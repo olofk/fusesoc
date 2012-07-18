@@ -1,0 +1,20 @@
+Clock and reset generation module
+
+This module should be used as the main reset and clock generation module. It 
+should have the asynchronous resets and unbuffered clock lines coming in, and 
+depending on defines in the main design file, generate the appropriate clocks 
+and clock-synchronous resets.
+
+Currently Actel and Xilinx technlogies are supported. It is unclear if the way 
+it is handling clock-configurations depending on boards is ideal, potentially 
+it could become very cluttered if further board support is added and this would 
+need to be looked at.
+
+The technology-dependent modules (PLLs, buffers) instantiated here should be 
+located under the backend/vendor/rtl paths.
+
+As mentioned previously, it is unclear if this is the best way to manage the
+task of clock and reset generation, particularly if further specialised clock
+domains wish to be added, however there is some benefit in that it is all 
+managed in one place and with the strict rules that all clocks and resets come 
+to this module to be generated.

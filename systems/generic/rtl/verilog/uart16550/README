@@ -1,0 +1,5 @@
+UART 16550 compatible (mostly) core RTL
+
+http://opencores.org/project,uart16550
+
+The core is configured to be in 8-bit mode in this project.

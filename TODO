@@ -1,0 +1,23 @@
+--Simulators--
+Modelsim
+Verilator
+
+--Boards--
+ordb2a
+atlys
+
+--Build tools--
+ISE
+Quartus
+Synplify
+icarus?
+
+Use(or1ktrace/libopcodes/opdis) in monitor or use post processing
+
+Move generic cores to separate cores
+Support for patches (start with calling patch)
+Load test cases with $value$plusargs
+Autogenerate top levels
+Autogenerate muxes/arbiters
+elf to vmem converter
+

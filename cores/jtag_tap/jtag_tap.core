@@ -1,0 +1,13 @@
+[main]
+name = jtag_tap
+description = JTAG Tap
+provider = opencores
+rtl_files = rtl/verilog/tap_top.v
+include_files = rtl/verilog/tap_defines.v
+include_dirs = rtl/verilog
+
+[opencores]
+repo_name = jtag
+repo_root = trunk/tap
+revision = 24
+

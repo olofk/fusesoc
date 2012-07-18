@@ -1,0 +1,54 @@
+[main]
+name = generic
+description = "Generic technology independent OpenRISC system
+rtl_files = 
+ rtl/verilog/arbiter/arbiter_bytebus.v
+ rtl/verilog/arbiter/arbiter_dbus.v
+ rtl/verilog/arbiter/arbiter_ibus.v
+ rtl/verilog/clkgen/clkgen.v
+# rtl/verilog/jtag_tap/jtag_tap.v
+ rtl/verilog/dbg_if/dbg_wb.v
+ rtl/verilog/dbg_if/dbg_register.v
+ rtl/verilog/dbg_if/dbg_crc32_d1.v
+ rtl/verilog/dbg_if/dbg_if.v
+ rtl/verilog/dbg_if/dbg_cpu_registers.v
+ rtl/verilog/dbg_if/dbg_cpu.v
+ rtl/verilog/ram_wb/ram_wb.v
+ rtl/verilog/ram_wb/ram_wb_b3.v
+ rtl/verilog/wb_ram_b3/wb_ram_b3.v
+ rtl/verilog/include/dbg_cpu_defines.v
+ rtl/verilog/include/usbhostslave_constants_h.v
+ rtl/verilog/include/dbg_wb_defines.v
+ rtl/verilog/include/uart_defines.v
+ rtl/verilog/include/usbhostslave_hostcontrol_h.v
+ rtl/verilog/include/orpsoc-defines.v
+ rtl/verilog/include/usbhostslave_serialinterfaceengine_h.v
+ rtl/verilog/include/dbg_defines.v
+ rtl/verilog/include/usbhostslave_wishbonebus_h.v
+ rtl/verilog/include/or1200_defines.v
+ rtl/verilog/include/tap_defines.v
+ rtl/verilog/include/timescale.v
+ rtl/verilog/intgen/intgen.v
+ rtl/verilog/uart16550/raminfr.v
+ rtl/verilog/uart16550/uart16550.v
+ rtl/verilog/uart16550/uart_debug_if.v
+ rtl/verilog/uart16550/uart_receiver.v
+ rtl/verilog/uart16550/uart_regs.v
+ rtl/verilog/uart16550/uart_rfifo.v
+ rtl/verilog/uart16550/uart_sync_flops.v
+ rtl/verilog/uart16550/uart_tfifo.v
+ rtl/verilog/uart16550/uart_transmitter.v
+ rtl/verilog/uart16550/uart_wb.v
+ rtl/verilog/orpsoc_top/orpsoc_top.v
+include_dirs = rtl/verilog/include
+include_files =
+ rtl/verilog/include/orpsoc-params.v
+
+tb_files = 
+ bench/monitor.v
+ bench/orpsoc_tb.v
+
+simulators =
+ icarus
+
+cores = jtag_tap or1200

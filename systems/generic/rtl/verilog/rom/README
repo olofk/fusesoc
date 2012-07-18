@@ -1,0 +1,13 @@
+ROM module
+
+This module will act as a read-only memory with a Wishbone interface. It relies
+on a generated list of verilog assigns for each address requested. This included
+verilog file is from the sw/bootrom path. Anything building the system should 
+also build this bootrom.v (requires compilation of assembly file with or32 
+toolchain and parsing with custom tool in sw/utils, all done automagically by 
+Makefile in sw/bootrom)
+
+This ROM can support Wishbone B3 bursting, but obviously then requires more 
+logic. The `NONBLOCK_DEFINE is to accomodate those annoying coding 
+methodologies that do all sequential assigns with a #delay, like the or1200 was.
+

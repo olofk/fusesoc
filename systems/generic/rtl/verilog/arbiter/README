@@ -1,0 +1,67 @@
+Wishbone arbiter RTL source
+
+The current implementation of these arbiters for the design is a hard-coded 
+slightly configurable set up, rather than a configurable one-size-fits-all 
+approach. It is assumed a Harvard architecture is in use, and therefore there 
+are seperate busses for both instruction and data busses of the processor. The 
+data bus arbiter also has a peripheral, or byte (wide) bus, attached to it.
+
+The busses have ports following the Wishbone B3 standard. They are a cross-bar 
+switch setup, ie only one master can be controlling the bus at a time. A simple 
+priority-based arbitration system is used, however this only really matters for 
+the data bus, which has multiple masters.
+
+The addresses for each slave are configured through parameters. It is expected 
+the instantiation of the arbiter will define these parameters also.
+
+The arbiters have the option of passing the signals through with or without any 
+sequential logic (registering) however they _DO NOT_ yet support registered 
+bursting (ie, where wb_cti indicates anything other than a Wishbone classic 
+cycle.) Do not enable registering, via the defines, and expect bursting to work!
+
+There is an optional watchdog counter which will assert wb_err if a request is 
+not serviced within the counting period of the clock. The width of the timer 
+is defined.
+
+The arbiters depend on the design's top level define file. The options for 
+registering and the watchdog timer should be set there.
+
+arbiter_ibus.v:
+	This has only one master input and two slaves - a ROM and a main memory.
+	This is the simplest of the arbiters. It has 32-bit wide data ports.
+
+
+arbiter_dbus.v:
+	This has two masters ports and several slave ports. It has 32-bit wide 
+	data ports. It has a default slave it selects if none of the other 
+	slaves are selected, allowing daisy-chaining of another arbiter onto it 
+	(used for the peripheral byte-bus.)
+
+	Increasing or reducing the slaves here requires:
+	1. Altering the module() declaration, adding the required ports.
+	2. Altering the input/output declaration, adding the required ports.
+	3. Add/remove(comment-out) the appropriate line in the section under the
+	   commend "Slave selects". Ensure to alter the final slave, or 
+	   "default" slave's select logic to include/exclude the slave being 
+	   added/removed.
+	4. Alter the inputs from the master going to the slave
+	5. Alter the inputs from the slave (wb_ack, wb_dat_i, etc.) going to the
+	   master
+	6. When instantiating, be sure that the address for the new slave is 
+	   defined.
+	7. Be sure to update the appropriate parameters in design-params.v with
+	   the correct total number of slaves, and the address of the new slave.
+
+	For most of this slave configuration change, it should be as easy as 
+	following the example of the structure already in the file, and 
+	potentially just moving the open block-comment marker "/*" past the 
+	lines for the new slave.
+
+arbiter_bytebus.v:
+	This is a single-master arbiter, connecting to multiple slaves. It has 
+	single byte-wide data ports. The data port back to the master maps read 
+	bytes to the correct position in a 32-bit wide word, consistent with a 
+	big-endian representation of data. There is no default slave. The 
+	procedure for adding new slaves is the same as for the main data-bus 
+	arbiter, except for the default slave selection considerations.
+	

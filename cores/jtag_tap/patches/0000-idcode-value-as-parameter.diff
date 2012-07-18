@@ -1,0 +1,46 @@
+Index: rtl/verilog/tap_defines.v
+===================================================================
+--- rtl/verilog/tap_defines.v	(revision 24)
++++ rtl/verilog/tap_defines.v	(working copy)
+@@ -53,13 +53,6 @@
+ //
+ 
+ 
+-// Define IDCODE Value
+-`define IDCODE_VALUE  32'h149511c3
+-// 0001             version
+-// 0100100101010001 part number (IQ)
+-// 00011100001      manufacturer id (flextronics)
+-// 1                required by standard
+-
+ // Length of the Instruction register
+ `define	IR_LENGTH	4
+ 
+Index: rtl/verilog/tap_top.v
+===================================================================
+--- rtl/verilog/tap_top.v	(revision 24)
++++ rtl/verilog/tap_top.v	(working copy)
+@@ -101,7 +101,13 @@
+ `include "tap_defines.v"
+ 
+ // Top module
+-module tap_top(
++module tap_top #(parameter
++                // 0001             version
++                // 0100100101010001 part number (IQ)
++                // 00011100001      manufacturer id (flextronics)
++                // 1                required by standard
++                IDCODE_VALUE = 32'h149511c3)
++               (
+                 // JTAG pads
+                 tms_pad_i, 
+                 tck_pad_i, 
+@@ -496,7 +502,7 @@
+   if(idcode_select & shift_dr)
+     idcode_reg <= #1 {tdi_pad_i, idcode_reg[31:1]};
+   else
+-    idcode_reg <= #1 `IDCODE_VALUE;
++    idcode_reg <= #1 IDCODE_VALUE;
+ end
+ 
+ always @ (negedge tck_pad_i)
