@@ -85,5 +85,5 @@ rtl_files =
 [opencores]
 repo_name = openrisc 
 repo_root = trunk/or1200
-revision = 675
+revision = 794
 
