@@ -15,8 +15,8 @@ class SimulatorIcarus:
         #FIXME: Make build_root directory
         self.copy_files()
         self.patch_files()
-        #self.write_config_files()
-        #self.compile()
+        self.write_config_files()
+        self.compile()
 
     def copy_files(self):
         for core_name in self.system.get_cores():
