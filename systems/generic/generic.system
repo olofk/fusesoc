@@ -6,7 +6,6 @@ rtl_files =
  rtl/verilog/arbiter/arbiter_dbus.v
  rtl/verilog/arbiter/arbiter_ibus.v
  rtl/verilog/clkgen/clkgen.v
-# rtl/verilog/jtag_tap/jtag_tap.v
  rtl/verilog/dbg_if/dbg_wb.v
  rtl/verilog/dbg_if/dbg_register.v
  rtl/verilog/dbg_if/dbg_crc32_d1.v
@@ -15,7 +14,6 @@ rtl_files =
  rtl/verilog/dbg_if/dbg_cpu.v
  rtl/verilog/ram_wb/ram_wb.v
  rtl/verilog/ram_wb/ram_wb_b3.v
- rtl/verilog/wb_ram_b3/wb_ram_b3.v
  rtl/verilog/include/dbg_cpu_defines.v
  rtl/verilog/include/usbhostslave_constants_h.v
  rtl/verilog/include/dbg_wb_defines.v
