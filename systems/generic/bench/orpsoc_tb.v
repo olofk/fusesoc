@@ -12,11 +12,13 @@ module orpsoc_tb;
       #100 rst_n <= 0;
       #200 rst_n <= 1;
    end
+
+   //FIXME: Add options for VCD logging
    initial begin
       $dumpfile("testlog.vcd");
       $dumpvars(0);
    end
-   orpsoc_top dut
+   orpsoc_top #(.memory_file("sram.vmem")) dut
      (.clk_pad_i   (clk),
       .rst_n_pad_i (rst_n)
       );

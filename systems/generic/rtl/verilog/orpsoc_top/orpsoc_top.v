@@ -62,6 +62,7 @@ module orpsoc_top
    input  uart0_srx_pad_i;
    output uart0_stx_pad_o;
 `endif
+   parameter memory_file="";
    
    ////////////////////////////////////////////////////////////////////////
    //
@@ -727,7 +728,7 @@ module orpsoc_top
    ////////////////////////////////////////////////////////////////////////
 
 
-   ram_wb ram_wb0
+   ram_wb #(.memory_file(memory_file)) ram_wb0
      (
       // Wishbone slave interface 0
       .wbm0_dat_i			(wbs_i_mc0_dat_i),

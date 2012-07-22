@@ -27,6 +27,7 @@ module ram_wb
    // Memory parameters
    parameter mem_size_bytes = 32'h0000_0400; // 1KBytes
    parameter mem_adr_width = 10; //(log2(mem_span));
+   parameter memory_file = "";
 
    input [aw-1:0]	wbm0_adr_i;
    input [1:0] 		wbm0_bte_i;
@@ -165,7 +166,7 @@ module ram_wb
    assign wbm2_err_o = wbs_ram_err_o & input_select[2];
    assign wbm2_rty_o = 0;
    
-   ram_wb_b3 ram_wb_b3_0
+   ram_wb_b3 #(.memory_file(memory_file)) ram_wb_b3_0
      (
       // Outputs
       .wb_ack_o				(wbs_ram_ack_o),

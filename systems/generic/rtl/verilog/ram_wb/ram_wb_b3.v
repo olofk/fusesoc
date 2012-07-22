@@ -121,7 +121,7 @@ module ram_wb_b3(
     from SystemC testbench.
     */
 // synthesis translate_off
-   parameter memory_file = "sram.vmem";
+   parameter memory_file = "";
 
 `ifdef verilator
    
@@ -134,7 +134,8 @@ module ram_wb_b3(
    
    initial
      begin
-	$readmemh(memory_file, mem);
+	if(!memory_file == "")
+	  $readmemh(memory_file, mem);
      end
 
 `endif // !`ifdef verilator
