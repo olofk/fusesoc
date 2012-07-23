@@ -9,7 +9,7 @@ SYSTEM = 'generic'
 if __name__ == "__main__":
 
     parser = argparse.ArgumentParser()
-    config = Config.Config('./orpsoc.conf')
+    config = Config.Config()
 
     parser.add_argument('action', choices=['list-systems',
                                            'list-cores',
@@ -26,7 +26,7 @@ if __name__ == "__main__":
     cores = config.get_cores()
     
     if p.system in systems:
-        system = System(config, config.get_systems()[p.system],config.cores_root)
+        system = System(config.get_systems()[p.system],config.cores_root)
     else:
         print("Can not find system " + p.system)
         exit(1)

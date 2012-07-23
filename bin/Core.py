@@ -1,4 +1,5 @@
 #import ConfigParser as configparser
+import Config
 import configparser
 import ProviderOpenCores
 import ProviderLocal
@@ -8,7 +9,7 @@ DEFAULT_VALUES = {'include_dirs'  : '',
                   'include_files' : '',
                   'tb_files'      : ''}
 class Core:
-    def __init__(self, oc, core_file=None):
+    def __init__(self, core_file=None):
         self.rtl_files = []
         self.include_files = []
         self.tb_files = []
@@ -27,10 +28,12 @@ class Core:
             items    = config.items(provider)
             self.provider = self.provider_factory(provider, items)
 
+            config = Config.Config()
+
             if provider == 'local':
                 self.root = os.path.dirname(core_file)
             else:
-                self.root = os.path.join(oc.cache_root, self.name)
+                self.root = os.path.join(config.cache_root, self.name)
 
 
     def setup(self):

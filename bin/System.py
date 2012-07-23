@@ -6,7 +6,7 @@ import ProviderLocal
 import os
 
 class System:
-    def __init__(self, oc, system_file, cores_root):
+    def __init__(self, system_file, cores_root):
         system_root = os.path.dirname(system_file)
 
         system_config = configparser.SafeConfigParser(allow_no_value=True)
@@ -15,21 +15,21 @@ class System:
         self.name = system_config.get('main', 'name')
 
         self.cores = {}
-        self.cores['orpsoc'] = self._create_orpsoc_core(oc, system_config, system_root)
+        self.cores['orpsoc'] = self._create_orpsoc_core(system_config, system_root)
         
         
         cores = self._get_files(system_config, 'cores')
 
         for core in cores:
-            self.cores[core] = Core.Core(oc, os.path.join(cores_root,core,core+'.core'))
+            self.cores[core] = Core.Core(os.path.join(cores_root,core,core+'.core'))
 
         self.simulators = system_config.get('main','simulators').split('\n')
 
     def setup_cores(self):
         for core in self.cores:
             self.cores[core].setup()
-    def _create_orpsoc_core(self, oc, system_config, system_root):
-        core = Core.Core(oc)
+    def _create_orpsoc_core(self, system_config, system_root):
+        core = Core.Core()
         
         core.set_rtl_files(self._get_files(system_config, 'rtl_files'))
         core.set_include_dirs(self._get_files(system_config, 'include_dirs'))
