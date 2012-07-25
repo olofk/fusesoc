@@ -43,7 +43,7 @@ if __name__ == "__main__":
         for c in cores:
             print(c)
     elif p.action == 'sim':
-        sim = SimulatorFactory(p.sim, system, config)
+        sim = SimulatorFactory(p.sim, system)
         sim.prepare()
         if p.testcase:
             sim.run(os.path.join(os.getcwd(), p.testcase))

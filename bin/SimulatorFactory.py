@@ -1,10 +1,8 @@
 from SimulatorIcarus import SimulatorIcarus
 
-#class SimulatorFactory:
-    #def __init__(self, sim):
-def SimulatorFactory(sim,system, config):
+def SimulatorFactory(sim,system):
     if sim == 'icarus':
-        return SimulatorIcarus(system, config)
+        return SimulatorIcarus(system)
     elif sim == 'modelsim':
         return SimulatorModelsim()
     else:
