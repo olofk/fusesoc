@@ -1,6 +1,9 @@
-#import ConfigParser as configparser
-import configparser
-import Simulator
+import sys
+if sys.version[0] == '2':
+    import ConfigParser as configparser
+else:
+    import configparser
+
 import Core
 import ProviderLocal
 import os

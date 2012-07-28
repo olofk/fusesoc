@@ -1,6 +1,10 @@
-#import ConfigParser as configparser
+import sys
+if sys.version[0] == '2':
+    import ConfigParser as configparser
+else:
+    import configparser
+
 import Config
-import configparser
 import ProviderOpenCores
 import ProviderLocal
 import os

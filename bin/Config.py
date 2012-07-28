@@ -1,5 +1,9 @@
-#import ConfigParser as configparser
-import configparser
+import sys
+if sys.version[0] == '2':
+    import ConfigParser as configparser
+else:
+    import configparser
+
 import os
 
 DEFAULT_VALUES = {'prefix'       : os.getcwd(),
