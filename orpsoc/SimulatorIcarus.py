@@ -6,7 +6,7 @@ import Config
 
 class SimulatorIcarus:
 
-    def __init__(self, system)
+    def __init__(self, system):
         config = Config.Config()
         self.system = system
         self.build_root = os.path.join(config.build_root, self.system.name)

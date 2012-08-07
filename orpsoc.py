@@ -1,8 +1,9 @@
+#!/usr/bin/python
 import argparse
 
-import Core, Config, System
-from SimulatorFactory import SimulatorFactory
-from System import System
+from orpsoc import Config, System
+from orpsoc import SimulatorFactory
+from orpsoc.System import System
 import os
 import sys
 SYSTEM = 'generic'
