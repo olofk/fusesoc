@@ -1,3 +1,4 @@
 orpsoc/__pycache__
 build
 cache
+*.pyc
