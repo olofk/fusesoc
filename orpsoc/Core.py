@@ -4,9 +4,10 @@ if sys.version[0] == '2':
 else:
     import configparser
 
-import Config
-import ProviderOpenCores
-import ProviderLocal
+from orpsoc import Config
+
+from orpsoc import ProviderOpenCores
+from orpsoc import ProviderLocal
 import os
 
 DEFAULT_VALUES = {'include_dirs'  : '',
@@ -46,6 +47,7 @@ class Core:
     def patch(self):
         print("FIXME: Need to check for python patch bindings. Do we need a file list or at least base dir for core too?")
 
+    #FIXME: Make providerfactory a separate class
     def provider_factory(self, provider, items):
         if provider == 'opencores':
             return ProviderOpenCores.ProviderOpenCores(dict(items))
