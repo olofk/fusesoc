@@ -30,6 +30,10 @@ class Core:
             self.tb_files = self._get_files(config, 'tb_files')
 
             provider = config.get('main', 'provider')
+
+            if provider == 'local':
+                self.cache_status = local
+
             items    = config.items(provider)
             self.provider = self.provider_factory(provider, items)
 
@@ -40,6 +44,13 @@ class Core:
             else:
                 self.root = os.path.join(config.cache_root, self.name)
 
+    def cache_status(self):
+        if self.cache_status == 'local':
+            return 'local'
+        if not os.path.isdir(self.root):
+            return 'empty'
+        #FIXME: Check for downloaded but modified. Add function in provider for this?
+        return 'downloaded'
 
     def setup(self):
         self.provider.fetch(self.root)

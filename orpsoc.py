@@ -4,6 +4,7 @@ import argparse
 from orpsoc import Config, System
 from orpsoc.simulator import SimulatorFactory
 from orpsoc.System import System
+from orpsoc.Core import Core
 import os
 import sys
 SYSTEM = 'generic'
@@ -41,8 +42,11 @@ if __name__ == "__main__":
         for s in systems:
             print(s)
     elif p.action == 'list-cores':
+        print(cores)
         for c in cores:
-            print(c)
+            core = Core(cores[c])
+            print(c, core.cache_status())
+
     elif p.action == 'sim':
         sim = SimulatorFactory(p.sim, system)
         sim.prepare()
