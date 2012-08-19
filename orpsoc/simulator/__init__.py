@@ -1,4 +1,6 @@
-from SimulatorIcarus import SimulatorIcarus
+from orpsoc.simulator.icarus import SimulatorIcarus
+
+import orpsoc.simulator
 
 def SimulatorFactory(sim,system):
     if sim == 'icarus':
@@ -7,4 +9,3 @@ def SimulatorFactory(sim,system):
         return SimulatorModelsim()
     else:
         raise Exception
-        

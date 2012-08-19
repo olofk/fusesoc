@@ -2,7 +2,7 @@ import os
 import os.path
 import shutil
 import subprocess
-import Config
+from orpsoc import Config
 
 class SimulatorIcarus:
 

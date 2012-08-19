@@ -4,8 +4,8 @@ if sys.version[0] == '2':
 else:
     import configparser
 
-import Core
-import ProviderLocal
+from orpsoc import Core
+from orpsoc import ProviderLocal
 import os
 
 class System:

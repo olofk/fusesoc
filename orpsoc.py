@@ -2,7 +2,7 @@
 import argparse
 
 from orpsoc import Config, System
-from orpsoc import SimulatorFactory
+from orpsoc.simulator import SimulatorFactory
 from orpsoc.System import System
 import os
 import sys
