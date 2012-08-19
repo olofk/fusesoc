@@ -17,9 +17,13 @@ class ProviderOpenCores: #(Provider):
             client.update(local_dir, revision)
         else:
             print("Checking out " + self.repo_path + " revision " + self.revision + " to " + local_dir)
-            client.checkout(self.repo_path,
-                            local_dir,
-                            revision=revision)
+            try:
+                client.checkout(self.repo_path,
+                                local_dir,
+                                revision=revision)
+            except pysvn.ClientError:
+                print("Error: Failed to checkout " + self.repo_path)
+                exit(1)
 
     #FIXME: Rename to print for python3 and return instead of print
     def dump_config(self):
