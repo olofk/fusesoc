@@ -2,12 +2,12 @@ import os
 import os.path
 import shutil
 import subprocess
-from orpsoc import Config
+from orpsoc.config import Config
 
 class SimulatorIcarus:
 
     def __init__(self, system):
-        config = Config.Config()
+        config = Config()
         self.system = system
         self.build_root = os.path.join(config.build_root, self.system.name)
         self.cores_root = config.cores_root

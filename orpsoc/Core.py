@@ -4,7 +4,7 @@ if sys.version[0] == '2':
 else:
     import configparser
 
-from orpsoc import Config
+from orpsoc.config import Config
 
 from orpsoc import ProviderOpenCores
 from orpsoc import ProviderLocal
@@ -37,12 +37,10 @@ class Core:
             items    = config.items(provider)
             self.provider = self.provider_factory(provider, items)
 
-            config = Config.Config()
-
             if provider == 'local':
                 self.root = os.path.dirname(core_file)
             else:
-                self.root = os.path.join(config.cache_root, self.name)
+                self.root = os.path.join(Config().cache_root, self.name)
 
     def cache_status(self):
         if self.cache_status == 'local':

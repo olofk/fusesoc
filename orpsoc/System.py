@@ -5,7 +5,7 @@ else:
     import configparser
 
 from orpsoc import Core
-from orpsoc.Config import Config
+from orpsoc.config import Config
 from orpsoc import ProviderLocal
 import os
 
