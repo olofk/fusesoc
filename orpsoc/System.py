@@ -5,11 +5,12 @@ else:
     import configparser
 
 from orpsoc import Core
+from orpsoc.Config import Config
 from orpsoc import ProviderLocal
 import os
 
 class System:
-    def __init__(self, system_file, cores_root):
+    def __init__(self, system_file):
         system_root = os.path.dirname(system_file)
 
         system_config = configparser.SafeConfigParser(allow_no_value=True)
@@ -24,7 +25,7 @@ class System:
         cores = self._get_files(system_config, 'cores')
 
         for core in cores:
-            self.cores[core] = Core.Core(os.path.join(cores_root,core,core+'.core'))
+            self.cores[core] = Core.Core(os.path.join(Config().cores_root,core,core+'.core'))
 
         self.simulators = system_config.get('main','simulators').split('\n')
 

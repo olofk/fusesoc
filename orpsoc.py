@@ -22,9 +22,8 @@ def list_systems(args):
 def sim(args):
     if not args.sim:
         args.sim=['icarus']
-    
-    system = System(Config().get_systems()[args.system],
-                    Config().cores_root)
+    system_file = Config().get_systems()[args.system]
+    system = System(system_file)
 
     sim = SimulatorFactory(args.sim[0], system)
     sim.prepare()
@@ -33,7 +32,6 @@ def sim(args):
 
 if __name__ == "__main__":
 
-    config = Config()
     parser = argparse.ArgumentParser()
     subparsers = parser.add_subparsers()
 
