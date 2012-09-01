@@ -1,69 +1,57 @@
 #!/usr/bin/python
 import argparse
 
-from orpsoc import Config, System
+from orpsoc import System
+from orpsoc.Config import Config
 from orpsoc.simulator import SimulatorFactory
 from orpsoc.System import System
 from orpsoc.Core import Core
 import os
-import sys
-SYSTEM = 'generic'
+
+def list_cores(args):
+    cores = Config().get_cores()
+    print("Available cores:")
+    for core in cores:
+        print(core, Core(cores[core]).cache_status())
+
+def list_systems(args):
+    print("Available systems:")
+    for system in Config().get_systems():
+        print(system)
+
+def sim(args):
+    if not args.sim:
+        args.sim=['icarus']
+    
+    system = System(Config().get_systems()[args.system],
+                    Config().cores_root)
+
+    sim = SimulatorFactory(args.sim[0], system)
+    sim.prepare()
+    if args.testcase:
+        sim.run(os.path.join(os.getcwd(), args.testcase[0]))
+
 if __name__ == "__main__":
 
+    config = Config()
     parser = argparse.ArgumentParser()
-    config = Config.Config()
+    subparsers = parser.add_subparsers()
 
-    parser.add_argument('action', choices=['list-systems',
-                                           'list-cores',
-                                           'sim'],
-                        help = 'Select an action from the list above')
-    parser.add_argument('--sim', nargs='?', const='icarus', default='icarus')
-    parser.add_argument('--system', nargs='?', const='generic', default='generic')
-    parser.add_argument('--testcase', nargs=1)
-    parser.add_argument('--dry-run', action='store_true')
+    #General options
+    parser_list_systems = subparsers.add_parser('list-systems', help='List available systems')
+    parser_list_systems.set_defaults(func=list_systems)
+
+    parser_list_cores = subparsers.add_parser('list-cores', help='List available cores')
+    #parser_list_cores.
+    parser_list_cores.set_defaults(func=list_cores)
+
+    #Simulation subparser
+    parser_sim = subparsers.add_parser('sim', help='Setup and run a simulation')
+    parser_sim.add_argument('--sim', nargs=1)
+    parser_sim.add_argument('--testcase', nargs=1)
+    parser_sim.add_argument('--dry-run', action='store_true')
+    parser_sim.add_argument('system')
+    parser_sim.set_defaults(func=sim)
 
     p = parser.parse_args()
-
-    systems = config.get_systems()
-    cores = config.get_cores()
-    
-    if p.system in systems:
-        system = System(config.get_systems()[p.system],config.cores_root)
-    else:
-        print("Can not find system " + p.system)
-        exit(1)
-
-#    for core in system.get_cores():
-#        print('='*5+core+'='*5)
-#        for f in system.cores[core].get_rtl_files():
-#            print(system.cores[core].get_root() + ' : ' + f)
-        
-    if p.action == 'list-systems':
-        for s in systems:
-            print(s)
-    elif p.action == 'list-cores':
-        print(cores)
-        for c in cores:
-            core = Core(cores[c])
-            print(c, core.cache_status())
-
-    elif p.action == 'sim':
-        sim = SimulatorFactory(p.sim, system)
-        sim.prepare()
-        if p.testcase:
-            sim.run(os.path.join(os.getcwd(), p.testcase))
-
-#    system.setup_cores()
-#    for i in os.listdir('.'):
-#        if i[-5:] == '.vmem':
-#            print("Running " + i)
-#            sim.run(os.path.join(os.getcwd(),'or1200-basic.vmem'))
-
-
-#    core_file = '../cores/or1200/or1200.core'
-#    local_core_dir = '../cores_dl/or1200'
-#    core = Core.Core(core_file)
-#    core.provider.dump_config()
-#    core.fetch(local_core_dir)
-#    core.patch()
-#    core.provider.repo_info()
+    p.func(p)
