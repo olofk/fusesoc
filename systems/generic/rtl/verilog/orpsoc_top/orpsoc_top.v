@@ -800,7 +800,7 @@ module orpsoc_top
    assign wbs_d_uart0_err_o = 0;
    assign wbs_d_uart0_rty_o = 0;
    
-   uart16550 uart16550_0
+   uart_top uart16550_0
      (
       // Wishbone slave interface
       .wb_clk_i				(wb_clk),

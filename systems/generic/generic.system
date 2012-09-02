@@ -27,16 +27,6 @@ rtl_files =
  rtl/verilog/include/tap_defines.v
  rtl/verilog/include/timescale.v
  rtl/verilog/intgen/intgen.v
- rtl/verilog/uart16550/raminfr.v
- rtl/verilog/uart16550/uart16550.v
- rtl/verilog/uart16550/uart_debug_if.v
- rtl/verilog/uart16550/uart_receiver.v
- rtl/verilog/uart16550/uart_regs.v
- rtl/verilog/uart16550/uart_rfifo.v
- rtl/verilog/uart16550/uart_sync_flops.v
- rtl/verilog/uart16550/uart_tfifo.v
- rtl/verilog/uart16550/uart_transmitter.v
- rtl/verilog/uart16550/uart_wb.v
  rtl/verilog/orpsoc_top/orpsoc_top.v
 include_dirs = rtl/verilog/include
 include_files =
@@ -49,4 +39,4 @@ tb_files =
 simulators =
  icarus
 
-cores = jtag_tap or1200
+cores = jtag_tap or1200 uart16550

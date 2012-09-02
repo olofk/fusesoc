@@ -1,0 +1,199 @@
+Index: uart16550/rtl/verilog/uart_transmitter.v
+===================================================================
+--- uart16550.orig/rtl/verilog/uart_transmitter.v
++++ uart16550/rtl/verilog/uart_transmitter.v
+@@ -269,7 +269,7 @@ begin
+ 					tstate <= s_send_byte;
+ 				end
+ 				else
+-					counter <= counter - 1'b1;
++					counter <= counter - 5'd1;
+ 				stx_o_tmp <= 1'b0;
+ 			end
+ 	s_send_byte :	begin
+@@ -280,7 +280,7 @@ begin
+ 				begin
+ 					if (bit_counter > 3'b0)
+ 					begin
+-						bit_counter <= bit_counter - 1'b1;
++						bit_counter <= bit_counter - 3'd1;
+ 						{shift_out[5:0],bit_out  } <= {shift_out[6:1], shift_out[0]};
+ 						tstate <= s_send_byte;
+ 					end
+@@ -302,7 +302,7 @@ begin
+ 					counter <= 0;
+ 				end
+ 				else
+-					counter <= counter - 1'b1;
++					counter <= counter - 5'd1;
+ 				stx_o_tmp <= bit_out; // set output pin
+ 			end
+ 	s_send_parity :	begin
+@@ -311,18 +311,18 @@ begin
+ 				else
+ 				if (counter == 5'b00001)
+ 				begin
+-					counter <= 4'b0;
++					counter <= 5'd0;
+ 					tstate <= s_send_stop;
+ 				end
+ 				else
+-					counter <= counter - 1'b1;
++					counter <= counter - 5'd1;
+ 				stx_o_tmp <= bit_out;
+ 			end
+ 	s_send_stop :  begin
+ 				if (~|counter)
+ 				  begin
+-						casex ({lcr[`UART_LC_SB],lcr[`UART_LC_BITS]})
+-  						3'b0xx:	  counter <= 5'b01101;     // 1 stop bit ok igor
++						casez ({lcr[`UART_LC_SB],lcr[`UART_LC_BITS]})
++  						3'b0??:	  counter <= 5'b01101;     // 1 stop bit ok igor
+   						3'b100:	  counter <= 5'b10101;     // 1.5 stop bit
+   						default:	  counter <= 5'b11101;     // 2 stop bits
+ 						endcase
+@@ -334,7 +334,7 @@ begin
+ 					tstate <= s_idle;
+ 				end
+ 				else
+-					counter <= counter - 1'b1;
++					counter <= counter - 5'd1;
+ 				stx_o_tmp <= 1'b1;
+ 			end
+ 
+Index: uart16550/rtl/verilog/uart_tfifo.v
+===================================================================
+--- uart16550.orig/rtl/verilog/uart_tfifo.v
++++ uart16550/rtl/verilog/uart_tfifo.v
+@@ -180,7 +180,7 @@ reg	[fifo_pointer_w-1:0]	bottom;
+ 
+ reg	[fifo_counter_w-1:0]	count;
+ reg				overrun;
+-wire [fifo_pointer_w-1:0] top_plus_1 = top + 1'b1;
++wire [fifo_pointer_w-1:0] top_plus_1 = top + 4'd1;
+ 
+ raminfr #(fifo_pointer_w,fifo_width,fifo_depth) tfifo  
+         (.clk(clk), 
+@@ -197,13 +197,13 @@ begin
+ 	if (wb_rst_i)
+ 	begin
+ 		top		<= 0;
+-		bottom		<= 1'b0;
++		bottom		<= 0;
+ 		count		<= 0;
+ 	end
+ 	else
+ 	if (fifo_reset) begin
+ 		top		<= 0;
+-		bottom		<= 1'b0;
++		bottom		<= 0;
+ 		count		<= 0;
+ 	end
+   else
+@@ -212,15 +212,15 @@ begin
+ 		2'b10 : if (count<fifo_depth)  // overrun condition
+ 			begin
+ 				top       <= top_plus_1;
+-				count     <= count + 1'b1;
++				count     <= count + 5'd1;
+ 			end
+ 		2'b01 : if(count>0)
+ 			begin
+-				bottom   <= bottom + 1'b1;
+-				count	 <= count - 1'b1;
++				bottom   <= bottom + 4'd1;
++				count	 <= count - 5'd1;
+ 			end
+ 		2'b11 : begin
+-				bottom   <= bottom + 1'b1;
++				bottom   <= bottom + 4'd1;
+ 				top       <= top_plus_1;
+ 		        end
+     default: ;
+Index: uart16550/rtl/verilog/uart_rfifo.v
+===================================================================
+--- uart16550.orig/rtl/verilog/uart_rfifo.v
++++ uart16550/rtl/verilog/uart_rfifo.v
+@@ -192,7 +192,7 @@ reg	[fifo_pointer_w-1:0]	bottom;
+ reg	[fifo_counter_w-1:0]	count;
+ reg				overrun;
+ 
+-wire [fifo_pointer_w-1:0] top_plus_1 = top + 1'b1;
++wire [fifo_pointer_w-1:0] top_plus_1 = top + 4'h1;
+ 
+ raminfr #(fifo_pointer_w,8,fifo_depth) rfifo  
+         (.clk(clk), 
+@@ -208,7 +208,7 @@ begin
+ 	if (wb_rst_i)
+ 	begin
+ 		top		<= 0;
+-		bottom		<= 1'b0;
++		bottom		<= 0;
+ 		count		<= 0;
+ 		fifo[0] <= 0;
+ 		fifo[1] <= 0;
+@@ -230,7 +230,7 @@ begin
+ 	else
+ 	if (fifo_reset) begin
+ 		top		<= 0;
+-		bottom		<= 1'b0;
++		bottom		<= 0;
+ 		count		<= 0;
+ 		fifo[0] <= 0;
+ 		fifo[1] <= 0;
+@@ -256,16 +256,16 @@ begin
+ 			begin
+ 				top       <= top_plus_1;
+ 				fifo[top] <= data_in[2:0];
+-				count     <= count + 1'b1;
++				count     <= count + 5'd1;
+ 			end
+ 		2'b01 : if(count>0)
+ 			begin
+         fifo[bottom] <= 0;
+-				bottom   <= bottom + 1'b1;
+-				count	 <= count - 1'b1;
++				bottom   <= bottom + 4'd1;
++				count	 <= count - 5'd1;
+ 			end
+ 		2'b11 : begin
+-				bottom   <= bottom + 1'b1;
++				bottom   <= bottom + 4'd1;
+ 				top       <= top_plus_1;
+ 				fifo[top] <= data_in[2:0];
+ 		        end
+Index: uart16550/rtl/verilog/uart_receiver.v
+===================================================================
+--- uart16550.orig/rtl/verilog/uart_receiver.v
++++ uart16550/rtl/verilog/uart_receiver.v
+@@ -257,7 +257,7 @@ wire 		rcounter16_eq_7 = (rcounter16 ==
+ wire		rcounter16_eq_0 = (rcounter16 == 4'd0);
+ wire		rcounter16_eq_1 = (rcounter16 == 4'd1);
+ 
+-wire [3:0] rcounter16_minus_1 = rcounter16 - 1'b1;
++wire [3:0] rcounter16_minus_1 = rcounter16 - 3'd1;
+ 
+ parameter  sr_idle 					= 4'd0;
+ parameter  sr_rec_start 			= 4'd1;
+@@ -351,7 +351,7 @@ begin
+ 				else		// else we have more bits to read
+ 				begin
+ 					rstate <= sr_rec_bit;
+-					rbit_counter <= rbit_counter - 1'b1;
++					rbit_counter <= rbit_counter - 3'd1;
+ 				end
+ 				rcounter16 <= 4'b1110;
+ 			end
+Index: uart16550/rtl/verilog/uart_regs.v
+===================================================================
+--- uart16550.orig/rtl/verilog/uart_regs.v
++++ uart16550/rtl/verilog/uart_regs.v
+@@ -406,7 +406,7 @@ always @(dl or dlab or ier or iir or scr
+ begin
+ 	case (wb_addr_i)
+ 		`UART_REG_RB   : wb_dat_o = dlab ? dl[`UART_DL1] : rf_data_out[10:3];
+-		`UART_REG_IE	: wb_dat_o = dlab ? dl[`UART_DL2] : ier;
++		`UART_REG_IE	: wb_dat_o = dlab ? dl[`UART_DL2] : {4'd0,ier};
+ 		`UART_REG_II	: wb_dat_o = {4'b1100,iir};
+ 		`UART_REG_LC	: wb_dat_o = lcr;
+ 		`UART_REG_LS	: wb_dat_o = lsr;
