@@ -63,7 +63,7 @@ module orpsoc_top
    output uart0_stx_pad_o;
 `endif
    parameter memory_file="";
-   
+   parameter IDCODE_VALUE=32'h14951185;
    ////////////////////////////////////////////////////////////////////////
    //
    // Clock and reset generation module
@@ -465,7 +465,7 @@ module orpsoc_top
    // Instantiation
    //
 
-   tap_top jtag_tap0
+   tap_top #(.IDCODE_VALUE(IDCODE_VALUE)) jtag_tap0
      (
       // Ports to pads
       .tdo_pad_o			(tdo_pad_o),

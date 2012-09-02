@@ -24,7 +24,6 @@ rtl_files =
  rtl/verilog/include/dbg_defines.v
  rtl/verilog/include/usbhostslave_wishbonebus_h.v
  rtl/verilog/include/or1200_defines.v
- rtl/verilog/include/tap_defines.v
  rtl/verilog/include/timescale.v
  rtl/verilog/intgen/intgen.v
  rtl/verilog/orpsoc_top/orpsoc_top.v
