@@ -5,19 +5,19 @@ else:
     import configparser
 
 from orpsoc.config import Config
-
-from orpsoc import ProviderOpenCores
-from orpsoc import ProviderLocal
+from orpsoc.provider import ProviderFactory
 import os
 
 DEFAULT_VALUES = {'include_dirs'  : '',
                   'include_files' : '',
+                  'provider'      : '',
                   'tb_files'      : ''}
 class Core:
     def __init__(self, core_file=None):
         self.rtl_files = []
         self.include_files = []
         self.tb_files = []
+        provider_name = ''
         if core_file:
 
             config = configparser.SafeConfigParser(DEFAULT_VALUES)
@@ -28,42 +28,30 @@ class Core:
             self.include_files = self._get_files(config, 'include_files')
             self.include_dirs = self._get_files(config, 'include_dirs')
             self.tb_files = self._get_files(config, 'tb_files')
+            provider_name = config.get('main', 'provider')
 
-            provider = config.get('main', 'provider')
-
-            if provider == 'local':
-                self.cache_status = local
-
-            items    = config.items(provider)
-            self.provider = self.provider_factory(provider, items)
-
-            if provider == 'local':
-                self.root = os.path.dirname(core_file)
-            else:
-                self.root = os.path.join(Config().cache_root, self.name)
+        if provider_name:
+            self.cache_dir = os.path.join(Config().cache_root, self.name)
+            self.files_root = self.cache_dir
+            items    = config.items(provider_name)
+            self.provider = ProviderFactory(provider_name, items)
+        else:
+            self.provider = None
+            if core_file:
+                self.files_root = os.path.dirname(core_file)
 
     def cache_status(self):
-        if self.cache_status == 'local':
+        if self.provider:
+            return self.provider.status(self.cache_dir)
+        else:
             return 'local'
-        if not os.path.isdir(self.root):
-            return 'empty'
-        #FIXME: Check for downloaded but modified. Add function in provider for this?
-        return 'downloaded'
 
     def setup(self):
-        self.provider.fetch(self.root)
+        if self.provider:
+            self.provider.fetch(self.cache_dir)
 
     def patch(self):
         print("FIXME: Need to check for python patch bindings. Do we need a file list or at least base dir for core too?")
-
-    #FIXME: Make providerfactory a separate class
-    def provider_factory(self, provider, items):
-        if provider == 'opencores':
-            return ProviderOpenCores.ProviderOpenCores(dict(items))
-        elif provider == 'local':
-            return ProviderLocal.ProviderLocal()
-        else:
-            raise Exception('Unknown provider')
 
     def get_rtl_files(self):
         return self.rtl_files
@@ -90,10 +78,10 @@ class Core:
         self.tb_files = tb_files
 
     def get_root(self):
-        return self.root
+        return self.files_root
 
     def set_root(self, root):
-        self.root = root
+        self.files_root = root
 
     def _get_files(self, config, identifier):
         files = config.get('main', identifier).split('\n')

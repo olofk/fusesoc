@@ -6,7 +6,7 @@ else:
 
 from orpsoc import Core
 from orpsoc.config import Config
-from orpsoc import ProviderLocal
+
 import os
 
 class System:
@@ -40,7 +40,6 @@ class System:
         core.set_include_files(self._get_files(system_config, 'include_files'))
         core.set_tb_files(self._get_files(system_config, 'tb_files'))
 
-        core.provider = ProviderLocal.ProviderLocal()
         core.set_root(os.path.join(system_root))
         return core
         

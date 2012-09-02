@@ -12,7 +12,7 @@ def list_cores(args):
     cores = Config().get_cores()
     print("Available cores:")
     for core in cores:
-        print(core, Core(cores[core]).cache_status())
+        print(core + ' : ' + Core(cores[core]).cache_status())
 
 def list_systems(args):
     print("Available systems:")
