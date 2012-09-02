@@ -1,0 +1,6 @@
+[main]
+name = ram_wb
+description = Wishbone RAM
+rtl_files =
+ ram_wb.v
+ ram_wb_b3.v

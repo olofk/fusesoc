@@ -12,8 +12,6 @@ rtl_files =
  rtl/verilog/dbg_if/dbg_if.v
  rtl/verilog/dbg_if/dbg_cpu_registers.v
  rtl/verilog/dbg_if/dbg_cpu.v
- rtl/verilog/ram_wb/ram_wb.v
- rtl/verilog/ram_wb/ram_wb_b3.v
  rtl/verilog/include/dbg_cpu_defines.v
  rtl/verilog/include/dbg_wb_defines.v
  rtl/verilog/include/uart_defines.v
@@ -34,4 +32,4 @@ tb_files =
 simulators =
  icarus
 
-cores = jtag_tap or1200 uart16550
+cores = jtag_tap or1200 ram_wb uart16550
