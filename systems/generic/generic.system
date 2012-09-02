@@ -15,14 +15,10 @@ rtl_files =
  rtl/verilog/ram_wb/ram_wb.v
  rtl/verilog/ram_wb/ram_wb_b3.v
  rtl/verilog/include/dbg_cpu_defines.v
- rtl/verilog/include/usbhostslave_constants_h.v
  rtl/verilog/include/dbg_wb_defines.v
  rtl/verilog/include/uart_defines.v
- rtl/verilog/include/usbhostslave_hostcontrol_h.v
  rtl/verilog/include/orpsoc-defines.v
- rtl/verilog/include/usbhostslave_serialinterfaceengine_h.v
  rtl/verilog/include/dbg_defines.v
- rtl/verilog/include/usbhostslave_wishbonebus_h.v
  rtl/verilog/include/or1200_defines.v
  rtl/verilog/include/timescale.v
  rtl/verilog/intgen/intgen.v
