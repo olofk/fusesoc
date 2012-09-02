@@ -50,9 +50,9 @@ class SimulatorIcarus:
             patch_root = os.path.join(self.cores_root, core_name, 'patches')
             if os.path.exists(patch_root):
                 print(core_name + " has patches")
-                for f in os.listdir(patch_root):
+                for f in sorted(os.listdir(patch_root)):
                     print("Applying " + f)
-                    subprocess.call(['patch','-p0',
+                    subprocess.call(['patch','-p1',
                                     '-d', os.path.join(self.build_root,'src',core_name),
                                     '-i', os.path.join(patch_root, f)])
 
