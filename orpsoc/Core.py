@@ -35,10 +35,10 @@ class Core:
                 self.provider = None
                 self.files_root = self.core_root
 
-            self.rtl_files = self._get_files(config, 'rtl_files')
-            self.include_files = self._get_files(config, 'include_files')
-            self.include_dirs = self._get_files(config, 'include_dirs')
-            self.tb_files = self._get_files(config, 'tb_files')
+            self.rtl_files     = config.get('main', 'rtl_files').split()
+            self.include_files = config.get('main', 'include_files').split()
+            self.include_dirs  = config.get('main', 'include_dirs').split()
+            self.tb_files      = config.get('main', 'tb_files').split()
 
         else:
             self.name = name
@@ -98,7 +98,4 @@ class Core:
         return True
 
     def _get_files(self, config, identifier):
-        files = config.get('main', identifier).split('\n')
-        if '' in files:
-            files.remove('')
-        return files
+        return 
