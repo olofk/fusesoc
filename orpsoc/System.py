@@ -25,7 +25,8 @@ class System:
         cores = self._get_files(system_config, 'cores')
 
         for core in cores:
-            self.cores[core] = Core.Core(os.path.join(Config().cores_root,core,core+'.core'))
+            core_file = os.path.join(Config().cores_root,core,core+'.core')
+            self.cores[core] = Core.Core(core_file)
 
         self.simulators = system_config.get('main','simulators').split('\n')
 
@@ -33,7 +34,7 @@ class System:
         for core in self.cores:
             self.cores[core].setup()
     def _create_orpsoc_core(self, system_config, system_root):
-        core = Core.Core()
+        core = Core.Core(name=self.name, core_root=system_root)
         
         core.set_rtl_files(self._get_files(system_config, 'rtl_files'))
         core.set_include_dirs(self._get_files(system_config, 'include_dirs'))

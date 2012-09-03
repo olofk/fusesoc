@@ -1,5 +1,4 @@
 import os
-import os.path
 import shutil
 import subprocess
 from orpsoc.config import Config
@@ -15,46 +14,15 @@ class SimulatorIcarus:
 
     def prepare(self):
         self.system.setup_cores()
-        #FIXME: Make build_root directory
-        self.copy_files()
-        self.patch_files()
+
+        for name, core in self.system.get_cores().items():
+            print("Preparing " + name)
+            dst_dir = os.path.join(Config().build_root, self.system.name, 'src', name)
+            core.setup()
+            core.export(dst_dir)
+            core.patch(dst_dir)
         self.write_config_files()
         self.compile()
-
-    def copy_files(self):
-        for core_name in self.system.get_cores():
-            core = self.system.cores[core_name]
-
-            src_dir = core.get_root()
-            dst_dir = os.path.join(self.build_root, 'src', core_name)
-            
-            if os.path.exists(dst_dir):
-                shutil.rmtree(dst_dir)
-
-            #FIXME: Separate tb_files to an own directory tree (src/tb/core_name ?)
-            src_files = core.get_rtl_files() + core.get_include_files() + core.get_tb_files()
-
-            dirs = list(set(map(os.path.dirname,src_files)))
-            for d in dirs:
-                os.makedirs(os.path.join(dst_dir, d))
-
-            for f in src_files:
-                shutil.copyfile(os.path.join(src_dir, f), 
-                                os.path.join(dst_dir, f))
-
-    def patch_files(self):
-        #FIXME: Check for patch availability
-        #FIXME: Use native python patch instead
-        for core_name in self.system.get_cores():
-            core = self.system.cores[core_name]
-            patch_root = os.path.join(self.cores_root, core_name, 'patches')
-            if os.path.exists(patch_root):
-                print(core_name + " has patches")
-                for f in sorted(os.listdir(patch_root)):
-                    print("Applying " + f)
-                    subprocess.call(['patch','-p1',
-                                    '-d', os.path.join(self.build_root,'src',core_name),
-                                    '-i', os.path.join(patch_root, f)])
 
     def write_config_files(self):
         icarus_file = 'icarus.scr'
