@@ -97,36 +97,6 @@ class Core:
                     return False
         return True
 
-    def get_rtl_files(self):
-        return self.rtl_files
-
-    def set_rtl_files(self, rtl_files):
-        self.rtl_files = rtl_files
-
-    def get_include_dirs(self):
-        return self.include_dirs
-
-    def set_include_dirs(self, include_dirs):
-        self.include_dirs = include_dirs
-
-    def get_include_files(self):
-        return self.include_files
-
-    def set_include_files(self, include_files):
-        self.include_files = include_files
-
-    def get_tb_files(self):
-        return self.tb_files
-
-    def set_tb_files(self, tb_files):
-        self.tb_files = tb_files
-
-    def get_root(self):
-        return self.files_root
-
-    def set_root(self, root):
-        self.files_root = root
-
     def _get_files(self, config, identifier):
         files = config.get('main', identifier).split('\n')
         if '' in files:

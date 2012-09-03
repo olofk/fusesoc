@@ -36,12 +36,11 @@ class System:
     def _create_orpsoc_core(self, system_config, system_root):
         core = Core.Core(name=self.name, core_root=system_root)
         
-        core.set_rtl_files(self._get_files(system_config, 'rtl_files'))
-        core.set_include_dirs(self._get_files(system_config, 'include_dirs'))
-        core.set_include_files(self._get_files(system_config, 'include_files'))
-        core.set_tb_files(self._get_files(system_config, 'tb_files'))
+        core.rtl_files     = self._get_files(system_config, 'rtl_files')
+        core.include_dirs  =self._get_files(system_config, 'include_dirs')
+        core.include_files =self._get_files(system_config, 'include_files')
+        core.tb_files      = self._get_files(system_config, 'tb_files')
 
-        core.set_root(os.path.join(system_root))
         return core
         
     def _get_files(self, config, identifier):

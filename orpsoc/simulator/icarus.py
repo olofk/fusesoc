@@ -37,11 +37,11 @@ class SimulatorIcarus:
 
         for core_name in self.system.get_cores():
             core = self.system.cores[core_name]
-            for d in core.get_include_dirs():
+            for d in core.include_dirs:
                 f.write("+incdir+" + os.path.join(src_root, core_name, d) + '\n')
-            for rtl_file in core.get_rtl_files():
+            for rtl_file in core.rtl_files:
                 f.write(os.path.join(src_root, core_name, rtl_file)+'\n')
-            for tb_file in core.get_tb_files():
+            for tb_file in core.tb_files:
                 f.write(os.path.join(src_root, core_name, tb_file)+'\n')
 
         f.close()
