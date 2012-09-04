@@ -96,6 +96,3 @@ class Core:
                     print("Error: Failed to call external command 'patch'")
                     return False
         return True
-
-    def _get_files(self, config, identifier):
-        return 
