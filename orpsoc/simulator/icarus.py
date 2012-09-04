@@ -47,16 +47,20 @@ class SimulatorIcarus:
         f.close()
     def compile(self):
         #FIXME: Handle failures. Save stdout/stderr. Build vmem file from elf file argument
-        print(subprocess.check_output(['iverilog',
-                                       '-s', 'orpsoc_tb',
-                                       '-c', 'icarus.scr',
-                                       '-o', 'orpsoc.elf'],
-                                      cwd = os.path.join(self.build_root, 'sim-icarus')))
+        if subprocess.call(['iverilog',
+                            '-s', 'orpsoc_tb',
+                            '-c', 'icarus.scr',
+                            '-o', 'orpsoc.elf'],
+                           cwd = os.path.join(self.build_root, 'sim-icarus')):
+            print("Error: Compiled failed")
+            exit(1)
+        
     def run(self, vmem_file):
         #FIXME: Handle failures. Save stdout/stderr. Build vmem file from elf file argument
         shutil.copyfile(vmem_file, os.path.join(self.build_root, 'sim-icarus', 'sram.vmem'))
-        print(subprocess.check_output(['vvp',
-                                       '-l', 'icarus.log',
-                                       'orpsoc.elf'],
-                                      cwd = os.path.join(self.build_root, 'sim-icarus')))
+        if subprocess.call(['vvp',
+                            '-l', 'icarus.log',
+                            'orpsoc.elf'],
+                           cwd = os.path.join(self.build_root, 'sim-icarus')):
+            print("Error: Failed to run simulation")
 
