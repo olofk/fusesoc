@@ -60,7 +60,8 @@ class SimulatorIcarus:
         shutil.copyfile(vmem_file, os.path.join(self.build_root, 'sim-icarus', 'sram.vmem'))
         if subprocess.call(['vvp',
                             '-l', 'icarus.log',
-                            'orpsoc.elf'],
+                            'orpsoc.elf',
+                            '+testcase='+vmem_file],
                            cwd = os.path.join(self.build_root, 'sim-icarus')):
             print("Error: Failed to run simulation")
 

@@ -13,10 +13,19 @@ module orpsoc_tb;
       #200 rst_n <= 1;
    end
 
+   reg [1023:0] testcase;
+   
    //FIXME: Add options for VCD logging
    initial begin
       $dumpfile("testlog.vcd");
       $dumpvars(0);
+      if($value$plusargs("testcase=%s",testcase))
+	$readmemh(testcase, dut.ram_wb0.ram_wb_b3_0.mem);
+      else begin
+	 $display("No testcase specified");
+	 $finish;
+      end
+      
    end
    orpsoc_top #(.memory_file("sram.vmem")) dut
      (.clk_pad_i   (clk),

@@ -28,7 +28,9 @@ def sim(args):
     sim = SimulatorFactory(args.sim[0], system)
     sim.prepare()
     if args.testcase:
-        sim.run(os.path.join(os.getcwd(), args.testcase[0]))
+        testcase=os.path.abspath(args.testcase[0])
+        print("Running test case: " + testcase)
+        sim.run(testcase)
 
 if __name__ == "__main__":
 

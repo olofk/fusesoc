@@ -167,14 +167,6 @@ module ram_wb_b3
       // verilator public
       $readmemh(memory_file, mem);
    endtask // do_readmemh
-   
-`else
-   
-   initial
-     begin
-	if(!memory_file == "")
-	  $readmemh(memory_file, mem);
-     end
 
 `endif // !`ifdef verilator
    
