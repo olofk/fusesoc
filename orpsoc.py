@@ -5,7 +5,7 @@ from orpsoc import System
 from orpsoc.config import Config
 from orpsoc.simulator import SimulatorFactory
 from orpsoc.System import System
-from orpsoc.Core import Core
+from orpsoc.core import Core
 import os
 
 def list_cores(args):

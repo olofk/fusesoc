@@ -4,7 +4,7 @@ if sys.version[0] == '2':
 else:
     import configparser
 
-from orpsoc import Core
+from orpsoc.core import Core
 from orpsoc.config import Config
 
 import os
@@ -26,7 +26,7 @@ class System:
 
         for core in cores:
             core_file = os.path.join(Config().cores_root,core,core+'.core')
-            self.cores[core] = Core.Core(core_file)
+            self.cores[core] = Core(core_file)
 
         self.simulators = system_config.get('main','simulators').split('\n')
 
@@ -34,7 +34,7 @@ class System:
         for core in self.cores:
             self.cores[core].setup()
     def _create_orpsoc_core(self, system_config, system_root):
-        core = Core.Core(name=self.name, core_root=system_root)
+        core = Core(name=self.name, core_root=system_root)
         
         core.rtl_files     = self._get_files(system_config, 'rtl_files')
         core.include_dirs  =self._get_files(system_config, 'include_dirs')
