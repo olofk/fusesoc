@@ -1,0 +1,13 @@
+Index: jtag_tap/rtl/verilog/tap_top.v
+===================================================================
+--- jtag_tap.orig/rtl/verilog/tap_top.v
++++ jtag_tap/rtl/verilog/tap_top.v
+@@ -515,7 +515,7 @@ end
+ 
+ always @ (negedge tck_pad_i)
+ begin
+-    idcode_tdo <= idcode_reg;
++    idcode_tdo <= idcode_reg[0];
+ end
+ /**********************************************************************************
+ *                                                                                 *
