@@ -16,10 +16,10 @@ class ProviderOpenCores(Provider):
         status = self.status(local_dir)
 
         if status == 'empty':
-            self._checkout()
+            self._checkout(local_dir)
         elif status == 'modified':
             self.clean_cache()
-            self._checkout()
+            self._checkout(local_dir)
         elif status == 'outofdate':
             self._update()
         elif status == 'downloaded':
@@ -34,10 +34,10 @@ class ProviderOpenCores(Provider):
         else:
             return 'downloaded'
         
-    def _checkout(self):
+    def _checkout(self, local_dir):
         print("Checking out " + self.repo_path + " revision " + self.revision_number + " to " + local_dir)
         try:
-            client.checkout(self.repo_path,
+            self.client.checkout(self.repo_path,
                             local_dir,
                             revision=self.revision)
         except pysvn.ClientError:
@@ -45,4 +45,4 @@ class ProviderOpenCores(Provider):
             exit(1)
 
     def _update(self):
-        client.update(local_dir, self.revision)
+        self.client.update(local_dir, self.revision)
