@@ -810,7 +810,7 @@ module orpsoc_top
       .wb_we_i				(wbs_d_uart0_we_i),
       .wb_stb_i				(wbs_d_uart0_stb_i),
       .wb_cyc_i				(wbs_d_uart0_cyc_i),
-      //.wb_sel_i				(),
+      .wb_sel_i				(),
       .wb_dat_o				(wbs_d_uart0_dat_o),
       .wb_ack_o				(wbs_d_uart0_ack_o),
 
