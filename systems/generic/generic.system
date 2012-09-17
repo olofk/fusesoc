@@ -6,17 +6,8 @@ rtl_files =
  rtl/verilog/arbiter/arbiter_dbus.v
  rtl/verilog/arbiter/arbiter_ibus.v
  rtl/verilog/clkgen/clkgen.v
- rtl/verilog/dbg_if/dbg_wb.v
- rtl/verilog/dbg_if/dbg_register.v
- rtl/verilog/dbg_if/dbg_crc32_d1.v
- rtl/verilog/dbg_if/dbg_if.v
- rtl/verilog/dbg_if/dbg_cpu_registers.v
- rtl/verilog/dbg_if/dbg_cpu.v
- rtl/verilog/include/dbg_cpu_defines.v
- rtl/verilog/include/dbg_wb_defines.v
  rtl/verilog/include/uart_defines.v
  rtl/verilog/include/orpsoc-defines.v
- rtl/verilog/include/dbg_defines.v
  rtl/verilog/include/or1200_defines.v
  rtl/verilog/include/timescale.v
  rtl/verilog/intgen/intgen.v
@@ -32,4 +23,4 @@ tb_files =
 simulators =
  icarus
 
-cores = jtag_tap or1200 ram_wb uart16550
+cores = dbg jtag_tap or1200 ram_wb uart16550

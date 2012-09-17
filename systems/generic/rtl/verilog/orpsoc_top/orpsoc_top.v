@@ -627,7 +627,7 @@ module orpsoc_top
    // 
    ////////////////////////////////////////////////////////////////////////
    
-   dbg_if dbg_if0
+   dbg_top dbg_if0
      (
       // OR1200 interface
       .cpu0_clk_i			(or1200_clk),
