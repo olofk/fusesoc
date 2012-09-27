@@ -33,8 +33,6 @@ module orpsoc_tb;
    initial
      if($value$plusargs("timeout=%d", timeout))
        #timeout $finish;
-     else
-       #1000 $finish;
    
    orpsoc_top #(.memory_file("sram.vmem")) dut
      (.clk_pad_i   (clk),
