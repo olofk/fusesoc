@@ -55,7 +55,11 @@ class SimulatorIcarus:
             print("Error: Compiled failed")
             exit(1)
         
-    def run(self, vmem_file):
+    def run(self, args):
+        vmem_file=os.path.abspath(args.testcase[0])
+        if not os.path.exists(vmem_file):
+            print("Error: Couldn't find test case " + vmem_file)
+            exit(1)
         #FIXME: Handle failures. Save stdout/stderr. Build vmem file from elf file argument
         shutil.copyfile(vmem_file, os.path.join(self.build_root, 'sim-icarus', 'sram.vmem'))
         if subprocess.call(['vvp',
