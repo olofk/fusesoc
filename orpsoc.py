@@ -48,7 +48,7 @@ if __name__ == "__main__":
     parser_sim = subparsers.add_parser('sim', help='Setup and run a simulation')
     parser_sim.add_argument('--sim', nargs=1)
     parser_sim.add_argument('--testcase', nargs=1)
-    parser_sim.add_argument('--timeout', nargs=1)
+    parser_sim.add_argument('--timeout', type=int, nargs=1)
     parser_sim.add_argument('--dry-run', action='store_true')
     parser_sim.add_argument('system')
     parser_sim.set_defaults(func=sim)

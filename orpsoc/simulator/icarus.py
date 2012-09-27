@@ -60,12 +60,17 @@ class SimulatorIcarus:
         if not os.path.exists(vmem_file):
             print("Error: Couldn't find test case " + vmem_file)
             exit(1)
+        plusargs = ['+testcase='+vmem_file]
+        if args.timeout:
+            print("Setting timeout to "+str(args.timeout[0]))
+            plusargs += ['+timeout='+str(args.timeout[0])]
+
         #FIXME: Handle failures. Save stdout/stderr. Build vmem file from elf file argument
         shutil.copyfile(vmem_file, os.path.join(self.build_root, 'sim-icarus', 'sram.vmem'))
         if subprocess.call(['vvp',
                             '-l', 'icarus.log',
-                            'orpsoc.elf',
-                            '+testcase='+vmem_file],
+                            'orpsoc.elf']
+                           + plusargs,
                            cwd = os.path.join(self.build_root, 'sim-icarus')):
             print("Error: Failed to run simulation")
 
