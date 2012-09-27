@@ -237,8 +237,8 @@ module orpsoc_top
    wire 			     wbs_d_intgen_rty_o;   
 
    wire [1:0] ibus_slave_sel =
-	      {wb_or1200_i_adr[31:28] == 4'hf,
-	       wb_or1200_i_adr[31:28] != 4'hf};
+	      {wb_or1200_i_adr[31:28] != 4'hf,
+	       wb_or1200_i_adr[31:28] == 4'hf};
    
 
    wire [31:0] wbs_i_adr;
@@ -276,14 +276,14 @@ module orpsoc_top
       .wbs_dat_o   (wbs_i_dat),
       .wbs_sel_o   (wbs_i_sel), 
       .wbs_we_o    (wbs_i_we),
-      .wbs_cyc_o   ({wbs_rom0_cyc, wbs_mc0_cyc}),
-      .wbs_stb_o   ({wbs_rom0_stb, wbs_mc0_stb}),
+      .wbs_cyc_o   ({wbs_mc0_cyc, wbs_rom0_cyc}),
+      .wbs_stb_o   ({wbs_mc0_stb, wbs_rom0_stb}),
       .wbs_cti_o   (wbs_i_cti),
       .wbs_bte_o   (wbs_i_bte),
-      .wbs_sdt_i   ({wbs_rom0_sdt, wbs_mc0_sdt}),
-      .wbs_ack_i   ({wbs_rom0_ack, wbs_mc0_ack}),
-      .wbs_err_i   ({wbs_rom0_err, wbs_mc0_err}),
-      .wbs_rty_i   ({wbs_rom0_rty, wbs_mc0_rty}));
+      .wbs_sdt_i   ({wbs_mc0_sdt, wbs_rom0_sdt}),
+      .wbs_ack_i   ({wbs_mc0_ack, wbs_rom0_ack}),
+      .wbs_err_i   ({wbs_mc0_err, wbs_rom0_err}),
+      .wbs_rty_i   ({wbs_mc0_rty, wbs_rom0_rty}));
       
    //
    // Wishbone data bus arbiter

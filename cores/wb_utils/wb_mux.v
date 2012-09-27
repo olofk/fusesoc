@@ -6,7 +6,7 @@
 ///                                                               ////
 /// The active slave is selected by asserting the corresponding   ////
 /// slave_sel_i bit. If several slave_sel signals are asserted,   ////
-/// the slave with the lowest number will be selected. If no bits ////
+/// the slave with the highest number will be selected. If no bits////
 /// are asserted, the last slave is selected to enable chaining   ////
 ///  with other arbiters                                          ////
 ///                                                               ////
@@ -128,19 +128,17 @@ endgenerate
    assign wbs_we_o  = wbm_we_i; 
 
    //FIXME: Do we need to cut off both cyc and stb?
-   assign wbs_cyc_o = {num_slaves{wbm_cyc_i}} & slave_sel_i;
-   assign wbs_stb_o = {num_slaves{wbm_stb_i}} & slave_sel_i;
-
+   assign wbs_cyc_o = wbm_cyc_i << slave_sel;
+   assign wbs_stb_o = wbm_stb_i << slave_sel;
+   
    assign wbs_cti_o = wbm_cti_i;
    assign wbs_bte_o = wbm_bte_i;
-
-   wire [num_slaves-1:0] dat_arr[0:dw-1];
 
    integer i;
    reg [1:0] slave_sel;
    
    always @(slave_sel_i) begin
-      slave_sel = num_slaves-2'd1;
+      slave_sel = 0;
       
       for(i=0;i<num_slaves;i=i+1) begin : slave_sel_loop
 	 if(slave_sel_i[i] == 1) slave_sel = i;
