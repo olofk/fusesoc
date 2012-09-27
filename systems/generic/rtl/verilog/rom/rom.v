@@ -70,15 +70,14 @@ module rom
 `else       
 	 case (wb_adr_i)
 `endif	 
-`include "bootrom.v"
-	   /*	 
+
 	    // Zero r0 and jump to 0x00000100
 	    0 : wb_dat_o <= 32'h18000000;
 	    1 : wb_dat_o <= 32'hA8200000;
 	    2 : wb_dat_o <= 32'hA8C00100;
 	    3 : wb_dat_o <= 32'h44003000;
 	    4 : wb_dat_o <= 32'h15000000;
-	    */
+
 	   default:
 	     wb_dat_o `NONBLOCK_ASSIGN 32'h00000000;
 	     

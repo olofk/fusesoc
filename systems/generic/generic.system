@@ -11,6 +11,7 @@ rtl_files =
  rtl/verilog/include/or1200_defines.v
  rtl/verilog/include/timescale.v
  rtl/verilog/intgen/intgen.v
+ rtl/verilog/rom/rom.v
  rtl/verilog/orpsoc_top/orpsoc_top.v
 include_dirs = rtl/verilog/include
 include_files =
@@ -23,4 +24,4 @@ tb_files =
 simulators =
  icarus
 
-cores = dbg jtag_tap or1200 ram_wb uart16550
+cores = dbg jtag_tap or1200 ram_wb uart16550 wb_utils

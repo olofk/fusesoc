@@ -113,19 +113,19 @@ module orpsoc_top
    //        ie. wbm_d_or12_adr_o is address OUT from the or1200
 
    // OR1200 instruction bus wires
-   wire [wb_aw-1:0] 	      wbm_i_or12_adr_o;
-   wire [wb_dw-1:0] 	      wbm_i_or12_dat_o;
-   wire [3:0] 		      wbm_i_or12_sel_o;
-   wire 		      wbm_i_or12_we_o;
-   wire 		      wbm_i_or12_cyc_o;
-   wire 		      wbm_i_or12_stb_o;
-   wire [2:0] 		      wbm_i_or12_cti_o;
-   wire [1:0] 		      wbm_i_or12_bte_o;
+   wire [wb_aw-1:0] 	      wb_or1200_i_adr;
+   wire [wb_dw-1:0] 	      wb_or1200_i_dat;
+   wire [3:0] 		      wb_or1200_i_sel;
+   wire 		      wb_or1200_i_we;
+   wire 		      wb_or1200_i_cyc;
+   wire 		      wb_or1200_i_stb;
+   wire [2:0] 		      wb_or1200_i_cti;
+   wire [1:0] 		      wb_or1200_i_bte;
    
-   wire [wb_dw-1:0] 	      wbm_i_or12_dat_i;   
-   wire 		      wbm_i_or12_ack_i;
-   wire 		      wbm_i_or12_err_i;
-   wire 		      wbm_i_or12_rty_i;
+   wire [wb_dw-1:0] 	      wb_or1200_i_sdt;   
+   wire 		      wb_or1200_i_ack;
+   wire 		      wb_or1200_i_err;
+   wire 		      wb_or1200_i_rty;
 
    // OR1200 data bus wires   
    wire [wb_aw-1:0] 	      wbm_d_or12_adr_o;
@@ -175,32 +175,21 @@ module orpsoc_top
    // Instruction bus slave wires //
    
    // rom0 instruction bus wires
-   wire [31:0] 		      wbs_i_rom0_adr_i;
-   wire [wbs_i_rom0_data_width-1:0] wbs_i_rom0_dat_i;
-   wire [3:0] 			    wbs_i_rom0_sel_i;
-   wire 			    wbs_i_rom0_we_i;
-   wire 			    wbs_i_rom0_cyc_i;
-   wire 			    wbs_i_rom0_stb_i;
-   wire [2:0] 			    wbs_i_rom0_cti_i;
-   wire [1:0] 			    wbs_i_rom0_bte_i;   
-   wire [wbs_i_rom0_data_width-1:0] wbs_i_rom0_dat_o;   
-   wire 			    wbs_i_rom0_ack_o;
-   wire 			    wbs_i_rom0_err_o;
-   wire 			    wbs_i_rom0_rty_o;   
+   wire        wbs_rom0_cyc;
+   wire        wbs_rom0_stb;
+
+   wire [31:0] wbs_rom0_sdt;   
+   wire        wbs_rom0_ack;
+   wire        wbs_rom0_err;
+   wire        wbs_rom0_rty;   
 
    // mc0 instruction bus wires
-   wire [31:0] 			    wbs_i_mc0_adr_i;
-   wire [31:0] 			    wbs_i_mc0_dat_i;
-   wire [3:0] 			    wbs_i_mc0_sel_i;
-   wire 			    wbs_i_mc0_we_i;
-   wire 			    wbs_i_mc0_cyc_i;
-   wire 			    wbs_i_mc0_stb_i;
-   wire [2:0] 			    wbs_i_mc0_cti_i;
-   wire [1:0] 			    wbs_i_mc0_bte_i;   
-   wire [31:0] 			    wbs_i_mc0_dat_o;   
-   wire 			    wbs_i_mc0_ack_o;
-   wire 			    wbs_i_mc0_err_o;
-   wire 			    wbs_i_mc0_rty_o;   
+   wire 			    wbs_mc0_cyc;
+   wire 			    wbs_mc0_stb;
+   wire [31:0] 			    wbs_mc0_sdt;   
+   wire 			    wbs_mc0_ack;
+   wire 			    wbs_mc0_err;
+   wire 			    wbs_mc0_rty;   
    
    // Data bus slave wires //
    
@@ -247,70 +236,55 @@ module orpsoc_top
    wire 			     wbs_d_intgen_err_o;
    wire 			     wbs_d_intgen_rty_o;   
 
+   wire [1:0] ibus_slave_sel =
+	      {wb_or1200_i_adr[31:28] == 4'hf,
+	       wb_or1200_i_adr[31:28] != 4'hf};
+   
 
+   wire [31:0] wbs_i_adr;
+   wire [31:0] wbs_i_dat;
+   wire [3:0]  wbs_i_sel;
+   wire        wbs_i_we;
+   wire        wbs_i_cyc;
+   wire        wbs_i_stb;
+   wire [2:0]  wbs_i_cti;
+   wire [1:0]  wbs_i_bte;
+   
+   
    //
    // Wishbone instruction bus arbiter
    //
-   
-   arbiter_ibus arbiter_ibus0
-     (
-      // Instruction Bus Master
-      // Inputs to arbiter from master
-      .wbm_adr_o			(wbm_i_or12_adr_o),
-      .wbm_dat_o			(wbm_i_or12_dat_o),
-      .wbm_sel_o			(wbm_i_or12_sel_o),
-      .wbm_we_o				(wbm_i_or12_we_o),
-      .wbm_cyc_o			(wbm_i_or12_cyc_o),
-      .wbm_stb_o			(wbm_i_or12_stb_o),
-      .wbm_cti_o			(wbm_i_or12_cti_o),
-      .wbm_bte_o			(wbm_i_or12_bte_o),
-      // Outputs to master from arbiter
-      .wbm_dat_i			(wbm_i_or12_dat_i),
-      .wbm_ack_i			(wbm_i_or12_ack_i),
-      .wbm_err_i			(wbm_i_or12_err_i),
-      .wbm_rty_i			(wbm_i_or12_rty_i),
+   wb_mux wb_mux_ibus
+     (.wb_clk      (wb_clk),
+      .wb_rst      (wb_rst),
+      .slave_sel_i (ibus_slave_sel),
+    // Master Interface
+      .wbm_adr_i   (wb_or1200_i_adr),
+      .wbm_dat_i   (wb_or1200_i_dat),
+      .wbm_sel_i   (wb_or1200_i_sel),
+      .wbm_we_i    (wb_or1200_i_we),
+      .wbm_cyc_i   (wb_or1200_i_cyc),
+      .wbm_stb_i   (wb_or1200_i_stb),
+      .wbm_cti_i   (wb_or1200_i_cti),
+      .wbm_bte_i   (wb_or1200_i_bte),
+      .wbm_sdt_o   (wb_or1200_i_sdt),
+      .wbm_ack_o   (wb_or1200_i_ack),
+      .wbm_err_o   (wb_or1200_i_err),
+      .wbm_rty_o   (wb_or1200_i_rty), 
+      //Slave interface
+      .wbs_adr_o   (wbs_i_adr),
+      .wbs_dat_o   (wbs_i_dat),
+      .wbs_sel_o   (wbs_i_sel), 
+      .wbs_we_o    (wbs_i_we),
+      .wbs_cyc_o   ({wbs_rom0_cyc, wbs_mc0_cyc}),
+      .wbs_stb_o   ({wbs_rom0_stb, wbs_mc0_stb}),
+      .wbs_cti_o   (wbs_i_cti),
+      .wbs_bte_o   (wbs_i_bte),
+      .wbs_sdt_i   ({wbs_rom0_sdt, wbs_mc0_sdt}),
+      .wbs_ack_i   ({wbs_rom0_ack, wbs_mc0_ack}),
+      .wbs_err_i   ({wbs_rom0_err, wbs_mc0_err}),
+      .wbs_rty_i   ({wbs_rom0_rty, wbs_mc0_rty}));
       
-      // Slave 0
-      // Inputs to slave from arbiter
-      .wbs0_adr_i			(wbs_i_rom0_adr_i),
-      .wbs0_dat_i			(wbs_i_rom0_dat_i),
-      .wbs0_sel_i			(wbs_i_rom0_sel_i),
-      .wbs0_we_i			(wbs_i_rom0_we_i),
-      .wbs0_cyc_i			(wbs_i_rom0_cyc_i),
-      .wbs0_stb_i			(wbs_i_rom0_stb_i),
-      .wbs0_cti_i			(wbs_i_rom0_cti_i),
-      .wbs0_bte_i			(wbs_i_rom0_bte_i),
-      // Outputs from slave to arbiter      
-      .wbs0_dat_o			(wbs_i_rom0_dat_o),
-      .wbs0_ack_o			(wbs_i_rom0_ack_o),
-      .wbs0_err_o			(wbs_i_rom0_err_o),
-      .wbs0_rty_o			(wbs_i_rom0_rty_o),
-
-      // Slave 1
-      // Inputs to slave from arbiter
-      .wbs1_adr_i			(wbs_i_mc0_adr_i),
-      .wbs1_dat_i			(wbs_i_mc0_dat_i),
-      .wbs1_sel_i			(wbs_i_mc0_sel_i),
-      .wbs1_we_i			(wbs_i_mc0_we_i),
-      .wbs1_cyc_i			(wbs_i_mc0_cyc_i),
-      .wbs1_stb_i			(wbs_i_mc0_stb_i),
-      .wbs1_cti_i			(wbs_i_mc0_cti_i),
-      .wbs1_bte_i			(wbs_i_mc0_bte_i),
-      // Outputs from slave to arbiter
-      .wbs1_dat_o			(wbs_i_mc0_dat_o),
-      .wbs1_ack_o			(wbs_i_mc0_ack_o),
-      .wbs1_err_o			(wbs_i_mc0_err_o),
-      .wbs1_rty_o			(wbs_i_mc0_rty_o),
-
-      // Clock, reset inputs
-      .wb_clk				(wb_clk),
-      .wb_rst				(wb_rst));
-
-   defparam arbiter_ibus0.wb_addr_match_width = ibus_arb_addr_match_width;
-
-   defparam arbiter_ibus0.slave0_adr = ibus_arb_slave0_adr; // ROM
-   defparam arbiter_ibus0.slave1_adr = ibus_arb_slave1_adr; // Main memory
-
    //
    // Wishbone data bus arbiter
    //
@@ -537,24 +511,24 @@ module orpsoc_top
    // 
    // Instantiation
    //    
-   or1200_top or1200_top0
+   or1200_top #(.boot_adr(32'hf0000000)) or1200_top0
        (
 	// Instruction bus, clocks, reset
 	.iwb_clk_i			(wb_clk),
 	.iwb_rst_i			(wb_rst),
-	.iwb_ack_i			(wbm_i_or12_ack_i),
-	.iwb_err_i			(wbm_i_or12_err_i),
-	.iwb_rty_i			(wbm_i_or12_rty_i),
-	.iwb_dat_i			(wbm_i_or12_dat_i),
+	.iwb_ack_i			(wb_or1200_i_ack),
+	.iwb_err_i			(wb_or1200_i_err),
+	.iwb_rty_i			(wb_or1200_i_rty),
+	.iwb_dat_i			(wb_or1200_i_sdt),
 	
-	.iwb_cyc_o			(wbm_i_or12_cyc_o),
-	.iwb_adr_o			(wbm_i_or12_adr_o),
-	.iwb_stb_o			(wbm_i_or12_stb_o),
-	.iwb_we_o			(wbm_i_or12_we_o),
-	.iwb_sel_o			(wbm_i_or12_sel_o),
-	.iwb_dat_o			(wbm_i_or12_dat_o),
-	.iwb_cti_o			(wbm_i_or12_cti_o),
-	.iwb_bte_o			(wbm_i_or12_bte_o),
+	.iwb_cyc_o			(wb_or1200_i_cyc),
+	.iwb_adr_o			(wb_or1200_i_adr),
+	.iwb_stb_o			(wb_or1200_i_stb),
+	.iwb_we_o			(wb_or1200_i_we),
+	.iwb_sel_o			(wb_or1200_i_sel),
+	.iwb_dat_o			(wb_or1200_i_dat),
+	.iwb_cti_o			(wb_or1200_i_cti),
+	.iwb_bte_o			(wb_or1200_i_bte),
 	
 	// Data bus, clocks, reset            
 	.dwb_clk_i			(wb_clk),
@@ -699,17 +673,21 @@ module orpsoc_top
 `ifdef BOOTROM   
    rom rom0
      (
-      .wb_dat_o				(wbs_i_rom0_dat_o),
-      .wb_ack_o				(wbs_i_rom0_ack_o),
-      .wb_adr_i				(wbs_i_rom0_adr_i[(wbs_i_rom0_addr_width+2)-1:2]),
-      .wb_stb_i				(wbs_i_rom0_stb_i),
-      .wb_cyc_i				(wbs_i_rom0_cyc_i),
-      .wb_cti_i				(wbs_i_rom0_cti_i),
-      .wb_bte_i				(wbs_i_rom0_bte_i),
+      .wb_dat_o				(wbs_rom0_sdt),
+      .wb_ack_o				(wbs_rom0_ack),
+      .wb_adr_i				(wbs_i_adr[(wbs_i_rom0_addr_width+2)-1:2]),
+      .wb_stb_i				(wbs_rom0_stb),
+      .wb_cyc_i				(wbs_rom0_cyc),
+      .wb_cti_i				(wbs_i_cti),
+      .wb_bte_i				(wbs_i_bte),
       .wb_clk				(wb_clk),
       .wb_rst				(wb_rst));
 
    defparam rom0.addr_width = wbs_i_rom0_addr_width;
+   
+   assign wbs_rom0_err = 1'b0;
+   assign wbs_rom0_rty = 1'b0;
+   
 `else // !`ifdef BOOTROM
    assign wbs_i_rom0_dat_o = 0;
    assign wbs_i_rom0_ack_o = 0;
@@ -731,18 +709,18 @@ module orpsoc_top
    ram_wb #(.memory_file(memory_file)) ram_wb0
      (
       // Wishbone slave interface 0
-      .wbm0_dat_i			(wbs_i_mc0_dat_i),
-      .wbm0_adr_i			(wbs_i_mc0_adr_i),
-      .wbm0_sel_i			(wbs_i_mc0_sel_i),
-      .wbm0_cti_i			(wbs_i_mc0_cti_i),
-      .wbm0_bte_i			(wbs_i_mc0_bte_i),
-      .wbm0_we_i			(wbs_i_mc0_we_i ),
-      .wbm0_cyc_i			(wbs_i_mc0_cyc_i),
-      .wbm0_stb_i			(wbs_i_mc0_stb_i),
-      .wbm0_dat_o			(wbs_i_mc0_dat_o),
-      .wbm0_ack_o			(wbs_i_mc0_ack_o),
-      .wbm0_err_o                       (wbs_i_mc0_err_o),
-      .wbm0_rty_o                       (wbs_i_mc0_rty_o),
+      .wbm0_dat_i			(wbs_i_dat),
+      .wbm0_adr_i			(wbs_i_adr),
+      .wbm0_sel_i			(wbs_i_sel),
+      .wbm0_cti_i			(wbs_i_cti),
+      .wbm0_bte_i			(wbs_i_bte),
+      .wbm0_we_i			(wbs_i_we ),
+      .wbm0_cyc_i			(wbs_mc0_cyc),
+      .wbm0_stb_i			(wbs_mc0_stb),
+      .wbm0_dat_o			(wbs_mc0_sdt),
+      .wbm0_ack_o			(wbs_mc0_ack),
+      .wbm0_err_o                       (wbs_mc0_err),
+      .wbm0_rty_o                       (wbs_mc0_rty),
       // Wishbone slave interface 1
       .wbm1_dat_i			(wbs_d_mc0_dat_i),
       .wbm1_adr_i			(wbs_d_mc0_adr_i),

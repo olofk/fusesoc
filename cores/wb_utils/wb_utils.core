@@ -1,0 +1,5 @@
+[main]
+name = wb_utils
+description = Wishbone utilities
+rtl_files =
+ wb_mux.v
