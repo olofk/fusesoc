@@ -19,6 +19,7 @@ include_files =
 
 tb_files = 
  bench/monitor.v
+ bench/uart_decoder.v
  bench/orpsoc_tb.v
 
 simulators =

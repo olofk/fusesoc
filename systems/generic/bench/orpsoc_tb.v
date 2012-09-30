@@ -36,12 +36,21 @@ module orpsoc_tb;
    
    orpsoc_top #(.memory_file("sram.vmem")) dut
      (.clk_pad_i   (clk),
-      .rst_n_pad_i (rst_n)
+      .rst_n_pad_i (rst_n),
+      .uart0_srx_pad_i(uart),
+      .uart0_stx_pad_o(uart)
       );
 
    or1200_monitor i_monitor
      (.clk (clk),
       .wb_insn (orpsoc_tb.dut.or1200_top0.or1200_cpu.or1200_ctrl.wb_insn)
       );
+
+   //FIXME: Get correct baud rate from parameter
+   uart_decoder
+     #(.uart_baudrate_period_ns(8680/2))
+   uart_decoder0
+     (.clk(clk),
+      .uart_tx(uart));
    
 endmodule
