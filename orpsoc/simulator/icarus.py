@@ -67,10 +67,11 @@ class SimulatorIcarus:
 
         #FIXME: Handle failures. Save stdout/stderr. Build vmem file from elf file argument
         shutil.copyfile(vmem_file, os.path.join(self.build_root, 'sim-icarus', 'sram.vmem'))
-        if subprocess.call(['vvp',
+        if subprocess.call(['vvp', '-n',
                             '-l', 'icarus.log',
                             'orpsoc.elf']
                            + plusargs,
-                           cwd = os.path.join(self.build_root, 'sim-icarus')):
+                           cwd = os.path.join(self.build_root, 'sim-icarus'),
+                           stdin=subprocess.PIPE):
             print("Error: Failed to run simulation")
 
