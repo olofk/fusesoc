@@ -31,8 +31,12 @@ module orpsoc_tb;
    //Force simulation stop after timeout cycles
    reg [63:0] timeout;
    initial
-     if($value$plusargs("timeout=%d", timeout))
-       #timeout $finish;
+     if($value$plusargs("timeout=%d", timeout)) begin
+	#timeout $display("Timeout: Forcing end of simulation");
+	$finish;
+     end
+
+   wire uart;
    
    orpsoc_top #(.memory_file("sram.vmem")) dut
      (.clk_pad_i   (clk),
