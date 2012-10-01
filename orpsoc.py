@@ -1,10 +1,9 @@
 #!/usr/bin/python
 import argparse
 
-from orpsoc import System
 from orpsoc.config import Config
 from orpsoc.simulator import SimulatorFactory
-from orpsoc.System import System
+from orpsoc.system import System
 from orpsoc.core import Core
 import os
 
