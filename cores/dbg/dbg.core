@@ -13,7 +13,6 @@ include_files =
  rtl/verilog/dbg_cpu_defines.v
  rtl/verilog/dbg_defines.v
  rtl/verilog/dbg_wb_defines.v
-include_dirs = rtl/verilog
 
 [opencores]
 repo_name = dbg_interface

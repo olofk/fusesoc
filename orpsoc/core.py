@@ -10,8 +10,7 @@ import os
 import shutil
 import subprocess
 
-DEFAULT_VALUES = {'include_dirs'  : '',
-                  'include_files' : '',
+DEFAULT_VALUES = {'include_files' : '',
                   'provider'      : '',
                   'rtl_files'     : '',
                   'tb_files'      : ''}
@@ -38,7 +37,7 @@ class Core:
 
             self.rtl_files     = config.get('main', 'rtl_files').split()
             self.include_files = config.get('main', 'include_files').split()
-            self.include_dirs  = config.get('main', 'include_dirs').split()
+            self.include_dirs  = list(set(map(os.path.dirname,self.include_files)))
             self.tb_files      = config.get('main', 'tb_files').split()
 
         else:
@@ -52,7 +51,7 @@ class Core:
 
             self.rtl_files = []
             self.include_files = []
-            self.include_dir = []
+            self.include_dirs = []
             self.tb_files = []
 
         

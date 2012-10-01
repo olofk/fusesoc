@@ -81,7 +81,7 @@ rtl_files =
  rtl/verilog/or1200_wbmux.v
  rtl/verilog/or1200_xcv_ram32x8d.v
  rtl/verilog/timescale.v
-#include_dirs = rtl/verilog
+
 [opencores]
 repo_name = openrisc 
 repo_root = trunk/or1200
