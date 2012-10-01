@@ -13,6 +13,7 @@ import subprocess
 DEFAULT_VALUES = {'include_dirs'  : '',
                   'include_files' : '',
                   'provider'      : '',
+                  'rtl_files'     : '',
                   'tb_files'      : ''}
 class Core:
     def __init__(self, core_file=None, name=None, core_root=None):
