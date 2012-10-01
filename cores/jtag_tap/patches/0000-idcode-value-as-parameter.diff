@@ -1,21 +1,3 @@
-Index: jtag_tap/rtl/verilog/tap_defines.v
-===================================================================
---- jtag_tap.orig/rtl/verilog/tap_defines.v
-+++ jtag_tap/rtl/verilog/tap_defines.v
-@@ -53,13 +53,6 @@
- //
- 
- 
--// Define IDCODE Value
--`define IDCODE_VALUE  32'h149511c3
--// 0001             version
--// 0100100101010001 part number (IQ)
--// 00011100001      manufacturer id (flextronics)
--// 1                required by standard
--
- // Length of the Instruction register
- `define	IR_LENGTH	4
- 
 Index: jtag_tap/rtl/verilog/tap_top.v
 ===================================================================
 --- jtag_tap.orig/rtl/verilog/tap_top.v
