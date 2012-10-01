@@ -6,16 +6,15 @@ rtl_files =
  rtl/verilog/arbiter/arbiter_dbus.v
  rtl/verilog/arbiter/arbiter_ibus.v
  rtl/verilog/clkgen/clkgen.v
- rtl/verilog/include/uart_defines.v
- rtl/verilog/include/orpsoc-defines.v
- rtl/verilog/include/or1200_defines.v
- rtl/verilog/include/timescale.v
  rtl/verilog/intgen/intgen.v
  rtl/verilog/rom/rom.v
  rtl/verilog/orpsoc_top/orpsoc_top.v
-include_dirs = rtl/verilog/include
 include_files =
+ rtl/verilog/include/or1200_defines.v
+ rtl/verilog/include/orpsoc-defines.v
  rtl/verilog/include/orpsoc-params.v
+ rtl/verilog/include/timescale.v
+ rtl/verilog/include/uart_defines.v
 
 tb_files = 
  bench/monitor.v

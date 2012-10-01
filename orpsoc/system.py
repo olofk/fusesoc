@@ -22,33 +22,28 @@ class System:
         self.cores['orpsoc'] = self._create_orpsoc_core(system_config, system_root)
         
         
-        cores = self._get_files(system_config, 'cores')
+        cores = system_config.get('main', 'cores').split()
 
         for core in cores:
             core_file = os.path.join(Config().cores_root,core,core+'.core')
             self.cores[core] = Core(core_file)
 
-        self.simulators = system_config.get('main','simulators').split('\n')
+        self.simulators = system_config.get('main','simulators').split()
 
     def setup_cores(self):
         for core in self.cores:
             self.cores[core].setup()
+
     def _create_orpsoc_core(self, system_config, system_root):
         core = Core(name=self.name, core_root=system_root)
         
-        core.rtl_files     = self._get_files(system_config, 'rtl_files')
-        core.include_dirs  =self._get_files(system_config, 'include_dirs')
-        core.include_files =self._get_files(system_config, 'include_files')
-        core.tb_files      = self._get_files(system_config, 'tb_files')
+        core.rtl_files     = system_config.get('main', 'rtl_files').split()
+        core.include_files = system_config.get('main', 'include_files').split()
+        core.include_dirs  = list(set(map(os.path.dirname, core.include_files)))
+        core.tb_files      = system_config.get('main', 'tb_files').split()
 
         return core
         
-    def _get_files(self, config, identifier):
-        files = config.get('main', identifier).split()
-        if '' in files:
-            files.remove('')
-        return files
-
     def get_cores(self):
         return self.cores
 
