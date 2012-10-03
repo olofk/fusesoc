@@ -47,6 +47,21 @@ class SimulatorIcarus:
         f.close()
     def compile(self):
         #FIXME: Handle failures. Save stdout/stderr. Build vmem file from elf file argument
+        sim_root = os.path.join(self.build_root, 'sim-icarus')
+        for name, core in self.system.get_cores().items():
+            if core.vpi:
+                core_root = os.path.join(self.build_root, 'src', name)
+                print("Building VPI module for " + name)
+                inc_dirs  = ['-I' + os.path.join(core_root, d) for d in core.vpi.include_dirs]
+                src_files = [os.path.join(core_root, f) for f in core.vpi.src_files]
+
+                if subprocess.call(['iverilog-vpi', '--name='+core.vpi.name] +
+                                   inc_dirs +
+                                   src_files,
+                                   cwd = os.path.join(sim_root)):
+                    print("Error VPI compilation failed")
+                    exit(1)
+                                    
         if subprocess.call(['iverilog',
                             '-s', 'orpsoc_tb',
                             '-c', 'icarus.scr',
@@ -65,12 +80,18 @@ class SimulatorIcarus:
             print("Setting timeout to "+str(args.timeout[0]))
             plusargs += ['+timeout='+str(args.timeout[0])]
 
+        vpi_modules = []
+        for name, core in self.system.get_cores().items():
+            if core.vpi:
+                vpi_modules += ['-m'+core.vpi.name]
+
         #FIXME: Handle failures. Save stdout/stderr. Build vmem file from elf file argument
         shutil.copyfile(vmem_file, os.path.join(self.build_root, 'sim-icarus', 'sram.vmem'))
-        if subprocess.call(['vvp', '-n',
-                            '-l', 'icarus.log',
-                            'orpsoc.elf']
-                           + plusargs,
+        if subprocess.call(['vvp', '-n', '-M.',
+                            '-l', 'icarus.log'] +
+                           vpi_modules +
+                           ['orpsoc.elf'] +
+                           plusargs,
                            cwd = os.path.join(self.build_root, 'sim-icarus'),
                            stdin=subprocess.PIPE):
             print("Error: Failed to run simulation")

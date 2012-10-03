@@ -37,10 +37,29 @@ module orpsoc_tb;
      end
 
    wire uart;
+
+   wire tms_pad_i;
+   wire tck_pad_i;
+   wire tdi_pad_i;
+   wire tdo_pad_o;
+   
+   vpi_debug_module vpi_dbg
+     (
+      .tms(tms_pad_i), 
+      .tck(tck_pad_i), 
+      .tdi(tdi_pad_i), 
+      .tdo(tdo_pad_o)
+      );
    
    orpsoc_top #(.memory_file("sram.vmem")) dut
      (.clk_pad_i   (clk),
       .rst_n_pad_i (rst_n),
+      //JTAG interface
+      .tms_pad_i(tms_pad_i),
+      .tck_pad_i(tck_pad_i),
+      .tdi_pad_i(tdi_pad_i),
+      .tdo_pad_o(tdo_pad_o),
+      //UART interface
       .uart0_srx_pad_i(uart),
       .uart0_stx_pad_o(uart)
       );

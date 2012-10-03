@@ -6,6 +6,7 @@ else:
 
 from orpsoc.config import Config
 from orpsoc.provider import ProviderFactory
+from orpsoc.vpi import VPI
 import os
 import shutil
 import subprocess
@@ -16,6 +17,7 @@ DEFAULT_VALUES = {'include_files' : '',
                   'tb_files'      : ''}
 class Core:
     def __init__(self, core_file=None, name=None, core_root=None):
+        self.vpi = None
         if core_file:
             config = configparser.SafeConfigParser(DEFAULT_VALUES)
             #FIXME: Check if file exists
@@ -39,6 +41,10 @@ class Core:
             self.include_files = config.get('main', 'include_files').split()
             self.include_dirs  = list(set(map(os.path.dirname,self.include_files)))
             self.tb_files      = config.get('main', 'tb_files').split()
+
+            if config.has_section('vpi'):
+                items = config.items('vpi')
+                self.vpi = VPI(dict(items))
 
         else:
             self.name = name
@@ -66,7 +72,6 @@ class Core:
             self.provider.fetch(self.cache_dir)
 
     def export(self, dst_dir):
-            
         if os.path.exists(dst_dir):
             shutil.rmtree(dst_dir)
 
@@ -74,6 +79,8 @@ class Core:
 
         #FIXME: Separate tb_files to an own directory tree (src/tb/core_name ?)
         src_files = self.rtl_files + self.include_files + self.tb_files
+        if self.vpi:
+            src_files += self.vpi.src_files + self.vpi.include_files
 
         dirs = list(set(map(os.path.dirname,src_files)))
         for d in dirs:
