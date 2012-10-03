@@ -58,8 +58,9 @@ class SimulatorIcarus:
                 if subprocess.call(['iverilog-vpi', '--name='+core.vpi.name] +
                                    inc_dirs +
                                    src_files,
+                                   stderr = open(os.path.join(sim_root,name+'.log'),'w'),
                                    cwd = os.path.join(sim_root)):
-                    print("Error VPI compilation failed")
+                    print("Error: VPI compilation failed. The log is saved as "+os.path.join(sim_root, name+'.log'))
                     exit(1)
                                     
         if subprocess.call(['iverilog',
