@@ -1,7 +1,6 @@
 [main]
 name = or1200
 description = OpenRISC 1200 CPU
-provider = opencores
 rtl_files =
  rtl/verilog/or1200_alu.v
  rtl/verilog/or1200_amultp2_32x32.v
@@ -82,7 +81,8 @@ rtl_files =
  rtl/verilog/or1200_xcv_ram32x8d.v
  rtl/verilog/timescale.v
 
-[opencores]
+[provider]
+name = opencores
 repo_name = openrisc 
 repo_root = trunk/or1200
 revision = 794

@@ -10,8 +10,8 @@ class Provider(object):
 
 from orpsoc.provider.opencores import ProviderOpenCores
 
-def ProviderFactory(provider, items):
-    if provider == 'opencores':
+def ProviderFactory(items):
+    if items.get('name') == 'opencores':
         return ProviderOpenCores(dict(items))
     else:
         raise Exception('Unknown provider')

@@ -1,7 +1,6 @@
 [main]
 name = uart16550
 description = UART 16550 transceiver
-provider = opencores
 rtl_files =
  rtl/verilog/raminfr.v
  rtl/verilog/uart_debug_if.v
@@ -14,7 +13,8 @@ rtl_files =
  rtl/verilog/uart_transmitter.v
  rtl/verilog/uart_wb.v
 
-[opencores]
+[provider]
+name = opencores
 repo_name = uart16550
 repo_root = trunk
 revision = 108

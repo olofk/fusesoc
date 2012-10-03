@@ -17,6 +17,7 @@ DEFAULT_VALUES = {'include_files' : '',
                   'tb_files'      : ''}
 class Core:
     def __init__(self, core_file=None, name=None, core_root=None):
+        self.provider = None
         self.vpi = None
         if core_file:
             config = configparser.SafeConfigParser(DEFAULT_VALUES)
@@ -27,14 +28,12 @@ class Core:
 
             self.core_root = os.path.dirname(core_file)
 
-            provider_name = config.get('main', 'provider')
-            if provider_name:
+            if config.has_section('provider'):
                 self.cache_dir = os.path.join(Config().cache_root, self.name)
                 self.files_root = self.cache_dir
-                items    = config.items(provider_name)
-                self.provider = ProviderFactory(provider_name, items)
+                items    = config.items('provider')
+                self.provider = ProviderFactory(dict(items))
             else:
-                self.provider = None
                 self.files_root = self.core_root
 
             self.rtl_files     = config.get('main', 'rtl_files').split()
