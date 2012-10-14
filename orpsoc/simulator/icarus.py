@@ -81,6 +81,10 @@ class SimulatorIcarus:
             print("Setting timeout to "+str(args.timeout[0]))
             plusargs += ['+timeout='+str(args.timeout[0])]
 
+        if args.enable_dbg:
+            print("Enabling debug interface")
+            plusargs += ['+enable_dbg']
+
         vpi_modules = []
         for name, core in self.system.get_cores().items():
             if core.vpi:

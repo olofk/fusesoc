@@ -36,19 +36,23 @@ module orpsoc_tb;
 	$finish;
      end
 
-   wire uart;
-
-   wire tms_pad_i;
-   wire tck_pad_i;
-   wire tdi_pad_i;
-   wire tdo_pad_o;
+   reg enable_dbg;
+   initial
+     enable_dbg = $test$plusargs("enable_dbg");
    
+   wire uart;
+   
+   wire tms_pad_i = tms |!enable_dbg;
+   wire tck_pad_i = tck & enable_dbg;
+   wire tdi_pad_i = tdi |!enable_dbg;
+   wire tdo       = tdo_pad_o & enable_dbg;
+
    vpi_debug_module vpi_dbg
      (
-      .tms(tms_pad_i), 
-      .tck(tck_pad_i), 
-      .tdi(tdi_pad_i), 
-      .tdo(tdo_pad_o)
+      .tms(tms), 
+      .tck(tck), 
+      .tdi(tdi), 
+      .tdo(tdo)
       );
    
    orpsoc_top #(.memory_file("sram.vmem")) dut
