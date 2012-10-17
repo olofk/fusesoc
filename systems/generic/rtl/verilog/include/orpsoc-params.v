@@ -51,9 +51,8 @@ parameter intgen_data_width = 8;
 parameter intgen_addr_width = 1;
 
 // ROM
-parameter wbs_i_rom0_data_width = 32;
-parameter wbs_i_rom0_addr_width = 6;
-parameter rom0_wb_adr = 4'hf;
+parameter rom0_dw = 32;
+parameter rom0_aw = 6;
 
 //////////////////////////////////////////////////////
 //                                                  //
@@ -75,22 +74,19 @@ parameter wb_aw = 32; // Default Wishbone full address width
 // Instruction bus       //
 //                       //
 ///////////////////////////
-parameter ibus_arb_addr_match_width = 4;
-// Slave addresses
-parameter ibus_arb_slave0_adr = rom0_wb_adr; // ROM
-parameter ibus_arb_slave1_adr = 4'h0;        // Main memory
+
+parameter ibus_slaves = 2;
+parameter rom0_slave_nr     = 0;
+parameter mc0_ibus_slave_nr = 1;
 
 ///////////////////////////
 //                       //
 // Data bus              //
 //                       //
 ///////////////////////////
-// Has auto foward to last slave when no address hits
-parameter dbus_arb_wb_addr_match_width = 8;
-parameter dbus_arb_wb_num_slaves = 2;
-// Slave addresses
-parameter dbus_arb_slave0_adr = 4'h0; // Main memory (SDRAM/FPGA SRAM)
-parameter dbus_arb_slave1_adr = 8'hxx; // Default slave - address don't care (X)
+parameter dbus_slaves = 2;
+parameter mc0_dbus_slave_nr = 0;
+parameter bbus_slave_nr = 1;
 
 ///////////////////////////////
 //                           //

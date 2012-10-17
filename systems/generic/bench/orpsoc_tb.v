@@ -47,14 +47,14 @@ module orpsoc_tb;
    wire tdi_pad_i = tdi |!enable_dbg;
    wire tdo       = tdo_pad_o & enable_dbg;
 
-   vpi_debug_module vpi_dbg
+/*   vpi_debug_module vpi_dbg
      (
       .tms(tms), 
       .tck(tck), 
       .tdi(tdi), 
       .tdo(tdo)
       );
-   
+  */ 
    orpsoc_top #(.memory_file("sram.vmem")) dut
      (.clk_pad_i   (clk),
       .rst_n_pad_i (rst_n),
