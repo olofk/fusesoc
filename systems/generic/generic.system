@@ -2,9 +2,6 @@
 name = generic
 description = "Generic technology independent OpenRISC system
 rtl_files = 
- rtl/verilog/arbiter/arbiter_bytebus.v
- rtl/verilog/arbiter/arbiter_dbus.v
- rtl/verilog/arbiter/arbiter_ibus.v
  rtl/verilog/clkgen/clkgen.v
  rtl/verilog/intgen/intgen.v
  rtl/verilog/rom/rom.v
