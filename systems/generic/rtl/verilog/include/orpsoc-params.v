@@ -93,30 +93,6 @@ parameter bbus_slave_nr = 1;
 // Byte-wide peripheral bus  //
 //                           //
 ///////////////////////////////
-parameter bbus_arb_wb_addr_match_width = 8;
-parameter bbus_arb_wb_num_slaves = 2; // Update this when changing slaves!
-// Slave addresses
-parameter bbus_arb_slave0_adr  = uart0_wb_adr;
-parameter bbus_arb_slave1_adr  = intgen_wb_adr;
-parameter bbus_arb_slave2_adr  = 0 /* UNASSIGNED */;
-parameter bbus_arb_slave3_adr  = 0 /* UNASSIGNED */;
-parameter bbus_arb_slave4_adr  = 0 /* UNASSIGNED */;
-parameter bbus_arb_slave5_adr  = 0 /* UNASSIGNED */;
-parameter bbus_arb_slave6_adr  = 0 /* UNASSIGNED */;
-parameter bbus_arb_slave7_adr  = 0 /* UNASSIGNED */;
-parameter bbus_arb_slave8_adr  = 0 /* UNASSIGNED */;
-parameter bbus_arb_slave9_adr  = 0 /* UNASSIGNED */;
-parameter bbus_arb_slave10_adr = 0 /* UNASSIGNED */;
-parameter bbus_arb_slave11_adr = 0 /* UNASSIGNED */;
-parameter bbus_arb_slave12_adr = 0 /* UNASSIGNED */;
-parameter bbus_arb_slave13_adr = 0 /* UNASSIGNED */;
-parameter bbus_arb_slave14_adr = 0 /* UNASSIGNED */;
-parameter bbus_arb_slave15_adr = 0 /* UNASSIGNED */;
-parameter bbus_arb_slave16_adr  = 0 /* UNASSIGNED */;
-parameter bbus_arb_slave17_adr  = 0 /* UNASSIGNED */;
-parameter bbus_arb_slave18_adr  = 0 /* UNASSIGNED */;
-parameter bbus_arb_slave19_adr  = 0 /* UNASSIGNED */;
-
-
-
-
+parameter bbus_slaves = 2;
+parameter uart_slave_nr = 0;
+parameter intgen_slave_nr = 1;

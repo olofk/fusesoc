@@ -45,9 +45,10 @@
 module wb_mux
   #(parameter watchdog = 0, //Set to non-zero to enable watchdog
     parameter watchdog_timer_width = 12,
-    parameter dw = 32,
-    parameter aw = 32,
-    parameter num_slaves = 2)
+    parameter dw = 32,        // Data width
+    parameter aw = 32,        // Address width
+    parameter sdw = 32,       // Slave data width. 8 or 32
+    parameter num_slaves = 2) // Number of slaves
 
    (input                      wb_clk,
     input                      wb_rst,
@@ -68,14 +69,14 @@ module wb_mux
     output                     wbm_rty_o,   
     // Wishbone Slave interface
     output            [aw-1:0] wbs_adr_o,
-    output            [dw-1:0] wbs_dat_o,
+    output           [sdw-1:0] wbs_dat_o,
     output               [3:0] wbs_sel_o,  
     output                     wbs_we_o,
     output    [num_slaves-1:0] wbs_cyc_o,
     output    [num_slaves-1:0] wbs_stb_o,
     output               [2:0] wbs_cti_o,
     output               [1:0] wbs_bte_o,
-    input  [dw*num_slaves-1:0] wbs_sdt_i,
+    input [sdw*num_slaves-1:0] wbs_sdt_i,
     input     [num_slaves-1:0] wbs_ack_i,
     input     [num_slaves-1:0] wbs_err_i,
     input     [num_slaves-1:0] wbs_rty_i);
@@ -123,9 +124,14 @@ endgenerate
 
 
    assign wbs_adr_o = wbm_adr_i;
-   assign wbs_dat_o = wbm_dat_i;
+   assign wbs_dat_o = (sdw == 32) ? wbm_dat_i :
+		      wbm_sel_i[3] ? wbm_dat_i[31:24] :
+		      wbm_sel_i[2] ? wbm_dat_i[23:16] :
+		      wbm_sel_i[1] ? wbm_dat_i[15:8]  :
+		      wbm_sel_i[0] ? wbm_dat_i[7:0]   : 8'b0;
+   
    assign wbs_sel_o = wbm_sel_i;
-   assign wbs_we_o  = wbm_we_i; 
+   assign wbs_we_o  = wbm_we_i;
 
    //FIXME: Do we need to cut off both cyc and stb?
    assign wbs_cyc_o = wbm_cyc_i << slave_sel;
@@ -144,8 +150,12 @@ endgenerate
 	 if(slave_sel_i[i] == 1) slave_sel = i;
       end
    end
-
-   assign wbm_sdt_o = wbs_sdt_i[slave_sel*32+:32];
+   assign wbm_sdt_o = (sdw == 32) ? wbs_sdt_i[slave_sel*dw+:dw] : 
+   		      wbm_sel_i[3] ? {wbs_sdt_i[slave_sel*sdw+:sdw],24'b0} :
+		      wbm_sel_i[2] ? {8'b0,wbs_sdt_i[slave_sel*sdw+:sdw],16'b0} :
+		      wbm_sel_i[1] ? {16'b0,wbs_sdt_i[slave_sel*sdw+:sdw],8'b0} :
+		      wbm_sel_i[0] ? {24'b0,wbs_sdt_i[slave_sel*sdw+:sdw]} :
+		      32'b0;
    assign wbm_ack_o = wbs_ack_i[slave_sel];
    assign wbm_err_o = wbs_err_i[slave_sel] | watchdog_err;
    assign wbm_rty_o = wbs_rty_i[slave_sel];

@@ -158,14 +158,6 @@ module orpsoc_top
    wire 		      wbm_d_dbg_rty_i;
 
    // Byte bus bridge master signals
-   wire [wb_aw-1:0] 	      wb_bbus_adr;
-   wire [wb_dw-1:0] 	      wb_bbus_dat;
-   wire [3:0] 		      wb_bbus_sel;
-   wire 		      wb_bbus_we;
-   wire 		      wb_bbus_cyc;
-   wire 		      wb_bbus_stb;
-   wire [2:0] 		      wb_bbus_cti;
-   wire [1:0] 		      wb_bbus_bte;
   
    wire [wb_dw-1:0] 	      wb_bbus_sdt;   
    wire 		      wb_bbus_ack;
@@ -196,33 +188,17 @@ module orpsoc_top
    // mc0 data bus wires
    
    // uart0 wires
-   wire [31:0] 			     wbs_d_uart0_adr_i;
-   wire [wbs_d_uart0_data_width-1:0] wbs_d_uart0_dat_i;
-   wire [3:0] 			     wbs_d_uart0_sel_i;
-   wire 			     wbs_d_uart0_we_i;
-   wire 			     wbs_d_uart0_cyc_i;
-   wire 			     wbs_d_uart0_stb_i;
-   wire [2:0] 			     wbs_d_uart0_cti_i;
-   wire [1:0] 			     wbs_d_uart0_bte_i;   
-   wire [wbs_d_uart0_data_width-1:0] wbs_d_uart0_dat_o;   
-   wire 			     wbs_d_uart0_ack_o;
-   wire 			     wbs_d_uart0_err_o;
-   wire 			     wbs_d_uart0_rty_o;   
+   wire [7:0]  wb_uart_sdt;   
+   wire        wb_uart_ack;
+   wire        wb_uart_err;
+   wire        wb_uart_rty;   
 
       
    // intgen wires
-   wire [31:0] 			     wbs_d_intgen_adr_i;
-   wire [7:0] 			     wbs_d_intgen_dat_i;
-   wire [3:0] 			     wbs_d_intgen_sel_i;
-   wire 			     wbs_d_intgen_we_i;
-   wire 			     wbs_d_intgen_cyc_i;
-   wire 			     wbs_d_intgen_stb_i;
-   wire [2:0] 			     wbs_d_intgen_cti_i;
-   wire [1:0] 			     wbs_d_intgen_bte_i;   
-   wire [7:0] 			     wbs_d_intgen_dat_o;   
-   wire 			     wbs_d_intgen_ack_o;
-   wire 			     wbs_d_intgen_err_o;
-   wire 			     wbs_d_intgen_rty_o;   
+   wire [7:0] 			     wb_intgen_sdt;
+   wire 			     wb_intgen_ack;
+   wire 			     wb_intgen_err;
+   wire 			     wb_intgen_rty;
 
    wire [ibus_slaves-1:0] ibus_slave_sel =
 	      {wb_or1200_i_adr[31:28] != 4'hf,
@@ -321,64 +297,53 @@ module orpsoc_top
       .wbs_rty_i   ({wb_bbus_rty, wb_mc0_dbus_rty}));
 
 
+   wire [bbus_slaves-1:0] bbus_slave_sel =
+			  {wb_or1200_d_adr[31:24] == 8'he1,
+			   wb_or1200_d_adr[31:24] == 8'h90};
+
+   wire [31:0] 		  wb_bbus_adr;
+   wire [7:0] 		  wb_bbus_dat;
+   wire [3:0] 		  wb_bbus_sel;
+   wire 		  wb_bbus_we;
+   wire [ibus_slaves-1:0] wb_bbus_cyc;
+   wire [ibus_slaves-1:0] wb_bbus_stb;
+   wire [2:0] 		  wb_bbus_cti;
+   wire [1:0] 		  wb_bbus_bte;
+
    //
    // Wishbone byte-wide bus arbiter
    //   
-   
-   arbiter_bytebus arbiter_bytebus0
-     (
-
-      // Master 0
-      // Inputs to arbiter from master
-      .wbm0_adr_o			(wb_dbus_adr),
-      .wbm0_dat_o			(wb_dbus_dat),
-      .wbm0_sel_o			(wb_dbus_sel),
-      .wbm0_we_o			(wb_dbus_we ),
-      .wbm0_cyc_o			(wb_dbus_cyc[bbus_slave_nr]),
-      .wbm0_stb_o			(wb_dbus_stb[bbus_slave_nr]),
-      .wbm0_cti_o			(wb_dbus_cti),
-      .wbm0_bte_o			(wb_dbus_bte),
-      // Outputs to master from arbiter
-      .wbm0_dat_i			(wb_bbus_sdt),
-      .wbm0_ack_i			(wb_bbus_ack),
-      .wbm0_err_i			(wb_bbus_err),
-      .wbm0_rty_i			(wb_bbus_rty),
-
-      // Byte bus slaves
-      
-      .wbs0_adr_i			(wbs_d_uart0_adr_i),
-      .wbs0_dat_i			(wbs_d_uart0_dat_i),
-      .wbs0_we_i			(wbs_d_uart0_we_i),
-      .wbs0_cyc_i			(wbs_d_uart0_cyc_i),
-      .wbs0_stb_i			(wbs_d_uart0_stb_i),
-      .wbs0_cti_i			(wbs_d_uart0_cti_i),
-      .wbs0_bte_i			(wbs_d_uart0_bte_i),
-      .wbs0_dat_o			(wbs_d_uart0_dat_o),
-      .wbs0_ack_o			(wbs_d_uart0_ack_o),
-      .wbs0_err_o			(wbs_d_uart0_err_o),
-      .wbs0_rty_o			(wbs_d_uart0_rty_o),
-
-      .wbs1_adr_i			(wbs_d_intgen_adr_i),
-      .wbs1_dat_i			(wbs_d_intgen_dat_i),
-      .wbs1_we_i			(wbs_d_intgen_we_i),
-      .wbs1_cyc_i			(wbs_d_intgen_cyc_i),
-      .wbs1_stb_i			(wbs_d_intgen_stb_i),
-      .wbs1_cti_i			(wbs_d_intgen_cti_i),
-      .wbs1_bte_i			(wbs_d_intgen_bte_i),
-      .wbs1_dat_o			(wbs_d_intgen_dat_o),
-      .wbs1_ack_o			(wbs_d_intgen_ack_o),
-      .wbs1_err_o			(wbs_d_intgen_err_o),
-      .wbs1_rty_o			(wbs_d_intgen_rty_o),
-
-      // Clock, reset inputs
-      .wb_clk			(wb_clk),
-      .wb_rst			(wb_rst));
-
-   defparam arbiter_bytebus0.wb_addr_match_width = bbus_arb_wb_addr_match_width;
-   defparam arbiter_bytebus0.wb_num_slaves = bbus_arb_wb_num_slaves;
-
-   defparam arbiter_bytebus0.slave0_adr = bbus_arb_slave0_adr;
-   defparam arbiter_bytebus0.slave1_adr = bbus_arb_slave1_adr;
+   wb_mux
+     #(.sdw(8))
+   wb_mux_bbus
+     (.wb_clk      (wb_clk),
+      .wb_rst      (wb_rst),
+      .slave_sel_i (bbus_slave_sel),
+      //Master interface
+      .wbm_adr_i   (wb_dbus_adr),
+      .wbm_dat_i   (wb_dbus_dat),
+      .wbm_sel_i   (wb_dbus_sel),
+      .wbm_we_i    (wb_dbus_we ),
+      .wbm_cyc_i   (wb_dbus_cyc[bbus_slave_nr]),
+      .wbm_stb_i   (wb_dbus_stb[bbus_slave_nr]),
+      .wbm_cti_i   (wb_dbus_cti),
+      .wbm_bte_i   (wb_dbus_bte),
+      .wbm_sdt_o   (wb_bbus_sdt),
+      .wbm_ack_o   (wb_bbus_ack),
+      .wbm_err_o   (wb_bbus_err),
+      .wbm_rty_o   (wb_bbus_rty),
+      //Slave interface
+      .wbs_adr_o   (wb_bbus_adr),
+      .wbs_dat_o   (wb_bbus_dat),
+      .wbs_we_o    (wb_bbus_we ),
+      .wbs_cyc_o   (wb_bbus_cyc),
+      .wbs_stb_o   (wb_bbus_stb),
+      .wbs_cti_o   (wb_bbus_cti),
+      .wbs_bte_o   (wb_bbus_bte),
+      .wbs_sdt_i   ({wb_intgen_sdt, wb_uart_sdt}),
+      .wbs_ack_i   ({wb_intgen_ack, wb_uart_ack}),
+      .wbs_err_i   ({wb_intgen_err, wb_uart_err}),
+      .wbs_rty_i   ({wb_intgen_rty, wb_uart_rty}));
 
 `ifdef JTAG_DEBUG   
    ////////////////////////////////////////////////////////////////////////
@@ -730,22 +695,22 @@ module orpsoc_top
    //
    // Assigns
    //
-   assign wbs_d_uart0_err_o = 0;
-   assign wbs_d_uart0_rty_o = 0;
+   assign wb_uart_err = 0;
+   assign wb_uart_rty = 0;
    
    uart_top uart16550_0
      (
       // Wishbone slave interface
       .wb_clk_i				(wb_clk),
       .wb_rst_i				(wb_rst),
-      .wb_adr_i				(wbs_d_uart0_adr_i[uart0_addr_width-1:0]),
-      .wb_dat_i				(wbs_d_uart0_dat_i),
-      .wb_we_i				(wbs_d_uart0_we_i),
-      .wb_stb_i				(wbs_d_uart0_stb_i),
-      .wb_cyc_i				(wbs_d_uart0_cyc_i),
+      .wb_adr_i				(wb_bbus_adr[uart0_addr_width-1:0]),
+      .wb_dat_i				(wb_bbus_dat),
+      .wb_we_i				(wb_bbus_we),
+      .wb_stb_i				(wb_bbus_stb[uart_slave_nr]),
+      .wb_cyc_i				(wb_bbus_cyc[uart_slave_nr]),
       .wb_sel_i				(),
-      .wb_dat_o				(wbs_d_uart0_dat_o),
-      .wb_ack_o				(wbs_d_uart0_ack_o),
+      .wb_dat_o				(wb_uart_sdt),
+      .wb_ack_o				(wb_uart_ack),
 
       .int_o				(uart0_irq),
       .stx_pad_o			(uart0_stx_pad_o),
@@ -765,10 +730,10 @@ module orpsoc_top
    //
    // Assigns
    //
-   assign wbs_d_uart0_err_o = 0;   
-   assign wbs_d_uart0_rty_o = 0;
-   assign wbs_d_uart0_ack_o = 0;
-   assign wbs_d_uart0_dat_o = 0;
+   assign wb_uart_err = 0;   
+   assign wb_uart_rty = 0;
+   assign wb_uart_ack = 0;
+   assign wb_uart_sdt = 0;
    
    ////////////////////////////////////////////////////////////////////////       
 `endif // !`ifdef UART0
@@ -781,20 +746,20 @@ module orpsoc_top
      (
       .clk_i                           (wb_clk),
       .rst_i                           (wb_rst),
-      .wb_adr_i                        (wbs_d_intgen_adr_i[intgen_addr_width-1:0]),
-      .wb_cyc_i                        (wbs_d_intgen_cyc_i),
-      .wb_stb_i                        (wbs_d_intgen_stb_i),
-      .wb_dat_i                        (wbs_d_intgen_dat_i),
-      .wb_we_i                         (wbs_d_intgen_we_i),
-      .wb_ack_o                        (wbs_d_intgen_ack_o),
-      .wb_dat_o                        (wbs_d_intgen_dat_o),
+      .wb_adr_i                        (wb_bbus_adr[intgen_addr_width-1:0]),
+      .wb_dat_i                        (wb_bbus_dat),
+      .wb_we_i                         (wb_bbus_we ),
+      .wb_cyc_i                        (wb_bbus_cyc[intgen_slave_nr]),
+      .wb_stb_i                        (wb_bbus_stb[intgen_slave_nr]),
+      .wb_ack_o                        (wb_intgen_ack),
+      .wb_dat_o                        (wb_intgen_sdt),
       
       .irq_o                           (intgen_irq)
       );
 
 `endif //  `ifdef INTGEN
-   assign wbs_d_intgen_err_o = 0;
-   assign wbs_d_intgen_rty_o = 0;
+   assign wb_intgen_err = 0;
+   assign wb_intgen_rty = 0;
    
    
    ////////////////////////////////////////////////////////////////////////
