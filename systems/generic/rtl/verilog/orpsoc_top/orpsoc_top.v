@@ -143,19 +143,33 @@ module orpsoc_top
    wire 		      wb_or1200_d_rty;   
 
    // Debug interface bus wires   
-   wire [wb_aw-1:0] 	      wbm_d_dbg_adr_o;
-   wire [wb_dw-1:0] 	      wbm_d_dbg_dat_o;
-   wire [3:0] 		      wbm_d_dbg_sel_o;
-   wire 		      wbm_d_dbg_we_o;
-   wire 		      wbm_d_dbg_cyc_o;
-   wire 		      wbm_d_dbg_stb_o;
-   wire [2:0] 		      wbm_d_dbg_cti_o;
-   wire [1:0] 		      wbm_d_dbg_bte_o;
+   wire [wb_aw-1:0] 	      wb_dbg_adr;
+   wire [wb_dw-1:0] 	      wb_dbg_dat;
+   wire [3:0] 		      wb_dbg_sel;
+   wire 		      wb_dbg_we;
+   wire 		      wb_dbg_cyc;
+   wire 		      wb_dbg_stb;
+   wire [2:0] 		      wb_dbg_cti;
+   wire [1:0] 		      wb_dbg_bte;
    
-   wire [wb_dw-1:0] 	      wbm_d_dbg_dat_i;   
-   wire 		      wbm_d_dbg_ack_i;
-   wire 		      wbm_d_dbg_err_i;
-   wire 		      wbm_d_dbg_rty_i;
+   wire [wb_dw-1:0] 	      wb_dbg_sdt;
+   wire 		      wb_dbg_ack;
+   wire 		      wb_dbg_err;
+   wire 		      wb_dbg_rty;
+
+   wire [wb_aw-1:0] 	      wbm_dbus_adr;
+   wire [wb_dw-1:0] 	      wbm_dbus_dat;
+   wire [3:0] 		      wbm_dbus_sel;
+   wire 		      wbm_dbus_we;
+   wire 		      wbm_dbus_cyc;
+   wire 		      wbm_dbus_stb;
+   wire [2:0] 		      wbm_dbus_cti;
+   wire [1:0] 		      wbm_dbus_bte;
+   
+   wire [wb_dw-1:0] 	      wbm_dbus_sdt;   
+   wire 		      wbm_dbus_ack;
+   wire 		      wbm_dbus_err;
+   wire 		      wbm_dbus_rty;
 
    // Byte bus bridge master signals
   
@@ -249,9 +263,40 @@ module orpsoc_top
       .wbs_err_i   ({wb_mc0_ibus_err, wb_rom0_err}),
       .wbs_rty_i   ({wb_mc0_ibus_rty, wb_rom0_rty}));
       
+
+   wb_arbiter wb_arbiter_dbus
+     (.wb_clk      (wb_clk),
+      .wb_rst      (wb_rst),
+    // Master Interface
+      .wbm_adr_i   ({wb_dbg_adr, wb_or1200_d_adr}),
+      .wbm_dat_i   ({wb_dbg_dat, wb_or1200_d_dat}),
+      .wbm_sel_i   ({wb_dbg_sel, wb_or1200_d_sel}),
+      .wbm_we_i    ({wb_dbg_we , wb_or1200_d_we }),
+      .wbm_cyc_i   ({wb_dbg_cyc, wb_or1200_d_cyc}),
+      .wbm_stb_i   ({wb_dbg_stb, wb_or1200_d_stb}),
+      .wbm_cti_i   ({wb_dbg_cti, wb_or1200_d_cti}),
+      .wbm_bte_i   ({wb_dbg_bte, wb_or1200_d_bte}),
+      .wbm_sdt_o   ({wb_dbg_sdt, wb_or1200_d_sdt}),
+      .wbm_ack_o   ({wb_dbg_ack, wb_or1200_d_ack}),
+      .wbm_err_o   ({wb_dbg_err, wb_or1200_d_err}),
+      .wbm_rty_o   ({wb_dbg_rty, wb_or1200_d_rty}), 
+      //Slave interface
+      .wbs_adr_o   (wbm_dbus_adr),
+      .wbs_dat_o   (wbm_dbus_dat),
+      .wbs_sel_o   (wbm_dbus_sel), 
+      .wbs_we_o    (wbm_dbus_we),
+      .wbs_cyc_o   (wbm_dbus_cyc),
+      .wbs_stb_o   (wbm_dbus_stb),
+      .wbs_cti_o   (wbm_dbus_cti),
+      .wbs_bte_o   (wbm_dbus_bte),
+      .wbs_sdt_i   (wbm_dbus_sdt),
+      .wbs_ack_i   (wbm_dbus_ack),
+      .wbs_err_i   (wbm_dbus_err),
+      .wbs_rty_i   (wbm_dbus_rty));
+
    wire [dbus_slaves-1:0] dbus_slave_sel =
-			  {wb_or1200_d_adr[31:28] != 4'h0,
-			   wb_or1200_d_adr[31:28] == 4'h0};
+			  {wbm_dbus_adr[31:28] != 4'h0,
+			   wbm_dbus_adr[31:28] == 4'h0};
 
    wire [31:0] 		  wb_dbus_adr;
    wire [31:0] 		  wb_dbus_dat;
@@ -270,18 +315,18 @@ module orpsoc_top
       .wb_rst      (wb_rst),
       .slave_sel_i (dbus_slave_sel),
       // Master Interface
-      .wbm_adr_i   (wb_or1200_d_adr),
-      .wbm_dat_i   (wb_or1200_d_dat),
-      .wbm_sel_i   (wb_or1200_d_sel),
-      .wbm_we_i    (wb_or1200_d_we),
-      .wbm_cyc_i   (wb_or1200_d_cyc),
-      .wbm_stb_i   (wb_or1200_d_stb),
-      .wbm_cti_i   (wb_or1200_d_cti),
-      .wbm_bte_i   (wb_or1200_d_bte),
-      .wbm_sdt_o   (wb_or1200_d_sdt),
-      .wbm_ack_o   (wb_or1200_d_ack),
-      .wbm_err_o   (wb_or1200_d_err),
-      .wbm_rty_o   (wb_or1200_d_rty), 
+      .wbm_adr_i   (wbm_dbus_adr),
+      .wbm_dat_i   (wbm_dbus_dat),
+      .wbm_sel_i   (wbm_dbus_sel),
+      .wbm_we_i    (wbm_dbus_we),
+      .wbm_cyc_i   (wbm_dbus_cyc),
+      .wbm_stb_i   (wbm_dbus_stb),
+      .wbm_cti_i   (wbm_dbus_cti),
+      .wbm_bte_i   (wbm_dbus_bte),
+      .wbm_sdt_o   (wbm_dbus_sdt),
+      .wbm_ack_o   (wbm_dbus_ack),
+      .wbm_err_o   (wbm_dbus_err),
+      .wbm_rty_o   (wbm_dbus_rty), 
       //Slave interface
       .wbs_adr_o   (wb_dbus_adr),
       .wbs_dat_o   (wb_dbus_dat),
@@ -554,18 +599,18 @@ module orpsoc_top
 
       // Wishbone debug master
       .wb_clk_i				(wb_clk),
-      .wb_dat_i				(wbm_d_dbg_dat_i),
-      .wb_ack_i				(wbm_d_dbg_ack_i),
-      .wb_err_i				(wbm_d_dbg_err_i),
-      .wb_adr_o				(wbm_d_dbg_adr_o),
-      .wb_dat_o				(wbm_d_dbg_dat_o),
-      .wb_cyc_o				(wbm_d_dbg_cyc_o),
-      .wb_stb_o				(wbm_d_dbg_stb_o),
-      .wb_sel_o				(wbm_d_dbg_sel_o),
-      .wb_we_o				(wbm_d_dbg_we_o ),
-      .wb_cti_o				(wbm_d_dbg_cti_o),
+      .wb_dat_i				(wb_dbg_sdt),
+      .wb_ack_i				(wb_dbg_ack),
+      .wb_err_i				(wb_dbg_err),
+      .wb_adr_o				(wb_dbg_adr),
+      .wb_dat_o				(wb_dbg_dat),
+      .wb_cyc_o				(wb_dbg_cyc),
+      .wb_stb_o				(wb_dbg_stb),
+      .wb_sel_o				(wb_dbg_sel),
+      .wb_we_o				(wb_dbg_we ),
+      .wb_cti_o				(wb_dbg_cti),
       .wb_cab_o                         (/*   UNUSED  */),
-      .wb_bte_o				(wbm_d_dbg_bte_o)
+      .wb_bte_o				(wb_dbg_bte)
       );
    
    ////////////////////////////////////////////////////////////////////////   
