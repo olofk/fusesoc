@@ -1,5 +1,4 @@
 import os
-import shutil
 import subprocess
 from .simulator import Simulator
 
@@ -22,11 +21,12 @@ class SimulatorIcarus(Simulator):
             f.write(tb_file + '\n')
 
         f.close()
+
     def compile(self):
         #FIXME: Handle failures. Save stdout/stderr. Build vmem file from elf file argument
         for name, core in self.system.get_cores().items():
             if core.vpi:
-                core_root = os.path.join(self.build_root, 'src', name)
+                core_root = os.path.join(self.src_root, name)
                 print("Building VPI module for " + name)
                 inc_dirs  = ['-I' + os.path.join(core_root, d) for d in core.vpi.include_dirs]
                 src_files = [os.path.join(core_root, f) for f in core.vpi.src_files]
@@ -43,7 +43,7 @@ class SimulatorIcarus(Simulator):
                             '-s', 'orpsoc_tb',
                             '-c', 'icarus.scr',
                             '-o', 'orpsoc.elf'],
-                           cwd = os.path.join(self.build_root, 'sim-icarus')):
+                           cwd = self.sim_root):
             print("Error: Compiled failed")
             exit(1)
         
@@ -67,13 +67,12 @@ class SimulatorIcarus(Simulator):
                 vpi_modules += ['-m'+core.vpi.name]
 
         #FIXME: Handle failures. Save stdout/stderr. Build vmem file from elf file argument
-        shutil.copyfile(vmem_file, os.path.join(self.build_root, 'sim-icarus', 'sram.vmem'))
         if subprocess.call(['vvp', '-n', '-M.',
                             '-l', 'icarus.log'] +
                            vpi_modules +
                            ['orpsoc.elf'] +
                            plusargs,
-                           cwd = os.path.join(self.build_root, 'sim-icarus'),
+                           cwd = self.sim_root,
                            stdin=subprocess.PIPE):
             print("Error: Failed to run simulation")
 
