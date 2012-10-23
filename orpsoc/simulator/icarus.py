@@ -8,7 +8,11 @@ class SimulatorIcarus(Simulator):
         super(SimulatorIcarus, self).__init__(system)
         self.sim_root = os.path.join(self.build_root, 'sim-icarus')
 
-    def write_config_files(self):
+    def configure(self):
+        super(SimulatorIcarus, self).configure()
+        self._write_config_files()
+
+    def _write_config_files(self):
         icarus_file = 'icarus.scr'
 
         f = open(os.path.join(self.sim_root,icarus_file),'w')
@@ -22,7 +26,7 @@ class SimulatorIcarus(Simulator):
 
         f.close()
 
-    def compile(self):
+    def build(self):
         #FIXME: Handle failures. Save stdout/stderr. Build vmem file from elf file argument
         for name, core in self.system.get_cores().items():
             if core.vpi:

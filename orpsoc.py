@@ -25,7 +25,8 @@ def sim(args):
     system = System(system_file)
 
     sim = SimulatorFactory(args.sim[0], system)
-    sim.prepare()
+    sim.configure()
+    sim.build()
     if args.testcase:
         print("Running test case: " + args.testcase[0])
         sim.run(args)

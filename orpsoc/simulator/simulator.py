@@ -21,7 +21,7 @@ class Simulator(object):
             self.rtl_files    += [os.path.join(self.src_root, core_name, f) for f in core.rtl_files]
             self.tb_files     += [os.path.join(self.src_root, core_name, f) for f in core.tb_files]
 
-    def prepare(self):
+    def configure(self):
         if os.path.exists(self.sim_root):
             shutil.rmtree(self.sim_root)
         os.makedirs(self.sim_root)
@@ -34,6 +34,3 @@ class Simulator(object):
             core.setup()
             core.export(dst_dir)
             core.patch(dst_dir)
-        self.write_config_files()
-        self.compile()
-
