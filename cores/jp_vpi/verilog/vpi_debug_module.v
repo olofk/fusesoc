@@ -40,17 +40,13 @@
 //////////////////////////////////////////////////////////////////////
 `timescale 1ns/10ps
 
-module vpi_debug_module(tms, tck, tdi, tdo);
-   
-   output               tms;
-   output               tck;
-   output               tdi;
-   input                tdo;
+module vpi_debug_module
+  (output reg tms,
+   output reg tck,
+   output reg tdi,
+   input      tdo,
+   input      enable);
 
-   reg                  tms;
-   reg                  tck;
-   reg                  tdi;
-   
    reg [31:0] 		in_data_le, in_data_be;
    reg [31:0] 		incoming_word;
    reg                  err;
@@ -224,7 +220,6 @@ module vpi_debug_module(tms, tck, tdi, tdo);
    
    initial
      begin
-	$display("JTAG debug module with VPI interface enabled\n");
 	tck    <=#Tp 1'b0;
 	tdi    <=#Tp 1'bz;
 	tms    <=#Tp 1'b0;
@@ -233,13 +228,12 @@ module vpi_debug_module(tms, tck, tdi, tdo);
 	// wait until the PC isn't pointing to flash anymore
 	// (this is around 20k ns if the flash_crash boot code
 	// is being booted from, else much bigger, around 10mil ns)
-	
-	#2_000 main;
-	  
+	#2_000 if(enable) main;
      end
    
    task main;
       begin
+	 $display("JTAG debug module with VPI interface enabled\n");
 	 
 	 id     <=#Tp 32'h00;
 	 npc    <=#Tp 32'h00;
