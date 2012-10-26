@@ -40,12 +40,6 @@
 //////////////////////////////////////////////////////////////////////
 `timescale 1ns/10ps
 
-`include "vpi_debug_defines.v"
-
-// uncomment the following line to get more debug output for this module 
-//`define DEBUG_INFO
-//`define VPI_DEBUG_INFO
-
 module vpi_debug_module(tms, tck, tdi, tdo);
    
    output               tms;
@@ -74,14 +68,14 @@ module vpi_debug_module(tms, tck, tdi, tdo);
    reg [31:0] 		crc_in;
    wire                 crc_match_in;
    
-   reg [`DBG_TOP_STATUS_LEN -1:0] status;
-   reg [`DBG_WB_STATUS_LEN -1:0]  status_wb;
-   reg [`DBG_CPU_STATUS_LEN -1:0] status_cpu;
+   reg [DBG_TOP_STATUS_LEN -1:0] status;
+   reg [DBG_WB_STATUS_LEN -1:0]  status_wb;
+   reg [DBG_CPU_STATUS_LEN -1:0] status_cpu;
    
    // Text used for easier debugging
    reg [199:0] 			  test_text;
-   reg [`DBG_WB_CMD_LEN -1:0] 	  last_wb_cmd;
-   reg [`DBG_CPU_CMD_LEN -1:0] 	  last_cpu_cmd;
+   reg [DBG_WB_CMD_LEN -1:0] 	  last_wb_cmd;
+   reg [DBG_CPU_CMD_LEN -1:0] 	  last_cpu_cmd;
    reg [199:0] 			  last_wb_cmd_text;
    reg [199:0] 			  last_cpu_cmd_text;
    
@@ -91,7 +85,132 @@ module vpi_debug_module(tms, tck, tdi, tdo);
    parameter 			  Tp    = 1;   
 //parameter Tck   = 25;   // Clock half period (Clok period = 50 ns => 20 MHz)
    parameter 			  Tck   = 50;   // Clock half period (Clok period = 100 ns => 10 MHz)
+   parameter DEBUG_INFO     = 0; //Enable debug information
+   parameter VPI_DEBUG_INFO = 0; //Enable VPI debug information
+   
+   // Length of the Instruction register
+   localparam IR_LENGTH = 4;
 
+   // Supported Instructions
+   localparam EXTEST          = 4'b0000;
+   localparam SAMPLE_PRELOAD  = 4'b0001;
+   localparam IDCODE          = 4'b0010;
+   localparam DEBUG           = 4'b1000;
+   localparam MBIST           = 4'b1001;
+   localparam BYPASS          = 4'b1111;
+
+   // Number of cells in boundary scan chain
+   localparam BS_CELL_NB      = 32'd558;
+
+   // Length of the MODULE ID register
+   localparam DBG_TOP_MODULE_ID_LENGTH = 4;
+
+   // Length of status
+   localparam DBG_TOP_STATUS_LEN = 3'd4;
+   
+   // Length of the CRC
+   localparam DBG_TOP_CRC_LEN =          32;
+   
+   // Chains
+   localparam DBG_TOP_WISHBONE_DEBUG_MODULE = 4'h0;
+   localparam DBG_TOP_CPU0_DEBUG_MODULE     = 4'h1;
+   localparam DBG_TOP_CPU1_DEBUG_MODULE     = 4'h2;
+   
+   // Defining length of the command
+   localparam DBG_WB_CMD_LEN         =  3'd4;
+
+   // Defining length of the access_type field
+   localparam DBG_WB_ACC_TYPE_LEN    = 3'd4;
+
+   // Defining length of the address
+   localparam DBG_WB_ADR_LEN         = 6'd32;
+
+   // Defining length of the length register
+   localparam DBG_WB_LEN_LEN         = 5'd16;
+
+   // Defining length of the CRC
+   localparam DBG_WB_CRC_LEN         = 6'd32;
+
+   // Defining length of status
+   localparam DBG_WB_STATUS_LEN      = 3'd4;
+
+   //Defining commands
+   localparam DBG_WB_GO              = 4'h0;
+   localparam DBG_WB_RD_COMM         = 4'h1;
+   localparam DBG_WB_WR_COMM         = 4'h2;
+
+   // Defining access types for wishbone
+   localparam DBG_WB_WRITE8          = 4'h0;
+   localparam DBG_WB_WRITE16         = 4'h1;
+   localparam DBG_WB_WRITE32         = 4'h2;
+   localparam DBG_WB_READ8           = 4'h4;
+   localparam DBG_WB_READ16          = 4'h5;
+   localparam DBG_WB_READ32          = 4'h6;
+  
+   // Defining length of the command
+   localparam DBG_CPU_CMD_LEN        = 3'd4;
+
+   // Defining length of the access_type field
+   localparam DBG_CPU_ACC_TYPE_LEN   = 3'd4;
+
+   // Defining length of the address
+   localparam DBG_CPU_ADR_LEN        = 6'd32;
+
+   // Defining length of the length register
+   localparam DBG_CPU_LEN_LEN        = 5'd16;
+
+   // Defining total length of the DR needed
+   //define DBG_CPU_DR_LEN           (DBG_CPU_ACC_TYPE_LEN + DBG_CPU_ADR_LEN + DBG_CPU_LEN_LEN)
+   localparam DBG_CPU_DR_LEN         = 52;
+
+   // Defining length of the CRC
+   localparam DBG_CPU_CRC_LEN        = 6'd32;
+
+   // Defining length of status
+   localparam DBG_CPU_STATUS_LEN     = 3'd4;
+
+   // Defining length of the control register
+   localparam DBG_CPU_CTRL_LEN       = 2;
+
+   //Defining commands
+   localparam DBG_CPU_GO              = 4'h0;
+   localparam DBG_CPU_RD_COMM         = 4'h1;
+   localparam DBG_CPU_WR_COMM         = 4'h2;
+   localparam DBG_CPU_RD_CTRL         = 4'h3;
+   localparam DBG_CPU_WR_CTRL         = 4'h4;
+
+   // Defining access types for wishbone
+   localparam DBG_CPU_WRITE           = 4'h2;
+   localparam DBG_CPU_READ            = 4'h6;
+
+   localparam CMD_JTAG_SET_IR          = 4'h1;
+   localparam CMD_SET_DEBUG_CHAIN      = 4'h2;
+   localparam CMD_CPU_CTRL_WR          = 4'h3;
+   localparam CMD_CPU_CTRL_RD          = 4'h4;
+   localparam CMD_CPU_WR_REG           = 4'h5;
+   localparam CMD_CPU_RD_REG           = 4'h6;
+   localparam CMD_WB_WR                = 4'h7;
+   localparam CMD_WB_RD32              = 4'h8;
+   localparam CMD_WB_BLOCK_WR32        = 4'h9;
+   localparam CMD_WB_BLOCK_RD32        = 4'ha;
+   localparam CMD_RESET                = 4'hb;
+   localparam CMD_READ_JTAG_ID         = 4'hc;
+   localparam CMD_GDB_DETACH           = 4'hd;
+   localparam CMD_WB_RD8               = 4'he; /* Byte read is useful with a system with byte peripherals! */
+// commands:
+// 4'h1 jtag set instruction register (input: instruction value)
+// 4'h2 set debug chain (dbg_set_command here) (input: chain value)
+// 4'h3 cpu_ctrl_wr (input: ctrl value (2 bits))
+// 4'h4 cpu_ctrl_rd (output: ctrl value (2bits))
+// 4'h5 cpu wr reg (inputs: address, data)
+// 4'h6 cpu rd reg (input: address; output: data)
+// 4'h7 wb wr (inputs: address, size, data)
+// 4'h8 wb rd 32 (input: address; output: data)
+// 4'h9 wb wr block 32 (inputs: address, length, data)
+// 4'ha wb rd block 32 (inputs: address, length; output: data)
+// 4'hb reset
+// 4'hc read jtag id (output: data)
+   
    integer cmd;
    integer block_cmd_length;
    integer jtag_instn_val;
@@ -153,222 +272,115 @@ module vpi_debug_module(tms, tck, tdi, tdo);
 
 	    // now switch on the command
 	    case (cmd)
-	      
-	      `CMD_RESET : // reset
-		begin
-		   
-		   // call reset task
-		   reset_tap;
-		   // and put TAP into run_test_idle state
-		   goto_run_test_idle;
-		   
-	       end	     
-	      
-	      `CMD_JTAG_SET_IR : // set jtag instruction register
-		begin
-		   
-		   $get_command_data(jtag_instn_val);	     
-		   
-		   set_instruction(jtag_instn_val);
-		   
+	      CMD_RESET : begin //reset
+		 // call reset task
+		 reset_tap;
+		 // and put TAP into run_test_idle state
+		 goto_run_test_idle;
+	      end	     
+	      CMD_JTAG_SET_IR : begin // set jtag instruction register
+		 $get_command_data(jtag_instn_val);	     
+		 set_instruction(jtag_instn_val);
+	      end
+	      CMD_SET_DEBUG_CHAIN : begin // set debug chain
+		 $get_command_data(set_chain_val);
+		 module_select(set_chain_val, 1'b0);   // {chain, gen_crc_err}
+	      end
+	      CMD_CPU_CTRL_WR : begin // cpu CTRL write
+		 $get_command_data(cpu_ctrl_val);
+		 debug_cpu_wr_ctrl(cpu_ctrl_val, "");
 	       end
-	      `CMD_SET_DEBUG_CHAIN : // set debug chain
-	       begin
-		  
-		  $get_command_data(set_chain_val);
-		  
-		  module_select(set_chain_val, 1'b0);   // {chain, gen_crc_err}
+	      CMD_CPU_CTRL_RD : begin // cpu CTRL read
+		 debug_cpu_rd_ctrl(cpu_ctrl_val);
+		 $return_command_data(4,cpu_ctrl_val);
+	      end
+	      CMD_CPU_WR_REG : begin
+		 $get_command_address(cmd_adr);
+		 $get_command_data(block_cmd_length);
+		 $get_command_block_data(block_cmd_length, data_storage);
+		 if (block_cmd_length > 4)
+		   cpu_write_block(cmd_adr, block_cmd_length);
+		 else begin
+		    cmd_data = data_storage[0]; // Get the single word we'll write
+		    cpu_write_32(cmd_data, cmd_adr,16'h3);
+		    if(VPI_DEBUG_INFO)
+		      $display("CPU reg write. adr: 0x%x (reg group: %d reg#: %d), val: 0x%x",
+			       cmd_adr,cmd_adr[15:11], cmd_adr[10:0], cmd_data);
+		 end
+	      end
+	      CMD_CPU_RD_REG : begin
+		 $get_command_address(cmd_adr);
+		 $get_command_data(block_cmd_length); // Added 090901 --jb
 
+		 /* Depending on size, issue a block or single read */
+		 if (block_cmd_length > 4 )
+		   cpu_read_block(cmd_adr, block_cmd_length);
+		 else
+		   cpu_read_32(cmd_data, cmd_adr, 16'h3);
+		 if(VPI_DEBUG_INFO)
+		   if (cmd_size > 4 )
+		     $display("CPU reg read. block adr: 0x%x (reg group: %d reg#: %d), num: %d",
+			      cmd_adr,cmd_adr[15:11], cmd_adr[10:0],  block_cmd_length);
+		   else
+		     $display("CPU reg read. adr: 0x%x (reg group: %d reg#: %d), val: 0x%x",
+			      cmd_adr,cmd_adr[15:11], cmd_adr[10:0], cmd_data);
+		 $return_command_block_data(block_cmd_length, data_storage);
+	      end
+	      CMD_WB_WR : begin
+		 $get_command_address(cmd_adr);
+		 $get_command_data(cmd_size);
+		 $get_command_data(cmd_data);
+		 case (cmd_size)
+		   4 : wb_write_32(cmd_data, cmd_adr, 16'h3);
+		   2 : wb_write_16(cmd_data[15:0], cmd_adr, 16'h1);
+		   1 : wb_write_8(cmd_data[7:0], cmd_adr, 16'h0);
+		   default: $display("* vpi_debug_module: CMD_WB_WR size incorrect: %d\n", cmd_size);
+		 endcase // case (cmd_size)
 	       end
-	     `CMD_CPU_CTRL_WR : // cpu CTRL write
-	       begin
-
-		  $get_command_data(cpu_ctrl_val);
-
-		  debug_cpu_wr_ctrl(cpu_ctrl_val, "");
-
-	       end
-
-	     `CMD_CPU_CTRL_RD : // cpu CTRL read
-	       begin
-		  
-		  debug_cpu_rd_ctrl(cpu_ctrl_val);
-
-		  $return_command_data(4,cpu_ctrl_val);
-		  
-	       end
-
-	     `CMD_CPU_WR_REG :
-	       begin
-		  
-		  $get_command_address(cmd_adr);
-
-		  $get_command_data(block_cmd_length);
-
-		  $get_command_block_data(block_cmd_length, data_storage);
-		  
-		  if (block_cmd_length > 4)
-		    cpu_write_block(cmd_adr, block_cmd_length);
-		  else
-		    begin
-		       cmd_data = data_storage[0]; // Get the single word we'll write
-		       cpu_write_32(cmd_data, cmd_adr,16'h3);
-`ifdef VPI_DEBUG_INFO
-		  $display("CPU reg write. adr: 0x%x (reg group: %d reg#: %d), val: 0x%x",
-			   cmd_adr,cmd_adr[15:11], cmd_adr[10:0], cmd_data);
-`endif
-		    end
-		  		  
-
-		  
-	       end
-	     
-	     `CMD_CPU_RD_REG :
-	       begin
-
-		  $get_command_address(cmd_adr);
-
-		  $get_command_data(block_cmd_length); // Added 090901 --jb
-
-		  /* Depending on size, issue a block or single read */
-		  if (block_cmd_length > 4 )
-		    cpu_read_block(cmd_adr, block_cmd_length);
-		  else
-		    cpu_read_32(cmd_data, cmd_adr, 16'h3);
-
-		  
-`ifdef VPI_DEBUG_INFO
-		  if (cmd_size > 4 )
-		    $display("CPU reg read. block adr: 0x%x (reg group: %d reg#: %d), num: %d",
-				cmd_adr,cmd_adr[15:11], cmd_adr[10:0],  block_cmd_length);
-		  else
-		    $display("CPU reg read. adr: 0x%x (reg group: %d reg#: %d), val: 0x%x",
-				cmd_adr,cmd_adr[15:11], cmd_adr[10:0], cmd_data);
-`endif
-
-		  
-		  $return_command_block_data(block_cmd_length, data_storage);
-		  
-	       end
-	     
-	     `CMD_WB_WR :
-	       begin
-		  
-		  $get_command_address(cmd_adr);
-
-		  $get_command_data(cmd_size);
-
-		  $get_command_data(cmd_data);
-
-		  case (cmd_size)
-		    4 :
-		      begin
-			 wb_write_32(cmd_data, cmd_adr, 16'h3);
-		      end
-		    2 :
-		      begin
-			 wb_write_16(cmd_data[15:0], cmd_adr, 16'h1);
-		      end
-		    1 :
-		      begin
-			 wb_write_8(cmd_data[7:0], cmd_adr, 16'h0);
-		      end
-		    default:
-		      begin
-			 $display("* vpi_debug_module: CMD_WB_WR size incorrect: %d\n", cmd_size);
-		      end
-		  endcase // case (cmd_size)
-		  
-	       end
-	     
-	     `CMD_WB_RD32 :
-	       begin
-
-		  $get_command_address(cmd_adr);
-
-		  wb_read_32(cmd_data, cmd_adr, 16'h3);
-
-		  $return_command_data(4,cmd_data);
-		  
-	       end
-
-	     `CMD_WB_RD8 :
-	       begin
-
-		  $get_command_address(cmd_adr);
-
-		  wb_read_8(cmd_data, cmd_adr, 16'h0);
-
-		  $return_command_data(1,cmd_data);
-		  
-	       end
-	     
-	     `CMD_WB_BLOCK_WR32 :
-	       begin
-
-		  $get_command_address(cmd_adr);
-		  
-		  $get_command_data(block_cmd_length);
-
-		  $get_command_block_data(block_cmd_length, data_storage);
-
-		  wb_block_write_32(cmd_adr ,block_cmd_length);
-		  
-	       end
-	      
-	      `CMD_WB_BLOCK_RD32 :
-		begin
-		   
-		   $get_command_address(cmd_adr);
-		   
-		   $get_command_data(block_cmd_length);
-
-		   wb_block_read_32(cmd_adr, block_cmd_length);
-		   
-		   $return_command_block_data(block_cmd_length, data_storage);
-		   
-		end
-	      
-	      `CMD_READ_JTAG_ID :
-		begin
-		   
-		   read_id_code(id);
-		   
-		   $return_command_data(4,id);
-		   
-		end
-	      
-	      `CMD_GDB_DETACH :
-		begin
-
-		   $display("(%t)(%m)Debugging client disconnected. Finishing simulation", $time);
-		   
-		   
-		   $finish();
-		   
-		end
-	     
-	      default:
-		begin
-		   $display("Somehow got to the default case in the command case statement.");
-		   $display("Command was: %x", cmd);
-		   $display("Exiting...");
-
-		   $finish();//shouldn't be here
-		end
-	      
+	     CMD_WB_RD32 : begin
+		$get_command_address(cmd_adr);
+		wb_read_32(cmd_data, cmd_adr, 16'h3);
+		$return_command_data(4,cmd_data);
+	     end
+	     CMD_WB_RD8 : begin
+		$get_command_address(cmd_adr);
+		wb_read_8(cmd_data, cmd_adr, 16'h0);
+		$return_command_data(1,cmd_data);
+	     end
+	     CMD_WB_BLOCK_WR32 : begin
+		$get_command_address(cmd_adr);
+		$get_command_data(block_cmd_length);
+		$get_command_block_data(block_cmd_length, data_storage);
+		wb_block_write_32(cmd_adr ,block_cmd_length);
+	     end
+	     CMD_WB_BLOCK_RD32 : begin
+		$get_command_address(cmd_adr);
+		$get_command_data(block_cmd_length);
+		wb_block_read_32(cmd_adr, block_cmd_length);
+		$return_command_block_data(block_cmd_length, data_storage);
+	     end
+	     CMD_READ_JTAG_ID : begin
+		read_id_code(id);
+		$return_command_data(4,id);
+	     end
+	     CMD_GDB_DETACH : begin
+		 $display("(%t)(%m)Debugging client disconnected. Finishing simulation", $time);
+		 $finish();
+	      end
+	      default: begin
+		 $display("Somehow got to the default case in the command case statement.");
+		 $display("Command was: %x", cmd);
+		 $display("Exiting...");
+		 $finish();//shouldn't be here
+	      end
 	    endcase // case (cmd)
 	    
 	    // send back response, which is currently nothing
 	    // but could be used to signal something
 	    $return_response();
-	    
 	 end // while (1)
       end
-      
    endtask // main
-
-   
 
    // Receiving data and calculating input crc
    always @(posedge tck)
@@ -397,9 +409,8 @@ module vpi_debug_module(tms, tck, tdi, tdo);
    task reset_tap;
       
       begin
-`ifdef DEBUG_INFO
-	 $display("(%0t) Task reset_tap", $time);
-`endif
+	 if(DEBUG_INFO)
+	   $display("(%0t) Task reset_tap", $time);
 	 tms<=#1 1'b1;
 	 gen_clk(5);
       end
@@ -409,9 +420,8 @@ module vpi_debug_module(tms, tck, tdi, tdo);
    // Goes to RunTestIdle state
    task goto_run_test_idle;
       begin
-`ifdef DEBUG_INFO
-	 $display("(%0t) Task goto_run_test_idle", $time);
-`endif
+	 if(DEBUG_INFO)
+	   $display("(%0t) Task goto_run_test_idle", $time);
 	 tms<=#1 1'b0;
 	 gen_clk(1);
       end
@@ -423,29 +433,28 @@ module vpi_debug_module(tms, tck, tdi, tdo);
       integer 	  i;
       
       begin
-`ifdef DEBUG_INFO
-	 case (instr)
-	   `EXTEST          : $display("(%0t) Task set_instruction (EXTEST)", $time); 
-	   `SAMPLE_PRELOAD  : $display("(%0t) Task set_instruction (SAMPLE_PRELOAD)", $time); 
-	   `IDCODE          : $display("(%0t) Task set_instruction (IDCODE)", $time);
-	   `DEBUG           : $display("(%0t) Task set_instruction (DEBUG)", $time);
-	   `MBIST           : $display("(%0t) Task set_instruction (MBIST)", $time);
-	   `BYPASS          : $display("(%0t) Task set_instruction (BYPASS)", $time);
-	   default
-             begin
-                $display("(%0t) Task set_instruction (Unsupported instruction !!!)", $time);
-                $display("\tERROR: Unsupported instruction !!!", $time);
-                $stop;
-             end
-	 endcase
-`endif
+	 if(DEBUG_INFO)
+	   case (instr)
+	     EXTEST          : $display("(%0t) Task set_instruction (EXTEST)", $time); 
+	     SAMPLE_PRELOAD  : $display("(%0t) Task set_instruction (SAMPLE_PRELOAD)", $time); 
+	     IDCODE          : $display("(%0t) Task set_instruction (IDCODE)", $time);
+	     DEBUG           : $display("(%0t) Task set_instruction (DEBUG)", $time);
+	     MBIST           : $display("(%0t) Task set_instruction (MBIST)", $time);
+	     BYPASS          : $display("(%0t) Task set_instruction (BYPASS)", $time);
+	     default
+               begin
+                  $display("(%0t) Task set_instruction (Unsupported instruction !!!)", $time);
+                  $display("\tERROR: Unsupported instruction !!!", $time);
+                  $stop;
+               end
+	   endcase
 
 	 tms<=#1 1;
 	 gen_clk(2);
 	 tms<=#1 0;
 	 gen_clk(2);  // we are in shiftIR
 
-	 for(i=0; i<`IR_LENGTH-1; i=i+1)
+	 for(i=0; i<IR_LENGTH-1; i=i+1)
 	   begin
 	      tdi<=#1 instr[i];
 	      gen_clk(1);
@@ -499,9 +508,8 @@ module vpi_debug_module(tms, tck, tdi, tdo);
       output [31:0] code;
       reg [31:0]    code;
       begin
-`ifdef DEBUG_INFO
-	 $display("(%0t) Task read_id_code", $time);
-`endif
+	 if(DEBUG_INFO)
+	   $display("(%0t) Task read_id_code", $time);
 
 	 tms<=#1 1;
 	 gen_clk(1);
@@ -543,7 +551,7 @@ module vpi_debug_module(tms, tck, tdi, tdo);
 	      gen_clk(1);
 	   end
 
-	 gen_clk(`BS_CELL_NB-1);
+	 gen_clk(BS_CELL_NB-1);
 	 tms<=#Tp 1;             // going out of shiftDR
 	 gen_clk(1);
 
@@ -559,39 +567,38 @@ module vpi_debug_module(tms, tck, tdi, tdo);
 
    // sets the selected scan chain and goes to the RunTestIdle state
    task module_select;
-      input [`DBG_TOP_MODULE_ID_LENGTH -1:0]  data;
+      input [DBG_TOP_MODULE_ID_LENGTH -1:0]  data;
       input 				      gen_crc_err;
       integer 				      i;
       
       begin
-`ifdef DEBUG_INFO
-	 case (data)
-	   `DBG_TOP_CPU1_DEBUG_MODULE : $display("(%0t) Task module_select (DBG_TOP_CPU1_DEBUG_MODULE, gen_crc_err=%0d)", $time, gen_crc_err);
-	   `DBG_TOP_CPU0_DEBUG_MODULE : $display("(%0t) Task module_select (DBG_TOP_CPU0_DEBUG_MODULE, gen_crc_err=%0d)", $time, gen_crc_err);
-	   `DBG_TOP_WISHBONE_DEBUG_MODULE : $display("(%0t) Task module_select (DBG_TOP_WISHBONE_DEBUG_MODULE gen_crc_err=%0d)", $time, gen_crc_err);
-	   default               : $display("(%0t) Task module_select (ERROR!!! Unknown module selected)", $time);
-	 endcase
-`endif
+	 if(DEBUG_INFO)
+	   case (data)
+	     DBG_TOP_CPU1_DEBUG_MODULE : $display("(%0t) Task module_select (DBG_TOP_CPU1_DEBUG_MODULE, gen_crc_err=%0d)", $time, gen_crc_err);
+	     DBG_TOP_CPU0_DEBUG_MODULE : $display("(%0t) Task module_select (DBG_TOP_CPU0_DEBUG_MODULE, gen_crc_err=%0d)", $time, gen_crc_err);
+	     DBG_TOP_WISHBONE_DEBUG_MODULE : $display("(%0t) Task module_select (DBG_TOP_WISHBONE_DEBUG_MODULE gen_crc_err=%0d)", $time, gen_crc_err);
+	     default               : $display("(%0t) Task module_select (ERROR!!! Unknown module selected)", $time);
+	   endcase
 	 
 	 tms<=#1 1'b1;
 	 gen_clk(1);
 	 tms<=#1 1'b0;
 	 gen_clk(2);  // we are in shiftDR
 	 
-	 status = {`DBG_TOP_STATUS_LEN{1'b0}};    // Initialize status to all 0's
-	 crc_out = {`DBG_TOP_CRC_LEN{1'b1}}; // Initialize outgoing CRC to all ff    
+	 status = {DBG_TOP_STATUS_LEN{1'b0}};    // Initialize status to all 0's
+	 crc_out = {DBG_TOP_CRC_LEN{1'b1}}; // Initialize outgoing CRC to all ff    
 	 tdi<=#1 1'b1; // module_select bit
 	 calculate_crc(1'b1);
 	 gen_clk(1);
 	 
-	 for(i=`DBG_TOP_MODULE_ID_LENGTH -1; i>=0; i=i-1) // Shifting module ID
+	 for(i=DBG_TOP_MODULE_ID_LENGTH -1; i>=0; i=i-1) // Shifting module ID
 	   begin
 	      tdi<=#1 data[i];
 	      calculate_crc(data[i]);
 	      gen_clk(1);
 	   end
 
-	 for(i=`DBG_TOP_CRC_LEN -1; i>=0; i=i-1)
+	 for(i=DBG_TOP_CRC_LEN -1; i>=0; i=i-1)
 	   begin
 	      if (gen_crc_err & (i==0))  // Generate crc error at last crc bit
 		tdi<=#1 ~crc_out[i];   // error crc
@@ -603,15 +610,15 @@ module vpi_debug_module(tms, tck, tdi, tdo);
 	 
 	 tdi<=#1 1'hz;  // tri-state
 	 
-	 crc_in = {`DBG_TOP_CRC_LEN{1'b1}};  // Initialize incoming CRC to all ff
+	 crc_in = {DBG_TOP_CRC_LEN{1'b1}};  // Initialize incoming CRC to all ff
 	 
-	 for(i=`DBG_TOP_STATUS_LEN -1; i>=0; i=i-1)
+	 for(i=DBG_TOP_STATUS_LEN -1; i>=0; i=i-1)
 	   begin
               gen_clk(1);     // Generating 1 clock to read out a status bit.
               status[i] = tdo;
 	   end
 	 
-	 for(i=0; i<`DBG_TOP_CRC_LEN -1; i=i+1)
+	 for(i=0; i<DBG_TOP_CRC_LEN -1; i=i+1)
 	   gen_clk(1);
 	 
 	 tms<=#1 1'b1;
@@ -620,9 +627,8 @@ module vpi_debug_module(tms, tck, tdi, tdo);
 	 if (~crc_match_in)
 	   begin
               $display("(%0t) Incoming CRC failed !!!", $time);
-`ifdef DEBUG_INFO
-              $stop;
-`endif
+	      if(DEBUG_INFO)
+		$stop;
 	   end
 
 	 tms<=#1 1'b1;
@@ -639,9 +645,8 @@ module vpi_debug_module(tms, tck, tdi, tdo);
 		4'bxx1x : $display("Status[1] should be 1'b0 !!!\n\n", $time);
 		4'bxxx1 : $display("Status[0] should be 1'b0 !!!\n\n", $time);
               endcase
-`ifdef DEBUG_INFO
-              $stop;
-`endif
+	      if(DEBUG_INFO)
+		$stop;
 	   end
       end
    endtask   // module_select
@@ -651,13 +656,13 @@ module vpi_debug_module(tms, tck, tdi, tdo);
    // 32-bit write to the wishbone
    task wb_write_32;
       input [31:0] data;
-      input [`DBG_WB_ADR_LEN -1:0] addr;
-      input [`DBG_WB_LEN_LEN -1:0] length;
+      input [DBG_WB_ADR_LEN -1:0] addr;
+      input [DBG_WB_LEN_LEN -1:0] length;
 
       begin
 	 data_storage[0] = data;
-	 debug_wishbone_wr_comm(`DBG_WB_WRITE32, addr, length, 1'b0);
-	 last_wb_cmd = `DBG_WB_WRITE32;  last_wb_cmd_text = "DBG_WB_WRITE32";
+	 debug_wishbone_wr_comm(DBG_WB_WRITE32, addr, length, 1'b0);
+	 last_wb_cmd = DBG_WB_WRITE32;  last_wb_cmd_text = "DBG_WB_WRITE32";
 	 length_global = length + 1;
 	 debug_wishbone_go(1'b0, 1'b0);
 	 //debug_wishbone_go(1'b1, 1'b0); // maybe causes underrun/overrun error when wait for WB ready?
@@ -670,14 +675,14 @@ module vpi_debug_module(tms, tck, tdi, tdo);
    // presumes data is already in data_storage[]
    task wb_block_write_32;
 				    
-      input [`DBG_WB_ADR_LEN -1:0] addr;
-      input [`DBG_WB_LEN_LEN -1:0] length;
+      input [DBG_WB_ADR_LEN -1:0] addr;
+      input [DBG_WB_LEN_LEN -1:0] length;
 
       begin
 
-	 debug_wishbone_wr_comm(`DBG_WB_WRITE32, addr, length-1, 1'b0);
+	 debug_wishbone_wr_comm(DBG_WB_WRITE32, addr, length-1, 1'b0);
 
-	 last_wb_cmd = `DBG_WB_WRITE32;  last_wb_cmd_text = "DBG_WB_WRITE32";
+	 last_wb_cmd = DBG_WB_WRITE32;  last_wb_cmd_text = "DBG_WB_WRITE32";
 	 
 	 length_global = length; // number of bytes!
 	 	 
@@ -693,12 +698,12 @@ module vpi_debug_module(tms, tck, tdi, tdo);
 
     output [31:0] data;
 
-    input [`DBG_WB_ADR_LEN -1:0] addr;
-    input [`DBG_WB_LEN_LEN -1:0] length;
+    input [DBG_WB_ADR_LEN -1:0] addr;
+    input [DBG_WB_LEN_LEN -1:0] length;
 
       begin
-	 debug_wishbone_wr_comm(`DBG_WB_READ32, addr, length, 1'b0);
-	 last_wb_cmd = `DBG_WB_READ32;  last_wb_cmd_text = "DBG_WB_READ32";
+	 debug_wishbone_wr_comm(DBG_WB_READ32, addr, length, 1'b0);
+	 last_wb_cmd = DBG_WB_READ32;  last_wb_cmd_text = "DBG_WB_READ32";
 	 length_global = length + 1;
 	 //debug_wishbone_go(1'b0, 1'b0);
 	 debug_wishbone_go(1'b1, 1'b0);
@@ -713,12 +718,12 @@ module vpi_debug_module(tms, tck, tdi, tdo);
 
     output [31:0] data;
 
-    input [`DBG_WB_ADR_LEN -1:0] addr;
-    input [`DBG_WB_LEN_LEN -1:0] length;
+    input [DBG_WB_ADR_LEN -1:0] addr;
+    input [DBG_WB_LEN_LEN -1:0] length;
 
       begin
-	 debug_wishbone_wr_comm(`DBG_WB_READ8, addr, length, 1'b0);
-	 last_wb_cmd = `DBG_WB_READ8;  last_wb_cmd_text = "DBG_WB_READ8";
+	 debug_wishbone_wr_comm(DBG_WB_READ8, addr, length, 1'b0);
+	 last_wb_cmd = DBG_WB_READ8;  last_wb_cmd_text = "DBG_WB_READ8";
 	 length_global = length + 1;
 	 debug_wishbone_go(1'b1, 1'b0);
 	 data = data_storage[0];
@@ -731,13 +736,13 @@ module vpi_debug_module(tms, tck, tdi, tdo);
    // assumes data will be stored into data_storage[]
    task wb_block_read_32;
 
-    input [`DBG_WB_ADR_LEN -1:0] addr;
-    input [`DBG_WB_LEN_LEN -1:0] length;
+    input [DBG_WB_ADR_LEN -1:0] addr;
+    input [DBG_WB_LEN_LEN -1:0] length;
 
       begin
-	 debug_wishbone_wr_comm(`DBG_WB_READ32, addr, length-1, 1'b0);
+	 debug_wishbone_wr_comm(DBG_WB_READ32, addr, length-1, 1'b0);
 
-	 last_wb_cmd = `DBG_WB_READ32;  last_wb_cmd_text = "DBG_WB_READ32";
+	 last_wb_cmd = DBG_WB_READ32;  last_wb_cmd_text = "DBG_WB_READ32";
 	 
 	 length_global = length;
 	 
@@ -751,13 +756,13 @@ module vpi_debug_module(tms, tck, tdi, tdo);
    // 16-bit write to the wishbone
    task wb_write_16;
       input [15:0] data;
-      input [`DBG_WB_ADR_LEN -1:0] addr;
-      input [`DBG_WB_LEN_LEN -1:0] length;
+      input [DBG_WB_ADR_LEN -1:0] addr;
+      input [DBG_WB_LEN_LEN -1:0] length;
 
       begin
 	 data_storage[0] = {data, 16'h0};
-	 debug_wishbone_wr_comm(`DBG_WB_WRITE16, addr, length, 1'b0);
-	 last_wb_cmd = `DBG_WB_WRITE16;  last_wb_cmd_text = "DBG_WB_WRITE16";
+	 debug_wishbone_wr_comm(DBG_WB_WRITE16, addr, length, 1'b0);
+	 last_wb_cmd = DBG_WB_WRITE16;  last_wb_cmd_text = "DBG_WB_WRITE16";
 	 length_global = length + 1;
 	 debug_wishbone_go(1'b0, 1'b0);
 	 if (length>1)
@@ -770,13 +775,13 @@ module vpi_debug_module(tms, tck, tdi, tdo);
    // 8-bit write to the wishbone
    task wb_write_8;
       input [7:0] data;
-      input [`DBG_WB_ADR_LEN -1:0] addr;
-      input [`DBG_WB_LEN_LEN -1:0] length;
+      input [DBG_WB_ADR_LEN -1:0] addr;
+      input [DBG_WB_LEN_LEN -1:0] length;
 
       begin
 	 data_storage[0] = {data, 24'h0};
-	 debug_wishbone_wr_comm(`DBG_WB_WRITE8, addr, length, 1'b0);
-	 last_wb_cmd = `DBG_WB_WRITE8;  last_wb_cmd_text = "DBG_WB_WRITE8";
+	 debug_wishbone_wr_comm(DBG_WB_WRITE8, addr, length, 1'b0);
+	 last_wb_cmd = DBG_WB_WRITE8;  last_wb_cmd_text = "DBG_WB_WRITE8";
 	 length_global = length + 1;
 	 debug_wishbone_go(1'b0, 1'b0);
 	 if (length>0)
@@ -787,59 +792,58 @@ module vpi_debug_module(tms, tck, tdi, tdo);
 
 
    task debug_wishbone_wr_comm;
-      input [`DBG_WB_ACC_TYPE_LEN -1:0]   acc_type;
-      input [`DBG_WB_ADR_LEN -1:0] 	  addr;
-      input [`DBG_WB_LEN_LEN -1:0] 	  length;
+      input [DBG_WB_ACC_TYPE_LEN -1:0]   acc_type;
+      input [DBG_WB_ADR_LEN -1:0] 	  addr;
+      input [DBG_WB_LEN_LEN -1:0] 	  length;
       input                               gen_crc_err;
       integer                             i;
-      reg [`DBG_WB_CMD_LEN -1:0] 	  command;
+      reg [DBG_WB_CMD_LEN -1:0] 	  command;
       
       begin
-`ifdef DEBUG_INFO
-	 $display("(%0t) Task debug_wishbone_wr_comm: ", $time);
-`endif
+	 if(DEBUG_INFO)
+	   $display("(%0t) Task debug_wishbone_wr_comm: ", $time);
 	 
-	 command = `DBG_WB_WR_COMM;
+	 command = DBG_WB_WR_COMM;
 	 tms<=#1 1'b1;
 	 gen_clk(1);
 	 tms<=#1 1'b0;
 	 gen_clk(2);  // we are in shiftDR
 	 
-	 crc_out = {`DBG_WB_CRC_LEN{1'b1}}; // Initialize outgoing CRC to all ff
+	 crc_out = {DBG_WB_CRC_LEN{1'b1}}; // Initialize outgoing CRC to all ff
 	 
 	 tdi<=#1 1'b0; // module_select bit = 0
 	 calculate_crc(1'b0);
 	 gen_clk(1);
 	 
-	 for(i=`DBG_WB_CMD_LEN -1; i>=0; i=i-1)
+	 for(i=DBG_WB_CMD_LEN -1; i>=0; i=i-1)
 	   begin
 	      tdi<=#1 command[i]; // command
 	      calculate_crc(command[i]);
 	      gen_clk(1);
 	   end
 	 
-	 for(i=`DBG_WB_ACC_TYPE_LEN -1; i>=0; i=i-1)
+	 for(i=DBG_WB_ACC_TYPE_LEN -1; i>=0; i=i-1)
 	   begin
 	      tdi<=#1 acc_type[i]; // command
 	      calculate_crc(acc_type[i]);
 	      gen_clk(1);
 	   end
 	 
-	 for(i=`DBG_WB_ADR_LEN -1; i>=0; i=i-1)       // address
+	 for(i=DBG_WB_ADR_LEN -1; i>=0; i=i-1)       // address
 	   begin
 	      tdi<=#1 addr[i];
 	      calculate_crc(addr[i]);
 	      gen_clk(1);
 	   end
 	 
-	 for(i=`DBG_WB_LEN_LEN -1; i>=0; i=i-1)       // length
+	 for(i=DBG_WB_LEN_LEN -1; i>=0; i=i-1)       // length
 	   begin
 	      tdi<=#1 length[i];
 	      calculate_crc(length[i]);
 	      gen_clk(1);
 	   end
 	 
-	 for(i=`DBG_WB_CRC_LEN -1; i>=0; i=i-1)
+	 for(i=DBG_WB_CRC_LEN -1; i>=0; i=i-1)
 	   begin
 	      if (gen_crc_err & (i==0))  // Generate crc error at last crc bit
 		tdi<=#1 ~crc_out[i];   // error crc
@@ -851,9 +855,9 @@ module vpi_debug_module(tms, tck, tdi, tdo);
 	 
 	 tdi<=#1 1'hz;
 	 
-	 crc_in = {`DBG_WB_CRC_LEN{1'b1}};  // Initialize incoming CRC to all ff
+	 crc_in = {DBG_WB_CRC_LEN{1'b1}};  // Initialize incoming CRC to all ff
 	 
-	 for(i=`DBG_WB_STATUS_LEN -1; i>=0; i=i-1)
+	 for(i=DBG_WB_STATUS_LEN -1; i>=0; i=i-1)
 	   begin
               gen_clk(1);     // Generating clock to read out a status bit.
               status_wb[i] = tdo;
@@ -868,13 +872,12 @@ module vpi_debug_module(tms, tck, tdi, tdo);
 		4'bxx1x : $display("WISHBONE error !!!\n\n", $time);
 		4'bxxx1 : $display("Overrun/Underrun !!!\n\n", $time);
               endcase
-`ifdef DEBUG_INFO
-              $stop;
-`endif
+	      if(DEBUG_INFO)
+		$stop;
 	   end
 	 
 	 
-	 for(i=0; i<`DBG_WB_CRC_LEN -1; i=i+1)  // Getting in the CRC
+	 for(i=0; i<DBG_WB_CRC_LEN -1; i=i+1)  // Getting in the CRC
 	   begin
 	      gen_clk(1);
 	   end
@@ -885,9 +888,8 @@ module vpi_debug_module(tms, tck, tdi, tdo);
 	 if (~crc_match_in)
 	   begin
               $display("(%0t) Incoming CRC failed !!!", $time);
-`ifdef DEBUG_INFO
-              $stop;
-`endif
+	      if(DEBUG_INFO)
+		$stop;
 	   end
 
 	 tms<=#1 1'b1;
@@ -907,16 +909,15 @@ module vpi_debug_module(tms, tck, tdi, tdo);
       reg [4:0]     bit_pointer;
       integer       word_pointer;
       reg [31:0]    tmp_data;
-      reg [`DBG_WB_CMD_LEN -1:0] command;
+      reg [DBG_WB_CMD_LEN -1:0] command;
       
       
       begin
 	 
-`ifdef DEBUG_INFO
-	 $display("(%0t) Task debug_wishbone_go (previous command was %0s): ", $time, last_wb_cmd_text);
-`endif
+	 if(DEBUG_INFO)
+	   $display("(%0t) Task debug_wishbone_go (previous command was %0s): ", $time, last_wb_cmd_text);
 
-	 command = `DBG_WB_GO;
+	 command = DBG_WB_GO;
 	 word_pointer = 0;
 	 
 	 tms<=#1 1'b1;
@@ -924,13 +925,13 @@ module vpi_debug_module(tms, tck, tdi, tdo);
 	 tms<=#1 1'b0;
 	 gen_clk(2);  // we are in shiftDR
 	 
-	 crc_out = {`DBG_WB_CRC_LEN{1'b1}}; // Initialize outgoing CRC to all ff
+	 crc_out = {DBG_WB_CRC_LEN{1'b1}}; // Initialize outgoing CRC to all ff
 	 
 	 tdi<=#1 1'b0; // module_select bit = 0
 	 calculate_crc(1'b0);
 	 gen_clk(1);
 	 
-	 for(i=`DBG_WB_CMD_LEN -1; i>=0; i=i-1)
+	 for(i=DBG_WB_CMD_LEN -1; i>=0; i=i-1)
 	   begin
 	      tdi<=#1 command[i]; // command
 	      calculate_crc(command[i]);
@@ -939,8 +940,8 @@ module vpi_debug_module(tms, tck, tdi, tdo);
 	 
 	 // W R I T E
 	 if (
-	     (last_wb_cmd == `DBG_WB_WRITE8) | (last_wb_cmd == `DBG_WB_WRITE16) | 
-	     (last_wb_cmd == `DBG_WB_WRITE32)
+	     (last_wb_cmd == DBG_WB_WRITE8) | (last_wb_cmd == DBG_WB_WRITE16) | 
+	     (last_wb_cmd == DBG_WB_WRITE32)
 	     )  // When WB_WRITEx was previously activated, data needs to be shifted.
 	   begin
               for (i=0; i<((length_global) << 3); i=i+1)
@@ -964,7 +965,7 @@ module vpi_debug_module(tms, tck, tdi, tdo);
 		end
 	   end
 	 
-	 for(i=`DBG_WB_CRC_LEN -1; i>=1; i=i-1)
+	 for(i=DBG_WB_CRC_LEN -1; i>=1; i=i-1)
 	   begin
 	      tdi<=#1 crc_out[i];
 	      gen_clk(1);
@@ -1003,17 +1004,16 @@ module vpi_debug_module(tms, tck, tdi, tdo);
 
 	 // R E A D
 	 
-	 crc_in = {`DBG_WB_CRC_LEN{1'b1}};  // Initialize incoming CRC to all ff
+	 crc_in = {DBG_WB_CRC_LEN{1'b1}};  // Initialize incoming CRC to all ff
 	 
 	 if (
-	     (last_wb_cmd == `DBG_WB_READ8) | (last_wb_cmd == `DBG_WB_READ16) | 
-	     (last_wb_cmd == `DBG_WB_READ32)
+	     (last_wb_cmd == DBG_WB_READ8) | (last_wb_cmd == DBG_WB_READ16) | 
+	     (last_wb_cmd == DBG_WB_READ32)
 	     )  // When WB_READx was previously activated, data needs to be shifted.
 	   begin
 	      
-`ifdef DEBUG_INFO
-              $display("\t\tGenerating %0d clocks to read %0d data bytes.", length_global<<3, length_global);
-`endif
+	      if(DEBUG_INFO)
+		$display("\t\tGenerating %0d clocks to read %0d data bytes.", length_global<<3, length_global);
               word_pointer = 0; // Reset pointer
 	      
               for (i=0; i<(length_global<<3); i=i+1)
@@ -1027,9 +1027,8 @@ module vpi_debug_module(tms, tck, tdi, tdo);
 		   if (i[4:0] == 31)
 		     begin
 			data_storage[word_pointer] = incoming_word;
-`ifdef DEBUG_INFO
-			$display("\t\tin_data_be = 0x%x", incoming_word);
-`endif
+			if(DEBUG_INFO)
+			  $display("\t\tin_data_be = 0x%x", incoming_word);
 			word_pointer = word_pointer + 1;
 			
 		     end
@@ -1039,13 +1038,12 @@ module vpi_debug_module(tms, tck, tdi, tdo);
 	      if (length_global[1:0] != 0)
 		begin
 		   data_storage[word_pointer] = incoming_word;
-`ifdef DEBUG_INFO
-		   $display("\t\tin_data_be = 0x%x", incoming_word);
-`endif		   
+		   if(DEBUG_INFO)
+		     $display("\t\tin_data_be = 0x%x", incoming_word);
 		end
 	   end
 	 
-	 for(i=`DBG_WB_STATUS_LEN -1; i>=0; i=i-1)
+	 for(i=DBG_WB_STATUS_LEN -1; i>=0; i=i-1)
 	   begin
 	      
               gen_clk(1);     // Generating clock to read out a status bit.
@@ -1062,13 +1060,12 @@ module vpi_debug_module(tms, tck, tdi, tdo);
 		4'bxx1x : $display("WISHBONE error !!!\n\n", $time);
 		4'bxxx1 : $display("Overrun/Underrun !!!\n\n", $time);
               endcase
-`ifdef DEBUG_INFO
-              $stop;
-`endif
+	      if(DEBUG_INFO)
+		$stop;
 	   end
 	 
 	 
-	 for(i=0; i<`DBG_WB_CRC_LEN -1; i=i+1)  // Getting in the CRC
+	 for(i=0; i<DBG_WB_CRC_LEN -1; i=i+1)  // Getting in the CRC
 	   begin
 	      gen_clk(1);
 	   end
@@ -1079,9 +1076,8 @@ module vpi_debug_module(tms, tck, tdi, tdo);
 	 if (~crc_match_in)
 	   begin
               $display("(%0t) Incoming CRC failed !!!", $time);
-`ifdef DEBUG_INFO
-              $stop;
-`endif
+	      if(DEBUG_INFO)
+		$stop;
 	   end
 
 	 tms<=#1 1'b1;
@@ -1094,31 +1090,30 @@ module vpi_debug_module(tms, tck, tdi, tdo);
 
 
    task debug_cpu_wr_ctrl;
-      input [`DBG_CPU_DR_LEN -1:0]  data;
+      input [DBG_CPU_DR_LEN -1:0]  data;
       input [99:0] 		    text;
       integer                       i;
-      reg [`DBG_CPU_CMD_LEN -1:0]   command;
+      reg [DBG_CPU_CMD_LEN -1:0]   command;
       
       begin
 	 test_text = text;
 	 
-`ifdef DEBUG_INFO
-	 $display("(%0t) Task debug_cpu_wr_ctrl (data=0x%0x (%0s))", $time, data, text);
-`endif
+	 if(DEBUG_INFO)
+	   $display("(%0t) Task debug_cpu_wr_ctrl (data=0x%0x (%0s))", $time, data, text);
 	 
-	 command = `DBG_CPU_WR_CTRL;
+	 command = DBG_CPU_WR_CTRL;
 	 tms<=#1 1'b1;
 	 gen_clk(1);
 	 tms<=#1 1'b0;
 	 gen_clk(2);  // we are in shiftDR
 	 
-	 crc_out = {`DBG_CPU_CRC_LEN{1'b1}}; // Initialize outgoing CRC to all ff
+	 crc_out = {DBG_CPU_CRC_LEN{1'b1}}; // Initialize outgoing CRC to all ff
 	 
 	 tdi<=#1 1'b0; // module_select bit = 0
 	 calculate_crc(1'b0);
 	 gen_clk(1);
 	 
-	 for(i=`DBG_CPU_CMD_LEN -1; i>=0; i=i-1)
+	 for(i=DBG_CPU_CMD_LEN -1; i>=0; i=i-1)
 	   begin
 	      tdi<=#1 command[i]; // command
 	      calculate_crc(command[i]);
@@ -1126,14 +1121,14 @@ module vpi_debug_module(tms, tck, tdi, tdo);
 	   end
 
 	 
-	 for(i=`DBG_CPU_CTRL_LEN -1; i>=0; i=i-1)
+	 for(i=DBG_CPU_CTRL_LEN -1; i>=0; i=i-1)
 	   begin
 	      tdi<=#1 data[i];                                    // data (used cotrol bits
 	      calculate_crc(data[i]);
 	      gen_clk(1);
 	   end
 
-	 for(i=`DBG_CPU_DR_LEN - `DBG_CPU_CTRL_LEN -1; i>=0; i=i-1)  // unused control bits
+	 for(i=DBG_CPU_DR_LEN - DBG_CPU_CTRL_LEN -1; i>=0; i=i-1)  // unused control bits
 	   begin
 	      tdi<=#1 1'b0;
 	      calculate_crc(1'b0);
@@ -1141,7 +1136,7 @@ module vpi_debug_module(tms, tck, tdi, tdo);
 	   end
 	 
 	 
-	 for(i=`DBG_CPU_CRC_LEN -1; i>=0; i=i-1)
+	 for(i=DBG_CPU_CRC_LEN -1; i>=0; i=i-1)
 	   begin
 	      tdi<=#1 crc_out[i];    // ok crc
 	      gen_clk(1);
@@ -1149,9 +1144,9 @@ module vpi_debug_module(tms, tck, tdi, tdo);
 	 
 	 tdi<=#1 1'hz;
 	 
-	 crc_in = {`DBG_CPU_CRC_LEN{1'b1}};  // Initialize incoming CRC to all ff
+	 crc_in = {DBG_CPU_CRC_LEN{1'b1}};  // Initialize incoming CRC to all ff
 	 
-	 for(i=`DBG_CPU_STATUS_LEN -1; i>=0; i=i-1)
+	 for(i=DBG_CPU_STATUS_LEN -1; i>=0; i=i-1)
 	   begin
               gen_clk(1);     // Generating clock to read out a status bit.
               status_cpu[i] = tdo;
@@ -1166,13 +1161,12 @@ module vpi_debug_module(tms, tck, tdi, tdo);
 		4'bxx1x : $display("??? error !!!\n\n", $time);
 		4'bxxx1 : $display("??? error !!!\n\n", $time);
               endcase
-`ifdef DEBUG_INFO
-              $stop;
-`endif
+	      if(DEBUG_INFO)
+		$stop;
 	   end
 	 
 	 
-	 for(i=0; i<`DBG_CPU_CRC_LEN -1; i=i+1)  // Getting in the CRC
+	 for(i=0; i<DBG_CPU_CRC_LEN -1; i=i+1)  // Getting in the CRC
 	   begin
 	      gen_clk(1);
 	   end
@@ -1183,9 +1177,8 @@ module vpi_debug_module(tms, tck, tdi, tdo);
 	 if (~crc_match_in)
 	   begin
               $display("(%0t) Incoming CRC failed !!!", $time);
-`ifdef DEBUG_INFO
-              $stop;
-`endif
+	      if(DEBUG_INFO)
+		$stop;
 	   end
 
 	 tms<=#1 1'b1;
@@ -1196,38 +1189,37 @@ module vpi_debug_module(tms, tck, tdi, tdo);
    endtask       // debug_cpu_wr_ctrl
 
    task debug_cpu_rd_ctrl;
-      output [`DBG_CPU_DR_LEN -1:0]  data;
+      output [DBG_CPU_DR_LEN -1:0]  data;
       //input [99:0] 		     text;
       integer 			     i;
-      reg [`DBG_CPU_CMD_LEN -1:0]    command;
+      reg [DBG_CPU_CMD_LEN -1:0]    command;
       
       begin
 
 	 
-`ifdef DEBUG_INFO
-	 $display("(%0t) Task debug_cpu_rd_ctrl", $time);
-`endif
+	 if(DEBUG_INFO)
+	   $display("(%0t) Task debug_cpu_rd_ctrl", $time);
 	 
-	 command = `DBG_CPU_RD_CTRL;
+	 command = DBG_CPU_RD_CTRL;
 	 tms<=#1 1'b1;
 	 gen_clk(1);
 	 tms<=#1 1'b0;
 	 gen_clk(2);  // we are in shiftDR
 	 
-	 crc_out = {`DBG_CPU_CRC_LEN{1'b1}}; // Initialize outgoing CRC to all ff
+	 crc_out = {DBG_CPU_CRC_LEN{1'b1}}; // Initialize outgoing CRC to all ff
 	 
 	 tdi<=#1 1'b0; // module_select bit = 0
 	 calculate_crc(1'b0);
 	 gen_clk(1);
 	 
-	 for(i=`DBG_CPU_CMD_LEN -1; i>=0; i=i-1)
+	 for(i=DBG_CPU_CMD_LEN -1; i>=0; i=i-1)
 	   begin
 	      tdi<=#1 command[i]; // command
 	      calculate_crc(command[i]);
 	      gen_clk(1);
 	   end
 	 
-	 for(i=`DBG_CPU_CRC_LEN -1; i>=0; i=i-1)
+	 for(i=DBG_CPU_CRC_LEN -1; i>=0; i=i-1)
 	   begin
 	      tdi<=#1 crc_out[i];    // ok crc
 	      gen_clk(1);
@@ -1235,7 +1227,7 @@ module vpi_debug_module(tms, tck, tdi, tdo);
 	 
 	 tdi<=#1 1'hz;
 	 
-	 crc_in = {`DBG_CPU_CRC_LEN{1'b1}};  // Initialize incoming CRC to all ff
+	 crc_in = {DBG_CPU_CRC_LEN{1'b1}};  // Initialize incoming CRC to all ff
 	 
 	 // Read incoming debug ctrl data (52 bits)
 	 //cpu_ctrl_val[1:0];
@@ -1246,12 +1238,12 @@ module vpi_debug_module(tms, tck, tdi, tdo);
 	 //cpu_ctrl_val[1]  <= #1 tdo; // cpu stall bit
 	 data[1]  <= #1 tdo; // cpu stall bit
 	 
-	 for(i=`DBG_CPU_DR_LEN - `DBG_CPU_CTRL_LEN -1; i>=0; i=i-1)  // unused control bits
+	 for(i=DBG_CPU_DR_LEN - DBG_CPU_CTRL_LEN -1; i>=0; i=i-1)  // unused control bits
 	   begin
 	      gen_clk(1);
 	   end     
 	 
-	 for(i=`DBG_CPU_STATUS_LEN -1; i>=0; i=i-1)
+	 for(i=DBG_CPU_STATUS_LEN -1; i>=0; i=i-1)
 	   begin
               gen_clk(1);     // Generating clock to read out a status bit.
               status_cpu[i] = tdo;
@@ -1270,7 +1262,7 @@ module vpi_debug_module(tms, tck, tdi, tdo);
 	   end
 	 
 	 
-	 for(i=0; i<`DBG_CPU_CRC_LEN -1; i=i+1)  // Getting in the CRC
+	 for(i=0; i<DBG_CPU_CRC_LEN -1; i=i+1)  // Getting in the CRC
 	   begin
 	      gen_clk(1);
 	   end
@@ -1295,15 +1287,15 @@ module vpi_debug_module(tms, tck, tdi, tdo);
    // 32-bit read from cpu
    task cpu_read_32;
       output [31:0] data;
-      input [`DBG_WB_ADR_LEN -1:0] addr;
-      input [`DBG_WB_LEN_LEN -1:0] length;
+      input [DBG_WB_ADR_LEN -1:0] addr;
+      input [DBG_WB_LEN_LEN -1:0] length;
 
       reg [31:0] 		   tmp;
 
       begin
-	 debug_cpu_wr_comm(`DBG_CPU_READ, addr, length, 1'b0);
+	 debug_cpu_wr_comm(DBG_CPU_READ, addr, length, 1'b0);
 	 
-	 last_cpu_cmd = `DBG_CPU_READ;  last_cpu_cmd_text = "DBG_CPU_READ";
+	 last_cpu_cmd = DBG_CPU_READ;  last_cpu_cmd_text = "DBG_CPU_READ";
 	 
 	 length_global = length + 1;
 	 
@@ -1320,15 +1312,15 @@ module vpi_debug_module(tms, tck, tdi, tdo);
    // block of 32-bit reads from cpu
    task cpu_read_block;
       //output [31:0] data;
-      input [`DBG_WB_ADR_LEN -1:0] addr;
-      input [`DBG_WB_LEN_LEN -1:0] length;
+      input [DBG_WB_ADR_LEN -1:0] addr;
+      input [DBG_WB_LEN_LEN -1:0] length;
 
       reg [31:0] 		   tmp;
 
       begin
-	 debug_cpu_wr_comm(`DBG_CPU_READ, addr, length-1, 1'b0);
+	 debug_cpu_wr_comm(DBG_CPU_READ, addr, length-1, 1'b0);
 	 
-	 last_cpu_cmd = `DBG_CPU_READ;  last_cpu_cmd_text = "DBG_CPU_READ";
+	 last_cpu_cmd = DBG_CPU_READ;  last_cpu_cmd_text = "DBG_CPU_READ";
 	 
 	 length_global = length;
 	 
@@ -1346,14 +1338,14 @@ module vpi_debug_module(tms, tck, tdi, tdo);
    // 32-bit write to cpu
    task cpu_write_32;
       input [31:0] data;
-      input [`DBG_WB_ADR_LEN -1:0] addr;
-      input [`DBG_WB_LEN_LEN -1:0] length;
+      input [DBG_WB_ADR_LEN -1:0] addr;
+      input [DBG_WB_LEN_LEN -1:0] length;
 
       reg [31:0] 		   tmp;
 
       begin
-	 debug_cpu_wr_comm(`DBG_CPU_WRITE, addr, length, 1'b0);
-	 last_cpu_cmd = `DBG_CPU_WRITE;  last_cpu_cmd_text = "DBG_CPU_WRITE";
+	 debug_cpu_wr_comm(DBG_CPU_WRITE, addr, length, 1'b0);
+	 last_cpu_cmd = DBG_CPU_WRITE;  last_cpu_cmd_text = "DBG_CPU_WRITE";
 	 length_global = length + 1;
 	 data_storage[0] = data;
 	 debug_cpu_go(1'b0, 1'b0);
@@ -1366,14 +1358,14 @@ module vpi_debug_module(tms, tck, tdi, tdo);
    // Data will already be in data_storage
    task cpu_write_block;
       //input [31:0] data;
-      input [`DBG_WB_ADR_LEN -1:0] addr;
-      input [`DBG_WB_LEN_LEN -1:0] length;
+      input [DBG_WB_ADR_LEN -1:0] addr;
+      input [DBG_WB_LEN_LEN -1:0] length;
 
       reg [31:0] 		   tmp;
 
       begin
-	 debug_cpu_wr_comm(`DBG_CPU_WRITE, addr, length-1, 1'b0);
-	 last_cpu_cmd = `DBG_CPU_WRITE;  last_cpu_cmd_text = "DBG_CPU_WRITE";
+	 debug_cpu_wr_comm(DBG_CPU_WRITE, addr, length-1, 1'b0);
+	 last_cpu_cmd = DBG_CPU_WRITE;  last_cpu_cmd_text = "DBG_CPU_WRITE";
 	 length_global = length;
 	 debug_cpu_go(1'b0, 1'b0);
       end
@@ -1381,59 +1373,58 @@ module vpi_debug_module(tms, tck, tdi, tdo);
 
 
    task debug_cpu_wr_comm;
-      input [`DBG_CPU_ACC_TYPE_LEN -1:0]  acc_type;
-      input [`DBG_CPU_ADR_LEN -1:0] 	  addr;
-      input [`DBG_CPU_LEN_LEN -1:0] 	  length;
+      input [DBG_CPU_ACC_TYPE_LEN -1:0]  acc_type;
+      input [DBG_CPU_ADR_LEN -1:0] 	  addr;
+      input [DBG_CPU_LEN_LEN -1:0] 	  length;
       input                               gen_crc_err;
       integer                             i;
-      reg [`DBG_CPU_CMD_LEN -1:0] 	  command;
+      reg [DBG_CPU_CMD_LEN -1:0] 	  command;
       
       begin
-`ifdef DEBUG_INFO
-	 $display("(%0t) Task debug_cpu_wr_comm: ", $time);
-`endif
+	 if(DEBUG_INFO)
+	   $display("(%0t) Task debug_cpu_wr_comm: ", $time);
 
-	 command = `DBG_CPU_WR_COMM;
+	 command = DBG_CPU_WR_COMM;
 	 tms<=#1 1'b1;
 	 gen_clk(1);
 	 tms<=#1 1'b0;
 	 gen_clk(2);  // we are in shiftDR
 
-	 crc_out = {`DBG_CPU_CRC_LEN{1'b1}}; // Initialize outgoing CRC to all ff
+	 crc_out = {DBG_CPU_CRC_LEN{1'b1}}; // Initialize outgoing CRC to all ff
 
 	 tdi<=#1 1'b0; // module_select bit = 0
 	 calculate_crc(1'b0);
 	 gen_clk(1);
 
-	 for(i=`DBG_CPU_CMD_LEN -1; i>=0; i=i-1)
+	 for(i=DBG_CPU_CMD_LEN -1; i>=0; i=i-1)
 	   begin
 	      tdi<=#1 command[i]; // command
 	      calculate_crc(command[i]);
 	      gen_clk(1);
 	   end
 
-	 for(i=`DBG_CPU_ACC_TYPE_LEN -1; i>=0; i=i-1)
+	 for(i=DBG_CPU_ACC_TYPE_LEN -1; i>=0; i=i-1)
 	   begin
 	      tdi<=#1 acc_type[i]; // command
 	      calculate_crc(acc_type[i]);
 	      gen_clk(1);
 	   end
 
-	 for(i=`DBG_CPU_ADR_LEN -1; i>=0; i=i-1)       // address
+	 for(i=DBG_CPU_ADR_LEN -1; i>=0; i=i-1)       // address
 	   begin
 	      tdi<=#1 addr[i];
 	      calculate_crc(addr[i]);
 	      gen_clk(1);
 	   end
 	 
-	 for(i=`DBG_CPU_LEN_LEN -1; i>=0; i=i-1)       // length
+	 for(i=DBG_CPU_LEN_LEN -1; i>=0; i=i-1)       // length
 	   begin
 	      tdi<=#1 length[i];
 	      calculate_crc(length[i]);
 	      gen_clk(1);
 	   end
 
-	 for(i=`DBG_CPU_CRC_LEN -1; i>=0; i=i-1)
+	 for(i=DBG_CPU_CRC_LEN -1; i>=0; i=i-1)
 	   begin
 	      if (gen_crc_err & (i==0))      // Generate crc error at last crc bit
 		tdi<=#1 ~crc_out[i];   // error crc
@@ -1445,9 +1436,9 @@ module vpi_debug_module(tms, tck, tdi, tdo);
 
 	 tdi<=#1 1'hz;
 
-	 crc_in = {`DBG_CPU_CRC_LEN{1'b1}};  // Initialize incoming CRC to all ff
+	 crc_in = {DBG_CPU_CRC_LEN{1'b1}};  // Initialize incoming CRC to all ff
 
-	 for(i=`DBG_CPU_STATUS_LEN -1; i>=0; i=i-1)
+	 for(i=DBG_CPU_STATUS_LEN -1; i>=0; i=i-1)
 	   begin
               gen_clk(1);     // Generating clock to read out a status bit.
               status_cpu[i] = tdo;
@@ -1462,13 +1453,12 @@ module vpi_debug_module(tms, tck, tdi, tdo);
 		4'bxx1x : $display("??? error !!!\n\n", $time);
 		4'bxxx1 : $display("Overrun/Underrun !!!\n\n", $time);
               endcase
-`ifdef DEBUG_INFO
-              $stop;
-`endif
+	      if(DEBUG_INFO)
+		$stop;
 	   end
 
 
-	 for(i=0; i<`DBG_CPU_CRC_LEN -1; i=i+1)  // Getting in the CRC
+	 for(i=0; i<DBG_CPU_CRC_LEN -1; i=i+1)  // Getting in the CRC
 	   begin
 	      gen_clk(1);
 	   end
@@ -1479,9 +1469,8 @@ module vpi_debug_module(tms, tck, tdi, tdo);
 	 if (~crc_match_in)
 	   begin
               $display("(%0t) Incoming CRC failed !!!", $time);
-`ifdef DEBUG_INFO
-              $stop;
-`endif
+	      if(DEBUG_INFO)
+		$stop;
 	   end
 
 	 tms<=#1 1'b1;
@@ -1500,14 +1489,13 @@ module vpi_debug_module(tms, tck, tdi, tdo);
       reg [4:0]     bit_pointer;
       integer       word_pointer;
       reg [31:0]    tmp_data;
-      reg [`DBG_CPU_CMD_LEN -1:0] command;
+      reg [DBG_CPU_CMD_LEN -1:0] command;
 
       
       begin
-`ifdef DEBUG_INFO
-	 $display("(%0t) Task debug_cpu_go (previous command was %0s): ", $time, last_cpu_cmd_text);
-`endif
-	 command = `DBG_CPU_GO;
+	 if(DEBUG_INFO)
+	   $display("(%0t) Task debug_cpu_go (previous command was %0s): ", $time, last_cpu_cmd_text);
+	 command = DBG_CPU_GO;
 	 word_pointer = 0;
 
 	 tms<=#1 1'b1;
@@ -1515,13 +1503,13 @@ module vpi_debug_module(tms, tck, tdi, tdo);
 	 tms<=#1 1'b0;
 	 gen_clk(2);  // we are in shiftDR
 
-	 crc_out = {`DBG_CPU_CRC_LEN{1'b1}}; // Initialize outgoing CRC to all ff
+	 crc_out = {DBG_CPU_CRC_LEN{1'b1}}; // Initialize outgoing CRC to all ff
 
 	 tdi<=#1 1'b0; // module_select bit = 0
 	 calculate_crc(1'b0);
 	 gen_clk(1);
 
-	 for(i=`DBG_CPU_CMD_LEN -1; i>=0; i=i-1)
+	 for(i=DBG_CPU_CMD_LEN -1; i>=0; i=i-1)
 	   begin
 	      tdi<=#1 command[i]; // command
 	      calculate_crc(command[i]);
@@ -1529,7 +1517,7 @@ module vpi_debug_module(tms, tck, tdi, tdo);
 	   end
 
 
-	 if (last_cpu_cmd == `DBG_CPU_WRITE)  // When DBG_CPU_WRITE was previously activated, data needs to be shifted.
+	 if (last_cpu_cmd == DBG_CPU_WRITE)  // When DBG_CPU_WRITE was previously activated, data needs to be shifted.
 	   begin
               for (i=0; i<((length_global) << 3); i=i+1)
 		begin
@@ -1546,7 +1534,7 @@ module vpi_debug_module(tms, tck, tdi, tdo);
 		end
 	   end
 
-	 for(i=`DBG_CPU_CRC_LEN -1; i>=1; i=i-1)
+	 for(i=DBG_CPU_CRC_LEN -1; i>=1; i=i-1)
 	   begin
 	      tdi<=#1 crc_out[i];
 	      gen_clk(1);
@@ -1582,13 +1570,12 @@ module vpi_debug_module(tms, tck, tdi, tdo);
 
 
 	 tdi<=#1 1'hz;
-	 crc_in = {`DBG_CPU_CRC_LEN{1'b1}};  // Initialize incoming CRC to all ff
+	 crc_in = {DBG_CPU_CRC_LEN{1'b1}};  // Initialize incoming CRC to all ff
 
-	 if (last_cpu_cmd == `DBG_CPU_READ)  // When DBG_CPU_READ was previously activated, data needs to be shifted.
+	 if (last_cpu_cmd == DBG_CPU_READ)  // When DBG_CPU_READ was previously activated, data needs to be shifted.
 	   begin
-`ifdef DEBUG_INFO
-              $display("\t\tGenerating %0d clocks to read %0d data bytes.", length_global<<3, length_global);
-`endif
+	      if(DEBUG_INFO)
+		$display("\t\tGenerating %0d clocks to read %0d data bytes.", length_global<<3, length_global);
               word_pointer = 0; // Reset pointer
               for (i=0; i<(length_global<<3); i=i+1)
 		begin
@@ -1598,9 +1585,8 @@ module vpi_debug_module(tms, tck, tdi, tdo);
 		   if (i[4:0] == 31)   // Latching data
 		     begin
 			data_storage[word_pointer] = in_data_be;
-`ifdef DEBUG_INFO
-			$display("\t\tin_data_be = 0x%x", in_data_be);
-`endif
+			if(DEBUG_INFO)
+			  $display("\t\tin_data_be = 0x%x", in_data_be);
 			word_pointer = word_pointer + 1;
 		     end
 		   
@@ -1608,7 +1594,7 @@ module vpi_debug_module(tms, tck, tdi, tdo);
 	   end
 
 
-	 for(i=`DBG_CPU_STATUS_LEN -1; i>=0; i=i-1)
+	 for(i=DBG_CPU_STATUS_LEN -1; i>=0; i=i-1)
 	   begin
               gen_clk(1);     // Generating clock to read out a status bit.
               status_cpu[i] = tdo;
@@ -1627,7 +1613,7 @@ module vpi_debug_module(tms, tck, tdi, tdo);
 	   end
 
 
-	 for(i=0; i<`DBG_CPU_CRC_LEN -1; i=i+1)  // Getting in the CRC
+	 for(i=0; i<DBG_CPU_CRC_LEN -1; i=i+1)  // Getting in the CRC
 	   begin
 	      gen_clk(1);
 	   end
