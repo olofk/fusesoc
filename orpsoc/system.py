@@ -9,11 +9,19 @@ from orpsoc.config import Config
 
 import os
 
+DEFAULT_VALUES = {'name'          : '',
+                  'cores'         : '',
+                  'simulators'    : '',
+                  'backend'       : '',
+                  'include_files' : '',
+                  'rtl_files'     : '',
+                  'tb_files'      : ''}
+
 class System:
     def __init__(self, system_file):
         system_root = os.path.dirname(system_file)
 
-        system_config = configparser.SafeConfigParser(allow_no_value=True)
+        system_config = configparser.SafeConfigParser(DEFAULT_VALUES)
         system_config.readfp(open(system_file))
 
         self.name = system_config.get('main', 'name')
