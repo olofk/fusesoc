@@ -52,30 +52,14 @@ class SimulatorIcarus(Simulator):
             exit(1)
         
     def run(self, args):
-        vmem_file=os.path.abspath(args.testcase[0])
-        if not os.path.exists(vmem_file):
-            print("Error: Couldn't find test case " + vmem_file)
-            exit(1)
-        plusargs = ['+testcase='+vmem_file]
-        if args.timeout:
-            print("Setting timeout to "+str(args.timeout[0]))
-            plusargs += ['+timeout='+str(args.timeout[0])]
-
-        if args.enable_dbg:
-            print("Enabling debug interface")
-            plusargs += ['+enable_dbg']
-
-        vpi_modules = []
-        for name, core in self.system.get_cores().items():
-            if core.vpi:
-                vpi_modules += ['-m'+core.vpi.name]
+        super(SimulatorIcarus, self).run(args)
 
         #FIXME: Handle failures. Save stdout/stderr. Build vmem file from elf file argument
         if subprocess.call(['vvp', '-n', '-M.',
                             '-l', 'icarus.log'] +
-                           vpi_modules +
+                           ['-m'+s for s in self.vpi_modules] +
                            ['orpsoc.elf'] +
-                           plusargs,
+                           ['+'+s for s in self.plusargs],
                            cwd = self.sim_root,
                            stdin=subprocess.PIPE):
             print("Error: Failed to run simulation")

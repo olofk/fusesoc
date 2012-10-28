@@ -34,3 +34,26 @@ class Simulator(object):
             core.setup()
             core.export(dst_dir)
             core.patch(dst_dir)
+
+    def run(self, args):
+        self.vpi_modules = []
+        for name, core in self.system.get_cores().items():
+            if core.vpi:
+                self.vpi_modules += [core.vpi.name]
+        #FIXME: Smarter plusargs handling
+        self.plusargs = []
+        
+        vmem_file=os.path.abspath(args.testcase[0])
+        if not os.path.exists(vmem_file):
+            print("Error: Couldn't find test case " + vmem_file)
+            exit(1)
+        plusargs = ['testcase='+vmem_file]
+        if args.timeout:
+            print("Setting timeout to "+str(args.timeout[0]))
+            plusargs += ['timeout='+str(args.timeout[0])]
+
+        if args.enable_dbg:
+            print("Enabling debug interface")
+            plusargs += ['enable_dbg']
+        
+        
