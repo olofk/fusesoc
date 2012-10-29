@@ -47,36 +47,6 @@ module vpi_debug_module
    input      tdo,
    input      enable);
 
-   reg [31:0] 		in_data_le, in_data_be;
-   reg [31:0] 		incoming_word;
-   reg                  err;
-   integer              i;
-   
-   reg [31:0] 		id;
-   reg [31:0] 		npc;
-   reg [31:0] 		ppc;
-   reg [31:0] 		r1;
-   reg [31:0] 		insn;
-   reg [31:0] 		result;
-   reg [31:0] 		tmp;
-   
-   reg [31:0] 		crc_out;
-   reg [31:0] 		crc_in;
-   wire                 crc_match_in;
-   
-   reg [DBG_TOP_STATUS_LEN -1:0] status;
-   reg [DBG_WB_STATUS_LEN -1:0]  status_wb;
-   reg [DBG_CPU_STATUS_LEN -1:0] status_cpu;
-   
-   // Text used for easier debugging
-   reg [199:0] 			  test_text;
-   reg [DBG_WB_CMD_LEN -1:0] 	  last_wb_cmd;
-   reg [DBG_CPU_CMD_LEN -1:0] 	  last_cpu_cmd;
-   reg [199:0] 			  last_wb_cmd_text;
-   reg [199:0] 			  last_cpu_cmd_text;
-   
-   reg [31:0] 			  data_storage [0:4095];   // Data storage (for write and read operations). 
-   reg [18:0] 			  length_global;
    
    parameter 			  Tp    = 1;   
 //parameter Tck   = 25;   // Clock half period (Clok period = 50 ns => 20 MHz)
@@ -207,6 +177,37 @@ module vpi_debug_module
 // 4'hb reset
 // 4'hc read jtag id (output: data)
    
+   reg [31:0] 		in_data_le, in_data_be;
+   reg [31:0] 		incoming_word;
+   reg                  err;
+   integer              i;
+   
+   reg [31:0] 		id;
+   reg [31:0] 		npc;
+   reg [31:0] 		ppc;
+   reg [31:0] 		r1;
+   reg [31:0] 		insn;
+   reg [31:0] 		result;
+   reg [31:0] 		tmp;
+   
+   reg [31:0] 		crc_out;
+   reg [31:0] 		crc_in;
+   wire                 crc_match_in;
+   
+   reg [DBG_TOP_STATUS_LEN -1:0] status;
+   reg [DBG_WB_STATUS_LEN -1:0]  status_wb;
+   reg [DBG_CPU_STATUS_LEN -1:0] status_cpu;
+   
+   // Text used for easier debugging
+   reg [199:0] 			  test_text;
+   reg [DBG_WB_CMD_LEN -1:0] 	  last_wb_cmd;
+   reg [DBG_CPU_CMD_LEN -1:0] 	  last_cpu_cmd;
+   reg [199:0] 			  last_wb_cmd_text;
+   reg [199:0] 			  last_cpu_cmd_text;
+   
+   reg [31:0] 			  data_storage [0:4095];   // Data storage (for write and read operations). 
+   reg [18:0] 			  length_global;
+
    integer cmd;
    integer block_cmd_length;
    integer jtag_instn_val;
