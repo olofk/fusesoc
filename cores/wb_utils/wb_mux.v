@@ -122,6 +122,7 @@ endgenerate
 // Master/slave connection
 ///////////////////////////////////////////////////////////////////////////////
 
+   reg [1:0] slave_sel;
 
    assign wbs_adr_o = wbm_adr_i;
    assign wbs_dat_o = (sdw == 32) ? wbm_dat_i :
@@ -141,7 +142,6 @@ endgenerate
    assign wbs_bte_o = wbm_bte_i;
 
    integer i;
-   reg [1:0] slave_sel;
    
    always @(slave_sel_i) begin
       slave_sel = 0;

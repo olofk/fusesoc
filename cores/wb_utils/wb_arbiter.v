@@ -35,6 +35,9 @@
 //////////////////////////////////////////////////////////////////////
 
 module wb_arbiter
+ #(parameter dw = 32,
+   parameter aw = 32,
+   parameter num_masters = 2)
   (
    input 		      wb_clk,
    input 		      wb_rst,
@@ -72,10 +75,6 @@ module wb_arbiter
 // Parameters
 ///////////////////////////////////////////////////////////////////////////////
 
-   parameter dw = 32;
-   parameter aw = 32;
-
-   parameter num_masters = 2;
 
    // Master select (MUX controls)
    reg [1:0]                master_sel;
