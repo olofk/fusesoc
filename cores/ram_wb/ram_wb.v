@@ -1,4 +1,12 @@
 module ram_wb
+  #(
+   // Bus parameters
+   parameter dw = 32,
+   parameter aw = 32,
+   // Memory parameters
+   parameter mem_size_bytes = 32'h0000_0400, // 1KBytes
+   parameter mem_adr_width = 10, //(log2(mem_span));
+   parameter memory_file = "")
   (
    // Clock, reset
    input 		wb_clk_i,
@@ -46,13 +54,6 @@ module ram_wb
    output 		wbm2_rty_o,
    output [dw-1:0] 	wbm2_dat_o
    );
-   // Bus parameters
-   parameter dw = 32;
-   parameter aw = 32;
-   // Memory parameters
-   parameter mem_size_bytes = 32'h0000_0400; // 1KBytes
-   parameter mem_adr_width = 10; //(log2(mem_span));
-   parameter memory_file = "";
 
    // Internal wires to actual RAM
 

@@ -1,4 +1,11 @@
 module ram_wb_b3
+ #(//Wishbone parameters
+   parameter dw = 32,
+   parameter aw = 32,
+   // Memory parameters
+   parameter memory_file = "",
+   parameter mem_size_bytes = 32'h0000_5000, // 20KBytes
+   parameter mem_adr_width = 15) //(log2(mem_size_bytes));
   (input 	   wb_clk_i,
    input 	   wb_rst_i,
    
@@ -16,13 +23,7 @@ module ram_wb_b3
    output 	   wb_rty_o,
    output [dw-1:0] wb_dat_o);
 
-   //Wishbone parameters
-   parameter dw = 32;
-   parameter aw = 32;
 
-   // Memory parameters
-   parameter mem_size_bytes = 32'h0000_5000; // 20KBytes
-   parameter mem_adr_width = 15; //(log2(mem_size_bytes));
    
    localparam bytes_per_dw = (dw/8);
    localparam adr_width_for_num_word_bytes = 2; //(log2(bytes_per_dw))
@@ -115,6 +116,13 @@ module ram_wb_b3
      if (ram_we)
 	  mem[adr] <= wr_data;
 
+
+   // Error when out of bounds of memory - skip top nibble of address in case
+   // this is mapped somewhere other than 0x0.
+   wire addr_err  = wb_cyc_i & wb_stb_i & (|wb_adr_i[aw-1-4:mem_adr_width]);  
+   
+
+
    // Ack Logic
    reg wb_ack_o_r;
 
@@ -142,10 +150,6 @@ module ram_wb_b3
    // Error signal generation
    //
    
-   // Error when out of bounds of memory - skip top nibble of address in case
-   // this is mapped somewhere other than 0x0.
-   wire addr_err  = wb_cyc_i & wb_stb_i & (|wb_adr_i[aw-1-4:mem_adr_width]);  
-   
    // OR in other errors here...
    assign wb_err_o =  wb_ack_o_r & wb_stb_i & 
 		      (burst_access_wrong_wb_adr | addr_err);
@@ -159,7 +163,6 @@ module ram_wb_b3
     from SystemC testbench.
     */
 // synthesis translate_off
-   parameter memory_file = "";
 
 `ifdef verilator
    
