@@ -38,6 +38,10 @@ class System:
 
         self.simulators = system_config.get('main','simulators').split()
 
+        self.backend_name = system_config.get('main','backend')
+        if self.backend_name and system_config.has_section(self.backend_name):
+            self.backend = dict(system_config.items(self.backend_name))
+
     def setup_cores(self):
         for core in self.cores:
             self.cores[core].setup()
