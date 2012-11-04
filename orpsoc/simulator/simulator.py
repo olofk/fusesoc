@@ -47,13 +47,11 @@ class Simulator(object):
         if not os.path.exists(vmem_file):
             print("Error: Couldn't find test case " + vmem_file)
             exit(1)
-        plusargs = ['testcase='+vmem_file]
+        self.plusargs += ['testcase='+vmem_file]
         if args.timeout:
             print("Setting timeout to "+str(args.timeout[0]))
-            plusargs += ['timeout='+str(args.timeout[0])]
+            self.plusargs += ['timeout='+str(args.timeout[0])]
 
         if args.enable_dbg:
             print("Enabling debug interface")
-            plusargs += ['enable_dbg']
-        
-        
+            self.plusargs += ['enable_dbg']
