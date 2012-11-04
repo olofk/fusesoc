@@ -380,6 +380,7 @@ module orpsoc_top
       //Slave interface
       .wbs_adr_o   (wb_bbus_adr),
       .wbs_dat_o   (wb_bbus_dat),
+      .wbs_sel_o   (           ),
       .wbs_we_o    (wb_bbus_we ),
       .wbs_cyc_o   (wb_bbus_cyc),
       .wbs_stb_o   (wb_bbus_stb),
@@ -671,7 +672,12 @@ module orpsoc_top
    ////////////////////////////////////////////////////////////////////////
 
 
-   ram_wb #(.memory_file(memory_file)) ram_wb0
+   ram_wb #(.memory_file(memory_file),
+	    .aw(wb_aw),
+	    .dw(wb_dw),
+	    .mem_size_bytes(8192*1024), // 8MB
+	    .mem_adr_width(23)) // log2(8192*1024)
+   ram_wb0
      (
       // Wishbone slave interface 0
       .wbm0_dat_i			(wb_ibus_dat),
@@ -716,11 +722,6 @@ module orpsoc_top
       .wb_clk_i				(wb_clk),
       .wb_rst_i				(wb_rst));
 
-   defparam ram_wb0.aw = wb_aw;
-   defparam ram_wb0.dw = wb_dw;
-
-   defparam ram_wb0.mem_size_bytes = (8192*1024); // 8MB
-   defparam ram_wb0.mem_adr_width = 23; // log2(8192*1024)
    
    
    ////////////////////////////////////////////////////////////////////////
