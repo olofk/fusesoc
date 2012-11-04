@@ -35,11 +35,19 @@ class Simulator(object):
             core.export(dst_dir)
             core.patch(dst_dir)
 
-    def run(self, args):
+    def build(self):
         self.vpi_modules = []
         for name, core in self.system.get_cores().items():
             if core.vpi:
-                self.vpi_modules += [core.vpi.name]
+                vpi_module = {}
+                core_root = os.path.join(self.src_root, name)
+                vpi_module['include_dirs']  = [os.path.join(core_root, d) for d in core.vpi.include_dirs]
+                vpi_module['src_files']     = [os.path.join(core_root, f) for f in core.vpi.src_files]
+                vpi_module['name']          = core.vpi.name
+                self.vpi_modules += [vpi_module]
+
+    def run(self, args):
+
         #FIXME: Smarter plusargs handling
         self.plusargs = []
         
