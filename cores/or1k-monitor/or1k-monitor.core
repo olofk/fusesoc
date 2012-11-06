@@ -1,0 +1,4 @@
+[main]
+name = or1k-monitor
+description = OR1K test bench monitor 
+tb_files = verilog/monitor.v

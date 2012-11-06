@@ -14,11 +14,10 @@ include_files =
  rtl/verilog/include/uart_defines.v
 
 tb_files = 
- bench/monitor.v
  bench/uart_decoder.v
  bench/orpsoc_tb.v
 
 simulators =
  icarus
 
-cores = dbg jp_vpi jtag_tap or1200 ram_wb uart16550 wb_utils
+cores = dbg jp_vpi jtag_tap or1200 or1k-monitor ram_wb uart16550 wb_utils
