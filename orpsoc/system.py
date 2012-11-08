@@ -21,38 +21,38 @@ class System:
     def __init__(self, system_file):
         system_root = os.path.dirname(system_file)
 
-        system_config = configparser.SafeConfigParser(DEFAULT_VALUES)
-        system_config.readfp(open(system_file))
+        self.config = configparser.SafeConfigParser(DEFAULT_VALUES)
+        self.config.readfp(open(system_file))
 
-        self.name = system_config.get('main', 'name')
+        self.name = self.config.get('main', 'name')
 
         self.cores = {}
-        self.cores['orpsoc'] = self._create_orpsoc_core(system_config, system_root)
+        self.cores['orpsoc'] = self._create_orpsoc_core(self.config, system_root)
         
         
-        cores = system_config.get('main', 'cores').split()
+        cores = self.config.get('main', 'cores').split()
 
         for core in cores:
             core_file = os.path.join(Config().cores_root,core,core+'.core')
             self.cores[core] = Core(core_file)
 
-        self.simulators = system_config.get('main','simulators').split()
+        self.simulators = self.config.get('main','simulators').split()
 
-        self.backend_name = system_config.get('main','backend')
-        if self.backend_name and system_config.has_section(self.backend_name):
-            self.backend = dict(system_config.items(self.backend_name))
+        self.backend_name = self.config.get('main','backend')
+        if self.backend_name and self.config.has_section(self.backend_name):
+            self.backend = dict(self.config.items(self.backend_name))
 
     def setup_cores(self):
         for core in self.cores:
             self.cores[core].setup()
 
-    def _create_orpsoc_core(self, system_config, system_root):
+    def _create_orpsoc_core(self, config, system_root):
         core = Core(name=self.name, core_root=system_root)
         
-        core.rtl_files     = system_config.get('main', 'rtl_files').split()
-        core.include_files = system_config.get('main', 'include_files').split()
+        core.rtl_files     = config.get('main', 'rtl_files').split()
+        core.include_files = config.get('main', 'include_files').split()
         core.include_dirs  = list(set(map(os.path.dirname, core.include_files)))
-        core.tb_files      = system_config.get('main', 'tb_files').split()
+        core.tb_files      = config.get('main', 'tb_files').split()
 
         return core
         
