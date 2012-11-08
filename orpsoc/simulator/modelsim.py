@@ -7,6 +7,8 @@ class Modelsim(Simulator):
     def __init__(self, system):
         super(Modelsim, self).__init__(system)
         self.sim_root = os.path.join(self.build_root, 'sim-modelsim')
+        if system.config.has_option('modelsim', 'vlog_options'):
+            self.vlog_options = system.config.get('modelsim','vlog_options').split()
 
     def configure(self):
         super(Modelsim, self).configure()
@@ -47,7 +49,8 @@ class Modelsim(Simulator):
 
         try:
             logfile = os.path.join(self.sim_root, 'vlog.log')
-            subprocess.check_call([self.model_tech+'/vlog', '-f', self.cfg_file, '-quiet', '-l', logfile],
+            subprocess.check_call([self.model_tech+'/vlog', '-f', self.cfg_file, '-quiet', '-l', logfile] +
+                                  self.vlog_options,
                             cwd = self.sim_root)
         except OSError:
             print("Error: Command vlog not found. Make sure it is in $PATH")
@@ -90,9 +93,13 @@ class Modelsim(Simulator):
         super(Modelsim, self).run(args)
 
         #FIXME: Handle failures. Save stdout/stderr. Build vmem file from elf file argument
+        if self.vpi_modules:
+            vpi_options = ['pli'] + [s['name'] for s in self.vpi_modules]
+        else:
+            vpi_options = []
         try:
             subprocess.check_call([self.model_tech+'/vsim', '-c', '-do', 'run -all'] +
-                                  ['-pli'] + [s['name'] for s in self.vpi_modules] +
+                                  vpi_options + 
                                   ['work.orpsoc_tb'] +
                                   ['+'+s for s in self.plusargs],
                                   cwd = self.sim_root,
