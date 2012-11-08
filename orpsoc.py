@@ -28,12 +28,14 @@ def list_systems(args):
         print(system)
 
 def sim(args):
-    if not args.sim:
-        args.sim=['icarus']
     system_file = Config().get_systems()[args.system]
     system = System(system_file)
 
-    sim = SimulatorFactory(args.sim[0], system)
+    if args.sim:
+        sim_name = args.sim[0]
+    else:
+        sim_name = system.simulators[0]
+    sim = SimulatorFactory(sim_name, system)
     sim.configure()
     sim.build()
     if args.testcase:
