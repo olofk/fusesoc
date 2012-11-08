@@ -46,13 +46,14 @@ class Modelsim(Simulator):
             exit(1)
 
         try:
-            subprocess.check_call([self.model_tech+'/vlog', '-f', self.cfg_file, '-quiet'],
+            logfile = os.path.join(self.sim_root, 'vlog.log')
+            subprocess.check_call([self.model_tech+'/vlog', '-f', self.cfg_file, '-quiet', '-l', logfile],
                             cwd = self.sim_root)
         except OSError:
             print("Error: Command vlog not found. Make sure it is in $PATH")
             exit(1)
         except subprocess.CalledProcessError:
-            print("Error: Failed to compile simulation model")
+            print("Error: Failed to compile simulation model. Compile log is available in " + logfile)
             exit(1)
 
         for vpi_module in self.vpi_modules:
