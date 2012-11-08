@@ -1,12 +1,21 @@
 #!/usr/bin/python
 import argparse
 
+from orpsoc.build import BackendFactory
 from orpsoc.config import Config
 from orpsoc.simulator import SimulatorFactory
 from orpsoc.system import System
 from orpsoc.core import Core
 import os
 
+def build(args):
+    system_file = Config().get_systems()[args.system]
+    system = System(system_file)
+
+    backend = BackendFactory(system)
+    backend.configure()
+    backend.build()
+    
 def list_cores(args):
     cores = Config().get_cores()
     print("Available cores:")
@@ -37,6 +46,10 @@ if __name__ == "__main__":
     subparsers = parser.add_subparsers()
 
     #General options
+    parser_build = subparsers.add_parser('build', help='Build an FPGA load module')
+    parser_build.add_argument('system')
+    parser_build.set_defaults(func=build)
+
     parser_list_systems = subparsers.add_parser('list-systems', help='List available systems')
     parser_list_systems.set_defaults(func=list_systems)
 
