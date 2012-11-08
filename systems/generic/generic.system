@@ -19,5 +19,6 @@ tb_files =
 
 simulators =
  icarus
+ modelsim
 
 cores = dbg jp_vpi jtag_tap or1200 or1k-monitor ram_wb uart16550 wb_utils
