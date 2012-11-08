@@ -30,7 +30,7 @@ class Modelsim(Simulator):
         super(Modelsim, self).build()
         self.model_tech = os.getenv('MODEL_TECH')
         if not self.model_tech:
-            print("Environment MODEL_TECH was not found. It should be set to <modelsim install path>/bin")
+            print("Environment variable MODEL_TECH was not found. It should be set to <modelsim install path>/bin")
             exit(1)
 
         #FIXME: Handle failures. Save stdout/stderr. Build vmem file from elf file argument
