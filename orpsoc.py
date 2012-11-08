@@ -33,8 +33,11 @@ def sim(args):
 
     if args.sim:
         sim_name = args.sim[0]
-    else:
+    elif system.simulators:
         sim_name = system.simulators[0]
+    else:
+        print("No simulator was found in "+ args.system + " system description")
+        exit(1)
     sim = SimulatorFactory(sim_name, system)
     sim.configure()
     sim.build()
