@@ -21,7 +21,9 @@ class Core:
         self.vpi = None
         if core_file:
             config = configparser.SafeConfigParser(DEFAULT_VALUES)
-            #FIXME: Check if file exists
+            if not os.path.exists(core_file):
+                print("Could not find " + core_file)
+                exit(1)
             config.readfp(open(core_file))
 
             self.name = config.get('main','name')
