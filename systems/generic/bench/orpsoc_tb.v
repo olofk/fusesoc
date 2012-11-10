@@ -36,38 +36,17 @@ module orpsoc_tb;
 	$finish;
      end
 
-   reg enable_dbg;
-   initial
-     enable_dbg = $test$plusargs("enable_dbg");
-   
-   wire uart;
-   
-   wire tms;
-   wire tck;
-   wire tdi;
-   wire tdo;
-
-   vpi_debug_module vpi_dbg
-     (
-      .tms(tms), 
-      .tck(tck), 
-      .tdi(tdi), 
-      .tdo(tdo),
-      .enable(enable_dbg)
-      );
-
    orpsoc_top #(.memory_file("sram.vmem")) dut
      (.clk_pad_i   (clk),
       .rst_n_pad_i (rst_n),
       //JTAG interface
-      .tms_pad_i(tms),
-      .tck_pad_i(tck),
-      .tdi_pad_i(tdi),
-      .tdo_pad_o(tdo),
+      .tms_pad_i(1'b0),
+      .tck_pad_i(1'b0),
+      .tdi_pad_i(1'bz),
+      .tdo_pad_o(),
       //UART interface
       .uart0_srx_pad_i(uart),
-      .uart0_stx_pad_o(uart)
-      );
+      .uart0_stx_pad_o(uart));
 
    or1200_monitor i_monitor
      (.clk (clk),
