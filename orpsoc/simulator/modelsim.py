@@ -101,7 +101,7 @@ class Modelsim(Simulator):
 
         #FIXME: Handle failures. Save stdout/stderr. Build vmem file from elf file argument
         if self.vpi_modules:
-            vpi_options = ['pli'] + [s['name'] for s in self.vpi_modules]
+            vpi_options = ['-pli'] + [s['name'] for s in self.vpi_modules]
         else:
             vpi_options = []
         try:
