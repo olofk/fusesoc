@@ -45,6 +45,7 @@ module vpi_debug_module
    output reg tck,
    output reg tdi,
    input      tdo,
+   input      init_done,
    input      enable);
 
    
@@ -229,12 +230,13 @@ module vpi_debug_module
 	// wait until the PC isn't pointing to flash anymore
 	// (this is around 20k ns if the flash_crash boot code
 	// is being booted from, else much bigger, around 10mil ns)
-	#2_000 if(enable) main;
+	wait(init_done);
+	if(enable) main;
      end
    
    task main;
       begin
-	 $display("JTAG debug module with VPI interface enabled\n");
+	 $display("JTAG debug module with VPI interface enabled at %t\n", $time);
 	 
 	 id     <=#Tp 32'h00;
 	 npc    <=#Tp 32'h00;
