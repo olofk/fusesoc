@@ -4,3 +4,5 @@ description = Wishbone RAM
 rtl_files =
  ram_wb.v
  ram_wb_b3.v
+
+tb_files = ram_wb_loader.v

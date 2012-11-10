@@ -19,14 +19,9 @@ module orpsoc_tb;
    initial begin
       $dumpfile("testlog.vcd");
       $dumpvars(0);
-      if($value$plusargs("testcase=%s",testcase))
-	$readmemh(testcase, dut.ram_wb0.ram_wb_b3_0.mem);
-      else begin
-	 $display("No testcase specified");
-	 $finish;
-      end
-      
    end
+
+   ram_wb_loader ram_wb_loader0();
 
    //Force simulation stop after timeout cycles
    reg [63:0] timeout;
