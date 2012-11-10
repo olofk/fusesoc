@@ -9,6 +9,13 @@ class Modelsim(Simulator):
         self.sim_root = os.path.join(self.build_root, 'sim-modelsim')
         if system.config.has_option('modelsim', 'vlog_options'):
             self.vlog_options = system.config.get('modelsim','vlog_options').split()
+        else:
+            self.vlog_options = []
+        
+        if system.config.has_option('modelsim', 'vsim_options'):
+            self.vsim_options = system.config.get('modelsim','vsim_options').split()
+        else:
+            self.vsim_options = []
 
     def configure(self):
         super(Modelsim, self).configure()
@@ -98,8 +105,11 @@ class Modelsim(Simulator):
         else:
             vpi_options = []
         try:
+            logfile = os.path.join(self.sim_root, 'vsim.log')
             subprocess.check_call([self.model_tech+'/vsim', '-c', '-do', 'run -all'] +
-                                  vpi_options + 
+                                  ['-l', logfile] +
+                                  self.vsim_options +
+                                  vpi_options +
                                   ['work.orpsoc_tb'] +
                                   ['+'+s for s in self.plusargs],
                                   cwd = self.sim_root,
@@ -108,5 +118,5 @@ class Modelsim(Simulator):
             print("Error: Command vsim not found. Make sure it is in $PATH")
             exit(1)
         except subprocess.CalledProcessError:
-            print("Error: Simulation failed")
+            print("Error: Simulation failed. Simulation log is available in " + logfile)
             exit(1)
