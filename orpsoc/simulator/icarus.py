@@ -8,6 +8,12 @@ class SimulatorIcarus(Simulator):
         super(SimulatorIcarus, self).__init__(system)
         self.sim_root = os.path.join(self.build_root, 'sim-icarus')
 
+        if system.config.has_option('icarus', 'iverilog_options'):
+            self.iverilog_options = system.config.get('icarus','iverilog_options').split()
+        else:
+            self.iverilog_options = []
+
+
     def configure(self):
         super(SimulatorIcarus, self).configure()
         self._write_config_files()
@@ -48,7 +54,8 @@ class SimulatorIcarus(Simulator):
         if subprocess.call(['iverilog',
                             '-s', 'orpsoc_tb',
                             '-c', 'icarus.scr',
-                            '-o', 'orpsoc.elf'],
+                            '-o', 'orpsoc.elf'] +
+                           self.iverilog_options,
                            cwd = self.sim_root):
             print("Error: Compiled failed")
             exit(1)
