@@ -36,33 +36,21 @@
 `include "orpsoc-defines.v"
 
 module orpsoc_top
-  ( 
-`ifdef JTAG_DEBUG    
-    tdo_pad_o, tms_pad_i, tck_pad_i, tdi_pad_i,
-`endif     
-`ifdef UART0
-    uart0_srx_pad_i, uart0_stx_pad_o, 
-`endif
-    clk_pad_i,
-    rst_n_pad_i  
+  (
+   input  clk_pad_i,
+   input  rst_n_pad_i,
+   //JTAG Interface
+   output tdo_pad_o,
+   input  tms_pad_i,
+   input  tck_pad_i,
+   input  tdi_pad_i,
+   //UART Interface
+   input  uart0_srx_pad_i,
+   output uart0_stx_pad_o
     );
 
 `include "orpsoc-params.v"   
 
-   input clk_pad_i;
-   input rst_n_pad_i;
-   
-`ifdef JTAG_DEBUG    
-   output tdo_pad_o;
-   input  tms_pad_i;
-   input  tck_pad_i;
-   input  tdi_pad_i;
-`endif
-`ifdef UART0
-   input  uart0_srx_pad_i;
-   output uart0_stx_pad_o;
-`endif
-   parameter memory_file="";
    parameter IDCODE_VALUE=32'h14951185;
    ////////////////////////////////////////////////////////////////////////
    //
@@ -70,47 +58,21 @@ module orpsoc_top
    // 
    ////////////////////////////////////////////////////////////////////////
 
-   //
-   // Wires
-   //
    wire   async_rst;
    wire   wb_clk, wb_rst;
    wire   dbg_tck;
-
    
    clkgen clkgen0
      (
-
-      .clk_pad_i             (clk_pad_i),
-
-      .async_rst_o            (async_rst),
-      
-      .wb_clk_o                  (wb_clk),
-      .wb_rst_o                  (wb_rst),
-
-`ifdef JTAG_DEBUG
-      .tck_pad_i                 (tck_pad_i),
-      .dbg_tck_o                 (dbg_tck),
-`endif      
-
-      // Asynchronous active low reset
-      .rst_n_pad_i               (rst_n_pad_i)
-      );
-
-   
-   ////////////////////////////////////////////////////////////////////////
-   //
-   // Arbiter
-   // 
-   ////////////////////////////////////////////////////////////////////////
-   
-   // Wire naming convention:
-   // First: wishbone master or slave (wbm/wbs)
-   // Second: Which bus it's on instruction or data (i/d)
-   // Third: Between which module and the arbiter the wires are
-   // Fourth: Signal name
-   // Fifth: Direction relative to module (not bus/arbiter!)
-   //        ie. wbm_d_or12_adr_o is address OUT from the or1200
+      .clk_pad_i   (clk_pad_i),
+      .rst_n_pad_i (rst_n_pad_i),
+      .async_rst_o (async_rst),
+      //Wishbone clocks
+      .wb_clk_o    (wb_clk),
+      .wb_rst_o    (wb_rst),
+      //JTAG clocks
+      .tck_pad_i   (tck_pad_i),
+      .dbg_tck_o   (dbg_tck));
 
    // OR1200 instruction bus wires
    wire [wb_aw-1:0] 	      wb_or1200_i_adr;
@@ -172,7 +134,6 @@ module orpsoc_top
    wire 		      wbm_dbus_rty;
 
    // Byte bus bridge master signals
-  
    wire [wb_dw-1:0] 	      wb_bbus_sdt;   
    wire 		      wb_bbus_ack;
    wire 		      wb_bbus_err;
@@ -185,7 +146,6 @@ module orpsoc_top
    wire        wb_rom0_ack;
    wire        wb_rom0_err;
    wire        wb_rom0_rty;   
-
    // mc0 instruction bus wires
    wire [31:0] wb_mc0_ibus_sdt;
    wire        wb_mc0_ibus_ack;
@@ -199,15 +159,11 @@ module orpsoc_top
    
    // Data bus slave wires //
    
-   // mc0 data bus wires
-   
    // uart0 wires
    wire [7:0]  wb_uart_sdt;   
    wire        wb_uart_ack;
    wire        wb_uart_err;
    wire        wb_uart_rty;   
-
-      
    // intgen wires
    wire [7:0] 			     wb_intgen_sdt;
    wire 			     wb_intgen_ack;
@@ -391,24 +347,17 @@ module orpsoc_top
       .wbs_err_i   ({wb_intgen_err, wb_uart_err}),
       .wbs_rty_i   ({wb_intgen_rty, wb_uart_rty}));
 
-`ifdef JTAG_DEBUG   
    ////////////////////////////////////////////////////////////////////////
    //
    // JTAG TAP
    // 
    ////////////////////////////////////////////////////////////////////////
 
-   //
-   // Wires
-   //
    wire 				  dbg_if_select;   
    wire 				  dbg_if_tdo;
    wire 				  jtag_tap_tdo;   
    wire 				  jtag_tap_shift_dr, jtag_tap_pause_dr, 
 					  jtag_tap_update_dr, jtag_tap_capture_dr;
-   //
-   // Instantiation
-   //
 
    tap_top #(.IDCODE_VALUE(IDCODE_VALUE)) jtag_tap0
      (
@@ -441,18 +390,11 @@ module orpsoc_top
       );
    
    ////////////////////////////////////////////////////////////////////////
-`endif //  `ifdef JTAG_DEBUG
-
-   ////////////////////////////////////////////////////////////////////////
    //
-   // OpenRISC processor
+   // or1200
    // 
    ////////////////////////////////////////////////////////////////////////
 
-   // 
-   // Wires
-   // 
-   
    wire [19:0] 				  or1200_pic_ints;
 
    wire [31:0] 				  or1200_dbg_dat_i;
@@ -470,18 +412,9 @@ module orpsoc_top
    wire 				  or1200_dbg_bp_o;
    wire 				  or1200_dbg_rst;   
    
-   wire 				  or1200_clk, or1200_rst;
    wire 				  sig_tick;
-   
-   //
-   // Assigns
-   //
-   assign or1200_clk = wb_clk;
-   assign or1200_rst = wb_rst | or1200_dbg_rst;
+   wire or1200_rst = wb_rst | or1200_dbg_rst;
 
-   // 
-   // Instantiation
-   //    
    or1200_top #(.boot_adr(32'hf0000000)) or1200_top0
        (
 	// Instruction bus, clocks, reset
@@ -545,7 +478,7 @@ module orpsoc_top
 	.pm_lvolt_o			(),
 
 	// Core clocks, resets
-	.clk_i				(or1200_clk),
+	.clk_i				(wb_clk),
 	.rst_i				(or1200_rst),
 	
 	.clmode_i			(2'b00),
@@ -565,7 +498,6 @@ module orpsoc_top
    ////////////////////////////////////////////////////////////////////////
 
 
-`ifdef JTAG_DEBUG
    ////////////////////////////////////////////////////////////////////////
    //
    // OR1200 Debug Interface
@@ -575,7 +507,7 @@ module orpsoc_top
    dbg_top dbg_if0
      (
       // OR1200 interface
-      .cpu0_clk_i			(or1200_clk),
+      .cpu0_clk_i			(wb_clk),
       .cpu0_rst_o			(or1200_dbg_rst),      
       .cpu0_addr_o			(or1200_dbg_adr_i),
       .cpu0_data_o			(or1200_dbg_dat_i),
@@ -614,28 +546,6 @@ module orpsoc_top
       .wb_bte_o				(wb_dbg_bte)
       );
    
-   ////////////////////////////////////////////////////////////////////////   
-`else // !`ifdef JTAG_DEBUG
-
-   assign wbm_d_dbg_adr_o = 0;   
-   assign wbm_d_dbg_dat_o = 0;   
-   assign wbm_d_dbg_cyc_o = 0;   
-   assign wbm_d_dbg_stb_o = 0;   
-   assign wbm_d_dbg_sel_o = 0;   
-   assign wbm_d_dbg_we_o  = 0;   
-   assign wbm_d_dbg_cti_o = 0;   
-   assign wbm_d_dbg_bte_o = 0;  
-
-   assign or1200_dbg_adr_i = 0;   
-   assign or1200_dbg_dat_i = 0;   
-   assign or1200_dbg_stb_i = 0;   
-   assign or1200_dbg_we_i = 0;
-   assign or1200_dbg_stall_i = 0;
-   
-   ////////////////////////////////////////////////////////////////////////   
-`endif // !`ifdef JTAG_DEBUG
-   
-
    ////////////////////////////////////////////////////////////////////////
    //
    // ROM
@@ -664,16 +574,13 @@ module orpsoc_top
 
    ////////////////////////////////////////////////////////////////////////
 
-`ifdef RAM_WB
    ////////////////////////////////////////////////////////////////////////
    //
    // Generic main RAM
    // 
    ////////////////////////////////////////////////////////////////////////
 
-
-   ram_wb #(.memory_file(memory_file),
-	    .aw(wb_aw),
+   ram_wb #(.aw(wb_aw),
 	    .dw(wb_dw),
 	    .mem_size_bytes(8192*1024), // 8MB
 	    .mem_adr_width(23)) // log2(8192*1024)
@@ -722,25 +629,14 @@ module orpsoc_top
       .wb_clk_i				(wb_clk),
       .wb_rst_i				(wb_rst));
 
-   
-   
-   ////////////////////////////////////////////////////////////////////////
-`endif   
-`ifdef UART0
    ////////////////////////////////////////////////////////////////////////
    //
    // UART0
    // 
    ////////////////////////////////////////////////////////////////////////
 
-   //
-   // Wires
-   //
    wire        uart0_irq;
 
-   //
-   // Assigns
-   //
    assign wb_uart_err = 0;
    assign wb_uart_rty = 0;
    
@@ -749,7 +645,7 @@ module orpsoc_top
       // Wishbone slave interface
       .wb_clk_i				(wb_clk),
       .wb_rst_i				(wb_rst),
-      .wb_adr_i				(wb_bbus_adr[uart0_addr_width-1:0]),
+      .wb_adr_i				(wb_bbus_adr[uart0_aw-1:0]),
       .wb_dat_i				(wb_bbus_dat),
       .wb_we_i				(wb_bbus_we),
       .wb_stb_i				(wb_bbus_stb[uart_slave_nr]),
@@ -769,20 +665,6 @@ module orpsoc_top
       .dsr_pad_i			(1'b0),
       .ri_pad_i				(1'b0),
       .dcd_pad_i			(1'b0));
-
-   ////////////////////////////////////////////////////////////////////////          
-`else // !`ifdef UART0
-   
-   //
-   // Assigns
-   //
-   assign wb_uart_err = 0;   
-   assign wb_uart_rty = 0;
-   assign wb_uart_ack = 0;
-   assign wb_uart_sdt = 0;
-   
-   ////////////////////////////////////////////////////////////////////////       
-`endif // !`ifdef UART0
 
 `ifdef INTGEN
 

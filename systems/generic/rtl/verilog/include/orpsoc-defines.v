@@ -33,10 +33,6 @@
 ////                                                              ////
 //////////////////////////////////////////////////////////////////////
 
-// Define board clock - main system clock period
-// 20ns period = 50MHz freq.
-`define BOARD_CLOCK_PERIOD 20
-
 // Included modules: define to include
 `define JTAG_DEBUG
 `define UART0

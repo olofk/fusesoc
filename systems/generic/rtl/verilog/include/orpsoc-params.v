@@ -40,14 +40,11 @@
 ///////////////////////////
 
 // UART 0 params
-parameter wbs_d_uart0_data_width = 8;
 parameter uart0_wb_adr = 8'h90;
-parameter uart0_data_width = 8;
-parameter uart0_addr_width = 3;
+parameter uart0_aw = 3;
 
 // Interrupt generator (intgen) params
 parameter intgen_wb_adr = 8'he1;
-parameter intgen_data_width = 8;
 parameter intgen_addr_width = 1;
 
 // ROM

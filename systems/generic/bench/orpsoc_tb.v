@@ -31,7 +31,7 @@ module orpsoc_tb;
 	$finish;
      end
 
-   orpsoc_top #(.memory_file("sram.vmem")) dut
+   orpsoc_top dut
      (.clk_pad_i   (clk),
       .rst_n_pad_i (rst_n),
       //JTAG interface
