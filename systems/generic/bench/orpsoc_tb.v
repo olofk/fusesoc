@@ -13,23 +13,8 @@ module orpsoc_tb;
       #200 rst_n <= 1;
    end
 
-   reg [1023:0] testcase;
-   
-   //FIXME: Add options for VCD logging
-   initial begin
-      $dumpfile("testlog.vcd");
-      $dumpvars(0);
-   end
-
+   vlog_tb_utils vlog_tb_utils0();
    ram_wb_loader ram_wb_loader0();
-
-   //Force simulation stop after timeout cycles
-   reg [63:0] timeout;
-   initial
-     if($value$plusargs("timeout=%d", timeout)) begin
-	#timeout $display("Timeout: Forcing end of simulation");
-	$finish;
-     end
 
    orpsoc_top dut
      (.clk_pad_i   (clk),
