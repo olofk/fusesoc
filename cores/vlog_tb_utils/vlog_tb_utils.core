@@ -1,0 +1,5 @@
+[main]
+name = vlog_tb_utils
+description = "Verilog test bench utility functions"
+
+tb_files = vlog_tb_utils.v
