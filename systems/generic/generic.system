@@ -21,4 +21,12 @@ simulators =
  icarus
  modelsim
 
-cores = dbg jtag_tap or1200 or1k-monitor ram_wb uart16550 wb_utils
+cores =
+ dbg
+ jtag_tap
+ or1200
+ or1k-monitor
+ ram_wb
+ uart16550
+ vlog_tb_utils
+ wb_utils
