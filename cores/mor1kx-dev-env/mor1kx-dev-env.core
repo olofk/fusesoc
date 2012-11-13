@@ -1,0 +1,12 @@
+[main]
+name=mor1kx-dev-env
+description="sdgfsd"
+
+tb_files =
+ bench/verilog/mor1kx_monitor.v
+
+[provider]
+name = github
+user = olofk
+repo = mor1kx-dev-env
+branch = master
