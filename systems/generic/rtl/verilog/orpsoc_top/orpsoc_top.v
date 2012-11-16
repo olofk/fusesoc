@@ -503,7 +503,7 @@ module orpsoc_top
    // OR1200 Debug Interface
    // 
    ////////////////////////////////////////////////////////////////////////
-   
+/*   
    dbg_top dbg_if0
      (
       // OR1200 interface
@@ -542,10 +542,51 @@ module orpsoc_top
       .wb_sel_o				(wb_dbg_sel),
       .wb_we_o				(wb_dbg_we ),
       .wb_cti_o				(wb_dbg_cti),
-      .wb_cab_o                         (/*   UNUSED  */),
+      .wb_cab_o                         (),
       .wb_bte_o				(wb_dbg_bte)
       );
-   
+*/
+  adbg_top dbg_if0
+     (
+      // OR1200 interface
+      .cpu0_clk_i	(wb_clk),
+      .cpu0_rst_o	(or1200_dbg_rst),
+      .cpu0_addr_o	(or1200_dbg_adr_i),
+      .cpu0_data_o	(or1200_dbg_dat_i),
+      .cpu0_stb_o	(or1200_dbg_stb_i),
+      .cpu0_we_o	(or1200_dbg_we_i),
+      .cpu0_data_i	(or1200_dbg_dat_o),
+      .cpu0_ack_i	(or1200_dbg_ack_o),
+      .cpu0_stall_o	(or1200_dbg_stall_i),
+      .cpu0_bp_i	(or1200_dbg_bp_o),
+
+      // TAP interface
+      .tck_i	(dbg_tck),
+      .tdi_i	(jtag_tap_tdo),
+      .tdo_o	(dbg_if_tdo),
+      .rst_i	(wb_rst),
+      .capture_dr_i (jtag_tap_capture_dr),
+      .shift_dr_i	(jtag_tap_shift_dr),
+      .pause_dr_i	(jtag_tap_pause_dr),
+      .update_dr_i	(jtag_tap_update_dr),
+      .debug_select_i	(dbg_if_select),
+
+      // Wishbone debug master
+      .wb_clk_i	(wb_clk),
+      .wb_dat_i	(wb_dbg_sdt),
+      .wb_ack_i	(wb_dbg_ack),
+      .wb_err_i	(wb_dbg_err),
+
+      .wb_adr_o	(wb_dbg_adr),
+      .wb_dat_o	(wb_dbg_dat),
+      .wb_cyc_o	(wb_dbg_cyc),
+      .wb_stb_o	(wb_dbg_stb),
+      .wb_sel_o	(wb_dbg_sel),
+      .wb_we_o	(wb_dbg_we ),
+      .wb_cti_o	(wb_dbg_cti),
+      .wb_bte_o	(wb_dbg_bte)
+     );
+
    ////////////////////////////////////////////////////////////////////////
    //
    // ROM

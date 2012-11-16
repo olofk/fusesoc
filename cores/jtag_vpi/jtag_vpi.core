@@ -1,0 +1,10 @@
+CAPI=1
+[main]
+description = "JTAG VPI"
+
+[verilog]
+tb_src_files = jtag_vpi.v
+
+[vpi]
+name = jtag_vpi
+src_files = jtag_vpi.c

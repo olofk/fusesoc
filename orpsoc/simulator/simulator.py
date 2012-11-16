@@ -64,4 +64,4 @@ class Simulator(object):
 
         if args.enable_dbg:
             print("Enabling debug interface")
-            self.plusargs += ['enable_dbg']
+            self.plusargs += ['enable_dbg', 'enable_jtag_vpi']

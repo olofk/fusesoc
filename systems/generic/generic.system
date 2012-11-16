@@ -22,8 +22,10 @@ simulators =
  modelsim
 
 cores =
+ adv_debug_sys
  dbg
  jtag_tap
+ jtag_vpi
  or1200
  or1k-monitor
  ram_wb
