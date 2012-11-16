@@ -1,0 +1,28 @@
+CAPI=1
+[main]
+
+[verilog]
+
+src_files =
+ rtl/verilog/adbg_wb_biu.v
+ rtl/verilog/adbg_or1k_status_reg.v
+ rtl/verilog/adbg_jsp_biu.v
+ rtl/verilog/adbg_or1k_module.v
+ rtl/verilog/syncflop.v
+ rtl/verilog/adbg_crc32.v
+ rtl/verilog/adbg_jsp_module.v
+ rtl/verilog/adbg_top.v
+ rtl/verilog/bytefifo.v
+ rtl/verilog/adbg_or1k_biu.v
+ rtl/verilog/adbg_or1k_defines.v
+ rtl/verilog/syncreg.v
+ rtl/verilog/adbg_wb_module.v
+include_files = 
+ rtl/verilog/adbg_defines.v
+ rtl/verilog/adbg_wb_defines.v
+ 
+[provider]
+name = opencores
+repo_name = adv_debug_sys
+repo_root = trunk/Hardware/adv_dbg_if
+revision = 69
