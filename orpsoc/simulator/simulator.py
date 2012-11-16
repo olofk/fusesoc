@@ -13,13 +13,15 @@ class Simulator(object):
         self.src_root = os.path.join(self.build_root, 'src')
 
         self.include_dirs = []
-        self.rtl_files = []
-        self.tb_files = []
+        self.src_files = []
+
         for core_name in self.system.get_cores():
             core = self.system.cores[core_name]
-            self.include_dirs += [os.path.join(self.src_root, core_name, d) for d in core.include_dirs]
-            self.rtl_files    += [os.path.join(self.src_root, core_name, f) for f in core.rtl_files]
-            self.tb_files     += [os.path.join(self.src_root, core_name, f) for f in core.tb_files]
+            if core.verilog:
+                self.include_dirs += [os.path.join(self.src_root, core_name, d) for d in core.verilog.include_dirs]
+                self.include_dirs += [os.path.join(self.src_root, core_name, d) for d in core.verilog.tb_include_dirs]
+                self.src_files    += [os.path.join(self.src_root, core_name, f) for f in core.verilog.src_files]
+                self.src_files    += [os.path.join(self.src_root, core_name, f) for f in core.verilog.tb_src_files]
 
     def configure(self):
         if os.path.exists(self.sim_root):

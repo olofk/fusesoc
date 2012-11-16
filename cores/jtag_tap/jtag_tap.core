@@ -1,7 +1,9 @@
+CAPI=1
 [main]
-name = jtag_tap
 description = JTAG Tap
-rtl_files = rtl/verilog/tap_top.v
+
+[verilog]
+src_files = rtl/verilog/tap_top.v
 
 [provider]
 name = opencores

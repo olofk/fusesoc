@@ -25,10 +25,8 @@ class SimulatorIcarus(Simulator):
 
         for include_dir in self.include_dirs:
             f.write("+incdir+" + include_dir + '\n')
-        for rtl_file in self.rtl_files:
-            f.write(rtl_file + '\n')
-        for tb_file in self.tb_files:
-            f.write(tb_file + '\n')
+        for src_file in self.src_files:
+            f.write(src_file + '\n')
 
         f.close()
 

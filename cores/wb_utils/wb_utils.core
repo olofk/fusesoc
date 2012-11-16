@@ -1,6 +1,8 @@
+CAPI=1
 [main]
-name = wb_utils
 description = Wishbone utilities
-rtl_files =
+
+[verilog]
+src_files =
  wb_arbiter.v
  wb_mux.v

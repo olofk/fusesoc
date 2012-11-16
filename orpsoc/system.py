@@ -6,7 +6,7 @@ else:
 
 from orpsoc.core import Core
 from orpsoc.config import Config
-
+from orpsoc.verilog import Verilog
 import os
 
 DEFAULT_VALUES = {'name'          : '',
@@ -48,12 +48,16 @@ class System:
 
     def _create_orpsoc_core(self, config, system_root):
         core = Core(name=self.name, core_root=system_root)
-        
-        core.rtl_files     = config.get('main', 'rtl_files').split()
-        core.include_files = config.get('main', 'include_files').split()
-        core.include_dirs  = list(set(map(os.path.dirname, core.include_files)))
-        core.tb_files      = config.get('main', 'tb_files').split()
 
+        items = {}
+        if config.has_option('main','rtl_files'):
+            items['src_files'] = config.get('main', 'rtl_files')
+        if config.has_option('main','include_files'):
+            items['include_files'] = config.get('main', 'include_files')
+        if config.has_option('main','tb_files'):
+            items['tb_src_files'] = config.get('main', 'tb_files')
+
+        core.verilog = Verilog(items)
         return core
         
     def get_cores(self):

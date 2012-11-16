@@ -1,8 +1,10 @@
+CAPI=1
 [main]
-name = ram_wb
 description = Wishbone RAM
-rtl_files =
+
+[verilog]
+src_files =
  ram_wb.v
  ram_wb_b3.v
 
-tb_files = ram_wb_loader.v
+tb_src_files = ram_wb_loader.v

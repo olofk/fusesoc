@@ -1,5 +1,6 @@
+CAPI=1
 [main]
-name = vlog_tb_utils
 description = "Verilog test bench utility functions"
 
-tb_files = vlog_tb_utils.v
+[verilog]
+tb_src_files = vlog_tb_utils.v

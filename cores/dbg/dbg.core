@@ -1,7 +1,9 @@
+CAPI=1
 [main]
-name = dbg
 description = or1200 Debug Interface
-rtl_files = 
+
+[verilog]
+src_files = 
  rtl/verilog/dbg_cpu.v
  rtl/verilog/dbg_cpu_registers.v
  rtl/verilog/dbg_crc32_d1.v

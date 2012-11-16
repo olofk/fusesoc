@@ -1,7 +1,9 @@
+CAPI=1
 [main]
-name = or1200
 description = OpenRISC 1200 CPU
-rtl_files =
+
+[verilog]
+src_files =
  rtl/verilog/or1200_alu.v
  rtl/verilog/or1200_amultp2_32x32.v
  rtl/verilog/or1200_cfgr.v
