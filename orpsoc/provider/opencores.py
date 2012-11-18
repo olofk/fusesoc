@@ -1,6 +1,7 @@
 from orpsoc.provider import Provider
+
+import subprocess
 import os.path
-import pysvn
 
 class ProviderOpenCores(Provider):
     def __init__(self, config):
@@ -8,8 +9,6 @@ class ProviderOpenCores(Provider):
             config.get('repo_name') + '/' + config.get('repo_name') + '/' + \
             config.get('repo_root')
         self.revision_number  = config.get('revision')
-        self.revision = pysvn.Revision(pysvn.opt_revision_kind.number, self.revision_number)
-        self.client = pysvn.Client()
 
     def fetch(self, local_dir):
 
@@ -37,12 +36,18 @@ class ProviderOpenCores(Provider):
     def _checkout(self, local_dir):
         print("Checking out " + self.repo_path + " revision " + self.revision_number + " to " + local_dir)
         try:
-            self.client.checkout(self.repo_path,
-                            local_dir,
-                            revision=self.revision)
-        except pysvn.ClientError:
+            subprocess.check_call(['svn', 'co', '-q',
+                                   '-r', self.revision_number,
+                                   '--username', 'orpsoc',
+                                   '--password', 'orpsoc',
+                                   self.repo_path,
+                                   local_dir])
+        except OSError:
+            print("Error: Command svn not found. Make sure it is in $PATH")
+            exit(1)
+        except subprocess.CalledProcessError:
             print("Error: Failed to checkout " + self.repo_path)
             exit(1)
 
     def _update(self):
-        self.client.update(local_dir, self.revision)
+        pass
