@@ -2,10 +2,10 @@
 name = generic
 description = "Generic technology independent OpenRISC system
 rtl_files = 
- rtl/verilog/clkgen/clkgen.v
- rtl/verilog/intgen/intgen.v
- rtl/verilog/rom/rom.v
- rtl/verilog/orpsoc_top/orpsoc_top.v
+ rtl/verilog/clkgen.v
+ rtl/verilog/intgen.v
+ rtl/verilog/rom.v
+ rtl/verilog/orpsoc_top.v
 include_files =
  rtl/verilog/include/or1200_defines.v
  rtl/verilog/include/orpsoc-defines.v
