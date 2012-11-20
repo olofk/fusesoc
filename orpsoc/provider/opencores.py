@@ -36,7 +36,7 @@ class ProviderOpenCores(Provider):
     def _checkout(self, local_dir):
         print("Checking out " + self.repo_path + " revision " + self.revision_number + " to " + local_dir)
         try:
-            subprocess.check_call(['svn', 'co', '-q',
+            subprocess.check_call(['svn', 'co', '-q', '--no-auth-cache',
                                    '-r', self.revision_number,
                                    '--username', 'orpsoc',
                                    '--password', 'orpsoc',
