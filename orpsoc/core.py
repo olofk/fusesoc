@@ -113,11 +113,12 @@ class Core:
         patch_root = os.path.join(Config().cores_root, self.name, 'patches')
         if os.path.exists(patch_root):
             for f in sorted(os.listdir(patch_root)):
-                try:
-                    subprocess.call(['patch','-p1', '-s',
-                                     '-d', os.path.join(dst_dir),
-                                     '-i', os.path.join(patch_root, f)])
-                except OSError:
-                    print("Error: Failed to call external command 'patch'")
-                    return False
+                if os.path.isfile(os.path.join(patch_root, f)):
+                    try:
+                        subprocess.call(['patch','-p1', '-s',
+                                         '-d', os.path.join(dst_dir),
+                                         '-i', os.path.join(patch_root, f)])
+                    except OSError:
+                        print("Error: Failed to call external command 'patch'")
+                        return False
         return True
