@@ -1,5 +1,4 @@
 --Simulators--
-Modelsim
 Verilator
 
 --Boards--
@@ -12,12 +11,23 @@ Quartus
 Synplify
 icarus?
 
-Use(or1ktrace/libopcodes/opdis) in monitor or use post processing
+Create round-robin wishbone scheduler
+Create UART over socket VPI module
+Verilator:
+-Come up with a good structure
+-load vmem/elf directly to memory
+Remove defines files from dbg
+Use(or1ktrace/libopcodes/opdis) in or1200-monitor for trace generation
+(Use waf for building)
+Check if cache is clean and revision is equal to core description
+Move generic cores to separate cores (intgen?, rom)
+Clean up include files
+Autogenerate top levels
+Add checksum to local cores
+Run or1ksim test suite
 
-Move generic cores to separate cores
+--DONE--
 Support for patches (start with calling patch)
 Load test cases with $value$plusargs
-Autogenerate top levels
-Autogenerate muxes/arbiters
-elf to vmem converter
-
+Quartus support
+Modelsim support
