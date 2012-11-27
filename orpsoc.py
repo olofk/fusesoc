@@ -64,12 +64,12 @@ if __name__ == "__main__":
 
     #Simulation subparser
     parser_sim = subparsers.add_parser('sim', help='Setup and run a simulation')
-    parser_sim.add_argument('--sim', nargs=1)
+    parser_sim.add_argument('--sim', nargs=1, help='Override the simulator settings from the system file')
     parser_sim.add_argument('--testcase', nargs=1)
     parser_sim.add_argument('--timeout', type=int, nargs=1)
     parser_sim.add_argument('--enable-dbg', action='store_true')
     parser_sim.add_argument('--dry-run', action='store_true')
-    parser_sim.add_argument('system')
+    parser_sim.add_argument('system',help='Select a system to simulate', choices = Config().get_systems())
     parser_sim.set_defaults(func=sim)
 
     p = parser.parse_args()
