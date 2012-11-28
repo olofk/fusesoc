@@ -1,0 +1,117 @@
+Core Description files
+======================
+:Author: Olof Kindgren
+:Email: <olof@opencores.org>
+:Date: 2012-11-28
+:Revision: 1.0 (draft)
+
+capi (Core API) is the format for core description files. Current version is version 1.0. A capi 1.0 file is identified by the string "CAPI=1" in the beginning of a file. The rest of the file is a standard http://en.wikipedia.org/wiki/INI_file[INI file] that is compatible with Python's http://docs.python.org/2/library/configparser.html[configparser] module
+
+File location
+-------------
+
+capi 1.0 files must reside in a sub directory of the cores directory and have the same name as the directory with a .core suffix, i.e. <cores_root>/<core_name>/<core_name>.core
+
+.Locations of core description files
+========
+cores/or1200/or1200.core
+
+cores/uart16550/uart16550.core
+========
+
+File contents
+-------------
+
+CAPI 1.0 files are divided into sections, with each section containing related configuration options. See http://en.wikipedia.org/wiki/INI_file[INI file] for more general information about ini files.
+
+Only sections defined in this document are recognized by orpsoc. All other sections are ignored. The same applies for the options inside each section. CAPI 1.0 defines the following required and optional sections and values. 
+
+main
+~~~~
+The main section contain options that does not fit into any of the other
+categories.
+
+description (optional)
+^^^^^^^^^^^^^^^^^^^^^^
+A string with a description can be added to the core.
+
+verilog
+~~~~~~~
+The verilog section contains options for verilog source code
+
+*src_files (optional) :*
+List of verilog files containing modules that are a part of the synthesized design.
+
+*include_files (optional) :*
+List of verilog files that are used in `include statements of the src_files
+
+*tb_src_files (optional) :*
+List of verilog files containing modules that are only used in test benches and not part of the synthesized design
+
+*tb_include_files (optional) :*
+List of verilog files that are referenced with `include statements from tb_src_files
+
+vpi
+~~~
+The VPI section contains information on how to compile C source files into a VPI library
+
+*name :*
+Name of the compiled VPI library
+
+*src_files :*
+List of C source files for the VPI library
+
+*include_files (optional) :*
+List of C include files for the VPI library
+
+provider (optional)
+~~~~~~~~~~~~~~~~~~~
+The provider section gives information on where to find the source code for the core. If the provider section is missing, the core is assumed to be local, with the directory of the .core file as the root directory.
+
+*name :*
+The name option selects which provider backend to use. All other provider options are specific to the selected provider. Currently two backends are supported
+
+name  = opencores
+^^^^^^^^^^^^^^^^^
+*repo_name :* Name of the opencores project. Can be found under Details on the project homepage
+
+*repo_root :* The sub directory in the repo that contains the files of interest. In most cases the value "trunk" is used to avoid pulling in tags and branches
+
+*revision :* The svn revision of the repository
+
+name = github
+^^^^^^^^^^^^^
+*user :* Name of the github user or organisation
+
+*repo :* Name of the GIT repository
+
+*branch :* Name of the GIT branch to use
+
+Known issues
+------------
+
+. The configparser in python 2 doesn't handle spaces before values in multiline options
++  
+.Illegal comment style
+----------------------
+src_files =
+ clkgen.v
+ #gpio.v
+ orpsoc_top.v
+----------------------
++
+This is not legal in python 2, while 
++
+.Legal comment style
+--------------------
+src_files =
+ clkgen.v
+# gpio.v
+ orpsoc_top.v
+--------------------
++
+is ok in python 2 and python 3
+
+. Spaces are not allowed anywhere in the paths
+
+. A specific git commit cannot be selected for the github backend
