@@ -24,7 +24,6 @@ class Core:
             if not os.path.exists(core_file):
                 print("Could not find " + core_file)
                 exit(1)
-            print("Parsing " + basename)
             f = open(core_file)
             capi = f.readline().split('=')
             if capi[0].strip().upper() == 'CAPI':
@@ -33,11 +32,9 @@ class Core:
                 except ValueError:
                     print("Unknown CAPI version: \"" + capi[1].strip()+'" in ' + core_file)
                 except IndexError:
-                    print("Could not find CAPI version in " + core_file)
-                    exit(1)
+                    raise SyntaxError("Could not find CAPI version in " + core_file)
             else:
-                print("Could not find CAPI version in "+ core_file)
-                exit(1)
+                raise SyntaxError("Could not find CAPI version in " + core_file)
             config.readfp(f)
 
             if config.has_option('main', 'name'):
