@@ -1,6 +1,8 @@
 from orpsoc.config import Config
+import argparse
 import shutil
 import os
+
 class Simulator(object):
 
     def __init__(self, system):
@@ -49,19 +51,21 @@ class Simulator(object):
                 self.vpi_modules += [vpi_module]
 
     def run(self, args):
-
-        #FIXME: Smarter plusargs handling
-        self.plusargs = []
         
-        vmem_file=os.path.abspath(args.testcase[0])
-        if not os.path.exists(vmem_file):
-            print("Error: Couldn't find test case " + vmem_file)
-            exit(1)
-        self.plusargs += ['testcase='+vmem_file]
-        if args.timeout:
-            print("Setting timeout to "+str(args.timeout[0]))
-            self.plusargs += ['timeout='+str(args.timeout[0])]
+        parser = argparse.ArgumentParser(prog ='orpsoc.py sim '+self.system.name)
+        for name, core in self.system.get_cores().items():
+            if core.plusargs:
+                core.plusargs.add_arguments(parser)
 
-        if args.enable_dbg:
-            print("Enabling debug interface")
-            self.plusargs += ['enable_dbg', 'enable_jtag_vpi']
+        p = parser.parse_args(args)
+
+        self.plusargs = []
+        for key,value in vars(p).items():
+            if value == True:
+                self.plusargs += [key]
+            elif value == False or value is None:
+                pass
+            else:
+                self.plusargs += [key+'='+str(value[0])]
+        print(self.plusargs)
+        

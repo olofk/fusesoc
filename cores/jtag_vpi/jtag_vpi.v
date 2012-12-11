@@ -70,7 +70,7 @@ begin
 	// (this is around 20k ns if the flash_crash boot code
 	// is being booted from, else much bigger, around 10mil ns)
         wait(init_done)
-	if(enable) main;
+	  if($test$plusargs("jtag_vpi_enable")) main;
 end
 
 task main;

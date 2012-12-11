@@ -8,3 +8,6 @@ src_files =
  ram_wb_b3.v
 
 tb_src_files = ram_wb_loader.v
+
+[plusargs]
+testcase = file VMEM file containing the test case

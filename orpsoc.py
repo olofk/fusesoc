@@ -16,7 +16,7 @@ def build(args):
     backend.configure()
     backend.build()
     
-def list_cores(args):
+def list_cores(known, remaining):
     cores = Config().get_cores()
     print("Available cores:")
     maxlen = max(map(len,cores))
@@ -31,28 +31,27 @@ def list_cores(args):
         if core:
             print(core_name.ljust(maxlen) + ' : ' + core.cache_status())
 
-def list_systems(args):
+def list_systems(known, remaining):
     print("Available systems:")
     for system in Config().get_systems():
         print(system)
 
-def sim(args):
-    system_file = Config().get_systems()[args.system]
+def sim(known, remaining):
+    system_file = Config().get_systems()[known.system]
     system = System(system_file)
-
-    if args.sim:
-        sim_name = args.sim[0]
+    
+    if known.sim:
+        sim_name = known.sim[0]
     elif system.simulators:
         sim_name = system.simulators[0]
     else:
-        print("No simulator was found in "+ args.system + " system description")
+        print("No simulator was found in "+ known.system + " system description")
         exit(1)
     sim = SimulatorFactory(sim_name, system)
     sim.configure()
     sim.build()
-    if args.testcase:
-        print("Running test case: " + args.testcase[0])
-        sim.run(args)
+    if not known.build_only:
+        sim.run(remaining)
 
 if __name__ == "__main__":
 
@@ -74,12 +73,11 @@ if __name__ == "__main__":
     #Simulation subparser
     parser_sim = subparsers.add_parser('sim', help='Setup and run a simulation')
     parser_sim.add_argument('--sim', nargs=1, help='Override the simulator settings from the system file')
-    parser_sim.add_argument('--testcase', nargs=1)
-    parser_sim.add_argument('--timeout', type=int, nargs=1)
-    parser_sim.add_argument('--enable-dbg', action='store_true')
+    parser_sim.add_argument('--build-only', action='store_true', help='Build the simulation binary without running the simulator')
     parser_sim.add_argument('--dry-run', action='store_true')
     parser_sim.add_argument('system',help='Select a system to simulate', choices = Config().get_systems())
     parser_sim.set_defaults(func=sim)
 
-    p = parser.parse_args()
-    p.func(p)
+    known, remaining = parser.parse_known_args()
+
+    known.func(known, remaining)

@@ -4,3 +4,6 @@ description = "Verilog test bench utility functions"
 
 [verilog]
 tb_src_files = vlog_tb_utils.v
+
+[plusargs]
+timeout = int "Abort test case after n cycles"

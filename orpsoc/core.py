@@ -5,6 +5,7 @@ else:
     import configparser
 
 from orpsoc.config import Config
+from orpsoc.plusargs import Plusargs
 from orpsoc.provider import ProviderFactory
 from orpsoc.vpi import VPI
 from orpsoc.verilog import Verilog
@@ -16,6 +17,7 @@ class Core:
     def __init__(self, core_file=None, name=None, core_root=None):
         if core_file:
             basename = os.path.basename(core_file)
+        self.plusargs = None
         self.provider = None
         self.verilog  = None
         self.vpi = None
@@ -44,6 +46,8 @@ class Core:
 
             self.core_root = os.path.dirname(core_file)
 
+            if config.has_section('plusargs'):
+                self.plusargs = Plusargs(dict(config.items('plusargs')))
             if config.has_section('provider'):
                 self.cache_dir = os.path.join(Config().cache_root, self.name)
                 self.files_root = self.cache_dir
