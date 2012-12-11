@@ -14,7 +14,7 @@ DEFAULT_VALUES = {'name'          : '',
                   'simulators'    : '',
                   'backend'       : '',
                   'include_files' : '',
-                  'rtl_files'     : '',
+                  'src_files'     : '',
                   'tb_files'      : ''}
 
 class System:
@@ -50,8 +50,8 @@ class System:
         core = Core(name=self.name, core_root=system_root)
 
         items = {}
-        if config.has_option('main','rtl_files'):
-            items['src_files'] = config.get('main', 'rtl_files')
+        if config.has_option('main','src_files'):
+            items['src_files'] = config.get('main', 'src_files')
         if config.has_option('main','include_files'):
             items['include_files'] = config.get('main', 'include_files')
         if config.has_option('main','tb_files'):
@@ -63,8 +63,8 @@ class System:
     def get_cores(self):
         return self.cores
 
-    def get_rtl_files(self):
-        return self.rtl_files
+    def get_src_files(self):
+        return self.src_files
             #FIXME: Iterate through core RTL files and append to rtl_files
     def get_tb_files(self):
         return self.tb_files

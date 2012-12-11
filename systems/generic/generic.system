@@ -1,7 +1,7 @@
 [main]
 name = generic
 description = "Generic technology independent OpenRISC system
-rtl_files = 
+src_files = 
  rtl/verilog/clkgen.v
  rtl/verilog/intgen.v
  rtl/verilog/rom.v

@@ -1,4 +1,5 @@
 import shutil
+import subprocess
 from orpsoc.config import Config
 
 class Backend(object):
@@ -13,12 +14,11 @@ class Backend(object):
         self.src_root = os.path.join(self.build_root, 'src')
 
         self.include_dirs = []
-        self.rtl_files = []
-        self.tb_files = []
+        self.src_files = []
         for core_name in self.system.get_cores():
             core = self.system.cores[core_name]
-            self.include_dirs += [os.path.join(self.src_root, core_name, d) for d in core.include_dirs]
-            self.rtl_files    += [os.path.join(self.src_root, core_name, f) for f in core.rtl_files]
+            self.include_dirs += [os.path.join(self.src_root, core_name, d) for d in core.verilog.include_dirs]
+            self.src_files    += [os.path.join(self.src_root, core_name, f) for f in core.verilog.src_files]
 
     def configure(self):
         pass
@@ -60,6 +60,9 @@ clean:
         self.work_root = os.path.join(self.build_root, 'bld-'+self.TOOL_NAME)
 
     def configure(self):
+        if os.path.exists(self.work_root): # Move to Backend.configure?
+            shutil.rmtree(self.work_root)
+        os.makedirs(self.work_root)
         self._write_tcl_file()
         self._write_makefile()
 
@@ -69,8 +72,8 @@ clean:
         tcl_file.write("set_global_assignment -name FAMILY " + self.system.backend['family'] + '\n')
         tcl_file.write("set_global_assignment -name DEVICE " + self.system.backend['device'] + '\n')
         tcl_file.write("set_global_assignment -name TOP_LEVEL_ENTITY " + "orpsoc_top" + '\n')
-        for rtl_file in self.rtl_files:
-            tcl_file.write("set_global_assignment -name VERILOG_FILE " + rtl_file + '\n')
+        for src_file in self.src_files:
+            tcl_file.write("set_global_assignment -name VERILOG_FILE " + src_file + '\n')
         for include_dir in self.include_dirs:
             tcl_file.write("set_global_assignment -name SEARCH_PATH " + include_dir + '\n')
 
@@ -95,6 +98,15 @@ clean:
         makefile.write("DESIGN_NAME = " + self.system.name)
         makefile.write(self.MAKEFILE_TEMPLATE)
         makefile.close()
+
+    def build(self):
+        # TODO: call super if necessary
+        if subprocess.call("make",
+                           cwd = self.work_root,
+                           stdin=subprocess.PIPE):
+            print("Error: Failed to make FPGA load module")
+        # TODO: Check results, and report SUCCESS or FAILURE
+
 def BackendFactory(system):
     #FIXME: Notify user if backend is missing from system description
     if system.backend_name == 'quartus':
