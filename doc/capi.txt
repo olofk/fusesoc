@@ -2,7 +2,7 @@ Core Description files
 ======================
 :Author: Olof Kindgren
 :Email: <olof@opencores.org>
-:Date: 2012-11-28
+:Date: 2012-12-14
 :Revision: 1.0 (draft)
 
 capi (Core API) is the format for core description files. Current version is version 1.0. A capi 1.0 file is identified by the string "CAPI=1" in the beginning of a file. The rest of the file is a standard http://en.wikipedia.org/wiki/INI_file[INI file] that is compatible with Python's http://docs.python.org/2/library/configparser.html[configparser] module
@@ -51,8 +51,8 @@ List of verilog files containing modules that are only used in test benches and 
 *tb_include_files (optional) :*
 List of verilog files that are referenced with `include statements from tb_src_files
 
-vpi
-~~~
+vpi (optional)
+~~~~~~~~~~~~~~
 The VPI section contains information on how to compile C source files into a VPI library
 
 *name :*
@@ -86,6 +86,37 @@ name = github
 *repo :* Name of the GIT repository
 
 *branch :* Name of the GIT branch to use
+
+plusargs (optional)
+~~~~~~~~~~~~~~~~~~~
+
+Plusargs are additional options that are sent to the verilog simulator at runtime. Cores that use plusargs internally (with $test$plusargs or $value$plusargs) can expose them to orpsoc by adding an entry in the plusargs section.
+
+The format of a plusarg is
+<option_name> = <type> <Description>
+
+When a system is simulated in orpsoc, the options specified after the system name are interpreted as plusargs and are compared to the plusargs registered in the system cores. To set a plusargs value, the following command-line syntax is used
+
++./orpsoc.py sim <system_name> --<option_name>+ for boolean parameters or .+/orpsoc.py sim <system_name> --<option_name>=<value>+ for other types of parameters.
+
+The <type> field has the following meaning:
+
+* *bool :* Boolean value. Set to true if the option is specified, otherwise false
+* *int :* Integer value. If the value is not an integer, orpsoc exits with errors
+* *str :* A string value.
+* *file :* The value string is interpreted as a relative path from the current working directory and is converted by orpsoc into an absolute path.
+
+.Defining plusargs
+--------
+timeout = int Abort simulation after the specified tim
+jtag-vpi-enable = bool Enable the JTAG VPI debug system
+testcase = file VMEM file containg a or1k testcase
+--------
+
+.Using plusargs
+--------
+orpsoc.py sim ordb2a --timeout=100000 --testcase=tests/or1200-basic.vmem --jtag-vpi-enable
+--------
 
 Known issues
 ------------
