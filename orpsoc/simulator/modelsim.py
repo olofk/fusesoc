@@ -81,10 +81,10 @@ class Modelsim(Simulator):
                     print("Error: Compilation of "+src_file + "failed")
                     exit(1)
 
+	        object_files = [os.path.splitext(os.path.basename(s))[0]+'.o' for s in vpi_module['src_files']]
             try:
                 subprocess.check_call(['ld', '-shared','-E','-melf_i386','-o',vpi_module['name']] +
-                                      ['gdb.o','jp_vpi.o','rsp-rtl_sim.o'],
-                                      #[os.path.splitext(s)[0]+'.o' for s in vpi_module['src_files']],
+                                      object_files,
                                       cwd = self.sim_root,
                                       stdin=subprocess.PIPE)
             except OSError:
@@ -97,11 +97,10 @@ class Modelsim(Simulator):
     def run(self, args):
         super(Modelsim, self).run(args)
 
-        #FIXME: Handle failures. Save stdout/stderr. Build vmem file from elf file argument
-        if self.vpi_modules:
-            vpi_options = ['-pli'] + [s['name'] for s in self.vpi_modules]
-        else:
-            vpi_options = []
+        #FIXME: Handle failures. Save stdout/stderr
+        vpi_options = []
+        for vpi_module in self.vpi_modules:
+            vpi_options += ['-pli', vpi_module['name']]
         try:
             logfile = os.path.join(self.sim_root, 'vsim.log')
             subprocess.check_call([self.model_tech+'/vsim', '-c', '-do', 'run -all'] +
