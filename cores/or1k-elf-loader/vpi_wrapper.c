@@ -29,6 +29,10 @@ void or1k_elf_load_file() {
     argval.format = vpiStringVal;
     vpi_get_value(arg_h, &argval);
     elf_file_name = argval.value.str;
+
+    while(isspace(*elf_file_name))
+      elf_file_name++;
+
     bin_file = load_elf_file(elf_file_name);
     if(!bin_file)
       vpi_printf("Error: Failed to load elf file from \"%s\"\n", elf_file_name);
@@ -83,8 +87,10 @@ void setup_user_functions() {
   p_vpi_systf_data task_data_p = &task_data_s;
 
   task_data_p->type = vpiSysTask;
+  task_data_p->sysfunctype = vpiIntFunc;
   task_data_p->tfname = "$or1k_elf_load_file";
   task_data_p->calltf = (void *)or1k_elf_load_file;
+  task_data_p->sizetf = 0;
   task_data_p->compiletf = 0;
 
   vpi_register_systf(task_data_p);
