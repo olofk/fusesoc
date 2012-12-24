@@ -1,12 +1,18 @@
 #!/usr/bin/python
 import argparse
+import os
+import sys
+
+#Check if this is run from a local installation
+orpsocdir = os.path.abspath(os.path.join(os.path.dirname(os.path.realpath(__file__)), ".."))
+if os.path.exists(os.path.join(orpsocdir, "orpsoc")):
+    sys.path[0:0] = [orpsocdir]
 
 from orpsoc.build import BackendFactory
 from orpsoc.config import Config
 from orpsoc.simulator import SimulatorFactory
 from orpsoc.system import System
 from orpsoc.core import Core
-import os
 
 def build(args):
     system_file = Config().get_systems()[args.system]
