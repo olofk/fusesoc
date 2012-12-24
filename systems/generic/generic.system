@@ -27,6 +27,7 @@ cores =
  jtag_tap
  jtag_vpi
  or1200
+ or1k-elf-loader
  or1k-monitor
  ram_wb
  uart16550
