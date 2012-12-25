@@ -9,19 +9,11 @@ from orpsoc.config import Config
 from orpsoc.verilog import Verilog
 import os
 
-DEFAULT_VALUES = {'name'          : '',
-                  'cores'         : '',
-                  'simulators'    : '',
-                  'backend'       : '',
-                  'include_files' : '',
-                  'src_files'     : '',
-                  'tb_files'      : ''}
-
 class System:
     def __init__(self, system_file):
         system_root = os.path.dirname(system_file)
 
-        self.config = configparser.SafeConfigParser(DEFAULT_VALUES)
+        self.config = configparser.SafeConfigParser()
         self.config.readfp(open(system_file))
 
         self.name = self.config.get('main', 'name')
@@ -38,9 +30,10 @@ class System:
 
         self.simulators = self.config.get('main','simulators').split()
 
-        self.backend_name = self.config.get('main','backend')
-        if self.backend_name and self.config.has_section(self.backend_name):
-            self.backend = dict(self.config.items(self.backend_name))
+        if self.config.has_option('main', 'backend'):
+            self.backend_name = self.config.get('main','backend')
+            if self.backend_name and self.config.has_section(self.backend_name):
+                self.backend = dict(self.config.items(self.backend_name))
 
     def setup_cores(self):
         for core in self.cores:
@@ -48,16 +41,14 @@ class System:
 
     def _create_orpsoc_core(self, config, system_root):
         core = Core(name=self.name, core_root=system_root)
+        if config.has_section('plusargs'):
+            core.vpi = Plusargs(dict(config.items('plusargs')))
+        if config.has_section('verilog'):
+            core.verilog = Verilog(dict(config.items('verilog')))
+        if config.has_section('vpi'):
+            core.vpi = Vpi(dict(config.items('vpi')))
+        
 
-        items = {}
-        if config.has_option('main','src_files'):
-            items['src_files'] = config.get('main', 'src_files')
-        if config.has_option('main','include_files'):
-            items['include_files'] = config.get('main', 'include_files')
-        if config.has_option('main','tb_files'):
-            items['tb_src_files'] = config.get('main', 'tb_files')
-
-        core.verilog = Verilog(items)
         return core
         
     def get_cores(self):

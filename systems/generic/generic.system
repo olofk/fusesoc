@@ -1,21 +1,6 @@
 [main]
 name = generic
 description = "Generic technology independent OpenRISC system
-src_files = 
- rtl/verilog/clkgen.v
- rtl/verilog/intgen.v
- rtl/verilog/rom.v
- rtl/verilog/orpsoc_top.v
-include_files =
- rtl/verilog/include/or1200_defines.v
- rtl/verilog/include/orpsoc-defines.v
- rtl/verilog/include/orpsoc-params.v
- rtl/verilog/include/timescale.v
- rtl/verilog/include/uart_defines.v
-
-tb_files = 
- bench/uart_decoder.v
- bench/orpsoc_tb.v
 
 simulators =
  icarus
@@ -33,3 +18,20 @@ cores =
  uart16550
  vlog_tb_utils
  wb_utils
+
+[verilog]
+src_files = 
+ rtl/verilog/clkgen.v
+ rtl/verilog/intgen.v
+ rtl/verilog/rom.v
+ rtl/verilog/orpsoc_top.v
+include_files =
+ rtl/verilog/include/or1200_defines.v
+ rtl/verilog/include/orpsoc-defines.v
+ rtl/verilog/include/orpsoc-params.v
+ rtl/verilog/include/timescale.v
+ rtl/verilog/include/uart_defines.v
+
+tb_src_files = 
+ bench/uart_decoder.v
+ bench/orpsoc_tb.v
