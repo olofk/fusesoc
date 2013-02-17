@@ -17,8 +17,9 @@ class Backend(object):
         self.src_files = []
         for core_name in self.system.get_cores():
             core = self.system.cores[core_name]
-            self.include_dirs += [os.path.join(self.src_root, core_name, d) for d in core.verilog.include_dirs]
-            self.src_files    += [os.path.join(self.src_root, core_name, f) for f in core.verilog.src_files]
+            if core.verilog:
+                self.include_dirs += [os.path.join(self.src_root, core_name, d) for d in core.verilog.include_dirs]
+                self.src_files    += [os.path.join(self.src_root, core_name, f) for f in core.verilog.src_files]
 
     def configure(self):
         pass
