@@ -128,8 +128,7 @@ class Core:
                                 os.path.join(dst_dir, f))
             else:
                 logger.debug("  File " + f + " doesn't exist - may it will be added as patch later?")
-                print("File " + os.path.join(src_dir, f) + " doesn't exist")
-                exit(1)
+                print("File " + os.path.join(src_dir, f) + " doesn't exist - maybe it will be added as patch later?")
         logger.debug('export() -Done-')
         
     def patch(self, dst_dir):
