@@ -1,7 +1,14 @@
 import os
+import logging
+
+logger = logging.getLogger(__name__)
 
 class Verilog:
+
     def __init__(self, items):
+        logger.debug('__init__() *Entered*')
+        logger.debug("  items=" + str(items))
+
         self.src_files = []
         self.include_files = []
         self.include_dirs = []
@@ -23,6 +30,10 @@ class Verilog:
                 self.tb_include_dirs  = list(set(map(os.path.dirname, self.tb_include_files)))
             else:
                 print("Warning: Unknown item '" + item +"' in verilog section")
+        logger.debug('__init__() -Done-')
 
     def export(self):
-        return self.src_files + self.include_files + self.tb_src_files + self.tb_include_files
+        logger.debug('export() *Entered*')
+        self.export_files = self.src_files + self.include_files + self.tb_src_files + self.tb_include_files
+        logger.debug("  export_files="+str(self.export_files));
+        return self.export_files
