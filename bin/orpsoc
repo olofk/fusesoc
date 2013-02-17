@@ -14,8 +14,8 @@ from orpsoc.simulator import SimulatorFactory
 from orpsoc.system import System
 from orpsoc.core import Core
 
-def build(args):
-    system_file = Config().get_systems()[args.system]
+def build(known, remaining):
+    system_file = Config().get_systems()[known.system]
     system = System(system_file)
 
     backend = BackendFactory(system)
