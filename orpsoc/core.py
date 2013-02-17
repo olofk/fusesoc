@@ -123,3 +123,12 @@ class Core:
                         print("Error: Failed to call external command 'patch'")
                         return False
         return True
+
+    def info(self):
+        # TODO: finish and make look better
+        print "CORE INFO"
+        print "Name                  :", self.name
+        print "Core root             :", self.core_root
+        #if core_file:
+        #    print 
+        #    if config.has_section('provider'):
