@@ -1,10 +1,14 @@
 import shutil
 import subprocess
 from orpsoc.config import Config
+import logging
+
+logger = logging.getLogger(__name__)
 
 class Backend(object):
 
     def __init__(self, system):
+        logger.debug('__init__() *Entered*')
         config = Config()
         self.system = system
         self.build_root = os.path.join(config.build_root, self.system.name)
@@ -16,10 +20,16 @@ class Backend(object):
         self.include_dirs = []
         self.src_files = []
         for core_name in self.system.get_cores():
+            logger.debug('core_name=' + core_name)
             core = self.system.cores[core_name]
             if core.verilog:
+                if core.verilog.include_dirs:
+                    logger.debug('core.include_dirs=' + str(core.verilog.include_dirs))
+                else:
+                    logger.debug('core.include_dirs=None')
                 self.include_dirs += [os.path.join(self.src_root, core_name, d) for d in core.verilog.include_dirs]
                 self.src_files    += [os.path.join(self.src_root, core_name, f) for f in core.verilog.src_files]
+        logger.debug('__init__() -Done-')
 
     def configure(self):
         pass
@@ -57,8 +67,10 @@ clean:
 
     TOOL_NAME = 'quartus'
     def __init__(self, system):
+        logger.debug('Quartus __init__() *Entered*')
         super(Quartus, self).__init__(system)
         self.work_root = os.path.join(self.build_root, 'bld-'+self.TOOL_NAME)
+        logger.debug('Quartus __init__() -Done-')
 
     def configure(self):
         if os.path.exists(self.work_root): # Move to Backend.configure?
@@ -66,8 +78,10 @@ clean:
         os.makedirs(self.work_root)
         self._write_tcl_file()
         self._write_makefile()
+        logger.debug('configure() -Done-')
 
     def _write_tcl_file(self):
+        logger.debug('_write_tcl_file() *Entered*')
         tcl_file = open(os.path.join(self.work_root, self.system.name+'.tcl'),'w')
         tcl_file.write("project_new " + self.system.name + " -overwrite\n")
         tcl_file.write("set_global_assignment -name FAMILY " + self.system.backend['family'] + '\n')
@@ -93,22 +107,30 @@ clean:
         for f in tcl_files:
             tcl_file.write(open(os.path.join(self.systems_root, self.system.name, f)).read())
         tcl_file.close()
+        logger.debug('_write_tcl_file() -Done-')
 
     def _write_makefile(self):
+        logger.debug('_write_makefile() *Entered*')
         makefile = open(os.path.join(self.work_root, 'Makefile'),'w')
         makefile.write("DESIGN_NAME = " + self.system.name)
         makefile.write(self.MAKEFILE_TEMPLATE)
         makefile.close()
+        logger.debug('_write_makefile() -Done-')
 
     def build(self):
+        logger.debug('build() *Entered*')
         # TODO: call super if necessary
         if subprocess.call("make",
                            cwd = self.work_root,
                            stdin=subprocess.PIPE):
             print("Error: Failed to make FPGA load module")
         # TODO: Check results, and report SUCCESS or FAILURE
+        logger.debug('build() -Done-')
+
+
 
 def BackendFactory(system):
+    logger.debug('BackendFactory() *Entered*')
     #FIXME: Notify user if backend is missing from system description
     if system.backend_name == 'quartus':
         return Quartus(system)
