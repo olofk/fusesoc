@@ -201,7 +201,10 @@ module ram_wb_b3
       // verilator public
       input [aw-1:0] 		addr;
       input [dw-1:0] 		data;
-      mem[addr] = data;
+      begin
+         mem[addr] = data;
+         set_mem32 = data; // For avoiding ModelSim warning
+      end
    endfunction // set_mem32   
    
 endmodule // ram_wb_b3
