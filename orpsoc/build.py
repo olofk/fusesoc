@@ -32,7 +32,20 @@ class Backend(object):
         logger.debug('__init__() -Done-')
 
     def configure(self):
-        pass
+        logger.debug('configure() *Entered*')
+        if os.path.exists(self.work_root): 
+            shutil.rmtree(self.work_root)
+        os.makedirs(self.work_root)
+
+        self.system.setup_cores()
+
+        for name, core in self.system.get_cores().items():
+            print("Preparing " + name)
+            dst_dir = os.path.join(Config().build_root, self.system.name, 'src', name)
+            core.setup()
+            core.export(dst_dir)
+            core.patch(dst_dir)
+        logger.debug('configure() -Done-')
 
     def build(self):
         pass
@@ -73,9 +86,9 @@ clean:
         logger.debug('Quartus __init__() -Done-')
 
     def configure(self):
-        if os.path.exists(self.work_root): # Move to Backend.configure?
-            shutil.rmtree(self.work_root)
-        os.makedirs(self.work_root)
+        logger.debug('configure() *Entered*')
+
+        super(Quartus, self).configure()
         self._write_tcl_file()
         self._write_makefile()
         logger.debug('configure() -Done-')
