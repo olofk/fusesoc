@@ -87,5 +87,5 @@ src_files =
 name = opencores
 repo_name = openrisc 
 repo_root = trunk/or1200
-revision = 813
+revision = 852
 
