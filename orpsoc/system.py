@@ -74,3 +74,34 @@ class System:
     def get_tb_files(self):
         logger.debug('get_tb_files() *Entered*')
         return self.tb_files
+
+    def info(self):
+        logger.debug('info() *Entered*')
+        # TODO: finish and make look better
+        print "SYSTEM INFO"
+        print "Name                  :", self.name
+        print "Cores                 :",
+        n = 0 
+        for core_name in self.cores:
+          print ' '*n + core_name
+          n = 24
+        print "Simulators            :",
+        n = 0
+        for simulator_name in self.simulators:
+          print ' '*n + simulator_name
+          n = 24
+        #print "Backend               :", self.backend
+        #print "Backend name          :", self.backend['name']
+        print "Backend name          :", self.backend_name
+        if self.backend_name:
+            print "        family        :", self.backend['family']
+            print "        tcl_files     :", self.backend['tcl_files']
+            print "        sdc_files     :", self.backend['sdc_files']
+            print "        simulators    :", self.backend['simulators']
+            print "        cores         :", self.backend['cores']
+            print "        device        :", self.backend['device']
+            print "        include files :", self.backend['include_files']
+            print "        src files     :", self.backend['src_files']
+            print "        tb files      :", self.backend['tb_files']
+            print "        backend       :", self.backend['backend']
+ 

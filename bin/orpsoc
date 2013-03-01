@@ -58,6 +58,12 @@ def list_systems(known, remaining):
     for system in Config().get_systems():
         print(system)
 
+def system_info(known, remaining):
+    logger.debug('info() *Entered*')
+    system_file = Config().get_systems()[known.system]
+    system = System(system_file)
+    system.info()
+
 def sim(known, remaining):
     logger.debug('sim() *Entered*')
     system_file = Config().get_systems()[known.system]
@@ -92,6 +98,10 @@ if __name__ == "__main__":
 
     parser_list_systems = subparsers.add_parser('list-systems', help='List available systems')
     parser_list_systems.set_defaults(func=list_systems)
+
+    parser_system_info = subparsers.add_parser('system-info', help='Displays details about a system')
+    parser_system_info.add_argument('system')
+    parser_system_info.set_defaults(func=system_info)
 
     parser_list_cores = subparsers.add_parser('list-cores', help='List available cores')
     #parser_list_cores.
