@@ -8,6 +8,7 @@ logger = logging.getLogger(__name__)
 
 class CoreManager(object):
     _instance = None
+    _cores = {}
 
     def __new__(cls, *args, **kwargs):
         if not cls._instance:
@@ -15,11 +16,11 @@ class CoreManager(object):
         return cls._instance
 
     def __init__(self):
-        self._cores = {}
-        self.load_cores(Config().cores_root)
+        self.add_cores_root(Config().cores_root)
 
     def load_cores(self, path):
-        logger.debug("Checking for cores in " + path)
+        if path:
+            logger.debug("Checking for cores in " + path)
         for d in os.listdir(path):
             f = os.path.join(path, d, d+'.core')
             if os.path.exists(f):
