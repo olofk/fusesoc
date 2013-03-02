@@ -20,15 +20,23 @@ class Config(object):
         return cls._instance
 
     def __init__(self):
-        config = configparser.SafeConfigParser(DEFAULT_VALUES)
         #FIXME: Don't hardcode ./orpsoc.conf
-        config.readfp(open('./orpsoc.conf'))
+        self.cores_root = None
+        config_file = './orpsoc.conf'
+        if os.path.exists(config_file):
+            config = configparser.SafeConfigParser(DEFAULT_VALUES)
+            config.readfp(open('./orpsoc.conf'))
 
-        self.build_root = config.get('main','build_root')
-        self.cache_root = config.get('main','cache_root')
-        self.cores_root = config.get('main','cores_root')
-        self.systems_root = config.get('main','systems_root')
-
+            self.build_root = config.get('main','build_root')
+            self.cache_root = config.get('main','cache_root')
+            self.cores_root = config.get('main','cores_root')
+            self.systems_root = config.get('main','systems_root')
+        else:
+            self.build_root   = 'build'
+            self.cache_root   = 'cache'
+            if os.path.exists('cores'):
+                self.cores_root   = 'cores'
+            self.systems_root = 'systems'
     def get_systems(self):
         systems = {}
         for d in os.listdir(self.systems_root):
