@@ -57,8 +57,8 @@ class Simulator(object):
             if core.vpi:
                 vpi_module = {}
                 core_root = os.path.join(self.src_root, name)
-                vpi_module['include_dirs']  = [os.path.join(core_root, d) for d in core.vpi.include_dirs]
-                vpi_module['src_files']     = [os.path.join(core_root, f) for f in core.vpi.src_files]
+                vpi_module['include_dirs']  = [os.path.abspath(os.path.join(core_root, d)) for d in core.vpi.include_dirs]
+                vpi_module['src_files']     = [os.path.abspath(os.path.join(core_root, f)) for f in core.vpi.src_files]
                 vpi_module['name']          = core.vpi.name
                 self.vpi_modules += [vpi_module]
         logger.debug('build() -Done-')
