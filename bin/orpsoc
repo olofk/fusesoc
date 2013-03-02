@@ -46,7 +46,7 @@ def core_info(known, remaining):
     logger.debug('core_info() *Entered*')
     cm = CoreManager()
     cm.add_cores_root(known.cores_root)
-    cores = cm.get_core(known.core)
+    core = cm.get_core(known.core)
     if core:
         core.info()
     else:
