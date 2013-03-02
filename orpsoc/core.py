@@ -138,13 +138,14 @@ class Core:
         patch_root = os.path.join(self.core_root, 'patches')
         if os.path.exists(patch_root):
             for f in sorted(os.listdir(patch_root)):
-                if os.path.isfile(os.path.join(patch_root, f)):
-                    logger.debug("  applying patch file: " + os.path.join(patch_root, f) + "\n" +
+                patch_file = os.path.abspath(os.path.join(patch_root, f))
+                if os.path.isfile(patch_file):
+                    logger.debug("  applying patch file: " + patch_file + "\n" +
                                  "                   to: " + os.path.join(dst_dir))
                     try:
                         subprocess.call(['patch','-p1', '-s',
                                          '-d', os.path.join(dst_dir),
-                                         '-i', os.path.join(patch_root, f)])
+                                         '-i', patch_file])
                     except OSError:
                         print("Error: Failed to call external command 'patch'")
                         return False
