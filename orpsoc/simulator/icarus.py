@@ -33,9 +33,9 @@ class SimulatorIcarus(Simulator):
         f = open(os.path.join(self.sim_root,icarus_file),'w')
 
         for include_dir in self.include_dirs:
-            f.write("+incdir+" + include_dir + '\n')
+            f.write("+incdir+" + os.path.abspath(include_dir) + '\n')
         for src_file in self.src_files:
-            f.write(src_file + '\n')
+            f.write(os.path.abspath(src_file) + '\n')
 
         f.close()
         logger.debug('_write_config_files() -Done-')
