@@ -12,7 +12,6 @@ class Backend(object):
         config = Config()
         self.system = system
         self.build_root = os.path.join(config.build_root, self.system.name)
-        self.cores_root = config.cores_root
         self.systems_root = config.systems_root
 
         self.src_root = os.path.join(self.build_root, 'src')

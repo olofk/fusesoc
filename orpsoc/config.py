@@ -37,11 +37,3 @@ class Config(object):
                 systems[d] = f
         return systems
 
-    def get_cores(self):
-        cores = {}
-        for d in os.listdir(self.cores_root):
-            f = os.path.join(self.cores_root, d, d+'.core')
-            if os.path.exists(f):
-                cores[d] = f
-        return cores
-        

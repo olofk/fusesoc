@@ -135,7 +135,7 @@ class Core:
         logger.debug('patch() *Entered*')
         logger.debug("  name=" + self.name)
         #FIXME: Use native python patch instead
-        patch_root = os.path.join(Config().cores_root, self.name, 'patches')
+        patch_root = os.path.join(self.core_root, 'patches')
         if os.path.exists(patch_root):
             for f in sorted(os.listdir(patch_root)):
                 if os.path.isfile(os.path.join(patch_root, f)):

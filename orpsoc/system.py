@@ -5,6 +5,7 @@ else:
     import configparser
 
 from orpsoc.core import Core
+from orpsoc.coremanager import CoreManager
 from orpsoc.config import Config
 from orpsoc.verilog import Verilog
 import os
@@ -30,9 +31,9 @@ class System:
         
         cores = self.config.get('main', 'cores').split()
 
+        coremanager = CoreManager()
         for core in cores:
-            core_file = os.path.join(Config().cores_root,core,core+'.core')
-            self.cores[core] = Core(core_file)
+            self.cores[core] = coremanager.get_core(core)
 
         self.simulators = self.config.get('main','simulators').split()
 
