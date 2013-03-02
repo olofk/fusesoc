@@ -1,7 +1,10 @@
+import logging
 import os
 
 from orpsoc.config import Config
 from orpsoc.core import Core
+
+logger = logging.getLogger(__name__)
 
 class CoreManager(object):
     _instance = None
@@ -16,6 +19,7 @@ class CoreManager(object):
         self.load_cores(Config().cores_root)
 
     def load_cores(self, path):
+        logger.debug("Checking for cores in " + path)
         for d in os.listdir(path):
             f = os.path.join(path, d, d+'.core')
             if os.path.exists(f):
@@ -25,10 +29,19 @@ class CoreManager(object):
                     pass
 
     def add_cores_root(self, path):
-        self.load_cores(path)
+        if path is None:
+            return
+        elif isinstance(path, list):
+            for p in path:
+                self.load_cores(p)
+        else:
+            self.load_cores(path)
 
     def get_cores(self):
         return self._cores
 
     def get_core(self, name):
-        return self._cores[name]
+        if name in self._cores:
+            return self._cores[name]
+        else:
+            return None

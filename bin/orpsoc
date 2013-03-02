@@ -10,6 +10,7 @@ if os.path.exists(os.path.join(orpsocdir, "orpsoc")):
 
 from orpsoc.build import BackendFactory
 from orpsoc.config import Config
+from orpsoc.coremanager import CoreManager
 from orpsoc.simulator import SimulatorFactory
 from orpsoc.system import System
 from orpsoc.core import Core
@@ -30,27 +31,26 @@ def build(known, remaining):
     logging.debug('build() -Done-')
     
 def list_cores(known, remaining):
-    cores = Config().get_cores()
+    cm = CoreManager()
+    cm.add_cores_root(known.cores_root)
+    cores = cm.get_cores()
     print("Available cores:")
-    maxlen = max(map(len,cores))
+    maxlen = max(map(len,cores.keys()))
     print('Core'.ljust(maxlen) + '   Cache status')
     print("="*80)
-    for core_name in cores:
-        try:
-            core = Core(cores[core_name])
-        except SyntaxError as e:
-            print(core_name.ljust(maxlen) + ' : Error! ' + str(e))
-            logger.error(core_name.ljust(maxlen) + ' : Error! ' + str(e))
-            core = None
-        if core:
-            print(core_name.ljust(maxlen) + ' : ' + core.cache_status())
+    for name, core in cores.items():
+        print(name.ljust(maxlen) + ' : ' + core.cache_status())
     logger.debug('list_cores() -Done-')
 
 def core_info(known, remaining):
     logger.debug('core_info() *Entered*')
-    core_file = Config().get_cores()[known.core]
-    core = Core(core_file)
-    core.info()
+    cm = CoreManager()
+    cm.add_cores_root(known.cores_root)
+    cores = cm.get_core(known.core)
+    if core:
+        core.info()
+    else:
+        print("Error: Can't find core " + known.core)
 
 def list_systems(known, remaining):
     logger.debug('list_systems() *Entered*')
@@ -91,6 +91,7 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     subparsers = parser.add_subparsers()
 
+    parser.add_argument('--cores-root', help='Add additional directories containing cores', action='append')
     #General options
     parser_build = subparsers.add_parser('build', help='Build an FPGA load module')
     parser_build.add_argument('system')
