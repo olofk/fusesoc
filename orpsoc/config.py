@@ -21,7 +21,10 @@ class Config(object):
 
     def __init__(self):
         #FIXME: Don't hardcode ./orpsoc.conf
+        self.build_root = None
+        self.cache_root = None
         self.cores_root = None
+        self.systems_root = None
         config_file = './orpsoc.conf'
         if os.path.exists(config_file):
             config = configparser.SafeConfigParser(DEFAULT_VALUES)
@@ -31,17 +34,12 @@ class Config(object):
             self.cache_root = config.get('main','cache_root')
             self.cores_root = config.get('main','cores_root')
             self.systems_root = config.get('main','systems_root')
-        else:
-            self.build_root   = 'build'
-            self.cache_root   = 'cache'
-            if os.path.exists('cores'):
-                self.cores_root   = 'cores'
-            self.systems_root = 'systems'
-    def get_systems(self):
-        systems = {}
-        for d in os.listdir(self.systems_root):
-            f = os.path.join(self.systems_root, d, d+'.system')
-            if os.path.exists(f):
-                systems[d] = f
-        return systems
 
+        if self.build_root is None:
+            self.build_root   = 'build'
+        if self.cache_root is None:
+            self.cache_root   = 'cache'
+        if self.cores_root is None and os.path.exists('cores'):
+            self.cores_root   = 'cores'
+        if self.systems_root is None and os.path.exists('systems'):
+            self.systems_root = 'systems'
