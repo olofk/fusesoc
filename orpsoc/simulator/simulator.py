@@ -1,4 +1,5 @@
 from orpsoc.config import Config
+from orpsoc.coremanager import CoreManager
 import argparse
 import shutil
 import os
@@ -20,9 +21,12 @@ class Simulator(object):
         self.include_dirs = []
         self.src_files = []
 
+        self.cm = CoreManager()
+
         for core_name in self.system.get_cores():
             logger.debug('core_name=' + core_name)
-            core = self.system.cores[core_name]
+            core = self.cm.get_core(core_name)
+
             if core.verilog:
                 if core.verilog.include_dirs:
                     logger.debug('core.include_dirs=' + str(core.verilog.include_dirs))
@@ -40,11 +44,10 @@ class Simulator(object):
             shutil.rmtree(self.sim_root)
         os.makedirs(self.sim_root)
 
-        self.system.setup_cores()
-
-        for name, core in self.system.get_cores().items():
+        for name in self.system.get_cores():
             print("Preparing " + name)
             dst_dir = os.path.join(Config().build_root, self.system.name, 'src', name)
+            core = self.cm.get_core(name)
             core.setup()
             core.export(dst_dir)
             core.patch(dst_dir)
@@ -53,7 +56,9 @@ class Simulator(object):
     def build(self):
         logger.debug('build() *Entered*')
         self.vpi_modules = []
-        for name, core in self.system.get_cores().items():
+
+        for name in self.system.get_cores():
+            core = self.cm.get_core(name)
             if core.vpi:
                 vpi_module = {}
                 core_root = os.path.join(self.src_root, name)
@@ -67,7 +72,8 @@ class Simulator(object):
         logger.debug('run() *Entered*')
 
         parser = argparse.ArgumentParser(prog ='orpsoc sim '+self.system.name)
-        for name, core in self.system.get_cores().items():
+        for name in self.system.get_cores():
+            core = self.cm.get_core(name)
             if core.plusargs:
                 core.plusargs.add_arguments(parser)
 
@@ -81,4 +87,3 @@ class Simulator(object):
                 pass
             else:
                 self.plusargs += [key+'='+str(value[0])]
-        print(self.plusargs)
