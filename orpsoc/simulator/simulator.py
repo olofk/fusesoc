@@ -22,8 +22,9 @@ class Simulator(object):
         self.src_files = []
 
         self.cm = CoreManager()
+        self.cores = self.cm.get_depends(self.system.name)
 
-        for core_name in self.system.get_cores():
+        for core_name in self.cores:
             logger.debug('core_name=' + core_name)
             core = self.cm.get_core(core_name)
 
@@ -44,7 +45,7 @@ class Simulator(object):
             shutil.rmtree(self.sim_root)
         os.makedirs(self.sim_root)
 
-        for name in self.system.get_cores():
+        for name in self.cores:
             print("Preparing " + name)
             dst_dir = os.path.join(Config().build_root, self.system.name, 'src', name)
             core = self.cm.get_core(name)
@@ -57,7 +58,7 @@ class Simulator(object):
         logger.debug('build() *Entered*')
         self.vpi_modules = []
 
-        for name in self.system.get_cores():
+        for name in self.cores:
             core = self.cm.get_core(name)
             if core.vpi:
                 vpi_module = {}
@@ -72,7 +73,7 @@ class Simulator(object):
         logger.debug('run() *Entered*')
 
         parser = argparse.ArgumentParser(prog ='orpsoc sim '+self.system.name)
-        for name in self.system.get_cores():
+        for name in self.cores:
             core = self.cm.get_core(name)
             if core.plusargs:
                 core.plusargs.add_arguments(parser)
