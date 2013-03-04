@@ -22,9 +22,12 @@ logger = logging.getLogger(__name__)
 
 def build(known, remaining):
     logger.debug('build() *Entered*')
-    system_file = Config().get_systems()[known.system]
-    logger.debug('    system_file=' + system_file)
-    system = System(system_file)
+    cm = CoreManager()
+    cm.add_cores_root(known.cores_root)
+    cm.add_cores_root(known.systems_root)
+    sm = SystemManager()
+    sm.add_systems_root(known.systems_root)
+    system = sm.get_system(known.system)
 
     backend = BackendFactory(system)
     backend.configure()

@@ -1,6 +1,7 @@
 import shutil
 import subprocess
 from orpsoc.config import Config
+from orpsoc.coremanager import CoreManager
 import logging
 
 logger = logging.getLogger(__name__)
@@ -18,9 +19,12 @@ class Backend(object):
 
         self.include_dirs = []
         self.src_files = []
-        for core_name in self.system.get_cores():
+        self.cm = CoreManager()
+
+        self.cores = self.cm.get_depends(self.system.name)
+        for core_name in self.cores:
             logger.debug('core_name=' + core_name)
-            core = self.system.cores[core_name]
+            core = self.cm.get_core(core_name)
             if core.verilog:
                 if core.verilog.include_dirs:
                     logger.debug('core.include_dirs=' + str(core.verilog.include_dirs))
@@ -35,11 +39,10 @@ class Backend(object):
         if os.path.exists(self.work_root): 
             shutil.rmtree(self.work_root)
         os.makedirs(self.work_root)
-
-        self.system.setup_cores()
-
-        for name, core in self.system.get_cores().items():
+        cm = CoreManager()
+        for name in self.cores:
             print("Preparing " + name)
+            core = cm.get_core(name)
             dst_dir = os.path.join(Config().build_root, self.system.name, 'src', name)
             core.setup()
             core.export(dst_dir)
