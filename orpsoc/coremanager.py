@@ -9,6 +9,7 @@ logger = logging.getLogger(__name__)
 class CoreManager(object):
     _instance = None
     _cores = {}
+    _cores_root = []
 
     def __new__(cls, *args, **kwargs):
         if not cls._instance:
@@ -17,26 +18,37 @@ class CoreManager(object):
 
     def __init__(self):
         self.add_cores_root(Config().cores_root)
+        self.add_cores_root(Config().systems_root)
 
+    def load_core(self, name, file):
+        if os.path.exists(file):
+            try:
+                self._cores[name] = Core(file)
+                logger.debug("Adding core " + file)
+            except SyntaxError:
+                logger.debug("Failed to parse " + file)
+        
     def load_cores(self, path):
         if path:
             logger.debug("Checking for cores in " + path)
         for d in os.listdir(path):
             f = os.path.join(path, d, d+'.core')
-            if os.path.exists(f):
-                try:
-                    self._cores[d] = Core(f)
-                except SyntaxError:
-                    pass
+            self.load_core(d, f)
 
     def add_cores_root(self, path):
         if path is None:
             return
         elif isinstance(path, list):
             for p in path:
-                self.load_cores(p)
+                abspath = os.path.abspath(p)
+                if not abspath in self._cores_root:
+                    self._cores_root += [abspath]
+                    self.load_cores(p)
         else:
-            self.load_cores(path)
+            abspath = os.path.abspath(path)
+            if not abspath in self._cores_root:
+                self._cores_root += [abspath]
+                self.load_cores(path)
 
     def get_cores(self):
         return self._cores
