@@ -25,11 +25,6 @@ class System:
 
         self.name = self.config.get('main', 'name')
 
-        self.cores = self.config.get('main', 'cores').split()
-
-        #Add system-specific core
-        self.cores += [self.name]
-
         self.simulators = self.config.get('main','simulators').split()
 
         if self.config.has_option('main', 'backend'):
@@ -37,21 +32,17 @@ class System:
             if self.backend_name and self.config.has_section(self.backend_name):
                 self.backend = dict(self.config.items(self.backend_name))
 
-        logger.debug('self.cores=' + str(self.cores))
         logger.debug('__init__() -Done-')
-
-    def get_cores(self):
-        logger.debug('get_cores() *Entered*')
-        return self.cores
 
     def info(self):
         logger.debug('info() *Entered*')
+        cm = CoreManager()
         # TODO: finish and make look better
         print "SYSTEM INFO"
         print "Name                  :", self.name
         print "Cores                 :",
         n = 0 
-        for core_name in self.cores:
+        for core_name in cm.get_depends(self.name):
           print ' '*n + core_name
           n = 24
         print "Simulators            :",
