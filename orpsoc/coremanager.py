@@ -50,6 +50,18 @@ class CoreManager(object):
                 self._cores_root += [abspath]
                 self.load_cores(path)
 
+    def get_depends(self, core):
+        return self._get_depends(core)
+
+    def _get_depends(self, core):
+        #FIXME: Check for circular dependencies and duplicates
+        if self._cores[core].depend:
+            c = self._cores[core].depend
+            d = map(self._get_depends, c) + [core]
+            return d
+        else:
+            return core
+
     def get_cores(self):
         return self._cores
 
