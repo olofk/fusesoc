@@ -25,15 +25,10 @@ class System:
 
         self.name = self.config.get('main', 'name')
 
-        self.cores = {}
-        self.cores['orpsoc'] = self._create_orpsoc_core(self.config, system_root)
-        
-        
-        cores = self.config.get('main', 'cores').split()
+        self.cores = self.config.get('main', 'cores').split()
 
-        coremanager = CoreManager()
-        for core in cores:
-            self.cores[core] = coremanager.get_core(core)
+        #Add system-specific core
+        self.cores += [self.name]
 
         self.simulators = self.config.get('main','simulators').split()
 
@@ -45,36 +40,9 @@ class System:
         logger.debug('self.cores=' + str(self.cores))
         logger.debug('__init__() -Done-')
 
-    def setup_cores(self):
-        logger.debug('setup_cores() *Entered*')
-        for core in self.cores:
-            self.cores[core].setup()
-        logger.debug('setup_cores() -Done-')
-
-    def _create_orpsoc_core(self, config, system_root):
-        logger.debug('_create_orpsoc_core() *Entered*')
-        core = Core(name=self.name, core_root=system_root)
-        if config.has_section('plusargs'):
-            core.vpi = Plusargs(dict(config.items('plusargs')))
-        if config.has_section('verilog'):
-            core.verilog = Verilog(dict(config.items('verilog')))
-        if config.has_section('vpi'):
-            core.vpi = Vpi(dict(config.items('vpi')))
-        
-
-        return core
-        
     def get_cores(self):
         logger.debug('get_cores() *Entered*')
         return self.cores
-
-    def get_src_files(self):
-        logger.debug('get_src_files() *Entered*')
-        return self.src_files
-            #FIXME: Iterate through core RTL files and append to rtl_files
-    def get_tb_files(self):
-        logger.debug('get_tb_files() *Entered*')
-        return self.tb_files
 
     def info(self):
         logger.debug('info() *Entered*')
