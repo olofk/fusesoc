@@ -25,6 +25,7 @@ class Core:
                     )
         if core_file:
             basename = os.path.basename(core_file)
+        self.depend = []
         self.plusargs = None
         self.provider = None
         self.verilog  = None
@@ -51,6 +52,9 @@ class Core:
                 self.name = config.get('main','name')
             else:
                 self.name = basename.split('.core')[0]
+
+            if config.has_option('main', 'depend'):
+                self.depend = config.get('main', 'depend').split()
 
             logger.debug('name=' + str(self.name))
             self.core_root = os.path.dirname(core_file)

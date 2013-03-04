@@ -35,6 +35,10 @@ description (optional)
 ^^^^^^^^^^^^^^^^^^^^^^
 A string with a description can be added to the core.
 
+depend (optional)
+^^^^^^^^^^^^^^^^^
+List of cores that this core depends on
+
 verilog
 ~~~~~~~
 The verilog section contains options for verilog source code
