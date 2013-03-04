@@ -5,17 +5,3 @@ description = "Generic technology independent OpenRISC system
 simulators =
  icarus
  modelsim
-
-cores =
- adv_debug_sys
- dbg
- jtag_tap
- jtag_vpi
- or1200
- or1k-elf-loader
- or1k-monitor
- ram_wb
- uart16550
- vlog_tb_utils
- wb_utils
-
