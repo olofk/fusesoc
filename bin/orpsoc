@@ -22,12 +22,7 @@ logger = logging.getLogger(__name__)
 
 def build(known, remaining):
     logger.debug('build() *Entered*')
-    cm = CoreManager()
-    cm.add_cores_root(known.cores_root)
-    cm.add_cores_root(known.systems_root)
-    sm = SystemManager()
-    sm.add_systems_root(known.systems_root)
-    system = sm.get_system(known.system)
+    system = SystemManager().get_system(known.system)
 
     backend = BackendFactory(system)
     backend.configure()
@@ -35,9 +30,7 @@ def build(known, remaining):
     logging.debug('build() -Done-')
     
 def list_cores(known, remaining):
-    cm = CoreManager()
-    cm.add_cores_root(known.cores_root)
-    cores = cm.get_cores()
+    cores = CoreManager().get_cores()
     print("Available cores:")
     maxlen = max(map(len,cores.keys()))
     print('Core'.ljust(maxlen) + '   Cache status')
@@ -48,9 +41,7 @@ def list_cores(known, remaining):
 
 def core_info(known, remaining):
     logger.debug('core_info() *Entered*')
-    cm = CoreManager()
-    cm.add_cores_root(known.cores_root)
-    core = cm.get_core(known.core)
+    core = CoreManager().get_core(known.core)
     if core:
         core.info()
     else:
@@ -59,26 +50,17 @@ def core_info(known, remaining):
 def list_systems(known, remaining):
     logger.debug('list_systems() *Entered*')
     print("Available systems:")
-    sm = SystemManager()
-    sm.add_systems_root(known.systems_root)
-    systems = sm.get_systems()
-    for system in systems:
+    for system in SystemManager.get_systems():
         print(system)
 
 def system_info(known, remaining):
     logger.debug('info() *Entered*')
-    system_file = Config().get_systems()[known.system]
-    system = System(system_file)
+    system = SystemManager().get_system(known.system)
     system.info()
 
 def sim(known, remaining):
     logger.debug('sim() *Entered*')
-    cm = CoreManager()
-    cm.add_cores_root(known.cores_root)
-    cm.add_cores_root(known.systems_root)
-    sm = SystemManager()
-    sm.add_systems_root(known.systems_root)
-    system = sm.get_system(known.system)
+    system = SystemManager().get_system(known.system)
     if known.sim:
         sim_name = known.sim[0]
     elif system.simulators:
@@ -93,6 +75,14 @@ def sim(known, remaining):
     if not known.build_only:
         sim.run(remaining)
     logger.debug('sim() -Done-')
+
+def run(known, remaining):
+    cm = CoreManager()
+    cm.add_cores_root(known.cores_root)
+    cm.add_cores_root(known.systems_root)
+    sm = SystemManager()
+    sm.add_systems_root(known.systems_root)
+    known.func(known, remaining)
 
 if __name__ == "__main__":
     logger.debug('__main__ *Entered*')
@@ -133,5 +123,5 @@ if __name__ == "__main__":
 
     known, remaining = parser.parse_known_args()
 
-    known.func(known, remaining)
+    run(known, remaining)
     logger.debug('__main__ -Done-')
