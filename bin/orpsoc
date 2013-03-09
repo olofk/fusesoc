@@ -13,7 +13,6 @@ from orpsoc.config import Config
 from orpsoc.coremanager import CoreManager
 from orpsoc.simulator import SimulatorFactory
 from orpsoc.system import System
-from orpsoc.systemmanager import SystemManager
 from orpsoc.core import Core
 import logging
 
@@ -22,9 +21,10 @@ logger = logging.getLogger(__name__)
 
 def build(known, remaining):
     logger.debug('build() *Entered*')
-    system = SystemManager().get_system(known.system)
+    if known.system in CoreManager().get_systems():
+        core = CoreManager().get_core(known.system)
 
-    backend = BackendFactory(system)
+    backend = BackendFactory(core.system)
     backend.configure()
     backend.build()
     logging.debug('build() -Done-')
@@ -50,26 +50,31 @@ def core_info(known, remaining):
 def list_systems(known, remaining):
     logger.debug('list_systems() *Entered*')
     print("Available systems:")
-    for system in SystemManager().get_systems():
+    for system in CoreManager().get_systems():
         print(system)
 
 def system_info(known, remaining):
     logger.debug('info() *Entered*')
-    system = SystemManager().get_system(known.system)
-    system.info()
+    if known.system in CoreManager().get_systems():
+        core = CoreManager().get_core(known.system)
+        core.info()
+        core.system.info()
+    else:
+        print("Can't find system " + known.system)
 
 def sim(known, remaining):
     logger.debug('sim() *Entered*')
-    system = SystemManager().get_system(known.system)
+    if known.system in CoreManager().get_systems():
+        core = CoreManager().get_core(known.system)
     if known.sim:
         sim_name = known.sim[0]
-    elif system.simulators:
-        sim_name = system.simulators[0]
+    elif core.system.simulators:
+        sim_name = core.system.simulators[0]
     else:
         print("No simulator was found in "+ known.system + " system description")
         logger.error("No simulator was found in "+ known.system + " system description")
         exit(1)
-    sim = SimulatorFactory(sim_name, system)
+    sim = SimulatorFactory(sim_name, core.system)
     sim.configure()
     sim.build()
     if not known.build_only:
@@ -80,8 +85,6 @@ def run(known, remaining):
     cm = CoreManager()
     cm.add_cores_root(known.cores_root)
     cm.add_cores_root(known.systems_root)
-    sm = SystemManager()
-    sm.add_systems_root(known.systems_root)
     known.func(known, remaining)
 
 if __name__ == "__main__":

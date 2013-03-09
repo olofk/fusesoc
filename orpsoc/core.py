@@ -7,6 +7,7 @@ else:
 from orpsoc.config import Config
 from orpsoc.plusargs import Plusargs
 from orpsoc.provider import ProviderFactory
+from orpsoc.system import System
 from orpsoc.vpi import VPI
 from orpsoc.verilog import Verilog
 import os
@@ -28,6 +29,7 @@ class Core:
         self.depend = []
         self.plusargs = None
         self.provider = None
+        self.system   = None
         self.verilog  = None
         self.vpi = None
         if core_file:
@@ -78,7 +80,9 @@ class Core:
             if config.has_section('vpi'):
                 items = config.items('vpi')
                 self.vpi = VPI(dict(items))
-
+            system_file = os.path.join(self.core_root, self.name+'.system')
+            if os.path.exists(system_file):
+                self.system = System(system_file)
         else:
             self.name = name
 

@@ -4,10 +4,7 @@ if sys.version[0] == '2':
 else:
     import configparser
 
-from orpsoc.core import Core
-from orpsoc.coremanager import CoreManager
 from orpsoc.config import Config
-from orpsoc.verilog import Verilog
 import os
 import logging
 
@@ -40,15 +37,9 @@ class System:
 
     def info(self):
         logger.debug('info() *Entered*')
-        cm = CoreManager()
         # TODO: finish and make look better
         print "SYSTEM INFO"
         print "Name                  :", self.name
-        print "Cores                 :",
-        n = 0 
-        for core_name in cm.get_depends(self.name):
-          print ' '*n + core_name
-          n = 24
         print "Simulators            :",
         n = 0
         for simulator_name in self.simulators:

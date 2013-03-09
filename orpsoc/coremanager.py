@@ -70,3 +70,10 @@ class CoreManager(object):
             return self._cores[name]
         else:
             return None
+
+    def get_systems(self):
+        systems = {}
+        for name, core in self._cores.items():
+            if core.system:
+                systems[name] = core
+        return systems
