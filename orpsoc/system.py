@@ -19,6 +19,7 @@ class System:
                      '\n    system_file=' + str(system_file)
                     )
         self.simulators = []
+        self.backend_name = None
 
         system_root = os.path.dirname(system_file)
 
