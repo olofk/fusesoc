@@ -18,6 +18,8 @@ class System:
         logger.debug('__init__() *Entered*' +
                      '\n    system_file=' + str(system_file)
                     )
+        self.simulators = []
+
         system_root = os.path.dirname(system_file)
 
         self.config = configparser.SafeConfigParser()
@@ -25,8 +27,9 @@ class System:
 
         self.name = self.config.get('main', 'name')
 
-        self.simulators = self.config.get('main','simulators').split()
-
+        if self.config.has_option('main','simulators'):
+            self.simulators = self.config.get('main','simulators').split()
+        
         if self.config.has_option('main', 'backend'):
             self.backend_name = self.config.get('main','backend')
             if self.backend_name and self.config.has_section(self.backend_name):
