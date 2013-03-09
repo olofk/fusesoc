@@ -1,5 +1,4 @@
 [main]
-name = generic
 description = "Generic technology independent OpenRISC system
 
 simulators =

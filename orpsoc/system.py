@@ -25,7 +25,7 @@ class System:
         self.config = configparser.SafeConfigParser()
         self.config.readfp(open(system_file))
 
-        self.name = self.config.get('main', 'name')
+        self.name = os.path.basename(system_file).split('.')[0]
 
         if self.config.has_option('main','simulators'):
             self.simulators = self.config.get('main','simulators').split()
