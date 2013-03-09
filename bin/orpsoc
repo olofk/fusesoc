@@ -50,7 +50,7 @@ def core_info(known, remaining):
 def list_systems(known, remaining):
     logger.debug('list_systems() *Entered*')
     print("Available systems:")
-    for system in SystemManager.get_systems():
+    for system in SystemManager().get_systems():
         print(system)
 
 def system_info(known, remaining):
