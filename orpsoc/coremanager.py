@@ -6,6 +6,12 @@ from orpsoc.core import Core
 
 logger = logging.getLogger(__name__)
 
+class DependencyError(Exception):
+    def __init__(self, value):
+        self.value = value
+    def __str__(self):
+        return repr(self.value)
+
 class CoreManager(object):
     _instance = None
     _cores = {}
@@ -55,13 +61,15 @@ class CoreManager(object):
 
     def _get_depends(self, core):
         #FIXME: Check for circular dependencies and duplicates
-        if self._cores[core].depend:
-            c = self._cores[core].depend
-            d = map(self._get_depends, c) + [core]
-            return d
-        else:
-            return core
-
+        try:
+            if self._cores[core].depend:
+                c = self._cores[core].depend
+                d = map(self._get_depends, c) + [core]
+                return d
+            else:
+                return core
+        except(KeyError):
+            raise DependencyError(core)
     def get_cores(self):
         return self._cores
 
