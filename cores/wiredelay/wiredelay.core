@@ -1,0 +1,6 @@
+CAPI=1
+[main]
+description = Wire delay Verilog model 
+
+[verilog]
+tb_src_files = verilog/wiredelay.v
