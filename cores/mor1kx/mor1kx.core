@@ -1,7 +1,8 @@
+CAPI=1
 [main]
-name = mor1kx
 description = "mor1kx CPU"
 
+[verilog]
 rtl_files =
  rtl/verilog/mor1kx_cpu_espresso.v
  rtl/verilog/mor1kx_dcache.v
