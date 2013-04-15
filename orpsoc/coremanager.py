@@ -64,7 +64,7 @@ class CoreManager(object):
         try:
             if self._cores[core].depend:
                 c = self._cores[core].depend
-                d = map(self._get_depends, c) + [core]
+                d = list(map(self._get_depends, c)) + [core]
                 return d
             else:
                 return core
