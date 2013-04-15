@@ -81,7 +81,7 @@ class Modelsim(Simulator):
                     print("Error: Compilation of "+src_file + "failed")
                     exit(1)
 
-	        object_files = [os.path.splitext(os.path.basename(s))[0]+'.o' for s in vpi_module['src_files']]
+                object_files = [os.path.splitext(os.path.basename(s))[0]+'.o' for s in vpi_module['src_files']]
             try:
                 subprocess.check_call(['ld', '-shared','-E','-melf_i386','-o',vpi_module['name']] +
                                       object_files,
