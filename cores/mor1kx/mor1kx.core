@@ -3,7 +3,7 @@ CAPI=1
 description = "mor1kx CPU"
 
 [verilog]
-rtl_files =
+src_files =
  rtl/verilog/mor1kx_cpu_espresso.v
  rtl/verilog/mor1kx_dcache.v
  rtl/verilog/mor1kx_icache.v
