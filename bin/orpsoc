@@ -75,8 +75,9 @@ def sim(known, remaining):
         logger.error("No simulator was found in "+ known.system + " system description")
         exit(1)
     sim = SimulatorFactory(sim_name, core.system)
-    sim.configure()
-    sim.build()
+    if known.force or not os.path.exists(sim.sim_root):
+        sim.configure()
+        sim.build()
     if not known.build_only:
         sim.run(remaining)
     logger.debug('sim() -Done-')
@@ -120,6 +121,7 @@ if __name__ == "__main__":
     parser_sim = subparsers.add_parser('sim', help='Setup and run a simulation')
     parser_sim.add_argument('--sim', nargs=1, help='Override the simulator settings from the system file')
     parser_sim.add_argument('--build-only', action='store_true', help='Build the simulation binary without running the simulator')
+    parser_sim.add_argument('--force', action='store_true', help='Force rebuilding simulation model when directory exists')
     parser_sim.add_argument('--dry-run', action='store_true')
     parser_sim.add_argument('system',help='Select a system to simulate') #, choices = Config().get_systems())
     parser_sim.set_defaults(func=sim)
