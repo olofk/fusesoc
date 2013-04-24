@@ -1,0 +1,28 @@
+Index: uart16550/rtl/verilog/uart_top.v
+===================================================================
+--- uart16550.orig/rtl/verilog/uart_top.v
++++ uart16550/rtl/verilog/uart_top.v
+@@ -157,6 +157,7 @@ module uart_top	(
+ 
+ parameter 							 uart_data_width = `UART_DATA_WIDTH;
+ parameter 							 uart_addr_width = `UART_ADDR_WIDTH;
++parameter debug = 0;
+ 
+ input 								 wb_clk_i;
+ 
+@@ -323,6 +324,7 @@ uart_debug_if dbg(/*AUTOINST*/
+ 
+ initial
+ begin
++   if(debug) begin
+ 	`ifdef DATA_BUS_WIDTH_8
+ 		$display("(%m) UART INFO: Data bus width is 8. No Debug interface.\n");
+ 	`else
+@@ -333,6 +335,7 @@ begin
+ 	`else
+ 		$display("(%m) UART INFO: Doesn't have baudrate output\n");
+ 	`endif
++   end
+ end
+ 
+ endmodule
