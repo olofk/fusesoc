@@ -20,6 +20,7 @@ class Simulator(object):
 
         self.include_dirs = []
         self.src_files = []
+        self.vpi_modules = []
 
         self.cm = CoreManager()
         self.cores = self.cm.get_depends(self.system.name)
@@ -37,6 +38,15 @@ class Simulator(object):
                 self.include_dirs += [os.path.join(self.src_root, core_name, d) for d in core.verilog.tb_include_dirs]
                 self.src_files    += [os.path.join(self.src_root, core_name, f) for f in core.verilog.src_files]
                 self.src_files    += [os.path.join(self.src_root, core_name, f) for f in core.verilog.tb_src_files]
+
+            if core.vpi:
+                vpi_module = {}
+                core_root = os.path.join(self.src_root, core_name)
+                vpi_module['include_dirs']  = [os.path.abspath(os.path.join(core_root, d)) for d in core.vpi.include_dirs]
+                vpi_module['src_files']     = [os.path.abspath(os.path.join(core_root, f)) for f in core.vpi.src_files]
+                vpi_module['name']          = core.vpi.name
+                self.vpi_modules += [vpi_module]
+
         logger.debug('__init__() -Done-')
 
     def configure(self):
@@ -55,19 +65,7 @@ class Simulator(object):
         logger.debug('configure() -Done-')
 
     def build(self):
-        logger.debug('build() *Entered*')
-        self.vpi_modules = []
-
-        for name in self.cores:
-            core = self.cm.get_core(name)
-            if core.vpi:
-                vpi_module = {}
-                core_root = os.path.join(self.src_root, name)
-                vpi_module['include_dirs']  = [os.path.abspath(os.path.join(core_root, d)) for d in core.vpi.include_dirs]
-                vpi_module['src_files']     = [os.path.abspath(os.path.join(core_root, f)) for f in core.vpi.src_files]
-                vpi_module['name']          = core.vpi.name
-                self.vpi_modules += [vpi_module]
-        logger.debug('build() -Done-')
+        return
 
     def run(self, args):
         logger.debug('run() *Entered*')
