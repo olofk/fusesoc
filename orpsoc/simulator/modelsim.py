@@ -6,6 +6,10 @@ class Modelsim(Simulator):
 
     def __init__(self, system):
         super(Modelsim, self).__init__(system)
+        self.model_tech = os.getenv('MODEL_TECH')
+        if not self.model_tech:
+            print("Environment variable MODEL_TECH was not found. It should be set to <modelsim install path>/bin")
+            exit(1)
         self.sim_root = os.path.join(self.build_root, 'sim-modelsim')
         if system.config.has_option('modelsim', 'vlog_options'):
             self.vlog_options = system.config.get('modelsim','vlog_options').split()
@@ -35,10 +39,6 @@ class Modelsim(Simulator):
 
     def build(self):
         super(Modelsim, self).build()
-        self.model_tech = os.getenv('MODEL_TECH')
-        if not self.model_tech:
-            print("Environment variable MODEL_TECH was not found. It should be set to <modelsim install path>/bin")
-            exit(1)
 
         #FIXME: Handle failures. Save stdout/stderr. Build vmem file from elf file argument
         try:
