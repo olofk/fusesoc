@@ -52,8 +52,13 @@ class Simulator(object):
     def configure(self):
         logger.debug('configure() *Entered*')
         if os.path.exists(self.sim_root):
-            shutil.rmtree(self.sim_root)
-        os.makedirs(self.sim_root)
+            for f in os.listdir(self.sim_root):
+                if os.path.isdir(os.path.join(self.sim_root, f)):
+                    shutil.rmtree(os.path.join(self.sim_root, f))
+                else:
+                    os.remove(os.path.join(self.sim_root, f))
+        else:
+            os.makedirs(self.sim_root)
 
         for name in self.cores:
             print("Preparing " + name)
