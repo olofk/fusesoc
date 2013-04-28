@@ -57,7 +57,6 @@ integer		debug;
 
 initial
 begin
-	$display("JTAG debug module with VPI interface enabled\n");
 	tck		<= #TP 1'b0;
 	tdi		<= #TP 1'bz;
 	tms		<= #TP 1'b0;
@@ -75,6 +74,7 @@ end
 
 task main;
 begin
+	$display("JTAG debug module with VPI interface enabled\n");
 
 	// execute some cycles
 	#50000;
