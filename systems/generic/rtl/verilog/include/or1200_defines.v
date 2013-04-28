@@ -699,6 +699,7 @@
 `define OR1200_OR32_MACI              6'b010011
 /* */
 `define OR1200_OR32_LWZ               6'b100001
+`define OR1200_OR32_LWS               6'b100010
 `define OR1200_OR32_LBZ               6'b100011
 `define OR1200_OR32_LBS               6'b100100
 `define OR1200_OR32_LHZ               6'b100101
