@@ -64,10 +64,10 @@ class CoreManager(object):
         try:
             if self._cores[core].depend:
                 c = self._cores[core].depend
-                d = list(map(self._get_depends, c)) + [core]
+                d = list(map(self._get_depends, c))[0] + [core]
                 return d
             else:
-                return core
+                return [core]
         except(KeyError):
             raise DependencyError(core)
     def get_cores(self):
