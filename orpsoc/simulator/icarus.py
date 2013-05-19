@@ -12,12 +12,6 @@ class SimulatorIcarus(Simulator):
         super(SimulatorIcarus, self).__init__(system)
         self.sim_root = os.path.join(self.build_root, 'sim-icarus')
 
-        if system.config.has_option('icarus', 'iverilog_options'):
-            self.iverilog_options = system.config.get('icarus','iverilog_options').split()
-            logger.debug("self.iverilog_options=" + str(self.iverilog_options))
-        else:
-            self.iverilog_options = []
-            logger.debug("No icarus iverilog_options"); # TODO: Remove this temporary line
         logger.debug('__init__() -Done-')
 
     def configure(self):
@@ -64,7 +58,7 @@ class SimulatorIcarus(Simulator):
                             '-s', 'orpsoc_tb',
                             '-c', 'icarus.scr',
                             '-o', 'orpsoc.elf'] +
-                           self.iverilog_options,
+                           self.system.iverilog_options,
                            cwd = self.sim_root):
             print("Error: Compiled failed")
             exit(1)

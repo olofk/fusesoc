@@ -13,6 +13,10 @@ depend =
  vlog_tb_utils
  wb_utils
 
+simulators =
+ icarus
+ modelsim
+
 [verilog]
 src_files = 
  rtl/verilog/clkgen.v

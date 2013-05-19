@@ -64,17 +64,19 @@ def system_info(known, remaining):
 
 def sim(known, remaining):
     logger.debug('sim() *Entered*')
-    if known.system in CoreManager().get_systems():
-        core = CoreManager().get_core(known.system)
+    core = CoreManager().get_core(known.system)
+    if core == None:
+        print("Could not find any core named " + known.system)
+        exit(1)
     if known.sim:
         sim_name = known.sim[0]
-    elif core.system.simulators:
+    elif core.simulators:
         sim_name = core.system.simulators[0]
     else:
-        print("No simulator was found in "+ known.system + " system description")
-        logger.error("No simulator was found in "+ known.system + " system description")
+        print("No simulator was found in "+ known.system + " core description")
+        logger.error("No simulator was found in "+ known.system + " core description")
         exit(1)
-    sim = SimulatorFactory(sim_name, core.system)
+    sim = SimulatorFactory(sim_name, core)
     if known.force or not os.path.exists(sim.sim_root):
         sim.configure()
         sim.build()

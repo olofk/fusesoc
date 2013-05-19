@@ -1,6 +1,2 @@
 [main]
 description = "Generic technology independent OpenRISC system
-
-simulators =
- icarus
- modelsim

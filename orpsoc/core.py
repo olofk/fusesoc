@@ -27,6 +27,8 @@ class Core:
         if core_file:
             basename = os.path.basename(core_file)
         self.depend = []
+        self.simulators = []
+
         self.plusargs = None
         self.provider = None
         self.system   = None
@@ -57,6 +59,15 @@ class Core:
 
             if config.has_option('main', 'depend'):
                 self.depend = config.get('main', 'depend').split()
+
+            if config.has_option('main','simulators'):
+                self.simulators = config.get('main','simulators').split()
+
+            #FIXME : Make simulators part of the core object
+            self.iverilog_options = []
+            if 'icarus' in self.simulators:
+                if config.has_option('icarus', 'iverilog_options'):
+                    self.iverilog_options = config.get('icarus','iverilog_options').split()
 
             logger.debug('name=' + str(self.name))
             self.core_root = os.path.dirname(core_file)
@@ -166,6 +177,11 @@ class Core:
         print("CORE INFO")
         print("Name                  :" + self.name)
         print("Core root             :" + self.core_root)
+        print("Simulators            :")
+        n = 0
+        for simulator_name in self.simulators:
+          print(' '*n + simulator_name)
+          n = 24
         #if core_file:
         #    print 
         #    if config.has_section('provider'):
