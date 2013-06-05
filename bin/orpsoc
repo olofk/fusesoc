@@ -71,7 +71,7 @@ def sim(known, remaining):
     if known.sim:
         sim_name = known.sim[0]
     elif core.simulators:
-        sim_name = core.system.simulators[0]
+        sim_name = core.simulators[0]
     else:
         print("No simulator was found in "+ known.system + " core description")
         logger.error("No simulator was found in "+ known.system + " core description")

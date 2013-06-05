@@ -11,16 +11,7 @@ class Modelsim(Simulator):
             print("Environment variable MODEL_TECH was not found. It should be set to <modelsim install path>/bin")
             exit(1)
         self.sim_root = os.path.join(self.build_root, 'sim-modelsim')
-        if system.config.has_option('modelsim', 'vlog_options'):
-            self.vlog_options = system.config.get('modelsim','vlog_options').split()
-        else:
-            self.vlog_options = []
         
-        if system.config.has_option('modelsim', 'vsim_options'):
-            self.vsim_options = system.config.get('modelsim','vsim_options').split()
-        else:
-            self.vsim_options = []
-
     def configure(self):
         super(Modelsim, self).configure()
         self._write_config_files()
@@ -55,7 +46,7 @@ class Modelsim(Simulator):
         try:
             logfile = os.path.join(self.sim_root, 'vlog.log')
             subprocess.check_call([self.model_tech+'/vlog', '-f', self.cfg_file, '-quiet', '-l', logfile] +
-                                  self.vlog_options,
+                                  self.system.vlog_options,
                             cwd = self.sim_root)
         except OSError:
             print("Error: Command vlog not found. Make sure it is in $PATH")
@@ -105,7 +96,7 @@ class Modelsim(Simulator):
             logfile = os.path.join(self.sim_root, 'vsim.log')
             subprocess.check_call([self.model_tech+'/vsim', '-c', '-do', 'run -all'] +
                                   ['-l', logfile] +
-                                  self.vsim_options +
+                                  self.system.vsim_options +
                                   vpi_options +
                                   ['work.orpsoc_tb'] +
                                   ['+'+s for s in self.plusargs],

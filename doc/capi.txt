@@ -2,7 +2,7 @@ Core Description files
 ======================
 :Author: Olof Kindgren
 :Email: <olof@opencores.org>
-:Date: 2012-12-14
+:Date: 2013-06-04
 :Revision: 1.0 (draft)
 
 capi (Core API) is the format for core description files. Current version is version 1.0. A capi 1.0 file is identified by the string "CAPI=1" in the beginning of a file. The rest of the file is a standard http://en.wikipedia.org/wiki/INI_file[INI file] that is compatible with Python's http://docs.python.org/2/library/configparser.html[configparser] module
@@ -38,6 +38,29 @@ A string with a description can be added to the core.
 depend (optional)
 ^^^^^^^^^^^^^^^^^
 List of cores that this core depends on
+
+simulators (optional)
+^^^^^^^^^^^^^^^^^^^^^
+A white-space separated list of orpsoc-supported simulators that can be used to simulate the system. Currently supported simulators are:
+
+* *modelsim :* Mentor Modelsim
+* *icarus :* Icarus Verilog Open-Source simulator
+
+Each of the simulator targets have a dedicated section described in further detail below
+
+modelsim (optional)
+~~~~~~~~~~~~~~~~~~~
+Additional options used when simulating with modelsim
+
+*vlog_options :* Options to be sent as additional arguments to vlog
+
+*vsim_options :* Options to be sent as additional arguments to vsim
+
+icarus (optional)
+~~~~~~~~~~~~~~~~~
+Additional options used when simulating with Icarus Verilog
+
+*iverilog_options :* Options to be sent as additional arguments to iverilog
 
 verilog
 ~~~~~~~
