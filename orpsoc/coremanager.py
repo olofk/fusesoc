@@ -57,17 +57,20 @@ class CoreManager(object):
                 self.load_cores(path)
 
     def get_depends(self, core):
-        return self._get_depends(core)
+        if self._cores[core].depend:
+            return self._get_depends(core)
+        else:
+            return [core]
 
     def _get_depends(self, core):
         #FIXME: Check for circular dependencies and duplicates
         try:
             if self._cores[core].depend:
                 c = self._cores[core].depend
-                d = list(map(self._get_depends, c))[0] + [core]
+                d = list(map(self._get_depends, c)) + [core]
                 return d
             else:
-                return [core]
+                return core
         except(KeyError):
             raise DependencyError(core)
     def get_cores(self):
