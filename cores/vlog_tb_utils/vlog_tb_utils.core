@@ -7,3 +7,4 @@ tb_src_files = vlog_tb_utils.v
 
 [plusargs]
 timeout = int "Abort test case after n cycles"
+vcd     = bool "Enable VCD logging"

@@ -8,10 +8,12 @@ module vlog_tb_utils;
 	$finish;
      end
 
-   //FIXME: Add options for VCD logging
+   //FIXME: Add more options for VCD logging
    initial begin
-      $dumpfile("testlog.vcd");
-      $dumpvars(0);
+      if($test$plusargs("vcd")) begin
+	 $dumpfile("testlog.vcd");
+	 $dumpvars(0);
+      end
    end
 
 endmodule // vlog_tb_utils
