@@ -1,9 +1,4 @@
-import sys
-if sys.version[0] == '2':
-    import ConfigParser as configparser
-else:
-    import configparser
-
+from orpsoc.orpsocconfigparser import OrpsocConfigParser
 from orpsoc.config import Config
 import os
 import logging
@@ -19,8 +14,7 @@ class System:
 
         system_root = os.path.dirname(system_file)
 
-        self.config = configparser.SafeConfigParser()
-        self.config.readfp(open(system_file))
+        self.config = OrpsocConfigParser(system_file)
 
         self.name = os.path.basename(system_file).split('.')[0]
 

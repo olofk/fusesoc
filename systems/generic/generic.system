@@ -1,2 +1,3 @@
+SAPI=1
 [main]
 description = "Generic technology independent OpenRISC system

@@ -1,9 +1,4 @@
-import sys
-if sys.version[0] == '2':
-    import ConfigParser as configparser
-else:
-    import configparser
-
+from orpsoc.orpsocconfigparser import OrpsocConfigParser
 from orpsoc.config import Config
 from orpsoc.plusargs import Plusargs
 from orpsoc.provider import ProviderFactory
@@ -35,47 +30,20 @@ class Core:
         self.verilog  = None
         self.vpi = None
         if core_file:
-            config = configparser.SafeConfigParser()
-            if not os.path.exists(core_file):
-                print("Could not find " + core_file)
-                exit(1)
-            f = open(core_file)
-            capi = f.readline().split('=')
-            if capi[0].strip().upper() == 'CAPI':
-                try:
-                    self.capi = int(capi[1].strip())
-                except ValueError:
-                    print("Unknown CAPI version: \"" + capi[1].strip()+'" in ' + core_file)
-                except IndexError:
-                    raise SyntaxError("Could not find CAPI version in " + core_file)
-            else:
-                raise SyntaxError("Could not find CAPI version in " + core_file)
-            config.readfp(f)
+            config = OrpsocConfigParser(core_file)
 
             if config.has_option('main', 'name'):
                 self.name = config.get('main','name')
             else:
                 self.name = basename.split('.core')[0]
 
-            if config.has_option('main', 'depend'):
-                self.depend = config.get('main', 'depend').split()
-
-            if config.has_option('main','simulators'):
-                self.simulators = config.get('main','simulators').split()
+            self.depend     = config.get_list('main', 'depend')
+            self.simulators = config.get_list('main', 'simulators')
 
             #FIXME : Make simulators part of the core object
-            self.iverilog_options = []
-            if 'icarus' in self.simulators:
-                if config.has_option('icarus', 'iverilog_options'):
-                    self.iverilog_options = config.get('icarus','iverilog_options').split()
-
-            self.vlog_options = []
-            self.vsim_options = []
-            if 'modelsim' in self.simulators:
-                if config.has_option('modelsim', 'vlog_options'):
-                    self.vlog_options = config.get('modelsim','vlog_options').split()
-                if config.has_option('modelsim', 'vsim_options'):
-                    self.vsim_options = config.get('modelsim','vsim_options').split()
+            self.iverilog_options = config.get_list('icarus','iverilog_options')
+            self.vlog_options     = config.get_list('modelsim','vlog_options')
+            self.vsim_options     = config.get_list('modelsim','vsim_options')
 
             logger.debug('name=' + str(self.name))
             self.core_root = os.path.dirname(core_file)
