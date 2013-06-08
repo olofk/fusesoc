@@ -58,21 +58,21 @@ class CoreManager(object):
 
     def get_depends(self, core):
         if self._cores[core].depend:
-            return self._get_depends(core)
+            return list(set(self._get_depends(core)))
         else:
             return [core]
 
     def _get_depends(self, core):
-        #FIXME: Check for circular dependencies and duplicates
+        #FIXME: Check for circular dependencies
         try:
+            cores = [core]
             if self._cores[core].depend:
-                c = self._cores[core].depend
-                d = list(map(self._get_depends, c)) + [core]
-                return d
-            else:
-                return core
+                for c in self._cores[core].depend:
+                    cores += self._get_depends(c)
+            return cores
         except(KeyError):
             raise DependencyError(core)
+
     def get_cores(self):
         return self._cores
 
