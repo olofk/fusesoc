@@ -36,7 +36,8 @@ class Simulator(object):
                 self.include_dirs += [os.path.join(self.src_root, core_name, d) for d in core.verilog.include_dirs]
                 self.include_dirs += [os.path.join(self.src_root, core_name, d) for d in core.verilog.tb_include_dirs]
                 self.src_files    += [os.path.join(self.src_root, core_name, f) for f in core.verilog.src_files]
-                self.src_files    += [os.path.join(self.src_root, core_name, f) for f in core.verilog.tb_src_files]
+                if core_name == self.system.name:
+                    self.src_files    += [os.path.join(self.src_root, core_name, f) for f in core.verilog.tb_src_files]
 
             if core.vpi:
                 vpi_module = {}
