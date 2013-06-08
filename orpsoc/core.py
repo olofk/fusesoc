@@ -69,11 +69,11 @@ class Core:
                 if config.has_option('icarus', 'iverilog_options'):
                     self.iverilog_options = config.get('icarus','iverilog_options').split()
 
+            self.vlog_options = []
+            self.vsim_options = []
             if 'modelsim' in self.simulators:
-                self.vlog_options = []
                 if config.has_option('modelsim', 'vlog_options'):
                     self.vlog_options = config.get('modelsim','vlog_options').split()
-                self.vsim_options = []
                 if config.has_option('modelsim', 'vsim_options'):
                     self.vsim_options = config.get('modelsim','vsim_options').split()
 
