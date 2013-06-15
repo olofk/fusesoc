@@ -46,7 +46,6 @@ class Backend(object):
             dst_dir = os.path.join(Config().build_root, self.system.name, 'src', name)
             core.setup()
             core.export(dst_dir)
-            core.patch(dst_dir)
         logger.debug('configure() -Done-')
 
     def build(self):

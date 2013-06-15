@@ -66,7 +66,6 @@ class Simulator(object):
             core = self.cm.get_core(name)
             core.setup()
             core.export(dst_dir)
-            core.patch(dst_dir)
         logger.debug('configure() -Done-')
 
     def build(self):

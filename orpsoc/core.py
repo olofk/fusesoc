@@ -93,6 +93,7 @@ class Core:
         logger.debug("  name="+self.name)
         if self.provider:
             self.provider.fetch(self.cache_dir)
+            self.patch(self.cache_dir)
         logger.debug('setup() -Done-')
 
     def export(self, dst_dir):
@@ -122,8 +123,7 @@ class Core:
                 shutil.copyfile(os.path.join(src_dir, f), 
                                 os.path.join(dst_dir, f))
             else:
-                logger.debug("  File " + f + " doesn't exist - may it will be added as patch later?")
-                print("File " + os.path.join(src_dir, f) + " doesn't exist - maybe it will be added as patch later?")
+                print("File " + os.path.join(src_dir, f) + " doesn't exist")
         logger.debug('export() -Done-')
         
     def patch(self, dst_dir):
