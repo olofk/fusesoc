@@ -21,16 +21,19 @@ class ProviderOpenCores(Provider):
 
         if status == 'empty':
             self._checkout(local_dir)
+            return True
         elif status == 'modified':
             self.clean_cache()
             self._checkout(local_dir)
+            return True
         elif status == 'outofdate':
             self._update()
+            return True
         elif status == 'downloaded':
-            pass
+            return False
         else:
             print("provider status is: " + status + " This shouldn't happen")
-        logger.debug('fetch() -Done-')
+            return False
 
     def status(self, local_dir):
         logger.debug('status() *Entered*')
