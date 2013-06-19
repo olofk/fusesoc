@@ -1,7 +1,9 @@
 [main]
 name= jp_vpi
 description = Debug interface GDB server
-tb_files = verilog/vpi_debug_module.v
+
+[verilog]
+tb_src_files = verilog/vpi_debug_module.v
 
 [vpi]
 name = jp_vpi
