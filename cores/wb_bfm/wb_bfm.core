@@ -1,0 +1,10 @@
+CAPI=1
+[main]
+description = Wishbone BFM
+depend = vlog_tb_utils
+simulators = icarus modelsim
+
+[verilog]
+tb_src_files = wb_bfm_master.v wb_bfm_slave.v wb_bfm_memory.v
+tb_private_src_files = bench/wb_master.v bench/orpsoc_tb.v
+tb_include_files = wb_bfm_params.v wb_bfm_common.v
