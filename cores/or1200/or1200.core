@@ -82,6 +82,8 @@ src_files =
  rtl/verilog/or1200_wbmux.v
  rtl/verilog/or1200_xcv_ram32x8d.v
  rtl/verilog/timescale.v
+tb_src_files =  bench/or1200_monitor.v
+tb_include_files = bench/or1200_monitor_defines.v
 
 [provider]
 name = opencores
