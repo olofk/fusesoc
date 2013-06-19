@@ -14,6 +14,7 @@ class Verilog:
         self.include_dirs = []
 
         self.tb_src_files = []
+        self.tb_private_src_files = []
         self.tb_include_files = []
         self.tb_include_dirs = []
 
@@ -25,6 +26,8 @@ class Verilog:
                 self.include_dirs  = list(set(map(os.path.dirname, self.include_files)))
             elif item == 'tb_src_files':
                 self.tb_src_files = items.get(item).split()
+            elif item == 'tb_private_src_files':
+                self.tb_private_src_files = items.get(item).split()
             elif item == 'tb_include_files':
                 self.tb_include_files = items.get(item).split()
                 self.tb_include_dirs  = list(set(map(os.path.dirname, self.tb_include_files)))
@@ -34,6 +37,6 @@ class Verilog:
 
     def export(self):
         logger.debug('export() *Entered*')
-        self.export_files = self.src_files + self.include_files + self.tb_src_files + self.tb_include_files
+        self.export_files = self.src_files + self.include_files + self.tb_src_files + self.tb_include_files + self.tb_private_src_files
         logger.debug("  export_files="+str(self.export_files));
         return self.export_files
