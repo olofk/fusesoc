@@ -10,7 +10,7 @@ orpsoc_PYTHON =        \
  orpsoc/verilog.py            \
  orpsoc/vpi.py
 
-orpsocdir = $(pythondir)/orpsoc
+orpsocdir = $(pkgpythondir)
 
 provider_PYTHON =      \
  orpsoc/provider/__init__.py  \
@@ -26,5 +26,7 @@ simulator_PYTHON =      \
  orpsoc/simulator/simulator.py
 
 simulatordir = $(orpsocdir)/simulator
+
+EXTRA_DIST = cores systems
 
 SUBDIRS = bin
