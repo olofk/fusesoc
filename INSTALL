@@ -1,0 +1,26 @@
+ORPSoCv3 can be run directly from a downloaded tar ball release or from a checked out repository
+In these cases the main program is available in bin/orpsoc.in. This is handy if you want to work
+on ORPSoC itself.
+
+Unless you want to development on ORPSoC itself, it is better to do a system installation
+
+If you install ORPSoC from from a GIT repository instead of using a released tar ball, you need to run
+"autoreconf -i" first
+
+Run "./configure && make" to build ORPSoC.
+Install it with "make install" and make sure you have write permissions to the target directory
+
+The two directories cores and systems contain ORPSoC core descriptions and example systems. You most
+certainly want the cores available (and probably systems too), so copy them somewhere.
+
+The next step is to create a directory that will host the build directories and caches of downloaded
+cores. Create a file named orpsoc.conf in this directory and add paths to the systems and cores directories
+like this:
+
+[main]
+cores_root=/path/to/cores
+systems_root=/path/to/systems
+
+If orpsoc is in your path, you can now try to do a test simulation. Run "orpsoc sim wb_bfm" to run through the
+self tests of the Wishbone BFM that is provided by ORPSoC. This should download all the needed cores to a cache
+directory, set up a build structure in the build directory and run a simulation with Icarus Verilog
