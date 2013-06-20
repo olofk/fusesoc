@@ -7,6 +7,8 @@ import sys
 orpsocdir = os.path.abspath(os.path.join(os.path.dirname(os.path.realpath(__file__)), ".."))
 if os.path.exists(os.path.join(orpsocdir, "orpsoc")):
     sys.path[0:0] = [orpsocdir]
+else:
+    sys.path[0:0] = ['@pythondir@']
 
 from orpsoc.build import BackendFactory
 from orpsoc.config import Config
