@@ -11,9 +11,9 @@ simulators = icarus modelsim
 [verilog]
 tb_private_src_files = 
  bench/orpsoc_tb.v
- rtl/verilog/wb_arbiter.v
- rtl/verilog/wb_intercon.v
- rtl/verilog/orpsoc_top.v
+ bench/wb_arbiter.v
+ bench/wb_intercon.v
+ bench/orpsoc_top.v
 include_files =
- rtl/verilog/include/or1200_defines.v
- rtl/verilog/include/timescale.v
+ bench/include/or1200_defines.v
+ bench/include/timescale.v
