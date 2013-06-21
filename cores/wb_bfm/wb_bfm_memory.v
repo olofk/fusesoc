@@ -28,6 +28,10 @@ module wb_bfm_memory
    localparam bytes_per_dw = (dw/8);
    localparam mem_words = (mem_size_bytes/bytes_per_dw);   
 
+   //Counters for read and write accesses
+   integer 		   reads  = 0;
+   integer 		   writes = 0;
+
    // synthesis attribute ram_style of mem is block
    reg [dw-1:0] 	mem [ 0 : mem_words-1 ]   /* verilator public */ /* synthesis ram_style = no_rw_check */;
 
@@ -56,6 +60,10 @@ module wb_bfm_memory
       bfm0.init();
       address = bfm0.address; //Fetch start address
 
+      if(bfm0.op === WRITE)
+	writes = writes + 1;
+      else
+	reads = reads + 1;
       while(bfm0.has_next) begin
 	 //Set error on out of range accesses
 	 if(address[31:2] > mem_words)
