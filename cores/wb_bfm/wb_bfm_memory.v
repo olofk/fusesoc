@@ -55,6 +55,8 @@ module wb_bfm_memory
 
    reg [aw-1:0] 	address;
    reg [dw-1:0] 	data;
+
+   integer 		i;
    
    always begin
       bfm0.init();
@@ -72,10 +74,16 @@ module wb_bfm_memory
 	    if(bfm0.op === WRITE) begin
 	       bfm0.write_ack(data);
 	       if(DEBUG) $display("%d : ram Write 0x%h = 0x%h %b", $time, address, data, bfm0.mask);
-	       mem[address[31:2]] = data;
+	       for(i=0;i < 4; i=i+1)
+		 if(bfm0.mask[i])
+		   mem[address[31:2]][i*8+:8] = data[i*8+:8];
 	    end else begin
-	       if(DEBUG) $display("%d : ram Read  0x%h = 0x%h %b", $time, address, mem[address[31:2]], bfm0.mask);
-	       bfm0.read_ack(mem[address[31:2]]);
+	       data = {aw{1'b0}};
+	       for(i=0;i < 4; i=i+1)
+		 if(bfm0.mask[i])
+		   data[i*8+:8] = mem[address[31:2]][i*8+:8];
+	       if(DEBUG) $display("%d : ram Read  0x%h = 0x%h %b", $time, address, data, bfm0.mask);
+	       bfm0.read_ack(data);
 	    end
 	 end
 	 if(bfm0.cycle_type === BURST_CYCLE)
