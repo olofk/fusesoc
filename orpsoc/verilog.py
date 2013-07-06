@@ -5,10 +5,7 @@ logger = logging.getLogger(__name__)
 
 class Verilog:
 
-    def __init__(self, items):
-        logger.debug('__init__() *Entered*')
-        logger.debug("  items=" + str(items))
-
+    def __init__(self):
         self.src_files = []
         self.include_files = []
         self.include_dirs = []
@@ -17,6 +14,10 @@ class Verilog:
         self.tb_private_src_files = []
         self.tb_include_files = []
         self.tb_include_dirs = []
+        
+    def load_items(self, items):
+        logger.debug('__init__() *Entered*')
+        logger.debug("  items=" + str(items))
 
         for item in items:
             if item == 'src_files':

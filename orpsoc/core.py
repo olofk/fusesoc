@@ -59,8 +59,9 @@ class Core:
                 self.files_root = self.core_root
 
             if config.has_section('verilog'):
+                self.verilog = Verilog()
                 items = config.items('verilog')
-                self.verilog = Verilog(dict(items))
+                self.verilog.load_items((dict(items)))
                 logger.debug('verilog.src_files=' + str(self.verilog.src_files))
                 logger.debug('verilog.include_files=' + str(self.verilog.include_files))
                 logger.debug('verilog.include_dirs=' + str(self.verilog.include_dirs))
