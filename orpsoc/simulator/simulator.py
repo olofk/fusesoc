@@ -1,5 +1,6 @@
 from orpsoc.config import Config
 from orpsoc.coremanager import CoreManager
+from orpsoc.verilog import Verilog
 import argparse
 import shutil
 import os
@@ -17,13 +18,12 @@ class Simulator(object):
 
         self.src_root = os.path.join(self.build_root, 'src')
 
-        self.include_dirs = []
-        self.src_files = []
         self.vpi_modules = []
 
         self.cm = CoreManager()
         self.cores = self.cm.get_depends(self.system.name)
 
+        self.verilog = Verilog()
         for core_name in self.cores:
             logger.debug('core_name=' + core_name)
             core = self.cm.get_core(core_name)
@@ -33,12 +33,12 @@ class Simulator(object):
                     logger.debug('core.include_dirs=' + str(core.verilog.include_dirs))
                 else:
                     logger.debug('core.include_dirs=None')
-                self.include_dirs += [os.path.join(self.src_root, core_name, d) for d in core.verilog.include_dirs]
-                self.include_dirs += [os.path.join(self.src_root, core_name, d) for d in core.verilog.tb_include_dirs]
-                self.src_files    += [os.path.join(self.src_root, core_name, f) for f in core.verilog.src_files]
-                self.src_files    += [os.path.join(self.src_root, core_name, f) for f in core.verilog.tb_src_files]
+                self.verilog.include_dirs    += [os.path.join(self.src_root, core_name, d) for d in core.verilog.include_dirs]
+                self.verilog.tb_include_dirs += [os.path.join(self.src_root, core_name, d) for d in core.verilog.tb_include_dirs]
+                self.verilog.src_files       += [os.path.join(self.src_root, core_name, f) for f in core.verilog.src_files]
+                self.verilog.tb_src_files    += [os.path.join(self.src_root, core_name, f) for f in core.verilog.tb_src_files]
                 if core_name == self.system.name:
-                    self.src_files    += [os.path.join(self.src_root, core_name, f) for f in core.verilog.tb_private_src_files]
+                    self.verilog.tb_src_files    += [os.path.join(self.src_root, core_name, f) for f in core.verilog.tb_private_src_files]
 
             if core.vpi:
                 vpi_module = {}
