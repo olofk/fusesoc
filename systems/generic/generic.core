@@ -7,7 +7,6 @@ depend =
  jtag_vpi
  or1200
  or1k-elf-loader
- or1k-monitor
  ram_wb
  uart16550
  vlog_tb_utils

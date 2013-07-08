@@ -1,6 +1,0 @@
-CAPI=1
-[main]
-description = OR1K test bench monitor 
-
-[verilog]
-tb_src_files = verilog/monitor.v
