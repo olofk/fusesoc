@@ -54,10 +54,7 @@ module orpsoc_tb;
       .uart0_srx_pad_i(uart),
       .uart0_stx_pad_o(uart));
 
-   or1200_monitor i_monitor
-     (.clk (clk),
-      .wb_insn (orpsoc_tb.dut.or1200_top0.or1200_cpu.or1200_ctrl.wb_insn)
-      );
+   or1200_monitor i_monitor();
 
    //FIXME: Get correct baud rate from parameter
    uart_decoder
