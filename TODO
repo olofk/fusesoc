@@ -12,7 +12,6 @@ icarus?
 
 Shorten opencores checkout message
 Document the internal API
-Create system installer (distutils2? packaging from python 3.3)
 Read arguments from file
 Add glob support in CAPI
 Create round-robin wishbone scheduler
@@ -39,3 +38,4 @@ Load test cases with $value$plusargs
 Quartus support
 Modelsim support
 Store patched copies in cache
+Create system installer
