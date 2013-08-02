@@ -32,6 +32,18 @@ module wb_bfm_master
    reg [2:0] 	   burst_type;
    reg [31:0] 	   burst_length;
 
+   task reset;
+      begin
+	 wb_adr_o = {aw{1'b0}};
+	 wb_dat_o = {dw{1'b0}};
+	 wb_sel_o = 4'h0;
+	 wb_we_o = 1'b0;
+	 wb_cyc_o = 1'b0;
+	 wb_stb_o = 1'b0;
+	 wb_cti_o = 3'b000;
+	 wb_bte_o = 2'b00;
+      end
+   endtask
    
    task write;
       input [aw-1:0] addr_i;
