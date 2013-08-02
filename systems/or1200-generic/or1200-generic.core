@@ -6,12 +6,13 @@ depend =
  or1k-elf-loader
  vlog_tb_utils
  wb_bfm
+ wb_intercon
+
 simulators = icarus modelsim
 
 [verilog]
 tb_private_src_files = 
  bench/orpsoc_tb.v
- bench/wb_arbiter.v
  bench/wb_intercon.v
  bench/orpsoc_top.v
 include_files =
