@@ -1,0 +1,22 @@
+CAPI=1
+[main]
+description = Wishbone Bus Interconnect utilities
+depend =
+ verilog-arbiter
+ vlog_tb_utils
+ wb_bfm
+simulators = icarus modelsim
+
+[verilog]
+src_files =
+ wb_arbiter.v
+ wb_data_resize.v
+ wb_mux.v
+tb_private_src_files =
+ bench/wb_master.v
+ bench/wb_mux_tb.v
+ bench/wb_arbiter_tb.v
+ bench/orpsoc_tb.v
+
+[plusargs]
+transactions = int "Number of wishbone transactions to run in test bench"
