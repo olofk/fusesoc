@@ -45,7 +45,7 @@ module ram_wb_b3
 
    // Logic to detect if there's a burst access going on
    wire wb_b3_trans_start = ((wb_cti_i == 3'b001)|(wb_cti_i == 3'b010)) & 
-	wb_stb_i & !wb_b3_trans;
+	wb_stb_i & !wb_b3_trans & wb_cyc_i;
    
    wire wb_b3_trans_stop = ((wb_cti_i == 3'b111) & 
 			    wb_stb_i & wb_b3_trans & wb_ack_o) | wb_err_o;
