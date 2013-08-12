@@ -35,3 +35,9 @@ class OrpsocConfigParser(configparser.SafeConfigParser):
         else:
             return []
         
+
+    def get_section(self, section):
+        if self.has_section(section):
+            return dict(self.items(section))
+        else:
+            return {}
