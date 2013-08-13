@@ -75,9 +75,11 @@ module wb_arbiter
 ///////////////////////////////////////////////////////////////////////////////
 
    wire [num_masters-1:0]     grant;
-   reg [num_masters-1:0]      master_sel; //TODO: Make width clog2(num_masters)
+   reg [$clog2(num_masters)-1:0]      master_sel;
    wire 		      active;
-   integer 		      i;
+   reg [$clog2(num_masters)-1:0] i;
+
+   wire [$clog2(num_masters)-1:0] master_sel_int [0:num_masters-1];
    
    arbiter
      #(.NUM_PORTS (num_masters))
@@ -87,13 +89,18 @@ module wb_arbiter
       .request (wbm_cyc_i),
       .grant (grant),
       .active (active));
+
+   genvar 			  idx;
    
-   always @(grant) begin
-      master_sel = 0;
-      for (i=0;i<num_masters;i=i+1)
-	if(grant[i])
-	  master_sel = i;
-   end
+   assign master_sel_int[0] = 0;
+   
+   generate
+      for(idx=1; idx<num_masters ; idx=idx+1) begin : select_mux
+	 assign master_sel_int[idx] = grant[idx] ? idx : master_sel_int[idx-1];
+      end
+   endgenerate
+   
+   assign master_sel = master_sel_int[num_masters-1];
    
    //Mux active master
    assign wbs_adr_o = wbm_adr_i[master_sel*aw+:aw];
