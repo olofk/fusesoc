@@ -1,18 +1,17 @@
-module orpsoc_top;
+module orpsoc_top
+  (input wb_clk_i,
+   input wb_rst_i);
 
    localparam wb_aw = 32;
    localparam wb_dw = 32;
+
+   localparam MEM_SIZE_BITS = 23;
    
    ////////////////////////////////////////////////////////////////////////
    //
    // Clock and reset generation
    // 
    ////////////////////////////////////////////////////////////////////////
-   reg wb_clk = 1;
-   reg wb_rst = 1;
-
-   always #5 wb_clk <= ~wb_clk;
-   initial #100 wb_rst <= 0;
    
    // OR1200 instruction bus wires
    wire [wb_aw-1:0] 	      wb_or1200_i_adr;
@@ -68,8 +67,8 @@ module orpsoc_top;
    or1200_top #(.boot_adr(32'h00000100)) or1200_top0
        (
 	// Instruction bus, clocks, reset
-	.iwb_clk_i			(wb_clk),
-	.iwb_rst_i			(wb_rst),
+	.iwb_clk_i			(wb_clk_i),
+	.iwb_rst_i			(wb_rst_i),
 	.iwb_adr_o			(wb_or1200_i_adr),
 	.iwb_dat_o			(wb_or1200_i_dat),
 	.iwb_sel_o			(wb_or1200_i_sel),
@@ -83,8 +82,8 @@ module orpsoc_top;
 	.iwb_err_i			(wb_or1200_i_err),
 	.iwb_rty_i			(wb_or1200_i_rty),
 	// Data bus, clocks, reset            
-	.dwb_clk_i			(wb_clk),
-	.dwb_rst_i			(wb_rst),
+	.dwb_clk_i			(wb_clk_i),
+	.dwb_rst_i			(wb_rst_i),
 	.dwb_adr_o			(wb_or1200_d_adr),
 	.dwb_dat_o			(wb_or1200_d_dat),
 	.dwb_sel_o			(wb_or1200_d_sel),
@@ -124,8 +123,8 @@ module orpsoc_top;
 	.pm_lvolt_o			(),
 
 	// Core clocks, resets
-	.clk_i				(wb_clk),
-	.rst_i				(wb_rst),
+	.clk_i				(wb_clk_i),
+	.rst_i				(wb_rst_i),
 	
 	.clmode_i			(2'b00),
 	// Interrupts      
@@ -140,8 +139,8 @@ module orpsoc_top;
    // 
    ////////////////////////////////////////////////////////////////////////
    wb_intercon wb_intercon0
-     (.wb_clk_i         (wb_clk),
-      .wb_rst_i         (wb_rst),
+     (.wb_clk_i         (wb_clk_i),
+      .wb_rst_i         (wb_rst_i),
       // OR1200 Instruction bus (To Master)
       .wb_or1200_i_adr_i (wb_or1200_i_adr),
       .wb_or1200_i_dat_i (wb_or1200_i_dat),
@@ -187,14 +186,16 @@ module orpsoc_top;
    // Generic main RAM
    // 
    ////////////////////////////////////////////////////////////////////////
-   wb_bfm_memory #(.DEBUG (0),
-		   .mem_size_bytes(32'h00800000))
+   ram_wb_b3 #(
+   //wb_bfm_memory #(.DEBUG (0),
+	       .mem_size_bytes (2**MEM_SIZE_BITS*(wb_dw/8)),
+	       .mem_adr_width (MEM_SIZE_BITS))
    wb_bfm_memory0
      (
       //Wishbone Master interface
-      .wb_clk_i (wb_clk),
-      .wb_rst_i (wb_rst),
-      .wb_adr_i	(wb_mem_adr),
+      .wb_clk_i (wb_clk_i),
+      .wb_rst_i (wb_rst_i),
+      .wb_adr_i	(wb_mem_adr & (2**MEM_SIZE_BITS-1)),
       .wb_dat_i	(wb_mem_dat),
       .wb_sel_i	(wb_mem_sel),
       .wb_we_i	(wb_mem_we),
@@ -202,7 +203,8 @@ module orpsoc_top;
       .wb_stb_i	(wb_mem_stb),
       .wb_cti_i	(wb_mem_cti),
       .wb_bte_i	(wb_mem_bte),
-      .wb_sdt_o	(wb_mem_sdt),
+      .wb_dat_o	(wb_mem_sdt),
+      //.wb_sdt_o	(wb_mem_sdt),
       .wb_ack_o	(wb_mem_ack),
       .wb_err_o (wb_mem_err),
       .wb_rty_o (wb_mem_rty));
