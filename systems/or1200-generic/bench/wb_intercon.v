@@ -58,8 +58,8 @@ module wb_intercon
    wire [MASTERS-1:0] 	 wbm_err;
    wire [MASTERS-1:0] 	 wbm_rty;
 
-   assign wbm_adr[0*dw+:dw] = wb_or1200_i_adr_i;
-   assign wbm_dat[0*aw+:aw] = wb_or1200_i_dat_i;
+   assign wbm_adr[0*aw+:dw] = wb_or1200_i_adr_i;
+   assign wbm_dat[0*dw+:aw] = wb_or1200_i_dat_i;
    assign wbm_sel[0*4+:4]   = wb_or1200_i_sel_i;
    assign wbm_we[0]	    = wb_or1200_i_we_i;
    assign wbm_cyc[0] 	    = wb_or1200_i_cyc_i;
@@ -71,8 +71,8 @@ module wb_intercon
    assign wb_or1200_i_err_o = wbm_err[0];
    assign wb_or1200_i_rty_o = wbm_rty[0]; 
 
-   assign wbm_adr[1*dw+:dw] = wb_or1200_d_adr_i;
-   assign wbm_dat[1*aw+:aw] = wb_or1200_d_dat_i;
+   assign wbm_adr[1*aw+:dw] = wb_or1200_d_adr_i;
+   assign wbm_dat[1*dw+:aw] = wb_or1200_d_dat_i;
    assign wbm_sel[1*4+:4]   = wb_or1200_d_sel_i;
    assign wbm_we[1]	    = wb_or1200_d_we_i;
    assign wbm_cyc[1] 	    = wb_or1200_d_cyc_i;
