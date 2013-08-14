@@ -44,6 +44,7 @@ class Core:
             self.iverilog_options = config.get_list('icarus','iverilog_options')
             self.vlog_options     = config.get_list('modelsim','vlog_options')
             self.vsim_options     = config.get_list('modelsim','vsim_options')
+            self.verilator = config.get_section('verilator')
 
             logger.debug('name=' + str(self.name))
             self.core_root = os.path.dirname(core_file)
