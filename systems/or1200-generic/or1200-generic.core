@@ -4,6 +4,7 @@ description = "Minimal OR1200 simulation environment"
 depend = 
  or1200
  or1k-elf-loader
+ ram_wb
  vlog_tb_utils
  wb_bfm
  wb_intercon
@@ -11,10 +12,17 @@ depend =
 simulators = icarus modelsim
 
 [verilog]
-tb_private_src_files = 
- bench/orpsoc_tb.v
+src_files =
  bench/wb_intercon.v
  bench/orpsoc_top.v
+tb_private_src_files = 
+ bench/orpsoc_tb.v
 include_files =
  bench/include/or1200_defines.v
  bench/include/timescale.v
+
+[verilator]
+verilator_options = -Wno-fatal --trace
+src_files = bench/or1k-elf-loader.c
+include_files = bench/or1k-elf-loader.h
+tb_toplevel = bench/tb.cpp
