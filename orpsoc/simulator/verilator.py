@@ -70,19 +70,13 @@ class Verilator(Simulator):
         
     def build(self):
         super(Verilator, self).build()
-        cmd = ['gcc', '-c']
-        cmd += ['-I'+s for s in self.include_dirs]
+        args = ['-c']
+        args += ['-I'+s for s in self.include_dirs]
         for src_file in self.src_files:
             print("Compiling " + src_file)
-            try:
-                subprocess.check_call(cmd + [src_file],
-                                      cwd = self.sim_root)
-            except OSError:
-                print("Command gcc not found. Make sure it is in $PATH")
-                exit(1)
-            except subprocess.CalledProcessError:
-                print("Error: Compilation of "+src_file + "failed")
-                exit(1)
+            utils.launch('gcc',
+                         args + [src_file],
+                         cwd=self.sim_root)
 
         object_files = [os.path.splitext(os.path.basename(s))[0]+'.o' for s in self.src_files]
         
@@ -102,17 +96,9 @@ class Verilator(Simulator):
         except subprocess.CalledProcessError:
             print("Error: Failed to compile. See " + os.path.join(self.sim_root,'verilator.log') + " for details")
             exit(1)
-        try:
-            subprocess.check_call(['make -f Vorpsoc_top.mk Vorpsoc_top'],
-                                  cwd=os.path.join(self.sim_root, 'obj_dir'),
-                                  shell=True)
-        except OSError:
-            print("Error Command make not found. Make sure it is in $PATH")
-            exit(1)
-        except subprocess.CalledProcessError:
-            print("Error: Failed to compile verilated model.")
-            exit(1)
-            
+        utils.launch('make -f Vorpsoc_top.mk Vorpsoc_top',
+                     cwd=os.path.join(self.sim_root, 'obj_dir'),
+                     shell=True)
         
     def run(self, args):
         #TODO: Handle arguments parsing
