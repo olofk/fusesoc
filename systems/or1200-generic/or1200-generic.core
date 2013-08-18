@@ -13,16 +13,16 @@ simulators = icarus modelsim
 
 [verilog]
 src_files =
- bench/wb_intercon.v
- bench/orpsoc_top.v
+ bench/verilog/wb_intercon.v
+ bench/verilog/orpsoc_top.v
 tb_private_src_files = 
- bench/orpsoc_tb.v
+ bench/verilog/orpsoc_tb.v
 include_files =
- bench/include/or1200_defines.v
- bench/include/timescale.v
+ bench/verilog/include/or1200_defines.v
+ bench/verilog/include/timescale.v
 
 [verilator]
 verilator_options = -Wno-fatal --trace
-src_files = bench/or1k-elf-loader.c
-include_files = bench/or1k-elf-loader.h
-tb_toplevel = bench/tb.cpp
+src_files     = bench/verilator/or1k-elf-loader.c
+include_files = bench/verilator/or1k-elf-loader.h
+tb_toplevel   = bench/verilator/tb.cpp
