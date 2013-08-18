@@ -1,6 +1,7 @@
 import os
 import shutil
 import subprocess
+from orpsoc import utils
 from .simulator import Simulator
 
 class Verilator(Simulator):
@@ -112,4 +113,10 @@ class Verilator(Simulator):
             print("Error: Failed to compile verilated model.")
             exit(1)
             
+        
+    def run(self, args):
+        #TODO: Handle arguments parsing
+        utils.launch('./Vorpsoc_top',
+                     args,
+                     cwd=os.path.join(self.sim_root, 'obj_dir'))
         
