@@ -27,6 +27,6 @@ simulator_PYTHON =      \
 
 simulatordir = $(orpsocdir)/simulator
 
-EXTRA_DIST = INSTALL cores systems
+EXTRA_DIST = INSTALL
 
 SUBDIRS = bin
