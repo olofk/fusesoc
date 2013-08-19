@@ -75,7 +75,7 @@ module wb_arbiter
 ///////////////////////////////////////////////////////////////////////////////
 
    wire [num_masters-1:0]     grant;
-   reg [$clog2(num_masters)-1:0]      master_sel;
+   wire [$clog2(num_masters)-1:0]      master_sel;
    wire 		      active;
    reg [$clog2(num_masters)-1:0] i;
 
