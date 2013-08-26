@@ -7,6 +7,7 @@ orpsoc_PYTHON =        \
  orpsoc/orpsocconfigparser.py \
  orpsoc/plusargs.py           \
  orpsoc/system.py             \
+ orpsoc/utils.py              \
  orpsoc/verilog.py            \
  orpsoc/vpi.py
 
@@ -23,7 +24,8 @@ simulator_PYTHON =      \
  orpsoc/simulator/__init__.py  \
  orpsoc/simulator/icarus.py    \
  orpsoc/simulator/modelsim.py  \
- orpsoc/simulator/simulator.py
+ orpsoc/simulator/simulator.py \
+ orpsoc/simulator/verilator.py
 
 simulatordir = $(orpsocdir)/simulator
 
