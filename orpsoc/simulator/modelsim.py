@@ -102,7 +102,7 @@ class Modelsim(Simulator):
                                   ['-l', logfile] +
                                   self.system.vsim_options +
                                   vpi_options +
-                                  ['work.orpsoc_tb'] +
+                                  ['work.'+self.toplevel] +
                                   ['+'+s for s in self.plusargs],
                                   cwd = self.sim_root,
                                   stdin=subprocess.PIPE)

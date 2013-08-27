@@ -59,7 +59,7 @@ class SimulatorIcarus(Simulator):
                                       
         #Build simulation model
         if subprocess.call(['iverilog',
-                            '-s', 'orpsoc_tb',
+                            '-s', self.toplevel,
                             '-c', 'icarus.scr',
                             '-o', 'orpsoc.elf'] +
                            self.system.iverilog_options,

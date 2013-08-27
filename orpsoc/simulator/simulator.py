@@ -18,6 +18,11 @@ class Simulator(object):
 
         self.src_root = os.path.join(self.build_root, 'src')
 
+        if 'toplevel' in self.system.simulator:
+            self.toplevel = self.system.simulator['toplevel']
+        else:
+            self.toplevel = 'orpsoc_tb'
+            
         self.vpi_modules = []
 
         self.cm = CoreManager()

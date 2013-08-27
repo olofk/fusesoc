@@ -41,6 +41,7 @@ class Core:
             self.simulators = config.get_list('main', 'simulators')
 
             #FIXME : Make simulators part of the core object
+            self.simulator        = config.get_section('simulator')
             self.iverilog_options = config.get_list('icarus','iverilog_options')
             self.vlog_options     = config.get_list('modelsim','vlog_options')
             self.vsim_options     = config.get_list('modelsim','vsim_options')
