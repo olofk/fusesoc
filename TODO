@@ -26,6 +26,9 @@ Move generic cores to separate cores (intgen?, rom)
 Clean up include files
 Add checksum to local cores
 Run or1ksim test suite
+Add support for multiple versions of cores
+Add support for version requirement in dependencies
+Add wishbone interconnect generator
 
 --DONE--
 Support for patches (start with calling patch)
