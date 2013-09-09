@@ -1,12 +1,23 @@
 from orpsoc.provider import Provider
 import subprocess
 import os.path
+import sys
+import tarfile
+
+if sys.version_info[0] >= 3:
+    import urllib.request as urllib
+else:
+    import urllib
 
 class GitHub(Provider):
     def __init__(self, config):
         self.user   = config.get('user')
         self.repo   = config.get('repo')
         self.branch = config.get('branch')
+        if 'version' in config:
+            self.version = config.get('version')
+        else:
+            self.version = 'master'
 
     def fetch(self, local_dir):
         status = self.status(local_dir)
@@ -23,18 +34,18 @@ class GitHub(Provider):
             print("Something else is wrong")
 
     def _checkout(self, local_dir):
-        try:
-            #FIXME: Add support for checking out a certain revision
-            repo = 'git://github.com/'+self.user+'/'+self.repo+'.git'
-            subprocess.check_call(['git', 'clone', '--depth','1',
-                                   '--branch', self.branch, repo],
-                                  cwd = os.path.split(local_dir)[0])
-        except OSError:
-            print("Error: Command git not found. Make sure it is in $PATH")
-            exit(1)
-        except subprocess.CalledProcessError:
-            print("Error: Failed to clone git repository")
-            exit(1)
+        #TODO : Sanitize URL
+        url = 'https://github.com/{user}/{repo}/archive/{version}.tar.gz'.format(user=self.user, repo=self.repo, version=self.version)
+        (filename, headers) = urllib.urlretrieve(url)
+
+        t = tarfile.open(filename)
+        (cache_root, core) = os.path.split(local_dir)
+
+        #Ugly hack to get the first part of the directory name of the extracted files
+        tmp = t.getnames()[0]
+        t.extractall(cache_root)
+        os.rename(os.path.join(cache_root, tmp),
+                  os.path.join(cache_root, core))
 
     def status(self, local_dir):
         if not os.path.isdir(local_dir):
