@@ -61,19 +61,19 @@ class Quartus(Backend):
 all: sta
 
 project: $(TCL_FILE)
-	quartus_sh -t $(DESIGN_NAME).tcl
+	quartus_sh $(QUARTUS_OPTIONS) -t $(DESIGN_NAME).tcl
 
 map: project
-	quartus_map $(DESIGN_NAME)
+	quartus_map $(QUARTUS_OPTIONS) $(DESIGN_NAME)
 
 fit: map
-	quartus_fit $(DESIGN_NAME)
+	quartus_fit $(QUARTUS_OPTIONS) $(DESIGN_NAME)
 
 asm: fit
-	quartus_asm $(DESIGN_NAME)
+	quartus_asm $(QUARTUS_OPTIONS) $(DESIGN_NAME)
 
 sta: asm
-	quartus_sta $(DESIGN_NAME)
+	quartus_sta $(QUARTUS_OPTIONS) $(DESIGN_NAME)
 
 clean:
 	rm -rf *.* db incremental_db
@@ -124,9 +124,11 @@ clean:
         logger.debug('_write_tcl_file() -Done-')
 
     def _write_makefile(self):
+        quartus_options = self.system.backend.get('quartus_options', '')
         logger.debug('_write_makefile() *Entered*')
         makefile = open(os.path.join(self.work_root, 'Makefile'),'w')
-        makefile.write("DESIGN_NAME = " + self.system.name)
+        makefile.write("DESIGN_NAME = " + self.system.name + "\n")
+        makefile.write("QUARTUS_OPTIONS = " + quartus_options + "\n")
         makefile.write(self.MAKEFILE_TEMPLATE)
         makefile.close()
         logger.debug('_write_makefile() -Done-')
