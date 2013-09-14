@@ -96,7 +96,7 @@ provider (optional)
 The provider section gives information on where to find the source code for the core. If the provider section is missing, the core is assumed to be local, with the directory of the .core file as the root directory.
 
 *name :*
-The name option selects which provider backend to use. All other provider options are specific to the selected provider. Currently two backends are supported
+The name option selects which provider backend to use. All other provider options are specific to the selected provider. Currently three backends are supported
 
 name  = opencores
 ^^^^^^^^^^^^^^^^^
@@ -113,6 +113,14 @@ name = github
 *repo :* Name of the GIT repository
 
 *branch :* Name of the GIT branch to use
+
+name = url
+^^^^^^^^^^^^^
+*url :* URL of the core file (or archive)
+
+*filetype :* File type (zip, tar, simple).
+
+*corename :* Name of the directory where the archive is unpacked (or the simple file is copied). If not provided, the name of the cache/build directory is the same as the core.
 
 plusargs (optional)
 ~~~~~~~~~~~~~~~~~~~

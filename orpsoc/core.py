@@ -95,7 +95,7 @@ class Core:
         logger.debug('setup() *Entered*')
         logger.debug("  name="+self.name)
         if self.provider:
-            if self.provider.fetch(self.cache_dir):
+            if self.provider.fetch(self.cache_dir, self.name):
                 self.patch(self.cache_dir)
         logger.debug('setup() -Done-')
 

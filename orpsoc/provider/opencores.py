@@ -15,7 +15,7 @@ class ProviderOpenCores(Provider):
         self.revision_number  = config.get('revision')
         logger.debug('__init__() -Done-')
 
-    def fetch(self, local_dir):
+    def fetch(self, local_dir, core_name):
         logger.debug('fetch() *Entered*')
         status = self.status(local_dir)
 

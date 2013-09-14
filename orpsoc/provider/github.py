@@ -19,7 +19,7 @@ class GitHub(Provider):
         else:
             self.version = 'master'
 
-    def fetch(self, local_dir):
+    def fetch(self, local_dir, core_name):
         status = self.status(local_dir)
         if status == 'empty':
             self._checkout(local_dir)
