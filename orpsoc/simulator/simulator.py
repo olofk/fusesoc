@@ -80,7 +80,7 @@ class Simulator(object):
     def run(self, args):
         logger.debug('run() *Entered*')
 
-        parser = argparse.ArgumentParser(prog ='orpsoc sim '+self.system.name)
+        parser = argparse.ArgumentParser(prog ='orpsoc sim '+self.system.name, conflict_handler='resolve')
         for name in self.cores:
             core = self.cm.get_core(name)
             if core.plusargs:
