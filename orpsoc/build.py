@@ -2,6 +2,7 @@ import shutil
 import subprocess
 from orpsoc.config import Config
 from orpsoc.coremanager import CoreManager
+from orpsoc import utils
 import logging
 
 logger = logging.getLogger(__name__)
@@ -144,6 +145,14 @@ clean:
         logger.debug('build() -Done-')
 
 
+    def pgm(self, remaining):
+        logger.debug('pgm() *Entered*')
+        args = ['--mode=jtag']
+        args += remaining
+        args += ['-o']
+        args += ['p;' + self.system.name + '.sof']
+        utils.launch('quartus_pgm', args, cwd=self.work_root)
+        logger.debug('pgm() -Done-')
 
 def BackendFactory(system):
     logger.debug('BackendFactory() *Entered*')

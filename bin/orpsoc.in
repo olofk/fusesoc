@@ -30,7 +30,16 @@ def build(known, remaining):
     backend.configure()
     backend.build()
     logging.debug('build() -Done-')
-    
+
+def pgm(known, remaining):
+    logger.debug('pgm() *Entered*')
+    if known.system in CoreManager().get_systems():
+        core = CoreManager().get_core(known.system)
+
+    backend = BackendFactory(core.system)
+    backend.pgm(remaining)
+    logging.debug('pgm() -Done-')
+
 def list_cores(known, remaining):
     cores = CoreManager().get_cores()
     print("Available cores:")
@@ -105,6 +114,10 @@ if __name__ == "__main__":
     parser_build = subparsers.add_parser('build', help='Build an FPGA load module')
     parser_build.add_argument('system')
     parser_build.set_defaults(func=build)
+
+    parser_pgm = subparsers.add_parser('pgm', help='Program a FPGA with a system configuration')
+    parser_pgm.add_argument('system')
+    parser_pgm.set_defaults(func=pgm)
 
     parser_list_systems = subparsers.add_parser('list-systems', help='List available systems')
     parser_list_systems.set_defaults(func=list_systems)
