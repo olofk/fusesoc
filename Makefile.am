@@ -16,7 +16,8 @@ orpsocdir = $(pkgpythondir)
 provider_PYTHON =      \
  orpsoc/provider/__init__.py  \
  orpsoc/provider/github.py    \
- orpsoc/provider/opencores.py
+ orpsoc/provider/opencores.py \
+ orpsoc/provider/url.py
 
 providerdir = $(orpsocdir)/provider
 
