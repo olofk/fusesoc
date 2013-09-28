@@ -1,0 +1,19 @@
+3.1 2013-09-28 Olof Kindgren <olof.kindgren@gmail.com>
+======================================================
++ Allow defining name of testbench toplevel
+* Download archives from github instead of cloning
++ Allow specifying options for quartus (Stefan Kristiansson)
++ Add URL provider to download cores from any URL (Franck Jullien)
+* Allow multiple cores registering the same plusarg
++ Add pgm command to download image to FPGA (Franck Jullien)
+
+Contributors:
+Stefan Kristiansson <stefan.kristiansson@saunalahti.fi>
+Franck Jullien <franck.jullien@gmail.com>
+
+3.0 2013-08-20 Olof Kindgren <olof.kindgren@gmail.com>
+=======================================================
++ Initial release
+
+Contributors:
+Per Larsson <pela@opencores.org>
