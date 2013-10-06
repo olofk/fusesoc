@@ -31,8 +31,10 @@ class CoreManager(object):
             try:
                 self._cores[name] = Core(file)
                 logger.debug("Adding core " + file)
-            except SyntaxError:
-                logger.debug("Failed to parse " + file)
+            except SyntaxError as e:
+                w = "Warning: Failed to parse " + file + ": " + e.msg
+                print(w)
+                logger.warning(w)
         
     def load_cores(self, path):
         if path:

@@ -27,7 +27,10 @@ class OrpsocConfigParser(configparser.SafeConfigParser):
                 print("Unknown version: \"" + id_string[1].strip()+'" in ' + config_file)
         except IndexError:
             raise SyntaxError("Could not find API version in " + config_file)
-        self.readfp(f)
+        try:
+            self.readfp(f)
+        except configparser.MissingSectionHeaderError:
+            raise SyntaxError("Missing section header")
 
     def get_list(self, section, item):
         if self.has_option(section, item):
