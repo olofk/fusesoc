@@ -152,18 +152,33 @@ class Core:
 
     def info(self):
         logger.debug('info() *Entered*')
-        # TODO: finish and make look better
+
+        show_list = lambda l: "\n                        ".join(l)
+        show_dict = lambda d: show_list(["%s: %s" % (k, d[k]) for k in d.keys()])
+
         print("CORE INFO")
-        print("Name                  :" + self.name)
-        print("Core root             :" + self.core_root)
-        print("Simulators            :")
-        n = 0
-        for simulator_name in self.simulators:
-          print(' '*n + simulator_name)
-          n = 24
-        #if core_file:
-        #    print 
-        #    if config.has_section('provider'):
+        print("Name:                   " + self.name)
+        print("Core root:              " + self.core_root)
+        if self.simulators:
+            print("Simulators:             " + show_list(self.simulators))
+        if self.plusargs: 
+            print("\nPlusargs:               " + show_dict(self.plusargs.items))
+        if self.depend:
+            print("\nCores:                  " + show_list(self.depend))
+        if self.verilog.include_dirs:
+            print("\nInclude dirs:           " + show_list(self.verilog.include_dirs))
+        if self.verilog.include_files:
+            print("\nInclude files:          " + show_list(self.verilog.include_files))
+        if self.verilog.src_files:
+            print("\nSrc files:              " + show_list(self.verilog.src_files))
+        if self.verilog.tb_src_files:
+            print("\nTestbench files:        " + show_list(self.verilog.tb_src_files))
+        if self.verilog.tb_private_src_files:
+            print("\nPrivate Testbench files:" + show_list(self.verilog.tb_private_src_files))
+        if self.verilog.tb_include_files:
+            print("\nTestbench include files:" + show_list(self.verilog.tb_include_files))
+        if self.verilog.tb_include_dirs:
+            print("\nTestbench include dirs: " + show_list(self.verilog.tb_include_dirs))
         logger.debug('info() -Done-')
 
 

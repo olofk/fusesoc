@@ -13,7 +13,6 @@ class System:
         self.backend_name = None
 
         system_root = os.path.dirname(system_file)
-
         self.config = OrpsocConfigParser(system_file)
 
         self.name = os.path.basename(system_file).split('.')[0]
@@ -27,20 +26,17 @@ class System:
 
     def info(self):
         logger.debug('info() *Entered*')
-        # TODO: finish and make look better
-        print("SYSTEM INFO")
-        print("Name                  :" + self.name)
-        #print "Backend               :", self.backend
-        #print "Backend name          :", self.backend['name']
+        print("\nSYSTEM INFO")
+        print("Name:                   " + self.name)
+
+        show_list = lambda s: "\n                        ".join(s.split('\n'))
+
         if self.backend_name:
-            print("Backend name          :" + self.backend_name)
-            print("        family        :"+ self.backend['family'])
-            print("        tcl_files     :"+ self.backend['tcl_files'])
-            print("        sdc_files     :"+ self.backend['sdc_files'])
-            print("        cores         :"+ self.backend['cores'])
-            print("        device        :"+ self.backend['device'])
-            print("        include files :"+ self.backend['include_files'])
-            print("        src files     :"+ self.backend['src_files'])
-            print("        tb files      :"+ self.backend['tb_files'])
-            print("        backend       :"+ self.backend['backend'])
- 
+            print("Backend name:           " + self.backend_name)
+            print("    family:             " + self.backend['family'])
+            print("    device:             " + self.backend['device'])
+
+            print("\n    tcl_files:          " + show_list(self.backend['tcl_files']))
+            print("\n    sdc_files:          " + show_list(self.backend['sdc_files']))
+            logger.debug('info() -Done-')
+
