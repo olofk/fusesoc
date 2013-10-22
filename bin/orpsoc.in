@@ -2,6 +2,7 @@
 import argparse
 import os
 import sys
+import signal
 
 #Check if this is run from a local installation
 orpsocdir = os.path.abspath(os.path.join(os.path.dirname(os.path.realpath(__file__)), ".."))
@@ -20,6 +21,16 @@ import logging
 
 logging.basicConfig(filename='orpsoc.log', filemode='w', level=logging.DEBUG)
 logger = logging.getLogger(__name__)
+
+def abort_handler(signal, frame):
+        print '\033[91m\n'
+        print '****************************'
+        print '****   ORPSoC aborted   ****'
+        print '****************************'
+        print '\033[0m\n'
+        sys.exit(0)
+
+signal.signal(signal.SIGINT, abort_handler)
 
 def build(known, remaining):
     logger.debug('build() *Entered*')
