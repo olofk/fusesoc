@@ -36,20 +36,22 @@ def build(known, remaining):
     logger.debug('build() *Entered*')
     if known.system in CoreManager().get_systems():
         core = CoreManager().get_core(known.system)
-
-    backend = BackendFactory(core.system)
-    backend.configure()
-    backend.build()
-    logging.debug('build() -Done-')
+        backend = BackendFactory(core.system)
+        backend.configure()
+        backend.build()
+        logging.debug('build() -Done-')
+    else:
+        print("Error: Can't find system " + known.system)
 
 def pgm(known, remaining):
     logger.debug('pgm() *Entered*')
     if known.system in CoreManager().get_systems():
         core = CoreManager().get_core(known.system)
-
-    backend = BackendFactory(core.system)
-    backend.pgm(remaining)
-    logging.debug('pgm() -Done-')
+        backend = BackendFactory(core.system)
+        backend.pgm(remaining)
+        logging.debug('pgm() -Done-')
+    else:
+        print("Error: Can't find system " + known.system)
 
 def list_cores(known, remaining):
     cores = CoreManager().get_cores()
