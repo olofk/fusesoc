@@ -58,6 +58,9 @@ class CoreManager(object):
                 self._cores_root += [abspath]
                 self.load_cores(path)
 
+    def get_cores_root(self):
+        return self._cores_root
+
     def get_depends(self, core):
         if self._cores[core].depend:
             return list(set(self._get_depends(core)))

@@ -56,6 +56,13 @@ def pgm(known, remaining):
 def list_cores(known, remaining):
     cores = CoreManager().get_cores()
     print("Available cores:")
+    if not cores:
+        cores_root = CoreManager().get_cores_root()
+        if cores_root:
+            print("Error: No cores found in "+':'.join(cores_root))
+        else:
+            print("Error: cores_root is not defined")
+        exit(1)
     maxlen = max(map(len,cores.keys()))
     print('Core'.ljust(maxlen) + '   Cache status')
     print("="*80)
