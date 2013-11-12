@@ -1,3 +1,4 @@
+import collections
 import logging
 import os
 
@@ -86,6 +87,19 @@ class CoreManager(object):
             return self._cores[name]
         else:
             return None
+
+    def get_property(self, core, attr, recursive=True):
+        retval = collections.OrderedDict()
+
+        if recursive:
+            for c in self._cores[core].depend:
+                if not c in retval:
+                    retval.update(self.get_property(c, attr))
+        try:
+            retval[core] = getattr(self._cores[core], attr)
+        except AttributeError:
+            pass
+        return retval
 
     def get_systems(self):
         systems = {}
