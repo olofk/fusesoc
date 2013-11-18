@@ -13,7 +13,7 @@ else:
 
 from orpsoc.build import BackendFactory
 from orpsoc.config import Config
-from orpsoc.coremanager import CoreManager
+from orpsoc.coremanager import CoreManager, DependencyError
 from orpsoc.simulator import SimulatorFactory
 from orpsoc.system import System
 from orpsoc.core import Core
@@ -107,7 +107,11 @@ def sim(known, remaining):
         print("No simulator was found in "+ known.system + " core description")
         logger.error("No simulator was found in "+ known.system + " core description")
         exit(1)
-    sim = SimulatorFactory(sim_name, core)
+    try:
+        sim = SimulatorFactory(sim_name, core)
+    except DependencyError as e:
+        print("Error: '" + known.system + "' or any of its dependencies requires '" + e.value + "', but this core was not found")
+        exit(1)
     if known.force or not os.path.exists(sim.sim_root):
         sim.configure()
         sim.build()
