@@ -53,6 +53,20 @@ def pgm(known, remaining):
     else:
         print("Error: Can't find system " + known.system)
 
+def fetch(known, remaining):
+    logger.debug('fetch() *Entered*')
+    core = CoreManager().get_core(known.core)
+    if core:
+        cores = CoreManager().get_depends(core.name)
+        core.setup()
+        for name in cores:
+             print("Fetching " + name)
+             core = CoreManager().get_core(name)
+             core.setup()
+        logging.debug('fetch() -Done-')
+    else:
+        print("Error: Can't find core " + known.core)
+
 def list_cores(known, remaining):
     cores = CoreManager().get_cores()
     print("Available cores:")
@@ -142,6 +156,10 @@ if __name__ == "__main__":
     parser_pgm = subparsers.add_parser('pgm', help='Program a FPGA with a system configuration')
     parser_pgm.add_argument('system')
     parser_pgm.set_defaults(func=pgm)
+
+    parser_fetch = subparsers.add_parser('fetch', help='Fetch a remote core and its dependencies to local cache')
+    parser_fetch.add_argument('core')
+    parser_fetch.set_defaults(func=fetch)
 
     parser_list_systems = subparsers.add_parser('list-systems', help='List available systems')
     parser_list_systems.set_defaults(func=list_systems)
