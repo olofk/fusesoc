@@ -1,6 +1,5 @@
 orpsoc_PYTHON =        \
  orpsoc/__init__.py           \
- orpsoc/build.py              \
  orpsoc/config.py             \
  orpsoc/core.py               \
  orpsoc/coremanager.py        \
@@ -29,6 +28,14 @@ simulator_PYTHON =      \
  orpsoc/simulator/verilator.py
 
 simulatordir = $(orpsocdir)/simulator
+
+
+build_PYTHON =      \
+ orpsoc/build/__init__.py  \
+ orpsoc/build/backend.py    \
+ orpsoc/build/quartus.py
+
+builddir = $(orpsocdir)/build
 
 EXTRA_DIST = INSTALL
 
