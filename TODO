@@ -12,23 +12,22 @@ icarus?
 Shorten opencores checkout message
 Document the internal API
 Read arguments from file
-Add glob support in CAPI
+Add glob support in CAPI (wildcards in src_files et. al.)
 Create UART over socket VPI module
-Switch to a bette format (YAML?) for CAPI2
+Switch to a better format (YAML?) for CAPI2
 Add checksums to cache
 Add use flag support
 Export IP-XACT data (for top-level generation with kactus2)
-Remove defines files from dbg
 Use(or1ktrace/libopcodes/opdis) in or1200-monitor for trace generation
-(Use waf for building)
 Check if cache is clean and revision is equal to core description
-Move generic cores to separate cores (intgen?, rom)
-Clean up include files
 Add checksum to local cores
 Run or1ksim test suite
 Add support for multiple versions of cores
 Add support for version requirement in dependencies
-Add wishbone interconnect generator
+Allow specifying multiple cores-root in orpsoc.conf
+Add support for programming devices with urjtag
+Allow cores to register themselves as generators
+Add VHDL support
 
 --DONE--
 Support for patches (start with calling patch)
@@ -39,3 +38,4 @@ Store patched copies in cache
 Create system installer
 Verilator support
 Create round-robin wishbone scheduler
+Add wishbone interconnect generator
