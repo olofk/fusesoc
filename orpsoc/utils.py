@@ -14,7 +14,8 @@ class Launcher:
             subprocess.check_call([self.cmd] + self.args,
                                   cwd = self.cwd,
                                   shell = self.shell,
-                                  stderr = self.stderr),
+                                  stderr = self.stderr,
+                                  stdin=subprocess.PIPE),
         except OSError:
             raise RunTimeError("Error: Command " + self.cmd + " not found. Make sure it is in $PATH")
         except subprocess.CalledProcessError:
