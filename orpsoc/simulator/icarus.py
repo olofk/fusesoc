@@ -46,6 +46,7 @@ class SimulatorIcarus(Simulator):
         for vpi_module in self.vpi_modules:
             try:
                 subprocess.check_call(['iverilog-vpi', '--name='+vpi_module['name']] +
+                                      [s for s in vpi_module['libs']] +
                                       ['-I' + s for s in vpi_module['include_dirs']] +
                                       vpi_module['src_files'],
                                       stderr = open(os.path.join(self.sim_root,vpi_module['name']+'.log'),'w'),

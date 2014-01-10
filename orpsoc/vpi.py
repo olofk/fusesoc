@@ -4,6 +4,12 @@ class VPI:
     def __init__(self, items):
         self.name          = items.get('name')
         self.src_files     = items.get('src_files').split()
+
+        if items.get('libs'):
+            self.libs = items.get('libs').split()
+        else:
+            self.libs = []
+
         if items.get('include_files'):
             self.include_files = items.get('include_files').split()
         else:

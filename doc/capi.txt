@@ -91,6 +91,9 @@ List of C source files for the VPI library
 *include_files (optional) :*
 List of C include files for the VPI library
 
+*libs (optional) :*
+List of external libraries linked with the VPI library
+
 provider (optional)
 ~~~~~~~~~~~~~~~~~~~
 The provider section gives information on where to find the source code for the core. If the provider section is missing, the core is assumed to be local, with the directory of the .core file as the root directory.
