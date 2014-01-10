@@ -1,6 +1,6 @@
 import os
-import subprocess
 from .simulator import Simulator
+from orpsoc.utils import Launcher
 
 class Modelsim(Simulator):
 
@@ -37,25 +37,16 @@ class Modelsim(Simulator):
 
         #FIXME: Handle failures. Save stdout/stderr. Build vmem file from elf file argument
         try:
-            subprocess.check_call([self.model_tech+'/vlib', 'work'],
-                                  cwd = self.sim_root)
-
-        except OSError:
-            print("Error: Command vlib not found. Make sure it is in $PATH")
-            exit(1)
-        except CalledProcessError:
+            Launcher(self.model_tech+'/vlib', ['work'], cwd = self.sim_root).run()
+        except RuntimeError:
             print("Error: Failed to create library work")
             exit(1)
-
         try:
             logfile = os.path.join(self.sim_root, 'vlog.log')
-            subprocess.check_call([self.model_tech+'/vlog', '-f', self.cfg_file, '-quiet', '-l', logfile] +
-                                  self.system.vlog_options,
-                            cwd = self.sim_root)
-        except OSError:
-            print("Error: Command vlog not found. Make sure it is in $PATH")
-            exit(1)
-        except subprocess.CalledProcessError:
+            Launcher(self.model_tech+'/vlog', ['-f', self.cfg_file, '-quiet', '-l', logfile] +
+                     self.system.vlog_options,
+                     cwd = self.sim_root).run()
+        except RuntimeError:
             print("Error: Failed to compile simulation model. Compile log is available in " + logfile)
             exit(1)
 
@@ -63,29 +54,21 @@ class Modelsim(Simulator):
             objs = []
             for src_file in vpi_module['src_files']:
                 try:
-                    subprocess.check_call(['gcc', '-c', '-fPIC', '-g','-m32','-DMODELSIM_VPI'] +
-                                          ['-I'+self.model_tech+'/../include'] +
-                                          ['-I'+s for s in vpi_module['include_dirs']] +
-                                          [src_file],
-                                          cwd = self.sim_root,
-                                          stdin=subprocess.PIPE)
-                except OSError:
-                    print("Error: Command gcc not found. Make sure it is in $PATH")
-                    exit(1)
-                except subprocess.CalledProcessError:
+                    Launcher('gcc', ['-c', '-fPIC', '-g','-m32','-DMODELSIM_VPI'] +
+                             ['-I'+self.model_tech+'/../include'] +
+                             ['-I'+s for s in vpi_module['include_dirs']] +
+                             [src_file],
+                             cwd = self.sim_root).run()
+                except RuntimeError:
                     print("Error: Compilation of "+src_file + "failed")
                     exit(1)
 
                 object_files = [os.path.splitext(os.path.basename(s))[0]+'.o' for s in vpi_module['src_files']]
             try:
-                subprocess.check_call(['ld', '-shared','-E','-melf_i386','-o',vpi_module['name']] +
-                                      object_files,
-                                      cwd = self.sim_root,
-                                      stdin=subprocess.PIPE)
-            except OSError:
-                print("Error: Command ld not found. Make sure it is in $PATH")
-                exit(1)
-            except subprocess.CalledProcessError:
+                Launcher('ld', ['-shared','-E','-melf_i386','-o',vpi_module['name']] +
+                         object_files,
+                         cwd = self.sim_root).run()
+            except RuntimeError:
                 print("Error: Linking of "+vpi_module['name'] + " failed")
                 exit(1)
 
@@ -98,17 +81,13 @@ class Modelsim(Simulator):
             vpi_options += ['-pli', vpi_module['name']]
         try:
             logfile = os.path.join(self.sim_root, 'vsim.log')
-            subprocess.check_call([self.model_tech+'/vsim', '-c', '-do', 'run -all'] +
-                                  ['-l', logfile] +
-                                  self.system.vsim_options +
-                                  vpi_options +
-                                  ['work.'+self.toplevel] +
-                                  ['+'+s for s in self.plusargs],
-                                  cwd = self.sim_root,
-                                  stdin=subprocess.PIPE)
-        except OSError:
-            print("Error: Command vsim not found. Make sure it is in $PATH")
-            exit(1)
-        except subprocess.CalledProcessError:
+            Launcher(self.model_tech+'/vsim', ['-c', '-do', 'run -all'] +
+                     ['-l', logfile] +
+                     self.system.vsim_options +
+                     vpi_options +
+                     ['work.'+self.toplevel] +
+                     ['+'+s for s in self.plusargs],
+                     cwd = self.sim_root).run()
+        except RuntimeError:
             print("Error: Simulation failed. Simulation log is available in " + logfile)
             exit(1)

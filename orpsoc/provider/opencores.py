@@ -1,6 +1,6 @@
 from orpsoc.provider import Provider
+from orpsoc.utils import Launcher
 
-import subprocess
 import os.path
 import logging
 
@@ -47,17 +47,15 @@ class ProviderOpenCores(Provider):
         logger.debug('_checkout() *Entered*')
         print("Checking out " + self.repo_path + " revision " + self.revision_number + " to " + local_dir)
         try:
-            subprocess.check_call(['svn', 'co', '-q', '--no-auth-cache',
-                                   '-r', self.revision_number,
-                                   '--username', 'orpsoc',
-                                   '--password', 'orpsoc',
-                                   self.repo_path,
-                                   local_dir])
-        except OSError:
-            print("Error: Command svn not found. Make sure it is in $PATH")
-            exit(1)
-        except subprocess.CalledProcessError:
+            l = Launcher('svn', ['co', '-q', '--no-auth-cache',
+                                 '-r', self.revision_number,
+                                 '--username', 'orpsoc',
+                                 '--password', 'orpsoc',
+                                 self.repo_path,
+                                 local_dir]).run()
+        except RuntimeError as e:
             print("Error: Failed to checkout " + self.repo_path)
+            print(e.value)
             exit(1)
         logger.debug('_checkout() -Done-')
 
