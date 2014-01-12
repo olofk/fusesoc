@@ -17,14 +17,14 @@ class Launcher:
                                   stderr = self.stderr,
                                   stdin=subprocess.PIPE),
         except OSError:
-            raise RunTimeError("Error: Command " + self.cmd + " not found. Make sure it is in $PATH")
+            raise RuntimeError("Error: Command " + self.cmd + " not found. Make sure it is in $PATH")
         except subprocess.CalledProcessError:
             if self.stderr is None:
                 self.stderr = "stderr"
                 if self.errormsg:
-                    raise RunTimeError(errormsg)
+                    raise RuntimeError(self.errormsg)
                 else:
-                    raise RunTimeError("Error: " + self.cmd + ' '.join(args) + " returned errors. See " + self.stderr + " for details")
+                    raise RuntimeError("Error: " + self.cmd + ' '.join(args) + " returned errors. See " + self.stderr + " for details")
 
     def __str__(self):
         return self.cmd + ' ' + ' '.join(self.args)
