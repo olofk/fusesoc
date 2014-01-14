@@ -65,8 +65,9 @@ class Modelsim(Simulator):
 
                 object_files = [os.path.splitext(os.path.basename(s))[0]+'.o' for s in vpi_module['src_files']]
             try:
+                libs = [s for s in vpi_module['libs']]
                 Launcher('ld', ['-shared','-E','-melf_i386','-o',vpi_module['name']] +
-                         object_files,
+                         object_files + libs,
                          cwd = self.sim_root).run()
             except RuntimeError:
                 print("Error: Linking of "+vpi_module['name'] + " failed")
