@@ -54,7 +54,7 @@ class Modelsim(Simulator):
             objs = []
             for src_file in vpi_module['src_files']:
                 try:
-                    Launcher('gcc', ['-c', '-fPIC', '-g','-m32','-DMODELSIM_VPI'] +
+                    Launcher('gcc', ['-c', '-std=c99', '-fPIC', '-g','-m32','-DMODELSIM_VPI'] +
                              ['-I'+self.model_tech+'/../include'] +
                              ['-I'+s for s in vpi_module['include_dirs']] +
                              [src_file],
