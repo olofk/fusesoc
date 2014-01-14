@@ -24,7 +24,7 @@ class Launcher:
                 if self.errormsg:
                     raise RuntimeError(self.errormsg)
                 else:
-                    raise RuntimeError("Error: " + self.cmd + ' '.join(args) + " returned errors. See " + self.stderr + " for details")
+                    raise RuntimeError("Error: " + self.cmd + ' '.join(self.args) + " returned errors. See " + self.stderr + " for details")
 
     def __str__(self):
         return self.cmd + ' ' + ' '.join(self.args)
