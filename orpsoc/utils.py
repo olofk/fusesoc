@@ -1,18 +1,20 @@
 import subprocess
 
 class Launcher:
-    def __init__(self, cmd, args=[], shell=False, cwd=None, stderr=None, errormsg=None):
+    def __init__(self, cmd, args=[], shell=False, cwd=None, stderr=None, errormsg=None, env=None):
         self.cmd      = cmd
         self.args     = args
         self.shell    = shell
         self.cwd      = cwd
         self.stderr   = stderr
         self.errormsg = errormsg
+        self.env      = env
 
     def run(self):
         try:
             subprocess.check_call([self.cmd] + self.args,
                                   cwd = self.cwd,
+                                  env = self.env,
                                   shell = self.shell,
                                   stderr = self.stderr,
                                   stdin=subprocess.PIPE),
