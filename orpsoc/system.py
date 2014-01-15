@@ -17,6 +17,9 @@ class System:
 
         self.name = os.path.basename(system_file).split('.')[0]
 
+        self.pre_build_scripts  = self.config.get_list('scripts','pre_build_scripts')
+        self.post_build_scripts = self.config.get_list('scripts','post_build_scripts')
+
         if self.config.has_option('main', 'backend'):
             self.backend_name = self.config.get('main','backend')
             if self.backend_name and self.config.has_section(self.backend_name):

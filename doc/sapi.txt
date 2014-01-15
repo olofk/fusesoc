@@ -44,3 +44,15 @@ quartus (optional)
 Additional options used when building with Quartus
 
 TODO: Add options
+
+scripts (optional)
+~~~~~~~~~~~~~~~~~~
+External scripts that are executed during the build process
+
+pre_build_scripts (optional)
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+A white-space separated list of scripts that are executed before the build process
+
+post_build_scripts (optional)
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+A white-space separated list of scripts that are executed after the build process

@@ -94,6 +94,18 @@ List of C include files for the VPI library
 *libs (optional) :*
 List of external libraries linked with the VPI library
 
+scripts (optional)
+~~~~~~~~~~~~~~~~~~
+External scripts that are executed during the simulation process
+
+pre_run_scripts (optional)
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+A white-space separated list of scripts that are executed before the simulation
+
+post_run_scripts (optional)
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+A white-space separated list of scripts that are executed after the simulation is started
+
 provider (optional)
 ~~~~~~~~~~~~~~~~~~~
 The provider section gives information on where to find the source code for the core. If the provider section is missing, the core is assumed to be local, with the directory of the .core file as the root directory.

@@ -2,11 +2,13 @@ import os
 import subprocess
 from .simulator import Simulator
 import logging
+from orpsoc.utils import Launcher
 
 logger = logging.getLogger(__name__)
 
 class SimulatorIcarus(Simulator):
 
+    TOOL_NAME = 'ICARUS'
     def __init__(self, system):
         logger.debug('__init__() *Entered*')
         super(SimulatorIcarus, self).__init__(system)
@@ -82,5 +84,6 @@ class SimulatorIcarus(Simulator):
                            cwd = self.sim_root,
                            stdin=subprocess.PIPE):  # Pipe to support Ctrl-C
             print("Error: Failed to run simulation")
-        logger.debug('run() -Done-')
 
+        super(SimulatorIcarus, self).done(args)
+        logger.debug('run() -Done-')

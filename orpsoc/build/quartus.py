@@ -76,6 +76,8 @@ clean:
         makefile.close()
 
     def build(self):
+        super(Quartus, self).build()
+
         # TODO: call super if necessary
         if subprocess.call("make",
                            cwd = self.work_root,
@@ -83,6 +85,7 @@ clean:
             print("Error: Failed to make FPGA load module")
         # TODO: Check results, and report SUCCESS or FAILURE
 
+        super(Quartus, self).done()
 
     def pgm(self, remaining):
         args = ['--mode=jtag']

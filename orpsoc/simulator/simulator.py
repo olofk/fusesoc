@@ -1,6 +1,7 @@
 from orpsoc.config import Config
 from orpsoc.coremanager import CoreManager
 from orpsoc.verilog import Verilog
+from orpsoc.utils import Launcher
 import argparse
 import shutil
 import os
@@ -27,6 +28,11 @@ class Simulator(object):
 
         self.cm = CoreManager()
         self.cores = self.cm.get_depends(self.system.name)
+
+        self.env = os.environ.copy()
+        self.env['CORE_ROOT'] = os.path.abspath(self.system.core_root)
+        self.env['BUILD_ROOT'] = os.path.abspath(self.build_root)
+        self.env['SIMULATOR'] = self.TOOL_NAME
 
         self.verilog = Verilog()
         for core_name in self.cores:
@@ -67,6 +73,8 @@ class Simulator(object):
         else:
             os.makedirs(self.sim_root)
 
+        self.env['SIM_ROOT'] = os.path.abspath(self.sim_root)
+
         for name in self.cores:
             print("Preparing " + name)
             dst_dir = os.path.join(Config().build_root, self.system.name, 'src', name)
@@ -97,3 +105,22 @@ class Simulator(object):
                 pass
             else:
                 self.plusargs += [key+'='+str(value[0])]
+
+        for script in self.system.pre_run_scripts:
+            script = os.path.abspath(os.path.join(self.system.core_root, script))
+            print("Running " + script);
+            try:
+                Launcher('bash', [script], cwd = self.sim_root, env = self.env).run()
+            except RuntimeError:
+                print("Error: script " + script + " failed")
+
+    def done(self, args):
+        logger.debug('done() *Entered*')
+
+        for script in self.system.post_run_scripts:
+            script = os.path.abspath(os.path.join(self.system.core_root, script))
+            print("Running " + script);
+            try:
+                Launcher('bash', [script], cwd = self.sim_root, env = self.env).run()
+            except RuntimeError:
+                print("Error: script " + script + " failed")

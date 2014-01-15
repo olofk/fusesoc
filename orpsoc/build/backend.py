@@ -4,6 +4,7 @@ import subprocess
 
 from orpsoc.config import Config
 from orpsoc.coremanager import CoreManager
+from orpsoc.utils import Launcher
 from orpsoc import utils
 import logging
 
@@ -23,6 +24,11 @@ class Backend(object):
         self.include_dirs = []
         self.src_files = []
         self.cm = CoreManager()
+
+        self.env = os.environ.copy()
+        self.env['SYSTEM_ROOT'] = os.path.abspath(os.path.join(self.systems_root, self.system.name))
+        self.env['BUILD_ROOT'] = os.path.abspath(self.build_root)
+        self.env['BACKEND'] = self.TOOL_NAME
 
         self.cores = self.cm.get_depends(self.system.name)
         for core_name in self.cores:
@@ -52,5 +58,19 @@ class Backend(object):
         logger.debug('configure() -Done-')
 
     def build(self):
-        pass
+        for script in self.system.pre_build_scripts:
+            script = os.path.abspath(os.path.join(self.systems_root, self.system.name, script))
+            print("Running " + script);
+            try:
+                Launcher('bash', [script], cwd = os.path.abspath(self.build_root), env = self.env).run()
+            except RuntimeError:
+                print("Error: script " + script + " failed")
 
+    def done(self):
+        for script in self.system.post_build_scripts:
+            script = os.path.abspath(os.path.join(self.systems_root, self.system.name, script))
+            print("Running " + script);
+            try:
+                Launcher('bash', [script], cwd = os.path.abspath(self.build_root), env = self.env).run()
+            except RuntimeError:
+                print("Error: script " + script + " failed")

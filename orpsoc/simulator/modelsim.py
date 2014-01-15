@@ -1,9 +1,11 @@
 import os
+import subprocess
 from .simulator import Simulator
 from orpsoc.utils import Launcher
 
 class Modelsim(Simulator):
 
+    TOOL_NAME = 'MODELSIM'
     def __init__(self, system):
         super(Modelsim, self).__init__(system)
         self.model_tech = os.getenv('MODEL_TECH')
@@ -92,3 +94,5 @@ class Modelsim(Simulator):
         except RuntimeError:
             print("Error: Simulation failed. Simulation log is available in " + logfile)
             exit(1)
+
+        super(Modelsim, self).done(args)
