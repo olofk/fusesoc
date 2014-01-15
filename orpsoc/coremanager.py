@@ -40,6 +40,8 @@ class CoreManager(object):
     def load_cores(self, path):
         if path:
             logger.debug("Checking for cores in " + path)
+        if os.path.isdir(path) == False:
+            raise IOError(path + " is not a directory")
         for d in os.listdir(path):
             f = os.path.join(path, d, d+'.core')
             self.load_core(d, f)

@@ -134,9 +134,14 @@ def sim(known, remaining):
     logger.debug('sim() -Done-')
 
 def run(known, remaining):
-    cm = CoreManager()
-    cm.add_cores_root(known.cores_root)
-    cm.add_cores_root(known.systems_root)
+    try:
+        cm = CoreManager()
+        cm.add_cores_root(known.cores_root)
+        cm.add_cores_root(known.systems_root)
+    except IOError as e:
+        print("Error: Failed to register cores root")
+        print(e)
+        exit(1)
     known.func(known, remaining)
 
 if __name__ == "__main__":
