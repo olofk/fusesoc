@@ -8,6 +8,10 @@ installation. Follow these steps to do a system-wide installation
 (If you install ORPSoC from from a GIT repository instead of using a released
 tar ball, you first need to run "autoreconf -i")
 
+If your system uses an incompatible version of Python (i.e. < 2.7) or if
+you want to use a specific version of Python, you need to set an environment
+varible, $PYTHON, to point to where the Python binary is.
+
 Run "./configure && make" to build ORPSoC.
 Install it with "make install" and make sure you have write permissions to the
 target directory
