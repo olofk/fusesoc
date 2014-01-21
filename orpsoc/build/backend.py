@@ -62,7 +62,7 @@ class Backend(object):
             script = os.path.abspath(os.path.join(self.systems_root, self.system.name, script))
             print("Running " + script);
             try:
-                Launcher('bash', [script], cwd = os.path.abspath(self.build_root), env = self.env).run()
+                Launcher(script, cwd = os.path.abspath(self.build_root), env = self.env, shell=True).run()
             except RuntimeError:
                 print("Error: script " + script + " failed")
 
@@ -71,6 +71,6 @@ class Backend(object):
             script = os.path.abspath(os.path.join(self.systems_root, self.system.name, script))
             print("Running " + script);
             try:
-                Launcher('bash', [script], cwd = os.path.abspath(self.build_root), env = self.env).run()
+                Launcher(script, cwd = os.path.abspath(self.build_root), env = self.env, shell=True).run()
             except RuntimeError:
                 print("Error: script " + script + " failed")

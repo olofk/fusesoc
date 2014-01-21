@@ -110,7 +110,7 @@ class Simulator(object):
             script = os.path.abspath(os.path.join(self.system.core_root, script))
             print("Running " + script);
             try:
-                Launcher('bash', [script], cwd = self.sim_root, env = self.env).run()
+                Launcher(script, cwd = self.sim_root, env = self.env, shell=True).run()
             except RuntimeError:
                 print("Error: script " + script + " failed")
 
@@ -121,6 +121,6 @@ class Simulator(object):
             script = os.path.abspath(os.path.join(self.system.core_root, script))
             print("Running " + script);
             try:
-                Launcher('bash', [script], cwd = self.sim_root, env = self.env).run()
+                Launcher(script, cwd = self.sim_root, env = self.env, shell=True).run()
             except RuntimeError:
                 print("Error: script " + script + " failed")
