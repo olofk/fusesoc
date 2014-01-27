@@ -23,15 +23,20 @@ class GitHub(Provider):
         status = self.status(local_dir)
         if status == 'empty':
             self._checkout(local_dir)
+            return True
         elif status == 'modified':
             self.clean_cache()
             self._checkout(local_dir)
+            return True
         elif status == 'outofdate':
             self._update()
+            return True
         elif status == 'downloaded':
             pass
         else:
             print("Something else is wrong")
+            return False
+            #TODO: throw an exception here 
 
     def _checkout(self, local_dir):
         #TODO : Sanitize URL
