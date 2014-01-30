@@ -5,6 +5,12 @@ Core Description files
 :Date: 2013-06-04
 :Revision: 1.0 (draft)
 
+:Author: Jose T. de Sousa
+:Email: <jts@inesc-id.pt>
+:Date: 2014-01-28
+:Revision: 1.1 (verilator rev)
+
+
 capi (Core API) is the format for core description files. Current version is version 1.0. A capi 1.0 file is identified by the string "CAPI=1" in the beginning of a file. The rest of the file is a standard http://en.wikipedia.org/wiki/INI_file[INI file] that is compatible with Python's http://docs.python.org/2/library/configparser.html[configparser] module
 
 File location
@@ -45,6 +51,7 @@ A white-space separated list of orpsoc-supported simulators that can be used to 
 
 * *modelsim :* Mentor Modelsim
 * *icarus :* Icarus Verilog Open-Source simulator
+* *verilator :* Verilog Open-Source compiler and simulator
 
 Each of the simulator targets have a dedicated section described in further detail below
 
@@ -53,7 +60,6 @@ modelsim (optional)
 Additional options used when simulating with modelsim
 
 *vlog_options :* Options to be sent as additional arguments to vlog
-
 *vsim_options :* Options to be sent as additional arguments to vsim
 
 icarus (optional)
@@ -61,6 +67,15 @@ icarus (optional)
 Additional options used when simulating with Icarus Verilog
 
 *iverilog_options :* Options to be sent as additional arguments to iverilog
+*depend 	  :* List of cores that only Icarus simulation depends on
+
+verilator (optional)
+~~~~~~~~~~~~~~~~~
+Additional options used when simulating with Verilator
+
+*source_type 	   :*  currently can be set to C or SystemC
+*define_files	   :*  list of .v files containing `define directives to be converted to #define directives in corresponding .h files
+
 
 verilog
 ~~~~~~~
