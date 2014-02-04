@@ -42,7 +42,7 @@ class Core:
 
             #FIXME : Make simulators part of the core object
             self.simulator        = config.get_section('simulator')
-            self.iverilog_options = config.get_list('icarus','iverilog_options')
+            self.icarus           = config.get_section('icarus')
             self.pre_run_scripts  = config.get_list('scripts','pre_run_scripts')
             self.post_run_scripts = config.get_list('scripts','post_run_scripts')
 

@@ -7,6 +7,9 @@ class Modelsim(Simulator):
 
     TOOL_NAME = 'MODELSIM'
     def __init__(self, system):
+
+        self.cores = []
+
         super(Modelsim, self).__init__(system)
         self.model_tech = os.getenv('MODEL_TECH')
         if not self.model_tech:

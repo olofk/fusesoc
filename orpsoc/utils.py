@@ -30,6 +30,21 @@ class Launcher:
 
     def __str__(self):
         return self.cmd + ' ' + ' '.join(self.args)
+
+
+def convert_V2H( read_file, write_file):
+            fV = open (read_file,'r')
+            fC = open (write_file,'w')
+            fC.write("//File auto-converted the Verilog to C. converted by ORPSOC//\n")
+            fC.write("//source file --> " + read_file + "\n")
+            for line in fV:
+                Sline=line.split('`',1)
+                if len(Sline) == 1:
+                    fC.write(Sline[0])
+                else:
+                    fC.write(Sline[0]+"#"+Sline[1])
+            fC.close
+            fV.close
         
 def launch(cmd, args=[], shell=False, cwd=None, stderr=None):
     try:

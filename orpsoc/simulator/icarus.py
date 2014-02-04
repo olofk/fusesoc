@@ -11,10 +11,26 @@ class SimulatorIcarus(Simulator):
     TOOL_NAME = 'ICARUS'
     def __init__(self, system):
         logger.debug('__init__() *Entered*')
+
+        self.cores = []
+        self.iverilog_options = []
+
+        if system.icarus is not None:
+            self._load_dict(system.icarus)
         super(SimulatorIcarus, self).__init__(system)
         self.sim_root = os.path.join(self.build_root, 'sim-icarus')
 
         logger.debug('__init__() -Done-')
+
+    def _load_dict(self,items):
+        for item in items:
+            if item == 'iverilog_options':
+                self.iverilog_options = items.get(item).split()
+            elif item == 'depend':
+                self.cores = items.get(item).split()
+            else:
+                print("Warning: Unknown item '" + item +"' in icarus section")
+
 
     def configure(self):
         logger.debug('configure() *Entered*')
@@ -65,7 +81,7 @@ class SimulatorIcarus(Simulator):
                             '-s', self.toplevel,
                             '-c', 'icarus.scr',
                             '-o', 'orpsoc.elf'] +
-                           self.system.iverilog_options,
+                           self.iverilog_options,
                            cwd = self.sim_root):
             print("Error: Compiled failed")
             exit(1)

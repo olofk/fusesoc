@@ -15,6 +15,7 @@ from orpsoc.build import BackendFactory
 from orpsoc.config import Config
 from orpsoc.coremanager import CoreManager, DependencyError
 from orpsoc.simulator import SimulatorFactory
+from orpsoc.simulator.verilator import Source
 from orpsoc.system import System
 from orpsoc.core import Core
 import logging
@@ -128,7 +129,11 @@ def sim(known, remaining):
         exit(1)
     if known.force or not os.path.exists(sim.sim_root):
         sim.configure()
-        sim.build()
+        try:
+            sim.build()
+        except Source as e:
+            print( e.value + " Source type don't valid. choose: C or systemC")
+            exit(1)
     if not known.build_only:
         sim.run(remaining)
     logger.debug('sim() -Done-')
