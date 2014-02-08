@@ -134,6 +134,9 @@ def sim(known, remaining):
         except Source as e:
             print( e.value + " Source type don't valid. choose: C or systemC")
             exit(1)
+        except RuntimeError as e:
+            print("Error: Failed to build simulation model. " + str(e))
+            exit(1)
     if not known.build_only:
         try:
             sim.run(remaining)
