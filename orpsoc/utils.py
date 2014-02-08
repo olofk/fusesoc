@@ -23,10 +23,9 @@ class Launcher:
         except subprocess.CalledProcessError:
             if self.stderr is None:
                 self.stderr = "stderr"
-                if self.errormsg:
-                    raise RuntimeError(self.errormsg)
-                else:
-                    raise RuntimeError("Error: " + self.cmd + ' '.join(self.args) + " returned errors. See " + self.stderr + " for details")
+            if self.errormsg is None:
+                self.errormsg = '"' + str(self) + '" exited with an error code. See ' + self.stderr + ' for details'
+            raise RuntimeError(self.errormsg)
 
     def __str__(self):
         return self.cmd + ' ' + ' '.join(self.args)
