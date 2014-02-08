@@ -1,6 +1,6 @@
 import os
 import shutil
-import subprocess
+
 from orpsoc import utils
 from .simulator import Simulator
 
@@ -74,6 +74,7 @@ class Verilator(Simulator):
         super(Verilator, self).configure()
         self.export()
         self._write_config_files()
+        self.object_files = [os.path.splitext(os.path.basename(s))[0]+'.o' for s in self.src_files]
 
     def _write_config_files(self):
         self.verilator_file = 'input.vc'
@@ -90,9 +91,32 @@ class Verilator(Simulator):
             write_file = os.path.join(os.path.dirname(os.path.join(self.sim_root,self.tb_toplevel)),os.path.splitext(os.path.basename(files))[0]+'.h')
             utils.convert_V2H(read_file, write_file)
 
-        
+    def _verilate(self):
+        if self.src_type == 'systemC':
+            args = ['--sc']
+        else:
+            args = ['--cc']
+        args += ['-f', self.verilator_file]
+        args += ['--top-module', 'orpsoc_top']
+        args += ['--exe']
+        args += [os.path.join(self.sim_root, s) for s in self.object_files]
+        args += [self.tb_toplevel]
+        args += self.verilator_options
+
+        cmd = os.path.join(self.verilator_root,'bin','verilator')
+
+        cmd += ' ' + ' '.join(args)
+        l = utils.Launcher(cmd,
+                           shell=True,
+                           cwd = self.sim_root,
+                           stderr = open(os.path.join(self.sim_root,'verilator.log'),'w')
+        )
+        print(l)
+        l.run()
+
     def build(self):
         super(Verilator, self).build()
+        self._verilate()
         if self.src_type == 'C':
             self.build_C()
         elif self.src_type == 'systemC':
@@ -100,59 +124,21 @@ class Verilator(Simulator):
         else:
             raise Source(self.src_type)
 
-
+        utils.Launcher('make', ['-f', 'Vorpsoc_top.mk', 'Vorpsoc_top'],
+                       cwd=os.path.join(self.sim_root, 'obj_dir')).run()
+     
     def build_C(self):
         args = ['-c']
         args += ['-I'+s for s in self.include_dirs]
         for src_file in self.src_files:
             print("Compiling " + src_file)
-            utils.launch('gcc',
+            utils.Launcher('gcc',
                          args + [src_file],
-                         cwd=self.sim_root)
+                         cwd=self.sim_root).run()
 
-        object_files = [os.path.splitext(os.path.basename(s))[0]+'.o' for s in self.src_files]
-
-        cmd = os.path.join(self.verilator_root,'bin','verilator')
-
-        args = [cmd]
-        args += ['--cc']
-        args += ['-f']
-        args += [self.verilator_file]
-        args += ['--top-module']
-        args += ['orpsoc_top']
-        args += ['--exe']
-        args += [os.path.join(self.sim_root, s) for s in object_files]
-        args += [self.tb_toplevel]
-        args += self.verilator_options
-
-        utils.launch('bash', args, cwd = os.path.join(self.sim_root), stderr = open(os.path.join(self.sim_root,'verilator.log'),'w'))
-
-        utils.launch('make -f Vorpsoc_top.mk Vorpsoc_top',
-                     cwd=os.path.join(self.sim_root, 'obj_dir'),
-                     shell=True)
 
     def build_SysC(self):
-
-        object_files = [os.path.splitext(os.path.basename(s))[0]+'.o' for s in self.src_files]
-
-        #verilog
-        cmd = os.path.join(self.verilator_root,'bin','verilator') 
-
-        args = [cmd]
-        args += ['--sc']
-        args += ['--top-module']
-        args += ['orpsoc_top']
-        args += ['-f']
-        args += [self.verilator_file]
-        args += ['--exe']
-        args += [os.path.join(self.sim_root, s) for s in object_files]
-        args += [self.tb_toplevel]
-        args += self.verilator_options
-
-        utils.launch('bash', args, cwd = os.path.join(self.sim_root), stderr = open(os.path.join(self.sim_root,'verilator.log'),'w'))
-
-
-         #src_files        
+        #src_files        
         args = ['-I.']
         args += ['-MMD']
         args += ['-I'+s for s in self.include_dirs]
@@ -171,17 +157,11 @@ class Verilator(Simulator):
 
         for src_file in self.src_files:
             print("Compiling " + src_file)
-            utils.launch('g++',args + ['-o' + os.path.splitext(os.path.basename(src_file))[0]+'.o']+ [src_file],
-                                cwd=self.sim_root)
+            utils.Launcher('g++',args + ['-o' + os.path.splitext(os.path.basename(src_file))[0]+'.o']+ [src_file],
+                           cwd=self.sim_root).run()
 
-        #tb_toplevel
-        utils.launch('make -f Vorpsoc_top.mk Vorpsoc_top',
-                     cwd=os.path.join(self.sim_root, 'obj_dir'),
-                     shell=True)
-        
     def run(self, args):
         #TODO: Handle arguments parsing
-        utils.launch('./Vorpsoc_top',
-                     args,
-                     cwd=os.path.join(self.sim_root, 'obj_dir'))
-        
+        utils.Launcher('./Vorpsoc_top',
+                       args,
+                       cwd=os.path.join(self.sim_root, 'obj_dir')).run()
