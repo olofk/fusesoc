@@ -1,4 +1,5 @@
 bin_SCRIPTS = orpsoc
+CLEANFILES = $(bin_SCRIPTS)
 EXTRA_DIST = orpsoc.in
 
 do_substitution = sed -e 's,[@]pythondir[@],$(pythondir),g' \
