@@ -1,4 +1,4 @@
-AC_INIT([ORPSoC], [3.1])
+AC_INIT([ORPSoC], [3.2])
 
 AM_INIT_AUTOMAKE([foreign])
 AM_PATH_PYTHON([2.7])

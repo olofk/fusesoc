@@ -1,3 +1,23 @@
+3.2 2014-02-13 Olof Kindgren <olof.kindgren@gmail.com>
+======================================================
+* Improved handling of broken .core files
+* Improved appearance of core-info and system-info (Hans Baier)
+* Improved sigint handling (Franck Jullien)
+* Use XDG dirs for cache and config
++ Support for global configuration files
+* Allow local python installations (Franck Jullien)
++ Add fetch command to download cores (Franck Jullien)
++ Allow use of external libs in VPI section (Franck Jullien)
++ Add support for launching scripts before/after simulation/build (Franck Jullien)
++Support SystemC test benches in verilator (carlos/Jose T. de Sousa)
+
+Contributors:
+carlos <carlos@marte.inesc-id.pt>
+Jose T. de Sousa <jts@inesc-id.pt>
+Hans Baier <hansfbaier@googlemail.com>
+Franck Jullien <franck.jullien@gmail.com>
+Dmitry Kalinkin <dmitry.kalinkin@gmail.com>
+
 3.1 2013-09-28 Olof Kindgren <olof.kindgren@gmail.com>
 ======================================================
 + Allow defining name of testbench toplevel
