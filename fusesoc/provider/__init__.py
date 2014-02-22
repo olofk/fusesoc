@@ -8,9 +8,9 @@ class Provider(object):
     def status(self, local_dir):
         pass
 
-from orpsoc.provider.opencores import ProviderOpenCores
-from orpsoc.provider.github import GitHub
-from orpsoc.provider.url import ProviderURL
+from fusesoc.provider.opencores import ProviderOpenCores
+from fusesoc.provider.github import GitHub
+from fusesoc.provider.url import ProviderURL
 
 def ProviderFactory(items):
     if items.get('name') == 'opencores':

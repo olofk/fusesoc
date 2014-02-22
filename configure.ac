@@ -1,4 +1,4 @@
-AC_INIT([ORPSoC], [3.2])
+AC_INIT([FuseSoC], [1.0])
 
 AM_INIT_AUTOMAKE([foreign])
 AM_PATH_PYTHON([2.7])

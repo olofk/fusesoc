@@ -1,7 +1,7 @@
 import os
 import shutil
 
-from orpsoc import utils
+from fusesoc import utils
 from .simulator import Simulator
 
 class Source(Exception):

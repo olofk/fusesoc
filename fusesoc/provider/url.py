@@ -1,4 +1,4 @@
-from orpsoc.provider import Provider
+from fusesoc.provider import Provider
 import subprocess
 import os.path
 import sys

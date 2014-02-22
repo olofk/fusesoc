@@ -5,12 +5,12 @@ if sys.version[0] == '2':
 else:
     import configparser
 
-class OrpsocConfigParser(configparser.SafeConfigParser):
+class FusesocConfigParser(configparser.SafeConfigParser):
     def __init__(self, config_file):
         if sys.version[0] == '2':
             configparser.SafeConfigParser.__init__(self)
         else:
-            super(OrpsocConfigParser, self).__init__()
+            super(FusesocConfigParser, self).__init__()
         if not os.path.exists(config_file):
             print("Could not find " + config_file)
             exit(1)

@@ -2,8 +2,8 @@ import collections
 import logging
 import os
 
-from orpsoc.config import Config
-from orpsoc.core import Core
+from fusesoc.config import Config
+from fusesoc.core import Core
 
 logger = logging.getLogger(__name__)
 

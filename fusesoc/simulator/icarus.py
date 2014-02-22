@@ -2,7 +2,7 @@ import os
 import subprocess
 from .simulator import Simulator
 import logging
-from orpsoc.utils import Launcher
+from fusesoc.utils import Launcher
 
 logger = logging.getLogger(__name__)
 
@@ -80,7 +80,7 @@ class SimulatorIcarus(Simulator):
         if subprocess.call(['iverilog',
                             '-s', self.toplevel,
                             '-c', 'icarus.scr',
-                            '-o', 'orpsoc.elf'] +
+                            '-o', 'fusesoc.elf'] +
                            self.iverilog_options,
                            cwd = self.sim_root):
             print("Error: Compiled failed")
@@ -95,7 +95,7 @@ class SimulatorIcarus(Simulator):
         if subprocess.call(['vvp', '-n', '-M.',
                             '-l', 'icarus.log'] +
                            ['-m'+s['name'] for s in self.vpi_modules] +
-                           ['orpsoc.elf'] +
+                           ['fusesoc.elf'] +
                            ['+'+s for s in self.plusargs],
                            cwd = self.sim_root,
                            stdin=subprocess.PIPE):  # Pipe to support Ctrl-C

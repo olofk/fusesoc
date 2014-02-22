@@ -1,5 +1,5 @@
-from orpsoc.orpsocconfigparser import OrpsocConfigParser
-from orpsoc.config import Config
+from fusesoc.fusesocconfigparser import FusesocConfigParser
+from fusesoc.config import Config
 import os
 import logging
 
@@ -13,7 +13,7 @@ class System:
         self.backend_name = None
 
         system_root = os.path.dirname(system_file)
-        self.config = OrpsocConfigParser(system_file)
+        self.config = FusesocConfigParser(system_file)
 
         self.name = os.path.basename(system_file).split('.')[0]
 

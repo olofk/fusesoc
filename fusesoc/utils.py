@@ -34,7 +34,7 @@ class Launcher:
 def convert_V2H( read_file, write_file):
             fV = open (read_file,'r')
             fC = open (write_file,'w')
-            fC.write("//File auto-converted the Verilog to C. converted by ORPSOC//\n")
+            fC.write("//File auto-converted the Verilog to C. converted by FuseSoC//\n")
             fC.write("//source file --> " + read_file + "\n")
             for line in fV:
                 Sline=line.split('`',1)

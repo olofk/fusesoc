@@ -1,7 +1,7 @@
 import os
 import subprocess
 from .simulator import Simulator
-from orpsoc.utils import Launcher
+from fusesoc.utils import Launcher
 
 class Modelsim(Simulator):
 

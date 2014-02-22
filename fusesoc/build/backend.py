@@ -2,10 +2,10 @@ import os.path
 import shutil
 import subprocess
 
-from orpsoc.config import Config
-from orpsoc.coremanager import CoreManager
-from orpsoc.utils import Launcher
-from orpsoc import utils
+from fusesoc.config import Config
+from fusesoc.coremanager import CoreManager
+from fusesoc.utils import Launcher
+from fusesoc import utils
 import logging
 
 logger = logging.getLogger(__name__)

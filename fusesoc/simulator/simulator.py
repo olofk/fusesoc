@@ -1,7 +1,7 @@
-from orpsoc.config import Config
-from orpsoc.coremanager import CoreManager
-from orpsoc.verilog import Verilog
-from orpsoc.utils import Launcher
+from fusesoc.config import Config
+from fusesoc.coremanager import CoreManager
+from fusesoc.verilog import Verilog
+from fusesoc.utils import Launcher
 import argparse
 import shutil
 import os
@@ -90,7 +90,7 @@ class Simulator(object):
     def run(self, args):
         logger.debug('run() *Entered*')
 
-        parser = argparse.ArgumentParser(prog ='orpsoc sim '+self.system.name, conflict_handler='resolve')
+        parser = argparse.ArgumentParser(prog ='fusesoc sim '+self.system.name, conflict_handler='resolve')
         for name in self.cores:
             core = self.cm.get_core(name)
             if core.plusargs:

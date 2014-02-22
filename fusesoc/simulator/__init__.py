@@ -1,6 +1,6 @@
-from orpsoc.simulator.icarus import SimulatorIcarus
-from orpsoc.simulator.modelsim import Modelsim
-from orpsoc.simulator.verilator import Verilator
+from fusesoc.simulator.icarus import SimulatorIcarus
+from fusesoc.simulator.modelsim import Modelsim
+from fusesoc.simulator.verilator import Verilator
 def SimulatorFactory(sim,system):
     if sim == 'icarus':
         return SimulatorIcarus(system)

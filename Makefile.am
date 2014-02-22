@@ -1,41 +1,41 @@
-orpsoc_PYTHON =        \
- orpsoc/__init__.py           \
- orpsoc/config.py             \
- orpsoc/core.py               \
- orpsoc/coremanager.py        \
- orpsoc/orpsocconfigparser.py \
- orpsoc/plusargs.py           \
- orpsoc/system.py             \
- orpsoc/utils.py              \
- orpsoc/verilog.py            \
- orpsoc/vpi.py
+fusesoc_PYTHON =        \
+ fusesoc/__init__.py           \
+ fusesoc/config.py             \
+ fusesoc/core.py               \
+ fusesoc/coremanager.py        \
+ fusesoc/fusesocconfigparser.py \
+ fusesoc/plusargs.py           \
+ fusesoc/system.py             \
+ fusesoc/utils.py              \
+ fusesoc/verilog.py            \
+ fusesoc/vpi.py
 
-orpsocdir = $(pkgpythondir)
+fusesocdir = $(pkgpythondir)
 
 provider_PYTHON =      \
- orpsoc/provider/__init__.py  \
- orpsoc/provider/github.py    \
- orpsoc/provider/opencores.py \
- orpsoc/provider/url.py
+ fusesoc/provider/__init__.py  \
+ fusesoc/provider/github.py    \
+ fusesoc/provider/opencores.py \
+ fusesoc/provider/url.py
 
-providerdir = $(orpsocdir)/provider
+providerdir = $(fusesocdir)/provider
 
 simulator_PYTHON =      \
- orpsoc/simulator/__init__.py  \
- orpsoc/simulator/icarus.py    \
- orpsoc/simulator/modelsim.py  \
- orpsoc/simulator/simulator.py \
- orpsoc/simulator/verilator.py
+ fusesoc/simulator/__init__.py  \
+ fusesoc/simulator/icarus.py    \
+ fusesoc/simulator/modelsim.py  \
+ fusesoc/simulator/simulator.py \
+ fusesoc/simulator/verilator.py
 
-simulatordir = $(orpsocdir)/simulator
+simulatordir = $(fusesocdir)/simulator
 
 
 build_PYTHON =      \
- orpsoc/build/__init__.py  \
- orpsoc/build/backend.py    \
- orpsoc/build/quartus.py
+ fusesoc/build/__init__.py  \
+ fusesoc/build/backend.py    \
+ fusesoc/build/quartus.py
 
-builddir = $(orpsocdir)/build
+builddir = $(fusesocdir)/build
 
 EXTRA_DIST = INSTALL
 

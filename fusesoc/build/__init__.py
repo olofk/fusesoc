@@ -1,4 +1,4 @@
-from orpsoc.build.quartus import Quartus
+from fusesoc.build.quartus import Quartus
 
 def BackendFactory(system):
     if system.backend_name == 'quartus':

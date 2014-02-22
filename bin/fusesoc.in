@@ -5,28 +5,28 @@ import sys
 import signal
 
 #Check if this is run from a local installation
-orpsocdir = os.path.abspath(os.path.join(os.path.dirname(os.path.realpath(__file__)), ".."))
-if os.path.exists(os.path.join(orpsocdir, "orpsoc")):
-    sys.path[0:0] = [orpsocdir]
+fusesocdir = os.path.abspath(os.path.join(os.path.dirname(os.path.realpath(__file__)), ".."))
+if os.path.exists(os.path.join(fusesocdir, "fusesoc")):
+    sys.path[0:0] = [fusesocdir]
 else:
     sys.path[0:0] = ['@pythondir@']
 
-from orpsoc.build import BackendFactory
-from orpsoc.config import Config
-from orpsoc.coremanager import CoreManager, DependencyError
-from orpsoc.simulator import SimulatorFactory
-from orpsoc.simulator.verilator import Source
-from orpsoc.system import System
-from orpsoc.core import Core
+from fusesoc.build import BackendFactory
+from fusesoc.config import Config
+from fusesoc.coremanager import CoreManager, DependencyError
+from fusesoc.simulator import SimulatorFactory
+from fusesoc.simulator.verilator import Source
+from fusesoc.system import System
+from fusesoc.core import Core
 import logging
 
-logging.basicConfig(filename='orpsoc.log', filemode='w', level=logging.DEBUG)
+logging.basicConfig(filename='fusesoc.log', filemode='w', level=logging.DEBUG)
 logger = logging.getLogger(__name__)
 
 def abort_handler(signal, frame):
         print('\033[91m\n')
         print('****************************')
-        print('****   ORPSoC aborted   ****')
+        print('****   FuseSoC aborted  ****')
         print('****************************')
         print('\033[0m\n')
         sys.exit(0)

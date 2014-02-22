@@ -24,7 +24,7 @@ Add checksum to local cores
 Run or1ksim test suite
 Add support for multiple versions of cores
 Add support for version requirement in dependencies
-Allow specifying multiple cores-root in orpsoc.conf
+Allow specifying multiple cores-root in fusesoc.conf
 Add support for programming devices with urjtag
 Allow cores to register themselves as generators
 Add VHDL support

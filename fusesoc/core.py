@@ -1,10 +1,10 @@
-from orpsoc.orpsocconfigparser import OrpsocConfigParser
-from orpsoc.config import Config
-from orpsoc.plusargs import Plusargs
-from orpsoc.provider import ProviderFactory
-from orpsoc.system import System
-from orpsoc.vpi import VPI
-from orpsoc.verilog import Verilog
+from fusesoc.fusesocconfigparser import FusesocConfigParser
+from fusesoc.config import Config
+from fusesoc.plusargs import Plusargs
+from fusesoc.provider import ProviderFactory
+from fusesoc.system import System
+from fusesoc.vpi import VPI
+from fusesoc.verilog import Verilog
 import os
 import shutil
 import subprocess
@@ -30,7 +30,7 @@ class Core:
         self.verilog  = None
         self.vpi = None
         if core_file:
-            config = OrpsocConfigParser(core_file)
+            config = FusesocConfigParser(core_file)
 
             if config.has_option('main', 'name'):
                 self.name = config.get('main','name')

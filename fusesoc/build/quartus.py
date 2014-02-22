@@ -1,9 +1,9 @@
 import os.path
 import shutil
 import subprocess
-from orpsoc import utils
+from fusesoc import utils
 
-from orpsoc.build.backend import Backend
+from fusesoc.build.backend import Backend
 class Quartus(Backend):
 
     MAKEFILE_TEMPLATE = """

@@ -28,9 +28,9 @@ class Config(object):
         xdg_config_home = os.environ.get('XDG_CONFIG_HOME') or \
                           os.path.join(os.path.expanduser('~'), '.config')
         config = configparser.SafeConfigParser()
-        config_files = ['/etc/orpsoc/orpsoc.conf',
-                        os.path.join(xdg_config_home, 'orpsoc','orpsoc.conf'),
-                        'orpsoc.conf']
+        config_files = ['/etc/fusesoc/fusesoc.conf',
+                        os.path.join(xdg_config_home, 'fusesoc','fusesoc.conf'),
+                        'fusesoc.conf']
 
         logger.debug('Looking for config files from ' + ':'.join(config_files))
         files_read = config.read(config_files)
@@ -57,7 +57,7 @@ class Config(object):
         if self.cache_root is None:
             xdg_cache_home = os.environ.get('XDG_CACHE_HOME') or \
                              os.path.join(os.path.expanduser('~'), '.cache')
-            self.cache_root = os.path.join(xdg_cache_home, 'orpsoc')
+            self.cache_root = os.path.join(xdg_cache_home, 'fusesoc')
             if not os.path.exists(self.cache_root):
                 os.makedirs(self.cache_root)
         if self.cores_root is None and os.path.exists('cores'):

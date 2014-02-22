@@ -1,18 +1,18 @@
-ORPSoCv3 can be run directly from a downloaded tar ball release or from a
+FuseSoC can be run directly from a downloaded tar ball release or from a
 checked out repository. In these cases the main program is available as
-bin/orpsoc.in. This is handy if you want to work on ORPSoC itself.
+bin/fusesoc.in. This is handy if you want to work on FuseSoC itself.
 
-Unless you want to development on ORPSoC itself, it is better to do a system
+Unless you want to development on FuseSoC itself, it is better to do a system
 installation. Follow these steps to do a system-wide installation
 
-(If you install ORPSoC from from a GIT repository instead of using a released
+(If you install FuseSoC from from a GIT repository instead of using a released
 tar ball, you first need to run "autoreconf -i")
 
 If your system uses an incompatible version of Python (i.e. < 2.7) or if
 you want to use a specific version of Python, you need to set an environment
 varible, $PYTHON, to point to where the Python binary is.
 
-Run "./configure && make" to build ORPSoC.
+Run "./configure && make" to build FuseSoC.
 Install it with "make install" and make sure you have write permissions to the
 target directory
 
@@ -22,7 +22,7 @@ orpsoc-cores package and put the directories systems and cores somewhere on
 your machine.
 
 The next step is to create a directory that will host the build directories and
-caches of downloaded cores. Create a file named orpsoc.conf in this directory
+caches of downloaded cores. Create a file named fusesoc.conf in this directory
 and add paths to the systems and cores directories like this:
 
 [main]
@@ -30,15 +30,15 @@ cores_root=/path/to/cores
 systems_root=/path/to/systems
 
 The default is to use a directory called orpsoc-cores for systems and cores that
- is a sibling to your orpsoc run directory. In that case your orpsoc.conf will
+ is a sibling to your FuseSoC run directory. In that case your fusesoc.conf will
 look like this:
 
 [main]
 cores_root   =../orpsoc-cores/cores
 systems_root =../orpsoc-cores/systems
 
-If orpsoc is in your path, you can now try to do a test simulation. Run
-"orpsoc sim wb_bfm" to run through the self tests of the Wishbone BFM that is
-provided by ORPSoC. This should download all the needed cores to a cache
+If fusesoc is in your path, you can now try to do a test simulation. Run
+"fusesoc sim wb_bfm" to run through the self tests of the Wishbone BFM that is
+provided by FuseSoC. This should download all the needed cores to a cache
 directory, set up a build structure in the build directory and run a simulation
 with Icarus Verilog

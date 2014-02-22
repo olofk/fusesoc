@@ -1,5 +1,5 @@
-from orpsoc.provider import Provider
-from orpsoc.utils import Launcher
+from fusesoc.provider import Provider
+from fusesoc.utils import Launcher
 
 import os.path
 import logging
