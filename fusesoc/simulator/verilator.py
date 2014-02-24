@@ -1,5 +1,6 @@
 import os
 import shutil
+import subprocess
 
 from fusesoc import utils
 from .simulator import Simulator
@@ -30,10 +31,6 @@ class Verilator(Simulator):
 
         if system.verilator is not None:
             self._load_dict(system.verilator)
-        self.verilator_root = os.getenv('VERILATOR_ROOT')
-        if not self.verilator_root:
-            print("Environment variable VERILATOR_ROOT was not found. It should be set to the verilator install path")
-            exit(1)
         self.sim_root = os.path.join(self.build_root, 'sim-verilator')
 
     def _load_dict(self, items):
@@ -103,7 +100,17 @@ class Verilator(Simulator):
         args += [self.tb_toplevel]
         args += self.verilator_options
 
-        cmd = os.path.join(self.verilator_root,'bin','verilator')
+        self.verilator_root = os.getenv('VERILATOR_ROOT')
+        if self.verilator_root is None:
+            try:
+                output = subprocess.check_output(["which", "verilator"])
+            except subprocess.CalledProcessError:
+                 print("VERILATOR_ROOT not set and there is no verilator program in your PATH")
+                 exit(1)
+            print("VERILATOR_ROOT not set, fusesoc will use " + output)
+            cmd = 'verilator'
+        else:
+            cmd = os.path.join(self.verilator_root,'bin','verilator')
 
         cmd += ' ' + ' '.join(args)
         l = utils.Launcher(cmd,
