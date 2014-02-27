@@ -41,18 +41,21 @@ A white-space separated list of the cores used in the system.
 
 quartus (optional)
 ~~~~~~~~~~~~~~~~~~
-Additional options used when building with Quartus
+Additional options used when building with Quartus:
 
-TODO: Add options
+* *family    :* Altera device family name (e.g. "Cyclone II").
+* *device    :* Altera device name (e.g. EP2C20F484C7).
+* *sdc_files :* List of SDC files used by Quartus.
+* *tcl_files :* List of TCL files. Files content is included in the Quartus Setting File (.qsf).
 
 scripts (optional)
 ~~~~~~~~~~~~~~~~~~
-External scripts that are executed during the build process
+External scripts that are executed during the build process.
 
 pre_build_scripts (optional)
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-A white-space separated list of scripts that are executed before the build process
+A white-space separated list of scripts that are executed before the build process.
 
 post_build_scripts (optional)
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-A white-space separated list of scripts that are executed after the build process
+A white-space separated list of scripts that are executed after the build process.
