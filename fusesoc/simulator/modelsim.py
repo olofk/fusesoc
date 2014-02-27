@@ -9,14 +9,29 @@ class Modelsim(Simulator):
     def __init__(self, system):
 
         self.cores = []
+        self.vlog_options = []
+        self.vsim_options = []
 
+        if system.modelsim is not None:
+            self._load_dict(system.modelsim)
         super(Modelsim, self).__init__(system)
         self.model_tech = os.getenv('MODEL_TECH')
         if not self.model_tech:
             print("Environment variable MODEL_TECH was not found. It should be set to <modelsim install path>/bin")
             exit(1)
         self.sim_root = os.path.join(self.build_root, 'sim-modelsim')
-        
+
+    def _load_dict(self,items):
+        for item in items:
+            if item == 'vlog_options':
+                self.vlog_options = items.get(item).split()
+            elif item == 'vsim_options':
+                self.vsim_options = items.get(item).split()
+            elif item == 'depend':
+                self.cores = items.get(item).split()
+            else:
+                print("Warning: Unknown item '" + item +"' in modelsim section")
+
     def configure(self):
         super(Modelsim, self).configure()
         self._write_config_files()
@@ -49,7 +64,7 @@ class Modelsim(Simulator):
         try:
             logfile = os.path.join(self.sim_root, 'vlog.log')
             Launcher(self.model_tech+'/vlog', ['-f', self.cfg_file, '-quiet', '-l', logfile] +
-                     self.system.vlog_options,
+                     self.vlog_options,
                      cwd = self.sim_root).run()
         except RuntimeError:
             print("Error: Failed to compile simulation model. Compile log is available in " + logfile)
@@ -89,7 +104,7 @@ class Modelsim(Simulator):
             logfile = os.path.join(self.sim_root, 'vsim.log')
             Launcher(self.model_tech+'/vsim', ['-c', '-do', 'run -all'] +
                      ['-l', logfile] +
-                     self.system.vsim_options +
+                     self.vsim_options +
                      vpi_options +
                      ['work.'+self.toplevel] +
                      ['+'+s for s in self.plusargs],

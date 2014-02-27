@@ -43,12 +43,10 @@ class Core:
             #FIXME : Make simulators part of the core object
             self.simulator        = config.get_section('simulator')
             self.icarus           = config.get_section('icarus')
+            self.modelsim         = config.get_section('modelsim')
+            self.verilator        = config.get_section('verilator')
             self.pre_run_scripts  = config.get_list('scripts','pre_run_scripts')
             self.post_run_scripts = config.get_list('scripts','post_run_scripts')
-
-            self.vlog_options     = config.get_list('modelsim','vlog_options')
-            self.vsim_options     = config.get_list('modelsim','vsim_options')
-            self.verilator = config.get_section('verilator')
 
             logger.debug('name=' + str(self.name))
             self.core_root = os.path.dirname(core_file)
