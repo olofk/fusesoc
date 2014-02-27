@@ -43,7 +43,7 @@ A string with a description can be added to the core.
 
 depend (optional)
 ^^^^^^^^^^^^^^^^^
-List of cores that this core depends on
+List of cores that this core depends on.
 
 simulators (optional)
 ^^^^^^^^^^^^^^^^^^^^^
@@ -53,104 +53,103 @@ A white-space separated list of FuseSoC-supported simulators that can be used to
 * *icarus :* Icarus Verilog Open-Source simulator
 * *verilator :* Verilog Open-Source compiler and simulator
 
-Each of the simulator targets have a dedicated section described in further detail below
+Each of the simulator targets have a dedicated section described in further detail below.
 
 modelsim (optional)
 ~~~~~~~~~~~~~~~~~~~
-Additional options used when simulating with modelsim
+Additional options used when simulating with modelsim:
 
-*vlog_options :* Options to be sent as additional arguments to vlog
-*vsim_options :* Options to be sent as additional arguments to vsim
+* *vlog_options :* Options to be sent as additional arguments to vlog
+* *vsim_options :* Options to be sent as additional arguments to vsim
 
 icarus (optional)
 ~~~~~~~~~~~~~~~~~
-Additional options used when simulating with Icarus Verilog
+Additional options used when simulating with Icarus Verilog:
 
-*iverilog_options :* Options to be sent as additional arguments to iverilog
-*depend 	  :* List of cores that only Icarus simulation depends on
+* *iverilog_options :* Options to be sent as additional arguments to iverilog
+* *depend           :* List of cores that only Icarus simulation depends on
 
 verilator (optional)
-~~~~~~~~~~~~~~~~~
-Additional options used when simulating with Verilator
+~~~~~~~~~~~~~~~~~~~~
+Additional options used when simulating with Verilator:
 
-*source_type 	   :*  currently can be set to C or SystemC
-*define_files	   :*  list of .v files containing `define directives to be converted to #define directives in corresponding .h files
-
+* *source_type 	   :*  Currently can be set to C or SystemC
+* *define_files	   :*  List of .v files containing `define directives to be converted to #define directives in corresponding .h files
 
 verilog
 ~~~~~~~
-The verilog section contains options for verilog source code
+The verilog section contains options for verilog source code:
 
-*src_files (optional) :*
+* *src_files (optional) :*
 List of verilog files containing modules that are a part of the synthesized design.
 
-*include_files (optional) :*
-List of verilog files that are used in `include statements of the src_files
+* *include_files (optional) :*
+List of verilog files that are used in `include statements of the src_files.
 
-*tb_src_files (optional) :*
-List of verilog files containing modules that are only used in test benches and not part of the synthesized design
+* *tb_src_files (optional) :*
+List of verilog files containing modules that are only used in test benches and not part of the synthesized design.
 
-*tb_include_files (optional) :*
-List of verilog files that are referenced with `include statements from tb_src_files
+* *tb_include_files (optional) :*
+List of verilog files that are referenced with `include statements from tb_src_files.
 
 vpi (optional)
 ~~~~~~~~~~~~~~
-The VPI section contains information on how to compile C source files into a VPI library
+The VPI section contains information on how to compile C source files into a VPI library:
 
-*name :*
-Name of the compiled VPI library
+* *name :*
+Name of the compiled VPI library.
 
-*src_files :*
-List of C source files for the VPI library
+* *src_files :*
+List of C source files for the VPI library.
 
-*include_files (optional) :*
-List of C include files for the VPI library
+* *include_files (optional) :*
+List of C include files for the VPI library.
 
-*libs (optional) :*
-List of external libraries linked with the VPI library
+* *libs (optional) :*
+List of external libraries linked with the VPI library.
 
 scripts (optional)
 ~~~~~~~~~~~~~~~~~~
-External scripts that are executed during the simulation process
+External scripts that are executed during the simulation process.
 
 pre_run_scripts (optional)
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-A white-space separated list of scripts that are executed before the simulation
+A white-space separated list of scripts that are executed before the simulation.
 
 post_run_scripts (optional)
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-A white-space separated list of scripts that are executed after the simulation is started
+A white-space separated list of scripts that are executed after the simulation is started.
 
 provider (optional)
 ~~~~~~~~~~~~~~~~~~~
 The provider section gives information on where to find the source code for the core. If the provider section is missing, the core is assumed to be local, with the directory of the .core file as the root directory.
 
-*name :*
-The name option selects which provider backend to use. All other provider options are specific to the selected provider. Currently three backends are supported
+* *name :*
+The name option selects which provider backend to use. All other provider options are specific to the selected provider. Currently three backends are supported.
 
 name  = opencores
 ^^^^^^^^^^^^^^^^^
-*repo_name :* Name of the opencores project. Can be found under Details on the project homepage
+* *repo_name :* Name of the opencores project. Can be found under Details on the project homepage.
 
-*repo_root :* The sub directory in the repo that contains the files of interest. In most cases the value "trunk" is used to avoid pulling in tags and branches
+* *repo_root :* The sub directory in the repo that contains the files of interest. In most cases the value "trunk" is used to avoid pulling in tags and branches.
 
-*revision :* The svn revision of the repository
+* *revision :* The svn revision of the repository.
 
 name = github
 ^^^^^^^^^^^^^
-*user :* Name of the github user or organisation
+* *user :* Name of the github user or organisation.
 
-*repo :* Name of the GIT repository
+* *repo :* Name of the GIT repository.
 
-*branch :* Name of the GIT branch to use
+* *branch :* Name of the GIT branch to use.
 
 name = url
-^^^^^^^^^^^^^
-*url :* URL of the core file (or archive)
+^^^^^^^^^^
+* *url :* URL of the core file (or archive).
 
-*filetype :* File type (zip, tar, simple).
+* *filetype :* File type (zip, tar, simple).
 
-*corename :* Name of the directory where the archive is unpacked (or the simple file is copied). If not provided, the name of the cache/build directory is the same as the core.
+* *corename :* Name of the directory where the archive is unpacked (or the simple file is copied). If not provided, the name of the cache/build directory is the same as the core.
 
 plusargs (optional)
 ~~~~~~~~~~~~~~~~~~~
@@ -160,14 +159,20 @@ Plusargs are additional options that are sent to the verilog simulator at runtim
 The format of a plusarg is
 <option_name> = <type> <Description>
 
-When a system is simulated in FuseSoC, the options specified after the system name are interpreted as plusargs and are compared to the plusargs registered in the system cores. To set a plusargs value, the following command-line syntax is used
+When a system is simulated in FuseSoC, the options specified after the system name are interpreted as plusargs and are compared to the plusargs registered in the system cores. To set a plusargs value, the following command-line syntax is used:
 
-+fusesoc sim <system_name> --<option_name>+ for boolean parameters or +fusesoc sim <system_name> --<option_name>=<value>+ for other types of parameters.
+For boolean parameters:
+
++fusesoc sim <system_name> --<option_name>+
+
+For other types of parameters:
+
++fusesoc sim <system_name> --<option_name>=<value>+
 
 The <type> field has the following meaning:
 
-* *bool :* Boolean value. Set to true if the option is specified, otherwise false
-* *int :* Integer value. If the value is not an integer, FuseSoC exits with errors
+* *bool :* Boolean value. Set to true if the option is specified, otherwise false.
+* *int :* Integer value. If the value is not an integer, FuseSoC exits with errors.
 * *str :* A string value.
 * *file :* The value string is interpreted as a relative path from the current working directory and is converted by FuseSoC into an absolute path.
 
@@ -180,34 +185,34 @@ testcase = file VMEM file containg a or1k testcase
 
 .Using plusargs
 --------
-fusesoc sim ordb2a --timeout=100000 --testcase=tests/or1200-basic.vmem --jtag-vpi-enable
+fusesoc sim ordb2a --timeout=100000 --testcase=tests/or1200-basic.vmem --vcd
 --------
 
 Known issues
 ------------
 
-. The configparser in python 2 doesn't handle spaces before values in multiline options
-+  
+. The configparser in python 2 doesn't handle spaces before values in multiline options.
++
 .Illegal comment style
-----------------------
+--------------
 src_files =
  clkgen.v
  #gpio.v
  fusesoc_top.v
-----------------------
+--------------
 +
-This is not legal in python 2, while 
+This is not legal in python 2, while:
 +
 .Legal comment style
---------------------
+--------------
 src_files =
  clkgen.v
 # gpio.v
  fusesoc_top.v
---------------------
+--------------
 +
-is ok in python 2 and python 3
+is ok in python 2 and python 3.
++
+. Spaces are not allowed anywhere in the paths.
 
-. Spaces are not allowed anywhere in the paths
-
-. A specific git commit cannot be selected for the github backend
+. A specific git commit cannot be selected for the github backend.
