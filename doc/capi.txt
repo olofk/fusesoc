@@ -61,6 +61,7 @@ Additional options used when simulating with modelsim:
 
 * *vlog_options :* Options to be sent as additional arguments to vlog
 * *vsim_options :* Options to be sent as additional arguments to vsim
+* *depend       :* List of cores that only Modelsim simulation depends on
 
 icarus (optional)
 ~~~~~~~~~~~~~~~~~
@@ -75,6 +76,7 @@ Additional options used when simulating with Verilator:
 
 * *source_type 	   :*  Currently can be set to C or SystemC
 * *define_files	   :*  List of .v files containing `define directives to be converted to #define directives in corresponding .h files
+* *depend      	   :*  List of cores that only Verilator simulation depends on
 
 verilog
 ~~~~~~~
