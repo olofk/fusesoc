@@ -61,6 +61,7 @@ Additional options used when simulating with modelsim:
 
 * *vlog_options :* Options to be sent as additional arguments to vlog
 * *vsim_options :* Options to be sent as additional arguments to vsim
+* *depend       :* List of cores that only Modelsim simulation depends on
 
 icarus (optional)
 ~~~~~~~~~~~~~~~~~
