@@ -48,6 +48,8 @@ class Verilator(Simulator):
                 self.src_type = items.get(item)
             elif item == 'define_files':
                 self.define_files = items.get(item).split()
+            elif item == 'depend':
+                self.cores = items.get(item).split()
             else:
                 print("Warning: Unknown item '" + item +"' in verilator section")
 
