@@ -102,7 +102,7 @@ class Modelsim(Simulator):
             vpi_options += ['-pli', vpi_module['name']]
         try:
             logfile = os.path.join(self.sim_root, 'vsim.log')
-            Launcher(self.model_tech+'/vsim', ['-c', '-do', 'run -all'] +
+            Launcher(self.model_tech+'/vsim', ['-quiet', '-c', '-do', 'run -all'] +
                      ['-l', logfile] +
                      self.vsim_options +
                      vpi_options +
