@@ -5,12 +5,19 @@ from fusesoc.provider import ProviderFactory
 from fusesoc.system import System
 from fusesoc.vpi import VPI
 from fusesoc.verilog import Verilog
+from fusesoc.verilator import Verilator
 import os
 import shutil
 import subprocess
 import logging
 
 logger = logging.getLogger(__name__)
+
+class OptionSectionMissing(Exception):
+    def __init__(self, value):
+        self.value = value
+    def __str__(self):
+        return repr(self.value)
 
 class Core:
     def __init__(self, core_file=None, name=None, core_root=None):
@@ -29,6 +36,8 @@ class Core:
         self.system   = None
         self.verilog  = None
         self.vpi = None
+        self.verilator = None
+
         if core_file:
             config = FusesocConfigParser(core_file)
 
@@ -71,6 +80,15 @@ class Core:
             if config.has_section('vpi'):
                 items = config.items('vpi')
                 self.vpi = VPI(dict(items))
+
+            if config.has_section('verilator'):
+                self.verilator = Verilator()
+                items = config.items('verilator')
+                self.verilator.load_items((dict(items)))
+                logger.debug('verilator.src_files=' + str(self.verilator.src_files))
+                logger.debug('verilator.include_files=' + str(self.verilator.include_files))
+                logger.debug('verilator.include_dirs=' + str(self.verilator.include_dirs))
+
             system_file = os.path.join(self.core_root, self.name+'.system')
             if os.path.exists(system_file):
                 self.system = System(system_file)
@@ -114,6 +132,8 @@ class Core:
             src_files += self.verilog.export()
         if self.vpi:
             src_files += self.vpi.export()
+        if self.verilator:
+            src_files += self.verilator.export()
 
         dirs = list(set(map(os.path.dirname,src_files)))
         logger.debug("export src_files=" + str(src_files))

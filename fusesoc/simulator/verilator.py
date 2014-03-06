@@ -3,6 +3,8 @@ import shutil
 import subprocess
 
 from fusesoc import utils
+from fusesoc.coremanager import CoreManager
+from fusesoc.core import OptionSectionMissing
 from .simulator import Simulator
 
 class Source(Exception):
@@ -12,68 +14,23 @@ class Source(Exception):
          return repr(self.value)
 
 
-class Verilator(Simulator):
+class SimulatorVerilator(Simulator):
 
     TOOL_NAME = 'VERILATOR'
     def __init__(self, system):
         self.cores = []
-
-        super(Verilator, self).__init__(system)
-
-        self.verilator_options = []
-        self.src_files = []
-        self.include_files = []
-        self.include_dirs = []
-        self.tb_toplevel = ""
-        self.src_type = 'C'
-        self.define_files = []
-
-
-        if system.verilator is not None:
-            self._load_dict(system.verilator)
+        super(SimulatorVerilator, self).__init__(system)
         self.sim_root = os.path.join(self.build_root, 'sim-verilator')
-
-    def _load_dict(self, items):
-        for item in items:
-            if item == 'verilator_options':
-                self.verilator_options = items.get(item).split()
-            elif item == 'src_files':
-                self.src_files = items.get(item).split()
-            elif item == 'include_files':
-                self.include_files = items.get(item).split()
-                self.include_dirs  = list(set(map(os.path.dirname, self.include_files)))
-            elif item == 'tb_toplevel':
-                self.tb_toplevel = items.get(item)
-            elif item == 'source_type':
-                self.src_type = items.get(item)
-            elif item == 'define_files':
-                self.define_files = items.get(item).split()
-            elif item == 'depend':
-                self.cores = items.get(item).split()
-            else:
-                print("Warning: Unknown item '" + item +"' in verilator section")
-
-    def export(self):
-        src_dir = self.system.files_root
-        dst_dir = self.sim_root
-        src_files = list(self.src_files)
-        src_files += self.include_files
-        src_files += [self.tb_toplevel]
-        dirs = list(set(map(os.path.dirname, src_files)))
-        for d in dirs:
-            if not os.path.exists(os.path.join(dst_dir, d)):
-                os.makedirs(os.path.join(dst_dir, d))
-
-        for f in src_files:
-            if(os.path.exists(os.path.join(src_dir, f))):
-                shutil.copyfile(os.path.join(src_dir, f), 
-                                os.path.join(dst_dir, f))
+        core = CoreManager().get_core(system.name)
+        if core.verilator.top_module == '':
+            raise OptionSectionMissing('top_module')
+        if core.verilator.tb_toplevel == '':
+            raise OptionSectionMissing('tb_toplevel')
 
     def configure(self):
-        super(Verilator, self).configure()
-        self.export()
+        super(SimulatorVerilator, self).configure()
         self._write_config_files()
-        self.object_files = [os.path.splitext(os.path.basename(s))[0]+'.o' for s in self.src_files]
+        self.object_files = [os.path.splitext(os.path.basename(s))[0]+'.o' for s in self.verilator.src_files]
 
     def _write_config_files(self):
         self.verilator_file = 'input.vc'
@@ -85,22 +42,28 @@ class Verilator(Simulator):
             f.write(os.path.abspath(src_file) + '\n')
         f.close()
         #convert verilog defines into C file
-        for files in self.define_files:
+        for files in self.verilator.define_files:
             read_file = os.path.join(self.src_root,files)
-            write_file = os.path.join(os.path.dirname(os.path.join(self.sim_root,self.tb_toplevel)),os.path.splitext(os.path.basename(files))[0]+'.h')
+            write_file = os.path.join(os.path.dirname(os.path.join(self.sim_root,self.verilator.tb_toplevel)),os.path.splitext(os.path.basename(files))[0]+'.h')
             utils.convert_V2H(read_file, write_file)
 
     def _verilate(self):
-        if self.src_type == 'systemC':
+        if self.verilator.src_type == 'systemC':
             args = ['--sc']
         else:
             args = ['--cc']
         args += ['-f', self.verilator_file]
-        args += ['--top-module', 'orpsoc_top']
+        args += ['--top-module', self.verilator.top_module]
         args += ['--exe']
+        args += ['-LDFLAGS "']
         args += [os.path.join(self.sim_root, s) for s in self.object_files]
-        args += [self.tb_toplevel]
-        args += self.verilator_options
+        args += ['--start-group']
+        args += [l for l in self.verilator.libs]
+        args += ['--end-group']
+        args += ['"']
+        args += ['-CFLAGS ' + '-I' + i for i in self.verilator.include_dirs]
+        args += [self.verilator.tb_toplevel]
+        args += self.verilator.verilator_options
 
         self.verilator_root = os.getenv('VERILATOR_ROOT')
         if self.verilator_root is None:
@@ -124,22 +87,23 @@ class Verilator(Simulator):
         l.run()
 
     def build(self):
-        super(Verilator, self).build()
+        super(SimulatorVerilator, self).build()
         self._verilate()
-        if self.src_type == 'C':
+        if self.verilator.src_type == 'C':
             self.build_C()
-        elif self.src_type == 'systemC':
+        elif self.verilator.src_type == 'systemC':
             self.build_SysC()
         else:
             raise Source(self.src_type)
 
-        utils.Launcher('make', ['-f', 'Vorpsoc_top.mk', 'Vorpsoc_top'],
+        utils.Launcher('make', ['-f', 'V' + self.verilator.top_module + '.mk', 'V' + self.verilator.top_module],
                        cwd=os.path.join(self.sim_root, 'obj_dir')).run()
      
     def build_C(self):
         args = ['-c']
-        args += ['-I'+s for s in self.include_dirs]
-        for src_file in self.src_files:
+        args += ['-std=c99']
+        args += ['-I'+s for s in self.verilator.include_dirs]
+        for src_file in self.verilator.src_files:
             print("Compiling " + src_file)
             utils.Launcher('gcc',
                          args + [src_file],
@@ -150,7 +114,7 @@ class Verilator(Simulator):
         #src_files        
         args = ['-I.']
         args += ['-MMD']
-        args += ['-I'+s for s in self.include_dirs]
+        args += ['-I'+s for s in self.verilator.include_dirs]
         args += ['-Iobj_dir']
         args += ['-I'+os.path.join(self.verilator_root,'include')]
         args += ['-I'+os.path.join(self.verilator_root,'include', 'vltstd')]  
@@ -164,13 +128,13 @@ class Verilator(Simulator):
         args += ['-c']
         args += ['-g']
 
-        for src_file in self.src_files:
+        for src_file in self.verilator.src_files:
             print("Compiling " + src_file)
             utils.Launcher('g++',args + ['-o' + os.path.splitext(os.path.basename(src_file))[0]+'.o']+ [src_file],
                            cwd=self.sim_root).run()
 
     def run(self, args):
         #TODO: Handle arguments parsing
-        utils.Launcher('./Vorpsoc_top',
+        utils.Launcher('./V' + self.verilator.top_module,
                        args,
                        cwd=os.path.join(self.sim_root, 'obj_dir')).run()

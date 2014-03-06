@@ -2,6 +2,8 @@ from fusesoc.config import Config
 from fusesoc.coremanager import CoreManager
 from fusesoc.verilog import Verilog
 from fusesoc.utils import Launcher
+from fusesoc.verilator import Verilator
+from fusesoc.core import OptionSectionMissing
 import argparse
 import shutil
 import os
@@ -36,6 +38,8 @@ class Simulator(object):
         self.env['SIMULATOR'] = self.TOOL_NAME
 
         self.verilog = Verilog()
+        self.verilator = Verilator()
+
         for core_name in self.cores:
             logger.debug('core_name=' + core_name)
             core = self.cm.get_core(core_name)
@@ -60,6 +64,22 @@ class Simulator(object):
                 vpi_module['name']          = core.vpi.name
                 vpi_module['libs']          = [l for l in core.vpi.libs]
                 self.vpi_modules += [vpi_module]
+
+            if core.verilator:
+                if core.verilator.include_dirs:
+                    logger.debug('core.include_dirs=' + str(core.verilator.include_dirs))
+                else:
+                    logger.debug('core.include_dirs=None')
+                self.verilator.include_dirs         += [os.path.join(self.src_root, core_name, d) for d in core.verilator.include_dirs]
+                self.verilator.src_files            += [os.path.join(self.src_root, core_name, f) for f in core.verilator.src_files]
+                self.verilator.verilator_options    += [opt for opt in core.verilator.verilator_options]
+                self.verilator.libs                 += [libs for libs in core.verilator.libs]
+                if core_name == self.system.name:
+                    self.verilator.src_files        += [f for f in core.verilator.private_src_files]
+                    if core.verilator.top_module != '':
+                        self.verilator.top_module    = core.verilator.top_module
+                    if core.verilator.tb_toplevel != '':
+                        self.verilator.tb_toplevel   = os.path.join(self.src_root, core_name, core.verilator.tb_toplevel)
 
         logger.debug('__init__() -Done-')
 
