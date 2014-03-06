@@ -123,6 +123,7 @@ def sim(known, remaining):
         logger.error("No simulator was found in "+ known.system + " core description")
         exit(1)
     try:
+        CoreManager().tool = sim_name
         sim = SimulatorFactory(sim_name, core)
     except DependencyError as e:
         print("Error: '" + known.system + "' or any of its dependencies requires '" + e.value + "', but this core was not found")

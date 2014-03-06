@@ -27,7 +27,7 @@ class Simulator(object):
         self.vpi_modules = []
 
         self.cm = CoreManager()
-        self.cores += self.cm.get_depends(self.system.name)
+        self.cores = self.cm.get_depends(self.system.name)
         logger.debug( "depend -->  " +str (self.cores))
 
         self.env = os.environ.copy()

@@ -27,7 +27,7 @@ class SimulatorIcarus(Simulator):
             if item == 'iverilog_options':
                 self.iverilog_options = items.get(item).split()
             elif item == 'depend':
-                self.cores = items.get(item).split()
+                pass
             else:
                 print("Warning: Unknown item '" + item +"' in icarus section")
 

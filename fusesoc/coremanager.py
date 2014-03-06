@@ -17,6 +17,7 @@ class CoreManager(object):
     _instance = None
     _cores = {}
     _cores_root = []
+    tool = ''
 
     def __new__(cls, *args, **kwargs):
         if not cls._instance:
@@ -65,7 +66,12 @@ class CoreManager(object):
         return self._cores_root
 
     def get_depends(self, core):
-        if self._cores[core].depend:
+        depends = self._cores[core].depend
+        try:
+            depends += getattr(self._cores[core], self.tool)['depend'].split()
+        except (AttributeError, KeyError):
+            pass
+        if depends:
             return list(set(self._get_depends(core)))
         else:
             return [core]
@@ -74,6 +80,10 @@ class CoreManager(object):
         #FIXME: Check for circular dependencies
         try:
             cores = [core]
+            try:
+                cores += getattr(self._cores[core], self.tool)['depend'].split()
+            except (AttributeError, KeyError):
+                pass
             if self._cores[core].depend:
                 for c in self._cores[core].depend:
                     cores += self._get_depends(c)

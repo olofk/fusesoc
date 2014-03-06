@@ -28,7 +28,7 @@ class Modelsim(Simulator):
             elif item == 'vsim_options':
                 self.vsim_options = items.get(item).split()
             elif item == 'depend':
-                self.cores = items.get(item).split()
+                pass
             else:
                 print("Warning: Unknown item '" + item +"' in modelsim section")
 
