@@ -92,4 +92,4 @@ clean:
         args += remaining
         args += ['-o']
         args += ['p;' + self.system.name + '.sof']
-        utils.launch('quartus_pgm', args, cwd=self.work_root)
+        utils.Launcher('quartus_pgm', args, cwd=self.work_root).run()
