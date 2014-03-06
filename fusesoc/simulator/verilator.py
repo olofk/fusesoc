@@ -118,7 +118,7 @@ class Verilator(Simulator):
         l = utils.Launcher(cmd,
                            shell=True,
                            cwd = self.sim_root,
-                           stderr = open(os.path.join(self.sim_root,'verilator.log'),'w')
+                           stderr_path = os.path.join(self.sim_root,'verilator.log')
         )
         print(l)
         l.run()
