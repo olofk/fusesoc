@@ -40,6 +40,10 @@ class Simulator(object):
             logger.debug('core_name=' + core_name)
             core = self.cm.get_core(core_name)
 
+            if core is None:
+                print("Error: '" + system.name + "' " + self.TOOL_NAME + " simulation requires " + core_name + " but this core was not found")
+                exit(1)
+
             if core.verilog:
                 if core.verilog.include_dirs:
                     logger.debug('core.include_dirs=' + str(core.verilog.include_dirs))
