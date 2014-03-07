@@ -5,6 +5,7 @@ from fusesoc.provider import ProviderFactory
 from fusesoc.system import System
 from fusesoc.vpi import VPI
 from fusesoc.verilog import Verilog
+from fusesoc.vhdl import VHDL
 import os
 import shutil
 import subprocess
@@ -28,6 +29,7 @@ class Core:
         self.provider = None
         self.system   = None
         self.verilog  = None
+        self.vhdl     = None
         self.vpi = None
         if core_file:
             config = FusesocConfigParser(core_file)
@@ -68,6 +70,11 @@ class Core:
                 logger.debug('verilog.src_files=' + str(self.verilog.src_files))
                 logger.debug('verilog.include_files=' + str(self.verilog.include_files))
                 logger.debug('verilog.include_dirs=' + str(self.verilog.include_dirs))
+            if config.has_section('vhdl'):
+                self.vhdl = VHDL()
+                items = config.items('vhdl')
+                self.vhdl.load_items((dict(items)))
+                logger.debug('vhdl.src_files=' + str(self.vhdl.src_files))
             if config.has_section('vpi'):
                 items = config.items('vpi')
                 self.vpi = VPI(dict(items))
@@ -112,6 +119,8 @@ class Core:
         src_files = []
         if self.verilog:
             src_files += self.verilog.export()
+        if self.vhdl:
+            src_files += self.vhdl.export()
         if self.vpi:
             src_files += self.vpi.export()
 
@@ -156,6 +165,7 @@ class Core:
 
         show_list = lambda l: "\n                        ".join(l)
         show_dict = lambda d: show_list(["%s: %s" % (k, d[k]) for k in d.keys()])
+        src_files = []
 
         print("CORE INFO")
         print("Name:                   " + self.name)
@@ -166,20 +176,27 @@ class Core:
             print("\nPlusargs:               " + show_dict(self.plusargs.items))
         if self.depend:
             print("\nCores:                  " + show_list(self.depend))
-        if self.verilog.include_dirs:
-            print("\nInclude dirs:           " + show_list(self.verilog.include_dirs))
-        if self.verilog.include_files:
-            print("\nInclude files:          " + show_list(self.verilog.include_files))
-        if self.verilog.src_files:
-            print("\nSrc files:              " + show_list(self.verilog.src_files))
-        if self.verilog.tb_src_files:
-            print("\nTestbench files:        " + show_list(self.verilog.tb_src_files))
-        if self.verilog.tb_private_src_files:
-            print("\nPrivate Testbench files:" + show_list(self.verilog.tb_private_src_files))
-        if self.verilog.tb_include_files:
-            print("\nTestbench include files:" + show_list(self.verilog.tb_include_files))
-        if self.verilog.tb_include_dirs:
-            print("\nTestbench include dirs: " + show_list(self.verilog.tb_include_dirs))
+        if self.verilog:
+            if self.verilog.include_dirs:
+                print("\nInclude dirs:           " + show_list(self.verilog.include_dirs))
+            if self.verilog.include_files:
+                print("\nInclude files:          " + show_list(self.verilog.include_files))
+            if self.verilog.src_files:
+                src_files += self.verilog.src_files
+        if self.vhdl:
+            if self.vhdl.src_files:
+                src_files += self.vhdl.src_files
+        if src_files:
+            print("\nSrc files:              " + show_list(src_files))
+        if self.verilog:
+            if self.verilog.tb_src_files:
+                print("\nTestbench files:        " + show_list(self.verilog.tb_src_files))
+            if self.verilog.tb_private_src_files:
+                print("\nPrivate Testbench files:" + show_list(self.verilog.tb_private_src_files))
+            if self.verilog.tb_include_files:
+                print("\nTestbench include files:" + show_list(self.verilog.tb_include_files))
+            if self.verilog.tb_include_dirs:
+                print("\nTestbench include dirs: " + show_list(self.verilog.tb_include_dirs))
         logger.debug('info() -Done-')
 
 
