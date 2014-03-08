@@ -13,6 +13,12 @@ import logging
 
 logger = logging.getLogger(__name__)
 
+class OptionSectionMissing(Exception):
+    def __init__(self, value):
+        self.value = value
+    def __str__(self):
+        return repr(self.value)
+
 class Core:
     def __init__(self, core_file=None, name=None, core_root=None):
         logger.debug('__init__() *Entered*' +

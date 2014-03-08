@@ -83,6 +83,7 @@ converted to #define directives in corresponding .h files
 * *include_files (optional)     :* List of C or SystemC include files
 * *tb_toplevel (optional)       :* Name of the test bench top file
 * *depend (optional)            :* List of cores that only Verilator simulation depends on
+* *top_module (optional)        :* Name of the verilog top module
 
 verilog
 ~~~~~~~

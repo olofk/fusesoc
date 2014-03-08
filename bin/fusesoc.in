@@ -17,7 +17,7 @@ from fusesoc.coremanager import CoreManager, DependencyError
 from fusesoc.simulator import SimulatorFactory
 from fusesoc.simulator.verilator import Source
 from fusesoc.system import System
-from fusesoc.core import Core
+from fusesoc.core import Core, OptionSectionMissing
 import logging
 
 logging.basicConfig(filename='fusesoc.log', filemode='w', level=logging.DEBUG)
@@ -127,6 +127,9 @@ def sim(known, remaining):
         sim = SimulatorFactory(sim_name, core)
     except DependencyError as e:
         print("Error: '" + known.system + "' or any of its dependencies requires '" + e.value + "', but this core was not found")
+        exit(1)
+    except OptionSectionMissing as e:
+        print("Error: '" + known.system + "' miss a mandatory parameter for " + sim_name + " simulation (" + e.value + ").")
         exit(1)
     if known.force or not os.path.exists(sim.sim_root):
         sim.configure()
