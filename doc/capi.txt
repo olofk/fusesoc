@@ -73,8 +73,15 @@ verilator (optional)
 ~~~~~~~~~~~~~~~~~~~~
 Additional options used when simulating with Verilator:
 
-* *source_type 	   :*  Currently can be set to C or SystemC
-* *define_files	   :*  List of .v files containing `define directives to be converted to #define directives in corresponding .h files
+* *source_type (optional)       :* Currently can be set to C or SystemC (default is C)
+* *define_files (optional)      :* List of .v files containing `define directives to be
+converted to #define directives in corresponding .h files
+* *libs (optional)              :* List of external libraries linked with the generated model
+* *verilator_options (optional) :* List of options passed to Verilator
+* *src_files (optional)         :* List of C or SystemC files
+* *include_files (optional)     :* List of C or SystemC include files
+* *tb_toplevel (optional)       :* Name of the test bench top file
+* *depend (optional)            :* List of cores that only Verilator simulation depends on
 
 verilog
 ~~~~~~~
