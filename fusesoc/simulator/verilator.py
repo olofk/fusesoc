@@ -27,7 +27,7 @@ class Verilator(Simulator):
         self.tb_toplevel = ""
         self.src_type = 'C'
         self.define_files = []
-
+        self.libs = []
 
         if system.verilator is not None:
             self._load_dict(system.verilator)
@@ -50,6 +50,8 @@ class Verilator(Simulator):
                 self.define_files = items.get(item).split()
             elif item == 'depend':
                  pass
+            elif item == 'libs':
+                 self.libs = items.get(item).split()
             else:
                 print("Warning: Unknown item '" + item +"' in verilator section")
 
@@ -98,7 +100,13 @@ class Verilator(Simulator):
         args += ['-f', self.verilator_file]
         args += ['--top-module', 'orpsoc_top']
         args += ['--exe']
+        args += ['-LDFLAGS "']
         args += [os.path.join(self.sim_root, s) for s in self.object_files]
+        args += ['--start-group']
+        args += [l for l in self.libs]
+        args += ['--end-group']
+        args += ['"']
+        args += ['-CFLAGS ' + '-I' + i for i in self.include_dirs]
         args += [self.tb_toplevel]
         args += self.verilator_options
 
