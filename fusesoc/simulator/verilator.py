@@ -3,6 +3,7 @@ import shutil
 import subprocess
 
 from fusesoc import utils
+from fusesoc.core import OptionSectionMissing
 from .simulator import Simulator
 
 class Source(Exception):
@@ -28,10 +29,15 @@ class Verilator(Simulator):
         self.src_type = 'C'
         self.define_files = []
         self.libs = []
+        self.top_module = ""
 
         if system.verilator is not None:
             self._load_dict(system.verilator)
         self.sim_root = os.path.join(self.build_root, 'sim-verilator')
+        if self.top_module == '':
+            raise OptionSectionMissing('top_module')
+        if self.tb_toplevel == '':
+            raise OptionSectionMissing('tb_toplevel')
 
     def _load_dict(self, items):
         for item in items:
@@ -52,6 +58,8 @@ class Verilator(Simulator):
                  pass
             elif item == 'libs':
                  self.libs = items.get(item).split()
+            elif item == 'top_module':
+                 self.top_module = items.get(item)
             else:
                 print("Warning: Unknown item '" + item +"' in verilator section")
 
@@ -98,7 +106,7 @@ class Verilator(Simulator):
         else:
             args = ['--cc']
         args += ['-f', self.verilator_file]
-        args += ['--top-module', 'orpsoc_top']
+        args += ['--top-module', self.top_module]
         args += ['--exe']
         args += ['-LDFLAGS "']
         args += [os.path.join(self.sim_root, s) for s in self.object_files]
@@ -141,7 +149,7 @@ class Verilator(Simulator):
         else:
             raise Source(self.src_type)
 
-        utils.Launcher('make', ['-f', 'Vorpsoc_top.mk', 'Vorpsoc_top'],
+        utils.Launcher('make', ['-f', 'V' + self.top_module + '.mk', 'V' + self.top_module],
                        cwd=os.path.join(self.sim_root, 'obj_dir')).run()
      
     def build_C(self):
@@ -179,6 +187,6 @@ class Verilator(Simulator):
 
     def run(self, args):
         #TODO: Handle arguments parsing
-        utils.Launcher('./Vorpsoc_top',
+        utils.Launcher('./V' + self.top_module,
                        args,
                        cwd=os.path.join(self.sim_root, 'obj_dir')).run()
