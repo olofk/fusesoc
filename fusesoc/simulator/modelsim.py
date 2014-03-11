@@ -8,29 +8,18 @@ class Modelsim(Simulator):
     TOOL_NAME = 'MODELSIM'
     def __init__(self, system):
 
-        self.cores = []
         self.vlog_options = []
         self.vsim_options = []
 
         if system.modelsim is not None:
-            self._load_dict(system.modelsim)
+            self.vlog_options = system.modelsim.vlog_options
+            self.vsim_options = system.modelsim.vsim_options
         super(Modelsim, self).__init__(system)
         self.model_tech = os.getenv('MODEL_TECH')
         if not self.model_tech:
             print("Environment variable MODEL_TECH was not found. It should be set to <modelsim install path>/bin")
             exit(1)
         self.sim_root = os.path.join(self.build_root, 'sim-modelsim')
-
-    def _load_dict(self,items):
-        for item in items:
-            if item == 'vlog_options':
-                self.vlog_options = items.get(item).split()
-            elif item == 'vsim_options':
-                self.vsim_options = items.get(item).split()
-            elif item == 'depend':
-                pass
-            else:
-                print("Warning: Unknown item '" + item +"' in modelsim section")
 
     def configure(self):
         super(Modelsim, self).configure()

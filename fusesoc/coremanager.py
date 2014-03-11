@@ -68,7 +68,7 @@ class CoreManager(object):
     def get_depends(self, core):
         depends = self._cores[core].depend
         try:
-            depends += getattr(self._cores[core], self.tool)['depend'].split()
+            depends += getattr(self._cores[core], self.tool).depend
         except (AttributeError, KeyError):
             pass
         if depends:
@@ -81,7 +81,7 @@ class CoreManager(object):
         try:
             cores = [core]
             try:
-                cores += getattr(self._cores[core], self.tool)['depend'].split()
+                cores += getattr(self._cores[core], self.tool).depend
             except (AttributeError, KeyError):
                 pass
             if self._cores[core].depend:

@@ -16,8 +16,6 @@ class Verilator(Simulator):
 
     TOOL_NAME = 'VERILATOR'
     def __init__(self, system):
-        self.cores = []
-
         super(Verilator, self).__init__(system)
 
         self.verilator_options = []
@@ -30,30 +28,17 @@ class Verilator(Simulator):
         self.libs = []
 
         if system.verilator is not None:
-            self._load_dict(system.verilator)
+             self.verilator_options  = system.verilator.verilator_options
+             self.src_files          = system.verilator.src_files
+             self.include_files      = system.verilator.include_files
+             self.include_dirs       = system.verilator.include_dirs
+             self.tb_toplevel        = system.verilator.tb_toplevel
+             self.src_type           = system.verilator.source_type
+             self.define_files       = system.verilator.define_files
+             self.libs               = system.verilator.libs
+
         self.sim_root = os.path.join(self.build_root, 'sim-verilator')
 
-    def _load_dict(self, items):
-        for item in items:
-            if item == 'verilator_options':
-                self.verilator_options = items.get(item).split()
-            elif item == 'src_files':
-                self.src_files = items.get(item).split()
-            elif item == 'include_files':
-                self.include_files = items.get(item).split()
-                self.include_dirs  = list(set(map(os.path.dirname, self.include_files)))
-            elif item == 'tb_toplevel':
-                self.tb_toplevel = items.get(item)
-            elif item == 'source_type':
-                self.src_type = items.get(item)
-            elif item == 'define_files':
-                self.define_files = items.get(item).split()
-            elif item == 'depend':
-                 pass
-            elif item == 'libs':
-                 self.libs = items.get(item).split()
-            else:
-                print("Warning: Unknown item '" + item +"' in verilator section")
 
     def export(self):
         src_dir = self.system.files_root

@@ -5,6 +5,7 @@ from fusesoc.provider import ProviderFactory
 from fusesoc.system import System
 from fusesoc.vpi import VPI
 from fusesoc.verilog import Verilog
+from fusesoc.sections import IcarusSection, ModelsimSection, VerilatorSection
 import os
 import shutil
 import subprocess
@@ -42,9 +43,9 @@ class Core:
 
             #FIXME : Make simulators part of the core object
             self.simulator        = config.get_section('simulator')
-            self.icarus           = config.get_section('icarus')
-            self.modelsim         = config.get_section('modelsim')
-            self.verilator        = config.get_section('verilator')
+            self.icarus    = IcarusSection(config.get_section('icarus'))
+            self.modelsim  = ModelsimSection(config.get_section('modelsim'))
+            self.verilator = VerilatorSection(config.get_section('verilator'))
             self.pre_run_scripts  = config.get_list('scripts','pre_run_scripts')
             self.post_run_scripts = config.get_list('scripts','post_run_scripts')
 

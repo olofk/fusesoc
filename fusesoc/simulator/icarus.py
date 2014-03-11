@@ -1,6 +1,6 @@
 import os
 import subprocess
-from .simulator import Simulator
+from fusesoc.simulator.simulator import Simulator
 import logging
 from fusesoc.utils import Launcher
 
@@ -16,20 +16,12 @@ class SimulatorIcarus(Simulator):
         self.iverilog_options = []
 
         if system.icarus is not None:
-            self._load_dict(system.icarus)
+            self.iverilog_options = system.icarus.iverilog_options
         super(SimulatorIcarus, self).__init__(system)
         self.sim_root = os.path.join(self.build_root, 'sim-icarus')
 
         logger.debug('__init__() -Done-')
 
-    def _load_dict(self,items):
-        for item in items:
-            if item == 'iverilog_options':
-                self.iverilog_options = items.get(item).split()
-            elif item == 'depend':
-                pass
-            else:
-                print("Warning: Unknown item '" + item +"' in icarus section")
 
 
     def configure(self):
