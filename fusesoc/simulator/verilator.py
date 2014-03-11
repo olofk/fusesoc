@@ -24,7 +24,7 @@ class Verilator(Simulator):
         self.include_files = []
         self.include_dirs = []
         self.tb_toplevel = ""
-        self.src_type = 'C'
+        self.src_type = ''
         self.define_files = []
         self.libs = []
         self.top_module = ""
@@ -126,7 +126,7 @@ class Verilator(Simulator):
     def build(self):
         super(Verilator, self).build()
         self._verilate()
-        if self.src_type == 'C':
+        if self.src_type == 'C' or self.src_type == '':
             self.build_C()
         elif self.src_type == 'systemC':
             self.build_SysC()

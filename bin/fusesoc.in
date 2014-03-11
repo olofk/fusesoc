@@ -136,7 +136,7 @@ def sim(known, remaining):
         try:
             sim.build()
         except Source as e:
-            print( e.value + " Source type don't valid. choose: C or systemC")
+            print( "'" + e.value + "' source type is not valid. Choose 'C' or 'systemC'.")
             exit(1)
         except RuntimeError as e:
             print("Error: Failed to build simulation model. " + str(e))
