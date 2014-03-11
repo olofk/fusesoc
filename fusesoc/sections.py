@@ -63,6 +63,7 @@ class VerilatorSection(ToolSection):
         
         self._add_stringitem('tb_toplevel')
         self._add_stringitem('source_type')
+        self._add_stringitem('top_module')
 
         if items:
             self.load_dict(items)
