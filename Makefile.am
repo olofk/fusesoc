@@ -5,6 +5,7 @@ fusesoc_PYTHON =        \
  fusesoc/coremanager.py        \
  fusesoc/fusesocconfigparser.py \
  fusesoc/plusargs.py           \
+ fusesoc/sections.py             \
  fusesoc/system.py             \
  fusesoc/utils.py              \
  fusesoc/verilog.py            \
