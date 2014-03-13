@@ -55,6 +55,8 @@ class VerilatorSection(ToolSection):
 
         self.name ='verilator'
 
+        self.include_dirs = []
+
         self._add_listitem('verilator_options')
         self._add_listitem('src_files')
         self._add_listitem('include_files')

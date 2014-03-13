@@ -29,15 +29,18 @@ class Verilator(Simulator):
         self.libs = []
         self.top_module = ""
 
+        for core_name in self.cores:
+            core = self.cm.get_core(core_name)
+            self.src_files         += [os.path.join(self.src_root, core_name, f) for f in core.verilator.src_files]
+            self.verilator_options += core.verilator.verilator_options
+            self.include_files     += [os.path.join(self.src_root, core_name, f) for f in core.verilator.include_files]
+            self.include_dirs      += [os.path.join(self.src_root, core_name, d) for d in core.verilator.include_dirs]
+            self.define_files      += [os.path.join(self.src_root, core_name, f) for f in core.verilator.define_files]
+            self.libs              += [l for l in core.verilator.libs]
+
         if system.verilator is not None:
-             self.verilator_options  = system.verilator.verilator_options
-             self.src_files          = system.verilator.src_files
-             self.include_files      = system.verilator.include_files
-             self.include_dirs       = system.verilator.include_dirs
              self.tb_toplevel        = system.verilator.tb_toplevel
              self.src_type           = system.verilator.source_type
-             self.define_files       = system.verilator.define_files
-             self.libs               = system.verilator.libs
              self.top_module         = system.verilator.top_module
 
         self.sim_root = os.path.join(self.build_root, 'sim-verilator')
@@ -60,8 +63,9 @@ class Verilator(Simulator):
 
         for f in src_files:
             if(os.path.exists(os.path.join(src_dir, f))):
-                shutil.copyfile(os.path.join(src_dir, f), 
-                                os.path.join(dst_dir, f))
+                if((os.path.exists(os.path.join(dst_dir, f))) == False):
+                    shutil.copyfile(os.path.join(src_dir, f),
+                                    os.path.join(dst_dir, f))
 
     def configure(self):
         super(Verilator, self).configure()
@@ -138,6 +142,7 @@ class Verilator(Simulator):
      
     def build_C(self):
         args = ['-c']
+        args += ['-std=c99']
         args += ['-I'+s for s in self.include_dirs]
         for src_file in self.src_files:
             print("Compiling " + src_file)
