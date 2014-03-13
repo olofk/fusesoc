@@ -17,8 +17,7 @@ class Modelsim(Simulator):
         super(Modelsim, self).__init__(system)
         self.model_tech = os.getenv('MODEL_TECH')
         if not self.model_tech:
-            print("Environment variable MODEL_TECH was not found. It should be set to <modelsim install path>/bin")
-            exit(1)
+            raise RuntimeError("Environment variable MODEL_TECH was not found. It should be set to <modelsim install path>/bin")
         self.sim_root = os.path.join(self.build_root, 'sim-modelsim')
 
     def configure(self):
@@ -44,43 +43,51 @@ class Modelsim(Simulator):
     def build(self):
         super(Modelsim, self).build()
 
-        #FIXME: Handle failures. Save stdout/stderr. Build vmem file from elf file argument
-        try:
-            Launcher(self.model_tech+'/vlib', ['work'], cwd = self.sim_root).run()
-        except RuntimeError:
-            print("Error: Failed to create library work")
-            exit(1)
-        try:
-            logfile = os.path.join(self.sim_root, 'vlog.log')
-            Launcher(self.model_tech+'/vlog', ['-f', self.cfg_file, '-quiet', '-l', logfile] +
-                     self.vlog_options,
-                     cwd = self.sim_root).run()
-        except RuntimeError:
-            print("Error: Failed to compile simulation model. Compile log is available in " + logfile)
-            exit(1)
+        #FIXME: Handle failures. Save stdout/stderr.
+        Launcher(self.model_tech+'/vlib', ['work'],
+                 cwd      = self.sim_root,
+                 errormsg = "Failed to create library 'work'").run()
+        
+        logfile = os.path.join(self.sim_root, 'vlog.log')
+        args = []
+        args += ['-f', self.cfg_file]
+        args += ['-quiet']
+        args += ['-l', logfile]
+        args += self.vlog_options
+
+        Launcher(self.model_tech+'/vlog', args,
+                 cwd      = self.sim_root,
+                 errormsg = "Failed to compile simulation model. Compile log is available in " + logfile).run()
 
         for vpi_module in self.vpi_modules:
             objs = []
             for src_file in vpi_module['src_files']:
-                try:
-                    Launcher('gcc', ['-c', '-std=c99', '-fPIC', '-g','-m32','-DMODELSIM_VPI'] +
-                             ['-I'+self.model_tech+'/../include'] +
-                             ['-I'+s for s in vpi_module['include_dirs']] +
-                             [src_file],
-                             cwd = self.sim_root).run()
-                except RuntimeError:
-                    print("Error: Compilation of "+src_file + "failed")
-                    exit(1)
+                args = []
+                args += ['-c']
+                args += ['-std=c99']
+                args += ['-fPIC']
+                args += ['-g']
+                args += ['-m32']
+                args += ['-DMODELSIM_VPI']
+                args += ['-I'+self.model_tech+'/../include']
+                args += ['-I'+s for s in vpi_module['include_dirs']]
+                args += [src_file]
+                Launcher('gcc', args,
+                         cwd      = self.sim_root,
+                         errormsg = "Compilation of "+src_file + "failed").run()
 
-                object_files = [os.path.splitext(os.path.basename(s))[0]+'.o' for s in vpi_module['src_files']]
-            try:
-                libs = [s for s in vpi_module['libs']]
-                Launcher('ld', ['-shared','-E','-melf_i386','-o',vpi_module['name']] +
-                         object_files + libs,
-                         cwd = self.sim_root).run()
-            except RuntimeError:
-                print("Error: Linking of "+vpi_module['name'] + " failed")
-                exit(1)
+            object_files = [os.path.splitext(os.path.basename(s))[0]+'.o' for s in vpi_module['src_files']]
+
+            args = []
+            args += ['-shared']
+            args += ['-E']
+            args += ['-melf_i386']
+            args += ['-o', vpi_module['name']]
+            args += object_files
+            args += [s for s in vpi_module['libs']]
+            Launcher('ld', args,
+                     cwd      = self.sim_root,
+                     errormsg = "Linking of "+vpi_module['name'] + " failed").run()
 
     def run(self, args):
         super(Modelsim, self).run(args)
@@ -89,17 +96,20 @@ class Modelsim(Simulator):
         vpi_options = []
         for vpi_module in self.vpi_modules:
             vpi_options += ['-pli', vpi_module['name']]
-        try:
-            logfile = os.path.join(self.sim_root, 'vsim.log')
-            Launcher(self.model_tech+'/vsim', ['-quiet', '-c', '-do', 'run -all'] +
-                     ['-l', logfile] +
-                     self.vsim_options +
-                     vpi_options +
-                     ['work.'+self.toplevel] +
-                     ['+'+s for s in self.plusargs],
-                     cwd = self.sim_root).run()
-        except RuntimeError:
-            print("Error: Simulation failed. Simulation log is available in " + logfile)
-            exit(1)
+
+        logfile = os.path.join(self.sim_root, 'vsim.log')
+        args = []
+        args += ['-quiet']
+        args += ['-c']
+        args += ['-do', 'run -all']
+        args += ['-l', logfile]
+        args += self.vsim_options
+        args += vpi_options
+        args += ['work.'+self.toplevel]
+        args += ['+'+s for s in self.plusargs]
+
+        Launcher(self.model_tech+'/vsim', args,
+                 cwd      = self.sim_root,
+                 errormsg = "Simulation failed. Simulation log is available in " + logfile).run()
 
         super(Modelsim, self).done(args)
