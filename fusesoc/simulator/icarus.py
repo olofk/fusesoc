@@ -1,5 +1,4 @@
 import os
-import subprocess
 from fusesoc.simulator.simulator import Simulator
 import logging
 from fusesoc.utils import Launcher
@@ -54,44 +53,44 @@ class SimulatorIcarus(Simulator):
         
         #Build VPI modules
         for vpi_module in self.vpi_modules:
-            try:
-                subprocess.check_call(['iverilog-vpi', '--name='+vpi_module['name']] +
-                                      [s for s in vpi_module['libs']] +
-                                      ['-I' + s for s in vpi_module['include_dirs']] +
-                                      vpi_module['src_files'],
-                                      stderr = open(os.path.join(self.sim_root,vpi_module['name']+'.log'),'w'),
-                                      cwd = os.path.join(self.sim_root))
-            except OSError:
-                print("Error: Command iverilog-vpi not found. Make sure it is in $PATH")
-                exit(1)
-            except subprocess.CalledProcessError:
-                print("Error: Failed to compile VPI library " + vpi_module['name'])
-                exit(1)
+            args = []
+            args += ['--name='+vpi_module['name']]
+            args += [s for s in vpi_module['libs']]
+            args += ['-I' + s for s in vpi_module['include_dirs']]
+            args += vpi_module['src_files']
+
+            Launcher('iverilog-vpi', args,
+                     stderr   = open(os.path.join(self.sim_root,vpi_module['name']+'.log'),'w'),
+                     cwd      = os.path.join(self.sim_root),
+                     errormsg = "Failed to compile VPI library " + vpi_module['name']).run()
                                       
         #Build simulation model
-        if subprocess.call(['iverilog',
-                            '-s', self.toplevel,
-                            '-c', 'icarus.scr',
-                            '-o', 'fusesoc.elf'] +
-                           self.iverilog_options,
-                           cwd = self.sim_root):
-            print("Error: Compiled failed")
-            exit(1)
+        args = []
+        args += ['-s', self.toplevel]
+        args += ['-c', 'icarus.scr']
+        args += ['-o', 'fusesoc.elf']
+        args += self.iverilog_options
+
+        Launcher('iverilog', args,
+                 cwd      = self.sim_root,
+                 errormsg = "Failed to compile Icarus Simulation model").run()
         logger.debug('build() -Done-')
         
     def run(self, args):
         logger.debug('run() *Entered*')
         super(SimulatorIcarus, self).run(args)
 
-        #FIXME: Handle failures. Save stdout/stderr. Build vmem file from elf file argument
-        if subprocess.call(['vvp', '-n', '-M.',
-                            '-l', 'icarus.log'] +
-                           ['-m'+s['name'] for s in self.vpi_modules] +
-                           ['fusesoc.elf'] +
-                           ['+'+s for s in self.plusargs],
-                           cwd = self.sim_root,
-                           stdin=subprocess.PIPE):  # Pipe to support Ctrl-C
-            print("Error: Failed to run simulation")
+        #FIXME: Handle failures. Save stdout/stderr.
+        args = []
+        args += ['-n']                                     # Non-interactive ($stop = $finish)
+        args += ['-M.']                                    # VPI module directory is '.'
+        args += ['-l', 'icarus.log']                       # Log file
+        args += ['-m'+s['name'] for s in self.vpi_modules] # Load VPI modules
+        args += ['fusesoc.elf']                            # Simulation binary file
+        args += ['+'+s for s in self.plusargs]             # Plusargs
+        Launcher('vvp', args,
+                 cwd = self.sim_root,
+                 errormsg = "Failed to run Icarus Simulation").run()
 
         super(SimulatorIcarus, self).done(args)
         logger.debug('run() -Done-')
