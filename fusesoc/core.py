@@ -121,6 +121,9 @@ class Core:
             src_files += self.verilog.export()
         if self.vpi:
             src_files += self.vpi.export()
+        if self.verilator:
+            src_files  += [f for f in self.verilator.src_files]
+            src_files  += [f for f in self.verilator.include_files]
 
         dirs = list(set(map(os.path.dirname,src_files)))
         logger.debug("export src_files=" + str(src_files))
