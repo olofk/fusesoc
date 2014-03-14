@@ -24,10 +24,6 @@ class CoreManager(object):
             cls._instance = super(CoreManager, cls).__new__(cls, *args, **kwargs)
         return cls._instance
 
-    def __init__(self):
-        self.add_cores_root(Config().cores_root)
-        self.add_cores_root(Config().systems_root)
-
     def load_core(self, name, file):
         if os.path.exists(file):
             try:

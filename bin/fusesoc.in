@@ -151,6 +151,9 @@ def sim(known, remaining):
 def run(known, remaining):
     try:
         cm = CoreManager()
+        config = Config()
+        cm.add_cores_root(config.cores_root)
+        cm.add_cores_root(config.systems_root)
         cm.add_cores_root(known.cores_root)
         cm.add_cores_root(known.systems_root)
     except IOError as e:
