@@ -33,7 +33,6 @@ class Verilator(Simulator):
              self.verilator_options  = system.verilator.verilator_options
              self.src_files          = system.verilator.src_files
              self.include_files      = system.verilator.include_files
-             self.include_dirs       = system.verilator.include_dirs
              self.tb_toplevel        = system.verilator.tb_toplevel
              self.src_type           = system.verilator.source_type
              self.define_files       = system.verilator.define_files
@@ -93,7 +92,7 @@ class Verilator(Simulator):
         args += ['--top-module', self.top_module]
         args += ['--exe']
         args += ['-LDFLAGS "']
-        args += [os.path.join(self.sim_root, s) for s in self.object_files]
+        args += [os.path.join(self.sim_root, s) for s in self.archives]
         args += ['-Wl,--start-group']
         args += [l for l in self.libs]
         args += ['-Wl,--end-group']
@@ -125,49 +124,22 @@ class Verilator(Simulator):
 
     def build(self):
         super(Verilator, self).build()
+        self.archives = []
+        for core_name in self.cores:
+            core = self.cm.get_core(core_name)
+            if core.verilator:
+                 if core.verilator.archive:
+                      self.archives += [core_name+'.a']
+                 self.libs += core.verilator.libs
+                 self.include_dirs += [os.path.join(self.src_root, core_name, d) for d in core.verilator.include_dirs]
         self._verilate()
-        if self.src_type == 'C' or self.src_type == '':
-            self.build_C()
-        elif self.src_type == 'systemC':
-            self.build_SysC()
-        else:
-            raise Source(self.src_type)
+        for core_name in self.cores:
+            core = self.cm.get_core(core_name)
+            if core.verilator:
+                 core.verilator.build(core_name, self.sim_root, self.src_root)
 
         utils.Launcher('make', ['-f', 'V' + self.top_module + '.mk', 'V' + self.top_module],
                        cwd=os.path.join(self.sim_root, 'obj_dir')).run()
-     
-    def build_C(self):
-        args = ['-c']
-        args += ['-I'+s for s in self.include_dirs]
-        for src_file in self.src_files:
-            print("Compiling " + src_file)
-            utils.Launcher('gcc',
-                         args + [src_file],
-                         cwd=self.sim_root).run()
-
-
-    def build_SysC(self):
-        #src_files        
-        args = ['-I.']
-        args += ['-MMD']
-        args += ['-I'+s for s in self.include_dirs]
-        args += ['-Iobj_dir']
-        args += ['-I'+os.path.join(self.verilator_root,'include')]
-        args += ['-I'+os.path.join(self.verilator_root,'include', 'vltstd')]  
-        args += ['-DVL_PRINTF=printf']
-        args += ['-DVM_TRACE=1']
-        args += ['-DVM_COVERAGE=0']
-        args += ['-I'+os.getenv('SYSTEMC_INCLUDE')]
-        args += ['-Wno-deprecated']
-        if os.getenv('SYSTEMC_CXX_FLAGS'):
-             args += [os.getenv('SYSTEMC_CXX_FLAGS')]
-        args += ['-c']
-        args += ['-g']
-
-        for src_file in self.src_files:
-            print("Compiling " + src_file)
-            utils.Launcher('g++',args + ['-o' + os.path.splitext(os.path.basename(src_file))[0]+'.o']+ [src_file],
-                           cwd=self.sim_root).run()
 
     def run(self, args):
         #TODO: Handle arguments parsing
