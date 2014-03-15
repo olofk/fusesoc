@@ -82,7 +82,7 @@ class VerilatorSection(ToolSection):
             self.load_dict(items)
             self.include_dirs  = list(set(map(os.path.dirname, self.include_files)))
             if self.src_files:
-                self._object_files = [os.path.splitext(s)[0]+'.o' for s in self.src_files]
+                self._object_files = [os.path.splitext(os.path.basename(s))[0]+'.o' for s in self.src_files]
                 self.archive = True
 
     def __str__(self):
@@ -107,10 +107,10 @@ Verilog top module      : {top_module}
     def build(self, core, sim_root, src_root):
         if self.source_type == 'C' or self.source_type == '':
             self.build_C(core, sim_root, src_root)
-        elif self.src_type == 'systemC':
-            self.build_SysC()
+        elif self.source_type == 'systemC':
+            self.build_SysC(core, sim_root, src_root)
         else:
-            raise Source(self.src_type)
+            raise Source(self.source_type)
         
         if self._object_files:
             args = []
@@ -135,12 +135,13 @@ Verilog top module      : {top_module}
 
     def build_SysC(self, core, sim_root, src_root):
         #src_files
+        verilator_root = os.getenv('VERILATOR_ROOT')
         args = ['-I.']
         args += ['-MMD']
         args += ['-I'+s for s in self.include_dirs]
         args += ['-Iobj_dir']
-        args += ['-I'+os.path.join(self.verilator_root,'include')]
-        args += ['-I'+os.path.join(self.verilator_root,'include', 'vltstd')]  
+        args += ['-I'+os.path.join(verilator_root,'include')]
+        args += ['-I'+os.path.join(verilator_root,'include', 'vltstd')]  
         args += ['-DVL_PRINTF=printf']
         args += ['-DVM_TRACE=1']
         args += ['-DVM_COVERAGE=0']
