@@ -51,7 +51,8 @@ class Core:
             self.simulator        = config.get_section('simulator')
             self.icarus    = IcarusSection(config.get_section('icarus'))
             self.modelsim  = ModelsimSection(config.get_section('modelsim'))
-            self.verilator = VerilatorSection(config.get_section('verilator'))
+            section = config.get_section('verilator')
+            self.verilator = VerilatorSection(section) if section else None
             self.pre_run_scripts  = config.get_list('scripts','pre_run_scripts')
             self.post_run_scripts = config.get_list('scripts','post_run_scripts')
 
