@@ -108,7 +108,7 @@ class Verilator(Simulator):
             except subprocess.CalledProcessError:
                  print("VERILATOR_ROOT not set and there is no verilator program in your PATH")
                  exit(1)
-            print("VERILATOR_ROOT not set, fusesoc will use " + output)
+            print("VERILATOR_ROOT not set, fusesoc will use " + output.decode('utf8'))
             cmd = 'verilator'
         else:
             cmd = os.path.join(self.verilator_root,'bin','verilator')
