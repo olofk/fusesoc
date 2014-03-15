@@ -20,6 +20,7 @@ class Verilator(Simulator):
         super(Verilator, self).__init__(system)
 
         self.verilator_options = []
+	self.src_file = []
         self.src_files = []
         self.include_files = []
         self.include_dirs = []
@@ -126,24 +127,26 @@ class Verilator(Simulator):
     def build(self):
         super(Verilator, self).build()
         self._verilate()
-        if self.src_type == 'C' or self.src_type == '':
-            self.build_C()
-        elif self.src_type == 'systemC':
-            self.build_SysC()
-        else:
-            raise Source(self.src_type)
+	for self.src_file in self.src_files:
+            if self.src_file.lower().endswith('.c'):
+                self.build_C()
+            elif self.src_file.lower().endswith('.cpp'):
+                self.build_SysC()
+            else:
+                raise Source(self.src_type)
 
         utils.Launcher('make', ['-f', 'V' + self.top_module + '.mk', 'V' + self.top_module],
                        cwd=os.path.join(self.sim_root, 'obj_dir')).run()
      
     def build_C(self):
         args = ['-c']
+	args += ['-std=c99']
+	args += [l for l in self.libs]
         args += ['-I'+s for s in self.include_dirs]
-        for src_file in self.src_files:
-            print("Compiling " + src_file)
-            utils.Launcher('gcc',
-                         args + [src_file],
-                         cwd=self.sim_root).run()
+        print("Compiling " + self.src_file)
+        utils.Launcher('gcc',
+                        args + [self.src_file],
+                        cwd=self.sim_root).run()
 
 
     def build_SysC(self):
@@ -164,9 +167,8 @@ class Verilator(Simulator):
         args += ['-c']
         args += ['-g']
 
-        for src_file in self.src_files:
-            print("Compiling " + src_file)
-            utils.Launcher('g++',args + ['-o' + os.path.splitext(os.path.basename(src_file))[0]+'.o']+ [src_file],
+        print("Compiling " + self.src_file)
+        utils.Launcher('g++',args + ['-o' + os.path.splitext(os.path.basename(self.src_file))[0]+'.o']+ [self.src_file],
                            cwd=self.sim_root).run()
 
     def run(self, args):
