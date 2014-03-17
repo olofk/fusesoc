@@ -1,4 +1,5 @@
 import subprocess
+import os
 
 class Launcher:
     def __init__(self, cmd, args=[], shell=False, cwd=None, stderr=None, errormsg=None, env=None):
@@ -47,3 +48,9 @@ def convert_V2H( read_file, write_file):
             fC.close
             fV.close
 
+def which(file):
+    for path in os.environ["PATH"].split(":"):
+        if os.path.exists(path + "/" + file):
+                return path + "/" + file
+
+    return None
