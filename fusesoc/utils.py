@@ -19,14 +19,14 @@ class Launcher:
                                   stderr = self.stderr,
                                   stdin=subprocess.PIPE),
         except OSError:
-            raise RuntimeError("Error: Command " + self.cmd + " not found. Make sure it is in $PATH")
+            raise RuntimeError("Command " + self.cmd + " not found. Make sure it is in $PATH")
         except subprocess.CalledProcessError:
             if self.stderr is None:
                 output = "stderr"
             else:
                 output = self.stderr.name
             if self.errormsg is None:
-                self.errormsg = '"' + str(self) + '" exited with an error code. See ' + output + ' for details'
+                self.errormsg = '"' + str(self) + '" exited with an error code.\n\nSee ' + output + ' for details.'
             raise RuntimeError(self.errormsg)
 
     def __str__(self):
@@ -47,3 +47,11 @@ def convert_V2H( read_file, write_file):
             fC.close
             fV.close
 
+def pr_err(msg):
+    print('\033[1;31m' + 'ERROR: ' + msg + '\033[0m')
+
+def pr_warn(msg):
+    print('\033[1;33m' + 'WARN:  ' + msg + '\033[0m')
+
+def pr_info(msg):
+    print('\033[1;37m' + 'INFO:  ' + msg + '\033[0m')
