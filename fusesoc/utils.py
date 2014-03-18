@@ -47,3 +47,11 @@ def convert_V2H( read_file, write_file):
             fC.close
             fV.close
 
+def pr_err(msg):
+    print('\033[1;31m' + 'ERROR: ' + msg + '\033[0m')
+
+def pr_warn(msg):
+    print('\033[1;33m' + 'WARN:  ' + msg + '\033[0m')
+
+def pr_info(msg):
+    print('\033[1;37m' + 'INFO:  ' + msg + '\033[0m')
