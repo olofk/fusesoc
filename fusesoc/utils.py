@@ -105,3 +105,12 @@ def which(name, flags=os.X_OK):
             if os.access(pext, flags):
                 result.append(pext)
     return result
+
+def pr_err(msg):
+    print('\033[1;31m' + 'ERROR: ' + msg + '\033[0m')
+
+def pr_warn(msg):
+    print('\033[1;33m' + 'WARN:  ' + msg + '\033[0m')
+
+def pr_info(msg):
+    print('\033[1;37m' + 'INFO:  ' + msg + '\033[0m')
