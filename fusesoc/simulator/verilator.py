@@ -1,3 +1,4 @@
+import logging
 import os
 import shutil
 import subprocess
@@ -5,6 +6,8 @@ import subprocess
 from fusesoc import utils
 from fusesoc.core import OptionSectionMissing
 from .simulator import Simulator
+
+logger = logging.getLogger(__name__)
 
 class Source(Exception):
      def __init__(self, value):
@@ -48,7 +51,7 @@ class Verilator(Simulator):
 
     def export(self):
         src_dir = self.system.files_root
-        dst_dir = self.sim_root
+        dst_dir = os.path.join(self.src_root, self.system.name)
         src_files = list(self.src_files)
         src_files += self.include_files
         src_files += [self.tb_toplevel]
@@ -98,18 +101,16 @@ class Verilator(Simulator):
         args += ['-Wl,--end-group']
         args += ['"']
         args += ['-CFLAGS ' + '-I' + i for i in self.include_dirs]
-        args += [self.tb_toplevel]
+        args += [os.path.join(self.src_root, self.system.name, self.tb_toplevel)]
         args += self.verilator_options
 
         self.verilator_root = os.getenv('VERILATOR_ROOT')
         if self.verilator_root is None:
-            try:
-                output = subprocess.check_output(["which", "verilator"])
-            except subprocess.CalledProcessError:
-                 print("VERILATOR_ROOT not set and there is no verilator program in your PATH")
-                 exit(1)
-            print("VERILATOR_ROOT not set, fusesoc will use " + output)
-            cmd = 'verilator'
+            output = utils.which('verilator')
+            if not output:
+                raise RuntimeError("VERILATOR_ROOT not set and there is no verilator program in your PATH")
+            cmd = output[0]
+            logger.debug("VERILATOR_ROOT not set, fusesoc will use " + cmd)
         else:
             cmd = os.path.join(self.verilator_root,'bin','verilator')
 
