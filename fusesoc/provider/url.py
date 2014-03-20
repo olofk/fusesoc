@@ -1,4 +1,5 @@
 from fusesoc.provider import Provider
+from fusesoc.utils import pr_info, pr_warn
 import subprocess
 import os.path
 import sys
@@ -52,12 +53,12 @@ class ProviderURL(Provider):
         elif status == 'downloaded':
             return False
         else:
-            print("Something else is wrong")
+            pr_warn("Provider status is: '" + status + "'. This shouldn't happen")
             return False
 
     def _checkout(self, local_dir, core_name):
         logger.debug('_checkout() *Entered*')
-        print("Checking out " + self.url + " to " + local_dir)
+        pr_info("Checking out " + self.url + " to " + local_dir)
         (filename, headers) = urllib.urlretrieve(self.url)
         (cache_root, core) = os.path.split(local_dir)
 

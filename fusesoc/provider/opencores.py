@@ -1,5 +1,5 @@
 from fusesoc.provider import Provider
-from fusesoc.utils import Launcher
+from fusesoc.utils import Launcher, pr_info, pr_warn
 
 import os.path
 import logging
@@ -38,7 +38,7 @@ class ProviderOpenCores(Provider):
         elif status == 'downloaded':
             return False
         else:
-            print("provider status is: " + status + " This shouldn't happen")
+            pr_warn("Provider status is: '" + status + "'. This shouldn't happen")
             return False
 
     def status(self, local_dir):
@@ -51,7 +51,7 @@ class ProviderOpenCores(Provider):
         
     def _checkout(self, local_dir):
         logger.debug('_checkout() *Entered*')
-        print("Checking out " + self.repo_path + " revision " + self.revision_number + " to " + local_dir)
+        pr_info("Checking out " + self.repo_path + " revision " + self.revision_number + " to " + local_dir)
 
         Launcher('svn', ['co', '-q', '--no-auth-cache',
                          '-r', self.revision_number,

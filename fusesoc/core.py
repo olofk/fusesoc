@@ -6,6 +6,7 @@ from fusesoc.system import System
 from fusesoc.vpi import VPI
 from fusesoc.verilog import Verilog
 from fusesoc.sections import IcarusSection, ModelsimSection, VerilatorSection
+from fusesoc.utils import pr_warn
 import os
 import shutil
 import subprocess
@@ -135,7 +136,7 @@ class Core:
                 shutil.copyfile(os.path.join(src_dir, f), 
                                 os.path.join(dst_dir, f))
             else:
-                print("File " + os.path.join(src_dir, f) + " doesn't exist")
+                pr_warn("File " + os.path.join(src_dir, f) + " doesn't exist")
         logger.debug('export() -Done-')
         
     def patch(self, dst_dir):
