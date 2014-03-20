@@ -134,7 +134,12 @@ def sim(known, remaining):
         pr_err("'" + known.system + "' miss a mandatory parameter for " + sim_name + " simulation (" + e.value + ")")
         exit(1)
     if known.force or not os.path.exists(sim.sim_root):
-        sim.configure()
+        try:
+            sim.configure()
+        except RuntimeError as e:
+            pr_err("Failed to configure the system")
+            pr_err(str(e))
+            exit(1)
         try:
             sim.build()
         except Source as e:
@@ -160,6 +165,10 @@ def run(known, remaining):
         cm.add_cores_root(config.systems_root)
         cm.add_cores_root(known.cores_root)
         cm.add_cores_root(known.systems_root)
+    except RuntimeError as e:
+        pr_err("Failed to register cores root")
+        pr_err(str(e))
+        exit(1)
     except IOError as e:
         pr_err("Failed to register cores root")
         pr_err(str(e))
