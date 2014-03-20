@@ -1,4 +1,5 @@
 import os
+from fusesoc import utils
 from fusesoc.utils import Launcher
 
 class Section(object):
@@ -134,8 +135,7 @@ Verilog top module      : {top_module}
 
 
     def build_SysC(self, core, sim_root, src_root):
-        #src_files
-        verilator_root = os.getenv('VERILATOR_ROOT')
+        verilator_root = utils.get_verilator_root()
         args = ['-I.']
         args += ['-MMD']
         args += ['-I'+s for s in self.include_dirs]
