@@ -104,16 +104,9 @@ class Verilator(Simulator):
         args += [os.path.join(self.src_root, self.system.name, self.tb_toplevel)]
         args += self.verilator_options
 
-        self.verilator_root = os.getenv('VERILATOR_ROOT')
-        if self.verilator_root is None:
-            output = utils.which('verilator')
-            if not output:
-                raise RuntimeError("VERILATOR_ROOT not set and there is no verilator program in your PATH")
-            cmd = output[0]
-            logger.debug("VERILATOR_ROOT not set, fusesoc will use " + cmd)
-        else:
-            cmd = os.path.join(self.verilator_root,'bin','verilator')
-
+        cmd = utils.find_verilator()
+        if cmd is None:
+             raise RuntimeError("VERILATOR_ROOT not set and there is no verilator program in your PATH")
         cmd += ' ' + ' '.join(args)
         l = utils.Launcher(cmd,
                            shell=True,
