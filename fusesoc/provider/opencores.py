@@ -20,12 +20,18 @@ class ProviderOpenCores(Provider):
         status = self.status(local_dir)
 
         if status == 'empty':
-            self._checkout(local_dir)
-            return True
+            try:
+                self._checkout(local_dir)
+                return True
+            except RuntimeError:
+                raise
         elif status == 'modified':
             self.clean_cache()
-            self._checkout(local_dir)
-            return True
+            try:
+                self._checkout(local_dir)
+                return True
+            except RuntimeError:
+                raise
         elif status == 'outofdate':
             self._update()
             return True
@@ -46,17 +52,14 @@ class ProviderOpenCores(Provider):
     def _checkout(self, local_dir):
         logger.debug('_checkout() *Entered*')
         print("Checking out " + self.repo_path + " revision " + self.revision_number + " to " + local_dir)
-        try:
-            l = Launcher('svn', ['co', '-q', '--no-auth-cache',
-                                 '-r', self.revision_number,
-                                 '--username', 'orpsoc',
-                                 '--password', 'orpsoc',
-                                 self.repo_path,
-                                 local_dir]).run()
-        except RuntimeError as e:
-            print("Error: Failed to checkout " + self.repo_path)
-            print(e.value)
-            exit(1)
+
+        Launcher('svn', ['co', '-q', '--no-auth-cache',
+                         '-r', self.revision_number,
+                         '--username', 'orpsoc',
+                         '--password', 'orpsoc',
+                         self.repo_path,
+                         local_dir]).run()
+
         logger.debug('_checkout() -Done-')
 
     def _update(self):

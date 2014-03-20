@@ -34,12 +34,18 @@ class ProviderURL(Provider):
             self.corename = self.version
 
         if status == 'empty':
-            self._checkout(local_dir, self.corename)
-            return True
+            try:
+                self._checkout(local_dir, self.corename)
+                return True
+            except RuntimeError:
+                raise
         elif status == 'modified':
             self.clean_cache()
-            self._checkout(local_dir, self.corename)
-            return True
+            try:
+                self._checkout(local_dir, self.corename)
+                return True
+            except RuntimeError:
+                raise
         elif status == 'outofdate':
             self._update()
             return True
@@ -73,7 +79,8 @@ class ProviderURL(Provider):
             self.path = os.path.join(self.path, segments[2])
             shutil.copy2(filename, self.path)
         else:
-            print("Unknown file type")
+            raise RuntimeError("Unknown file type '" + self.filetype + "' in [provider] section")
+
         logger.debug('_checkout() -Done-')
 
     def status(self, local_dir):
