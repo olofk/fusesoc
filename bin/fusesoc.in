@@ -41,6 +41,7 @@ def build(known, remaining):
         core = CoreManager().get_core(known.system)
         backend = BackendFactory(core.system)
         backend.configure()
+        print('')
         backend.build()
         logging.debug('build() -Done-')
     else:
@@ -136,6 +137,7 @@ def sim(known, remaining):
     if known.force or not os.path.exists(sim.sim_root):
         try:
             sim.configure()
+            print('')
         except RuntimeError as e:
             pr_err("Failed to configure the system")
             pr_err(str(e))

@@ -4,7 +4,7 @@ import subprocess
 
 from fusesoc.config import Config
 from fusesoc.coremanager import CoreManager
-from fusesoc.utils import Launcher
+from fusesoc.utils import Launcher, pr_info, pr_warn
 from fusesoc import utils
 import logging
 
@@ -50,7 +50,7 @@ class Backend(object):
         os.makedirs(self.work_root)
         cm = CoreManager()
         for name in self.cores:
-            print("Preparing " + name)
+            pr_info("Preparing " + name)
             core = cm.get_core(name)
             dst_dir = os.path.join(Config().build_root, self.system.name, 'src', name)
             core.setup()
@@ -60,7 +60,7 @@ class Backend(object):
     def build(self):
         for script in self.system.pre_build_scripts:
             script = os.path.abspath(os.path.join(self.systems_root, self.system.name, script))
-            print("Running " + script);
+            pr_info("Running " + script);
             try:
                 Launcher(script, cwd = os.path.abspath(self.build_root), env = self.env, shell=True).run()
             except RuntimeError:
@@ -69,7 +69,7 @@ class Backend(object):
     def done(self):
         for script in self.system.post_build_scripts:
             script = os.path.abspath(os.path.join(self.systems_root, self.system.name, script))
-            print("Running " + script);
+            pr_info("Running " + script);
             try:
                 Launcher(script, cwd = os.path.abspath(self.build_root), env = self.env, shell=True).run()
             except RuntimeError:

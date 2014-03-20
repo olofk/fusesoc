@@ -4,6 +4,7 @@ import shutil
 import subprocess
 
 from fusesoc import utils
+from fusesoc.utils import pr_info
 from fusesoc.core import OptionSectionMissing
 from .simulator import Simulator
 
@@ -113,7 +114,10 @@ class Verilator(Simulator):
                            cwd = self.sim_root,
                            stderr = open(os.path.join(self.sim_root,'verilator.log'),'w')
         )
+        print('')
+        pr_info("Starting Verilator:")
         print(l)
+        print('')
         l.run()
 
     def build(self):

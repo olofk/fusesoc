@@ -1,4 +1,5 @@
 from fusesoc.provider import Provider
+from fusesoc.utils import pr_info, pr_warn
 import subprocess
 import os.path
 import sys
@@ -34,13 +35,14 @@ class GitHub(Provider):
         elif status == 'downloaded':
             pass
         else:
-            print("Something else is wrong")
+            pr_warn("Provider status is: '" + status + "'. This shouldn't happen")
             return False
             #TODO: throw an exception here 
 
     def _checkout(self, local_dir):
         #TODO : Sanitize URL
         url = 'https://github.com/{user}/{repo}/archive/{version}.tar.gz'.format(user=self.user, repo=self.repo, version=self.version)
+        pr_info("Checking out " + url + " revision " + self.version + " to " + local_dir)
         (filename, headers) = urllib.urlretrieve(url)
 
         t = tarfile.open(filename)

@@ -1,7 +1,7 @@
 from fusesoc.config import Config
 from fusesoc.coremanager import CoreManager
 from fusesoc.verilog import Verilog
-from fusesoc.utils import Launcher
+from fusesoc.utils import Launcher, pr_info
 import argparse
 import shutil
 import os
@@ -77,7 +77,7 @@ class Simulator(object):
         self.env['SIM_ROOT'] = os.path.abspath(self.sim_root)
 
         for name in self.cores:
-            print("Preparing " + name)
+            pr_info("Preparing " + name)
             dst_dir = os.path.join(Config().build_root, self.system.name, 'src', name)
             core = self.cm.get_core(name)
             core.setup()
@@ -109,7 +109,7 @@ class Simulator(object):
 
         for script in self.system.pre_run_scripts:
             script = os.path.abspath(os.path.join(self.system.core_root, script))
-            print("Running " + script);
+            pr_info("Running " + script);
             try:
                 Launcher(script, cwd = self.sim_root, env = self.env, shell=True).run()
             except RuntimeError:
@@ -120,7 +120,7 @@ class Simulator(object):
 
         for script in self.system.post_run_scripts:
             script = os.path.abspath(os.path.join(self.system.core_root, script))
-            print("Running " + script);
+            pr_info("Running " + script);
             try:
                 Launcher(script, cwd = self.sim_root, env = self.env, shell=True).run()
             except RuntimeError:
