@@ -1,4 +1,5 @@
 import subprocess
+import re
 
 class Launcher:
     def __init__(self, cmd, args=[], shell=False, cwd=None, stderr=None, errormsg=None, env=None):
@@ -46,6 +47,35 @@ def convert_V2H( read_file, write_file):
                     fC.write(Sline[0]+"#"+Sline[1])
             fC.close
             fV.close
+
+def find_verilator():
+    verilator_root = os.getenv('VERILATOR_ROOT')
+    if verilator_root is None:
+        output = which('verilator')
+        if not output:
+            return None
+        return output[0]
+
+    return os.path.join(verilator_root,'bin','verilator')
+
+def get_verilator_root():
+    verilator_root = os.getenv('VERILATOR_ROOT')
+    if verilator_root is not None:
+        return verilator_root;
+
+    # VERILATOR_ROOT not set, run 'verilator -V' and 'grep' the hardcoded
+    # value out of the output.
+    verilator = find_verilator()
+    if verilator is None:
+        return None
+    output = subprocess.check_output(verilator + ' -V',
+                                     shell=True).splitlines();
+    pattern = re.compile("VERILATOR_ROOT")
+    for l in output:
+        if pattern.search(l):
+            return l.split('=')[1].strip()
+
+    return None
 
 
 #Copied from http://twistedmatrix.com/trac/browser/tags/releases/twisted-8.2.0/twisted/python/procutils.py
