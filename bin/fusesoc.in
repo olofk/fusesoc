@@ -141,13 +141,15 @@ def sim(known, remaining):
             pr_err("'" + e.value + "' source type is not valid. Choose 'C' or 'systemC'")
             exit(1)
         except RuntimeError as e:
-            pr_err("Failed to build simulation model.\n\n" + str(e))
+            pr_err("Failed to build simulation model")
+            pr_err(str(e))
             exit(1)
     if not known.build_only:
         try:
             sim.run(remaining)
         except RuntimeError as e:
-            pr_err("Failed to run the simulation.\n\n" + str(e))
+            pr_err("Failed to run the simulation")
+            pr_err(str(e))
     logger.debug('sim() -Done-')
 
 def run(known, remaining):
@@ -159,7 +161,7 @@ def run(known, remaining):
         cm.add_cores_root(known.cores_root)
         cm.add_cores_root(known.systems_root)
     except IOError as e:
-        pr_err("Error: Failed to register cores root")
+        pr_err("Failed to register cores root")
         pr_err(str(e))
         exit(1)
     known.func(known, remaining)
