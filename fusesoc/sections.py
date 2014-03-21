@@ -108,6 +108,8 @@ Verilog top module      : {top_module}
     def build(self, core, sim_root, src_root):
         if self.source_type == 'C' or self.source_type == '':
             self.build_C(core, sim_root, src_root)
+        elif self.source_type == 'CPP':
+            self.build_CPP(core, sim_root, src_root)
         elif self.source_type == 'systemC':
             self.build_SysC(core, sim_root, src_root)
         else:
@@ -134,6 +136,21 @@ Verilog top module      : {top_module}
             print(l)
             l.run()
 
+    def build_CPP(self, core, sim_root, src_root):
+        verilator_root = utils.get_verilator_root()
+        if verilator_root is None:
+            verilator_root = utils.get_verilator_root()
+        args = ['-c']
+        args += ['-I'+src_root]
+        args += ['-I'+os.path.join(src_root, core, s) for s in self.include_dirs]
+        args += ['-I'+os.path.join(verilator_root,'include')]
+        args += ['-I'+os.path.join(verilator_root,'include', 'vltstd')]
+        for src_file in self.src_files:
+            print("Compiling " + src_file)
+            l = Launcher('g++', args + [os.path.join(src_root, core, src_file)],
+                         cwd=sim_root)
+            print(l)
+            l.run()
 
     def build_SysC(self, core, sim_root, src_root):
         verilator_root = utils.get_verilator_root()
