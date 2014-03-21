@@ -7,8 +7,7 @@ fusesoc_PYTHON =        \
  fusesoc/plusargs.py           \
  fusesoc/sections.py             \
  fusesoc/system.py             \
- fusesoc/utils.py              \
- fusesoc/verilog.py
+ fusesoc/utils.py
 
 fusesocdir = $(pkgpythondir)
 

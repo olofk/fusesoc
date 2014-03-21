@@ -3,8 +3,7 @@ from fusesoc.config import Config
 from fusesoc.plusargs import Plusargs
 from fusesoc.provider import ProviderFactory
 from fusesoc.system import System
-from fusesoc.verilog import Verilog
-from fusesoc.sections import IcarusSection, ModelsimSection, VerilatorSection, VpiSection
+from fusesoc.sections import IcarusSection, ModelsimSection, VerilatorSection, VpiSection, VerilogSection
 import os
 import shutil
 import subprocess
@@ -33,7 +32,6 @@ class Core:
         self.plusargs = None
         self.provider = None
         self.system   = None
-        self.verilog  = None
 
         if core_file:
             config = FusesocConfigParser(core_file)
@@ -56,6 +54,9 @@ class Core:
             section = config.get_section('vpi')
             self.vpi = VpiSection(section) if section else None
 
+            section = config.get_section('verilog')
+            self.verilog = VerilogSection(section) if section else None
+
             self.pre_run_scripts  = config.get_list('scripts','pre_run_scripts')
             self.post_run_scripts = config.get_list('scripts','post_run_scripts')
 
@@ -72,13 +73,6 @@ class Core:
             else:
                 self.files_root = self.core_root
 
-            if config.has_section('verilog'):
-                self.verilog = Verilog()
-                items = config.items('verilog')
-                self.verilog.load_items((dict(items)))
-                logger.debug('verilog.src_files=' + str(self.verilog.src_files))
-                logger.debug('verilog.include_files=' + str(self.verilog.include_files))
-                logger.debug('verilog.include_dirs=' + str(self.verilog.include_dirs))
             system_file = os.path.join(self.core_root, self.name+'.system')
             if os.path.exists(system_file):
                 self.system = System(system_file)
@@ -119,7 +113,11 @@ class Core:
         #FIXME: Separate tb_files to an own directory tree (src/tb/core_name ?)
         src_files = []
         if self.verilog:
-            src_files += self.verilog.export()
+            src_files  += [f for f in self.verilog.src_files]
+            src_files  += [f for f in self.verilog.include_files]
+            src_files  += [f for f in self.verilog.tb_src_files]
+            src_files  += [f for f in self.verilog.tb_include_files]
+            src_files  += [f for f in self.verilog.tb_private_src_files]
         if self.vpi:
             src_files  += [f for f in self.vpi.src_files]
             src_files  += [f for f in self.vpi.include_files]
