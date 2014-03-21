@@ -124,6 +124,7 @@ Verilog top module      : {top_module}
     def build_C(self, core, sim_root, src_root):
         args = ['-c']
         args += ['-std=c99']
+        args += ['-I'+src_root]
         args += ['-I'+os.path.join(src_root, core, s) for s in self.include_dirs]
         for src_file in self.src_files:
             print("Compiling " + src_file)
@@ -138,6 +139,7 @@ Verilog top module      : {top_module}
         verilator_root = utils.get_verilator_root()
         args = ['-I.']
         args += ['-MMD']
+        args += ['-I'+src_root]
         args += ['-I'+s for s in self.include_dirs]
         args += ['-Iobj_dir']
         args += ['-I'+os.path.join(verilator_root,'include')]
