@@ -105,9 +105,6 @@ vpi (optional)
 ~~~~~~~~~~~~~~
 The VPI section contains information on how to compile C source files into a VPI library:
 
-* *name :*
-Name of the compiled VPI library.
-
 * *src_files :*
 List of C source files for the VPI library.
 

@@ -58,6 +58,22 @@ class IcarusSection(ToolSection):
         if items:
             self.load_dict(items)
 
+class VpiSection(ToolSection):
+    def __init__(self, items=None):
+        super(VpiSection, self).__init__()
+
+        self.name = 'vpi'
+
+        self.include_dirs = []
+
+        self._add_listitem('src_files')
+        self._add_listitem('libs')
+        self._add_listitem('include_files')
+
+        if items:
+            self.load_dict(items)
+            self.include_dirs  = list(set(map(os.path.dirname, self.include_files)))
+
 class VerilatorSection(ToolSection):
     def __init__(self, items=None):
         super(VerilatorSection, self).__init__()

@@ -3,9 +3,8 @@ from fusesoc.config import Config
 from fusesoc.plusargs import Plusargs
 from fusesoc.provider import ProviderFactory
 from fusesoc.system import System
-from fusesoc.vpi import VPI
 from fusesoc.verilog import Verilog
-from fusesoc.sections import IcarusSection, ModelsimSection, VerilatorSection
+from fusesoc.sections import IcarusSection, ModelsimSection, VerilatorSection, VpiSection
 import os
 import shutil
 import subprocess
@@ -35,7 +34,7 @@ class Core:
         self.provider = None
         self.system   = None
         self.verilog  = None
-        self.vpi = None
+
         if core_file:
             config = FusesocConfigParser(core_file)
 
@@ -53,6 +52,10 @@ class Core:
             self.modelsim  = ModelsimSection(config.get_section('modelsim'))
             section = config.get_section('verilator')
             self.verilator = VerilatorSection(section) if section else None
+
+            section = config.get_section('vpi')
+            self.vpi = VpiSection(section) if section else None
+
             self.pre_run_scripts  = config.get_list('scripts','pre_run_scripts')
             self.post_run_scripts = config.get_list('scripts','post_run_scripts')
 
@@ -76,9 +79,6 @@ class Core:
                 logger.debug('verilog.src_files=' + str(self.verilog.src_files))
                 logger.debug('verilog.include_files=' + str(self.verilog.include_files))
                 logger.debug('verilog.include_dirs=' + str(self.verilog.include_dirs))
-            if config.has_section('vpi'):
-                items = config.items('vpi')
-                self.vpi = VPI(dict(items))
             system_file = os.path.join(self.core_root, self.name+'.system')
             if os.path.exists(system_file):
                 self.system = System(system_file)
@@ -121,7 +121,8 @@ class Core:
         if self.verilog:
             src_files += self.verilog.export()
         if self.vpi:
-            src_files += self.vpi.export()
+            src_files  += [f for f in self.vpi.src_files]
+            src_files  += [f for f in self.vpi.include_files]
 
         dirs = list(set(map(os.path.dirname,src_files)))
         logger.debug("export src_files=" + str(src_files))
