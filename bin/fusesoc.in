@@ -43,7 +43,7 @@ def build(known, remaining):
         backend.configure()
         print('')
         try:
-            backend.build()
+            backend.build(remaining)
         except RuntimeError as e:
             pr_err("Failed to build FPGA: " + str(e))
         logging.debug('build() -Done-')

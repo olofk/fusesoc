@@ -75,8 +75,8 @@ clean:
         makefile.write(self.MAKEFILE_TEMPLATE)
         makefile.close()
 
-    def build(self):
-        super(Quartus, self).build()
+    def build(self, args):
+        super(Quartus, self).build(args)
 
         # TODO: call super if necessary
         if subprocess.call("make",

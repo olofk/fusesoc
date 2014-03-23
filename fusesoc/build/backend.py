@@ -57,7 +57,7 @@ class Backend(object):
             core.export(dst_dir)
         logger.debug('configure() -Done-')
 
-    def build(self):
+    def build(self, args):
         for script in self.system.pre_build_scripts:
             script = os.path.abspath(os.path.join(self.systems_root, self.system.name, script))
             pr_info("Running " + script);
