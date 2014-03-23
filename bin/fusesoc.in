@@ -41,7 +41,7 @@ def build(known, remaining):
         core = CoreManager().get_core(known.system)
         backend = BackendFactory(core.system)
         backend.configure()
-        backend.build()
+        backend.build(remaining)
         logging.debug('build() -Done-')
     else:
         pr_err("Can't find system '" + known.system + "'")
