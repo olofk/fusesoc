@@ -13,7 +13,7 @@ class System:
                     )
         self.backend_name = None
 
-        system_root = os.path.dirname(system_file)
+        self.system_root = os.path.dirname(system_file)
         self.config = FusesocConfigParser(system_file)
 
         self.name = os.path.basename(system_file).split('.')[0]
