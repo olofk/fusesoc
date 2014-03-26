@@ -115,6 +115,9 @@ Verilog top module      : {top_module}
                         source_type=self.source_type,
                         top_module=self.top_module)
 
+    def export(self):
+        return list(self.src_files) + list(self.include_files)
+
     def build(self, core, sim_root, src_root):
         if self.source_type == 'C' or self.source_type == '':
             self.build_C(core, sim_root, src_root)
