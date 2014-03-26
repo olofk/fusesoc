@@ -7,6 +7,7 @@ class Section(object):
         self.name = ""
         self.strings = []
         self.lists  = []
+        self.export_files = []
 
     def _add_listitem(self, listitem):
         self.lists += [listitem]
@@ -95,6 +96,8 @@ class VerilatorSection(ToolSection):
             if self.src_files:
                 self._object_files = [os.path.splitext(os.path.basename(s))[0]+'.o' for s in self.src_files]
                 self.archive = True
+                self.export_files = self.src_files + self.include_files
+
 
     def __str__(self):
         s = """Verilator options       : {verilator_options}
