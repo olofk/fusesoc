@@ -5,7 +5,7 @@ from fusesoc.provider import ProviderFactory
 from fusesoc.system import System
 from fusesoc.vpi import VPI
 from fusesoc.verilog import Verilog
-from fusesoc.sections import IcarusSection, ModelsimSection, VerilatorSection
+from fusesoc.section import IcarusSection, ModelsimSection, VerilatorSection
 from fusesoc.utils import pr_warn
 import os
 import shutil

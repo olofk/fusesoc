@@ -5,7 +5,6 @@ fusesoc_PYTHON =        \
  fusesoc/coremanager.py        \
  fusesoc/fusesocconfigparser.py \
  fusesoc/plusargs.py           \
- fusesoc/sections.py             \
  fusesoc/system.py             \
  fusesoc/utils.py              \
  fusesoc/verilog.py            \
@@ -20,6 +19,11 @@ provider_PYTHON =      \
  fusesoc/provider/url.py
 
 providerdir = $(fusesocdir)/provider
+
+section_PYTHON = \
+ fusesoc/section/__init__.py
+
+sectiondir = $(fusesocdir)/section
 
 simulator_PYTHON =      \
  fusesoc/simulator/__init__.py  \
