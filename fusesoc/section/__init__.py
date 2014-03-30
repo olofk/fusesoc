@@ -33,6 +33,13 @@ class Section(object):
             s += item + ' : ' + getattr(self, item) + '\n'
         return s
 
+    @staticmethod
+    def factory(type, items=None):
+        if type == 'icarus'    : return IcarusSection(items)
+        if type == 'modelsim'  : return ModelsimSection(items)
+        if type == 'verilator' : return VerilatorSection(items)
+        raise Exception
+
 class ToolSection(Section):
     def __init__(self):
         super(ToolSection, self).__init__()
