@@ -16,6 +16,9 @@ class Section(object):
         self.strings += [s]
         setattr(self, s, "")
 
+    def export(self):
+        return self.export_files
+
     def load_dict(self, items):
         for item in items:
             if item in self.lists:
