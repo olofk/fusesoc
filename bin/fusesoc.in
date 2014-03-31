@@ -42,7 +42,10 @@ def build(known, remaining):
         backend = BackendFactory(core.system)
         backend.configure()
         print('')
-        backend.build()
+        try:
+            backend.build()
+        except RuntimeError as e:
+            pr_err("Failed to build FPGA: " + str(e))
         logging.debug('build() -Done-')
     else:
         pr_err("Can't find system '" + known.system + "'")
