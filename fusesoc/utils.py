@@ -1,5 +1,8 @@
 import subprocess
 import re
+import sys
+if sys.version[0] == '2':
+    FileNotFoundError = OSError
 
 class Launcher:
     def __init__(self, cmd, args=[], shell=False, cwd=None, stderr=None, errormsg=None, env=None):
@@ -19,7 +22,7 @@ class Launcher:
                                   shell = self.shell,
                                   stderr = self.stderr,
                                   stdin=subprocess.PIPE),
-        except OSError:
+        except FileNotFoundError:
             raise RuntimeError("Command '" + self.cmd + "' not found. Make sure it is in $PATH")
         except subprocess.CalledProcessError:
             if self.stderr is None:
