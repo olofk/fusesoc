@@ -47,6 +47,8 @@ Additional options used when building with Quartus:
 * *device    :* Altera device name (e.g. EP2C20F484C7).
 * *sdc_files :* List of SDC files used by Quartus.
 * *tcl_files :* List of TCL files. Files content is included in the Quartus Setting File (.qsf).
+* *qsys_files:* List of qsys files (optional). Qsys will be executed on
+                each of the files present in this list.
 
 scripts (optional)
 ~~~~~~~~~~~~~~~~~~
