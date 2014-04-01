@@ -103,7 +103,11 @@ clean:
         tcl_file.write("project_new " + self.system.name + " -overwrite\n")
         tcl_file.write("set_global_assignment -name FAMILY " + self.system.backend['family'] + '\n')
         tcl_file.write("set_global_assignment -name DEVICE " + self.system.backend['device'] + '\n')
-        tcl_file.write("set_global_assignment -name TOP_LEVEL_ENTITY " + "orpsoc_top" + '\n')
+        # default to 'orpsoc_top' if top_module entry is missing
+        top_module = 'orpsoc_top'
+        if 'top_module' in self.system.backend:
+            top_module = self.system.backend['top_module']
+        tcl_file.write("set_global_assignment -name TOP_LEVEL_ENTITY " + top_module + '\n')
         for src_file in self.src_files:
             tcl_file.write("set_global_assignment -name VERILOG_FILE " + src_file + '\n')
         for vhdl_src_files in self.vhdl_src_files:
