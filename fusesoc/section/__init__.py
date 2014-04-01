@@ -42,7 +42,18 @@ class Section(object):
         if type == 'icarus'    : return IcarusSection(items)
         if type == 'modelsim'  : return ModelsimSection(items)
         if type == 'verilator' : return VerilatorSection(items)
+        if type == 'vhdl'      : return VhdlSection(items)
         raise Exception
+
+class VhdlSection(Section):
+    def __init__(self, items=None):
+        super(VhdlSection, self).__init__()
+
+        self._add_listitem('src_files')
+
+        if items:
+            self.load_dict(items)
+            self.export_files = self.src_files
 
 class ToolSection(Section):
     def __init__(self):
