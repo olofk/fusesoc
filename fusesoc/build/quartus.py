@@ -48,6 +48,8 @@ clean:
         tcl_file.write("set_global_assignment -name TOP_LEVEL_ENTITY " + "orpsoc_top" + '\n')
         for src_file in self.src_files:
             tcl_file.write("set_global_assignment -name VERILOG_FILE " + src_file + '\n')
+        for vhdl_src_files in self.vhdl_src_files:
+            tcl_file.write("set_global_assignment -name VHDL_FILE " + vhdl_src_files + '\n')
         for include_dir in self.include_dirs:
             tcl_file.write("set_global_assignment -name SEARCH_PATH " + include_dir + '\n')
 

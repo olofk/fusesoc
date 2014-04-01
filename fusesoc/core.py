@@ -50,7 +50,7 @@ class Core:
 
             #FIXME : Make simulators part of the core object
             self.simulator        = config.get_section('simulator')
-            for name in ['icarus', 'modelsim', 'verilator']:
+            for name in ['icarus', 'modelsim', 'verilator', 'vhdl']:
                 items = config.get_section(name)
                 section = Section.factory(name, items) if items else None
                 setattr(self, name, section)
@@ -125,6 +125,8 @@ class Core:
             src_files += self.vpi.export()
         if self.verilator:
             src_files += self.verilator.export()
+        if self.vhdl:
+            src_files += self.vhdl.export()
 
         dirs = list(set(map(os.path.dirname,src_files)))
         logger.debug("export src_files=" + str(src_files))
