@@ -85,8 +85,8 @@ converted to #define directives in corresponding .h files
 * *depend (optional)            :* List of cores that only Verilator simulation depends on
 * *top_module (optional)        :* Name of the verilog top module
 
-verilog
-~~~~~~~
+verilog (optional)
+~~~~~~~~~~~~~~~~~~
 The verilog section contains options for verilog source code:
 
 * *src_files (optional) :*
@@ -100,6 +100,13 @@ List of verilog files containing modules that are only used in test benches and 
 
 * *tb_include_files (optional) :*
 List of verilog files that are referenced with `include statements from tb_src_files.
+
+vhdl (optional)
+~~~~~~~~~~~~~~~
+The vhdl section contains options for vhdl source code:
+
+* *src_files (optional) :*
+List of vhdl files containing modules that are a part of the synthesized design.
 
 vpi (optional)
 ~~~~~~~~~~~~~~
