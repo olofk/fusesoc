@@ -148,12 +148,7 @@ clean:
     def build(self, args):
         super(Quartus, self).build(args)
 
-        # TODO: call super if necessary
-        if subprocess.call("make",
-                           cwd = self.work_root,
-                           stdin=subprocess.PIPE):
-            print("Error: Failed to make FPGA load module")
-        # TODO: Check results, and report SUCCESS or FAILURE
+        utils.Launcher('make', cwd = self.work_root).run()
 
         super(Quartus, self).done()
 
