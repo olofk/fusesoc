@@ -43,6 +43,8 @@ class Section(object):
         if type == 'modelsim'  : return ModelsimSection(items)
         if type == 'verilator' : return VerilatorSection(items)
         if type == 'vhdl'      : return VhdlSection(items)
+        if type == 'verilog'   : return VerilogSection(items)
+        if type == 'vpi'       : return VpiSection(items)
         raise Exception
 
 class VhdlSection(Section):
@@ -54,6 +56,45 @@ class VhdlSection(Section):
         if items:
             self.load_dict(items)
             self.export_files = self.src_files
+
+class VerilogSection(Section):
+    def __init__(self, items=None):
+        super(VerilogSection, self).__init__()
+
+        self.include_dirs = []
+        self.tb_include_dirs = []
+
+        self._add_listitem('src_files')
+        self._add_listitem('include_files')
+        self._add_listitem('tb_src_files')
+        self._add_listitem('tb_private_src_files')
+        self._add_listitem('tb_include_files')
+
+        if items:
+            self.load_dict(items)
+            if self.include_files:
+                self.include_dirs  += list(set(map(os.path.dirname, self.include_files)))
+            if self.tb_include_files:
+                self.tb_include_dirs  += list(set(map(os.path.dirname, self.tb_include_files)))
+
+            self.export_files = self.src_files + self.include_files + self.tb_src_files + self.tb_include_files + self.tb_private_src_files
+
+class VpiSection(Section):
+    def __init__(self, items=None):
+        super(VpiSection, self).__init__()
+
+        self.include_dirs = []
+
+        self._add_listitem('src_files')
+        self._add_listitem('include_files')
+        self._add_listitem('libs')
+
+        if items:
+            self.load_dict(items)
+            if self.include_files:
+                self.include_dirs  += list(set(map(os.path.dirname, self.include_files)))
+
+            self.export_files = self.src_files + self.include_files
 
 class ToolSection(Section):
     def __init__(self):

@@ -3,8 +3,6 @@ from fusesoc.config import Config
 from fusesoc.plusargs import Plusargs
 from fusesoc.provider import ProviderFactory
 from fusesoc.system import System
-from fusesoc.vpi import VPI
-from fusesoc.verilog import Verilog
 from fusesoc.section import Section
 from fusesoc.utils import pr_warn
 import os
@@ -50,7 +48,7 @@ class Core:
 
             #FIXME : Make simulators part of the core object
             self.simulator        = config.get_section('simulator')
-            for name in ['icarus', 'modelsim', 'verilator', 'vhdl']:
+            for name in ['icarus', 'modelsim', 'verilator', 'vhdl', 'verilog', 'vpi']:
                 items = config.get_section(name)
                 section = Section.factory(name, items) if items else None
                 setattr(self, name, section)
@@ -70,16 +68,6 @@ class Core:
             else:
                 self.files_root = self.core_root
 
-            if config.has_section('verilog'):
-                self.verilog = Verilog()
-                items = config.items('verilog')
-                self.verilog.load_items((dict(items)))
-                logger.debug('verilog.src_files=' + str(self.verilog.src_files))
-                logger.debug('verilog.include_files=' + str(self.verilog.include_files))
-                logger.debug('verilog.include_dirs=' + str(self.verilog.include_dirs))
-            if config.has_section('vpi'):
-                items = config.items('vpi')
-                self.vpi = VPI(dict(items))
             system_file = os.path.join(self.core_root, self.name+'.system')
             if os.path.exists(system_file):
                 self.system = System(system_file)
