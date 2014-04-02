@@ -55,8 +55,11 @@ def pgm(known, remaining):
     if known.system in CoreManager().get_systems():
         core = CoreManager().get_core(known.system)
         backend = BackendFactory(core.system)
-        backend.pgm(remaining)
-        logging.debug('pgm() -Done-')
+        try:
+            backend.pgm(remaining)
+            logging.debug('pgm() -Done-')
+        except RuntimeError as e:
+            pr_err("Failed to program the FPGA: " + str(e))
     else:
         pr_err("Can't find system '" + known.system + "'")
 
