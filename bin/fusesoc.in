@@ -140,6 +140,9 @@ def sim(known, remaining):
     except OptionSectionMissing as e:
         pr_err("'" + known.system + "' miss a mandatory parameter for " + sim_name + " simulation (" + e.value + ")")
         exit(1)
+    except RuntimeError as e:
+        pr_err(str(e))
+        exit(1)
     if known.force or not os.path.exists(sim.sim_root):
         try:
             sim.configure()
