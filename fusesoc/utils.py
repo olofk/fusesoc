@@ -75,6 +75,7 @@ def get_verilator_root():
                                      shell=True).splitlines();
     pattern = re.compile("VERILATOR_ROOT")
     for l in output:
+        l = str(l).strip("'")
         if pattern.search(l):
             return l.split('=')[1].strip()
 
