@@ -245,3 +245,19 @@ Verilog top module      : {top_module}
             Launcher('g++',args + ['-o' + os.path.splitext(os.path.basename(src_file))[0]+'.o']+ [src_file],
                      cwd=sim_root).run()
         
+class IseSection(ToolSection):
+    def __init__(self, items=None):
+        super(IseSection, self).__init__()
+        
+        self.name = 'ise'
+        self._add_listitem('ucf_files')
+        self._add_listitem('tcl_files')
+        self._add_stringitem('family')
+        self._add_stringitem('device')
+        self._add_stringitem('package')
+        self._add_stringitem('speed')
+        self._add_stringitem('top_module')
+
+        if items:
+            self.load_dict(items)
+            self.export_files = self.ucf_files
