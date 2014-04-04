@@ -1,6 +1,6 @@
 import os
 from fusesoc import utils
-from fusesoc.utils import Launcher
+from fusesoc.utils import Launcher, pr_warn
 
 class Section(object):
     def __init__(self):
@@ -27,7 +27,7 @@ class Section(object):
             elif item in self.strings:
                 setattr(self, item, items.get(item))
             else:
-                print("Warning: Unknown item '{item}' in section '{section}'".format(item=item, section=self.name))
+                pr_warn("Warning: Unknown item '{item}' in section '{section}'".format(item=item, section=self.name))
 
     def __str__(self):
         s = ''
