@@ -53,6 +53,8 @@ class VhdlSection(Section):
 
         self._add_listitem('src_files')
 
+        self.name = 'vhdl'
+
         if items:
             self.load_dict(items)
             self.export_files = self.src_files
@@ -64,6 +66,7 @@ class VerilogSection(Section):
         self.include_dirs = []
         self.tb_include_dirs = []
 
+        self.name = 'verilog'
         self._add_listitem('src_files')
         self._add_listitem('include_files')
         self._add_listitem('tb_src_files')
@@ -85,6 +88,7 @@ class VpiSection(Section):
 
         self.include_dirs = []
 
+        self.name = 'vpi'
         self._add_listitem('src_files')
         self._add_listitem('include_files')
         self._add_listitem('libs')
