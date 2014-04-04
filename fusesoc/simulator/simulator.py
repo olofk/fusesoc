@@ -1,6 +1,5 @@
 from fusesoc.config import Config
 from fusesoc.coremanager import CoreManager
-from fusesoc.verilog import Verilog
 from fusesoc.utils import Launcher, pr_info
 import argparse
 import shutil
@@ -8,6 +7,17 @@ import os
 import logging
 
 logger = logging.getLogger(__name__)
+
+class _Verilog(object):
+    def __init__(self):
+        self.src_files = []
+        self.include_files = []
+        self.include_dirs = []
+
+        self.tb_src_files = []
+        self.tb_private_src_files = []
+        self.tb_include_files = []
+        self.tb_include_dirs = []
 
 class Simulator(object):
 
@@ -35,7 +45,7 @@ class Simulator(object):
         self.env['BUILD_ROOT'] = os.path.abspath(self.build_root)
         self.env['SIMULATOR'] = self.TOOL_NAME
 
-        self.verilog = Verilog()
+        self.verilog = _Verilog()
         for core_name in self.cores:
             logger.debug('core_name=' + core_name)
             core = self.cm.get_core(core_name)
