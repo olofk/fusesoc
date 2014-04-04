@@ -72,7 +72,7 @@ def get_verilator_root():
     if verilator is None:
         return None
     output = subprocess.check_output(verilator + ' -V',
-                                     shell=True).splitlines();
+                                     shell=True).decode().splitlines()
     pattern = re.compile("VERILATOR_ROOT")
     for l in output:
         if pattern.search(l):
