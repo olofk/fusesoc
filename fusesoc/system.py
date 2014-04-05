@@ -1,5 +1,6 @@
 from fusesoc.fusesocconfigparser import FusesocConfigParser
 from fusesoc.config import Config
+from fusesoc.section import Section
 import os
 import logging
 
@@ -22,8 +23,7 @@ class System:
 
         if self.config.has_option('main', 'backend'):
             self.backend_name = self.config.get('main','backend')
-            if self.backend_name and self.config.has_section(self.backend_name):
-                self.backend = dict(self.config.items(self.backend_name))
+            self.backend = Section.factory(self.backend_name, self.config.get_section(self.backend_name))
 
         logger.debug('__init__() -Done-')
 

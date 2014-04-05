@@ -43,12 +43,12 @@ clean:
     # Runs qsys if a 'qsys_files' entry can be found under the quartus section
     def _run_qsys(self):
         self.qip_files = []
-        if not 'qsys_files' in self.system.backend:
+        if not self.system.backend.qsys_files:
             return
 
         qsys_script = open(os.path.join(self.work_root, 'qsys.sh'),'w')
 
-        for f in self.system.backend['qsys_files'].split():
+        for f in self.system.backend.qsys_files:
             src_file = os.path.join(self.systems_root, self.system.name, f)
             dst_file = os.path.join(self.work_root, f)
             dst_dir = os.path.dirname(dst_file)
@@ -63,9 +63,9 @@ clean:
             args += ['--report-file=bsf:' +
                      os.path.join(dst_dir, self.system.name+'.bsf')]
             args += ['--system-info=DEVICE_FAMILY=' +
-                     self.system.backend['family']]
+                     self.system.backend.family]
             args += ['--system-info=DEVICE=' +
-                     self.system.backend['device']]
+                     self.system.backend.device]
             args += ['--component-file=' + dst_file]
 
             qsys_script.write('ip-generate ' + ' '.join(args) + '\n');
@@ -87,9 +87,9 @@ clean:
                      os.path.join(dst_dir, self.system.name+'.cmp')]
             args += ['--report-file=svd']
             args += ['--system-info=DEVICE_FAMILY=' +
-                     self.system.backend['family']]
+                     self.system.backend.family]
             args += ['--system-info=DEVICE=' +
-                     self.system.backend['device']]
+                     self.system.backend.device]
             args += ['--component-file=' + dst_file]
             args += ['--language=VERILOG']
 
@@ -101,12 +101,12 @@ clean:
     def _write_tcl_file(self):
         tcl_file = open(os.path.join(self.work_root, self.system.name+'.tcl'),'w')
         tcl_file.write("project_new " + self.system.name + " -overwrite\n")
-        tcl_file.write("set_global_assignment -name FAMILY " + self.system.backend['family'] + '\n')
-        tcl_file.write("set_global_assignment -name DEVICE " + self.system.backend['device'] + '\n')
+        tcl_file.write("set_global_assignment -name FAMILY " + self.system.backend.family + '\n')
+        tcl_file.write("set_global_assignment -name DEVICE " + self.system.backend.device + '\n')
         # default to 'orpsoc_top' if top_module entry is missing
         top_module = 'orpsoc_top'
-        if 'top_module' in self.system.backend:
-            top_module = self.system.backend['top_module']
+        if self.system.backend.top_module:
+            top_module = self.system.backend.top_module
         tcl_file.write("set_global_assignment -name TOP_LEVEL_ENTITY " + top_module + '\n')
         for src_file in self.src_files:
             tcl_file.write("set_global_assignment -name VERILOG_FILE " + src_file + '\n')
@@ -116,7 +116,7 @@ clean:
             tcl_file.write("set_global_assignment -name SEARCH_PATH " + include_dir + '\n')
 
         #FIXME: Handle multiple SDC files. Also handle SDC files directly from cores?
-        sdc_files = self.system.backend['sdc_files'].split()
+        sdc_files = self.system.backend.sdc_files
         for f in sdc_files:
             src_file = os.path.join(self.systems_root, self.system.name, f)
             dst_file =os.path.join(self.work_root, f)
@@ -132,13 +132,13 @@ clean:
             tcl_file.write("set_global_assignment -name QIP_FILE " +
                            os.path.relpath(f, self.work_root) + '\n')
 
-        tcl_files = self.system.backend['tcl_files'].split()
+        tcl_files = self.system.backend.tcl_files
         for f in tcl_files:
             tcl_file.write(open(os.path.join(self.systems_root, self.system.name, f)).read())
         tcl_file.close()
 
     def _write_makefile(self):
-        quartus_options = self.system.backend.get('quartus_options', '')
+        quartus_options = self.system.backend.quartus_options
         makefile = open(os.path.join(self.work_root, 'Makefile'),'w')
         makefile.write("DESIGN_NAME = " + self.system.name + "\n")
         makefile.write("QUARTUS_OPTIONS = " + quartus_options + "\n")

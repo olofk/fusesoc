@@ -43,6 +43,7 @@ class Section(object):
         if type == 'modelsim'  : return ModelsimSection(items)
         if type == 'verilator' : return VerilatorSection(items)
         if type == 'ise'       : return IseSection(items)
+        if type == 'quartus'   : return QuartusSection(items)
         if type == 'vhdl'      : return VhdlSection(items)
         if type == 'verilog'   : return VerilogSection(items)
         if type == 'vpi'       : return VpiSection(items)
@@ -262,3 +263,21 @@ class IseSection(ToolSection):
         if items:
             self.load_dict(items)
             self.export_files = self.ucf_files
+
+class QuartusSection(ToolSection):
+    def __init__(self, items=None):
+        super(QuartusSection, self).__init__()
+        
+        self.name = 'quartus'
+        self._add_listitem('qsys_files')
+        self._add_listitem('sdc_files')
+        self._add_listitem('tcl_files')
+
+        self._add_stringitem('quartus_options')
+        self._add_stringitem('family')
+        self._add_stringitem('device')
+        self._add_stringitem('top_module')
+
+        if items:
+            self.load_dict(items)
+            self.export_files = self.qsys_files + self.sdc_files
