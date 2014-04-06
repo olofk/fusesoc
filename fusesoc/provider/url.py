@@ -35,18 +35,12 @@ class ProviderURL(Provider):
             self.corename = self.version
 
         if status == 'empty':
-            try:
-                self._checkout(local_dir, self.corename)
-                return True
-            except RuntimeError:
-                raise
+            self._checkout(local_dir, self.corename)
+            return True
         elif status == 'modified':
             self.clean_cache()
-            try:
-                self._checkout(local_dir, self.corename)
-                return True
-            except RuntimeError:
-                raise
+            self._checkout(local_dir, self.corename)
+            return True
         elif status == 'outofdate':
             self._update()
             return True
@@ -59,7 +53,13 @@ class ProviderURL(Provider):
     def _checkout(self, local_dir, core_name):
         logger.debug('_checkout() *Entered*')
         pr_info("Checking out " + self.url + " to " + local_dir)
-        (filename, headers) = urllib.urlretrieve(self.url)
+        try:
+            (filename, headers) = urllib.urlretrieve(self.url)
+        except urllib.URLError:
+            raise
+        except urllib.HTTPError:
+            raise
+
         (cache_root, core) = os.path.split(local_dir)
 
         if self.filetype == 'tar':
