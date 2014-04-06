@@ -1,6 +1,12 @@
 import os.path
 import shutil
 import subprocess
+import sys
+
+if sys.version_info[0] >= 3:
+    import urllib.request as urllib
+else:
+    import urllib
 
 from fusesoc.config import Config
 from fusesoc.coremanager import CoreManager
@@ -54,7 +60,12 @@ class Backend(object):
             pr_info("Preparing " + name)
             core = cm.get_core(name)
             dst_dir = os.path.join(Config().build_root, self.system.name, 'src', name)
-            core.setup()
+            try:
+                core.setup()
+            except urllib.URLError as e:
+                raise RuntimeError("Problem while fetching '" + core.name + "': " + str(e.reason))
+            except urllib.HTTPError as e:
+                raise RuntimeError("Problem while fetching '" + core.name + "': " + str(e.reason))
             core.export(dst_dir)
 
     def build(self, args):

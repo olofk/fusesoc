@@ -6,6 +6,11 @@ import subprocess
 import sys
 import signal
 
+if sys.version_info[0] >= 3:
+    import urllib.request as urllib
+else:
+    import urllib
+
 #Check if this is run from a local installation
 fusesocdir = os.path.abspath(os.path.join(os.path.dirname(os.path.realpath(__file__)), ".."))
 if os.path.exists(os.path.join(fusesocdir, "fusesoc")):
@@ -48,7 +53,11 @@ def build(args):
         except DependencyError as e:
             pr_err("'" + args.system + "' or any of its dependencies requires '" + e.value + "', but this core was not found")
             exit(1)
-        backend.configure()
+        try:
+            backend.configure()
+        except RuntimeError as e:
+            pr_err(str(e))
+            exit(1)
         print('')
         try:
             backend.build(args.backendargs)
@@ -72,11 +81,25 @@ def fetch(args):
     core = CoreManager().get_core(args.core)
     if core:
         cores = CoreManager().get_depends(core.name)
-        core.setup()
+        try:
+            core.setup()
+        except urllib.URLError as e:
+            pr_err("Problem while fetching '" + core.name + "': " + str(e.reason))
+            exit(1)
+        except urllib.HTTPError as e:
+            pr_err("Problem while fetching '" + core.name + "': " + str(e.reason))
+            exit(1)
         for name in cores:
              pr_info("Fetching " + name)
              core = CoreManager().get_core(name)
-             core.setup()
+             try:
+                 core.setup()
+             except urllib.URLError as e:
+                 pr_err("Problem while fetching '" + core.name + "': " + str(e.reason))
+                 exit(1)
+             except urllib.HTTPError as e:
+                 pr_err("Problem while fetching '" + core.name + "': " + str(e.reason))
+                 exit(1)
     else:
         pr_err("Can't find core '" + args.core + "'")
 

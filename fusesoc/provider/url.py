@@ -50,7 +50,13 @@ class ProviderURL(object):
 
     def _checkout(self, local_dir, core_name):
         pr_info("Checking out " + self.url + " to " + local_dir)
-        (filename, headers) = urllib.urlretrieve(self.url)
+        try:
+            (filename, headers) = urllib.urlretrieve(self.url)
+        except urllib.URLError:
+            raise
+        except urllib.HTTPError:
+            raise
+
         (cache_root, core) = os.path.split(local_dir)
 
         if self.filetype == 'tar':

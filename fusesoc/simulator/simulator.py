@@ -5,6 +5,12 @@ import argparse
 import shutil
 import os
 import logging
+import sys
+
+if sys.version_info[0] >= 3:
+    import urllib.request as urllib
+else:
+    import urllib
 
 logger = logging.getLogger(__name__)
 
@@ -87,7 +93,12 @@ class Simulator(object):
             pr_info("Preparing " + name)
             dst_dir = os.path.join(Config().build_root, self.system.name, 'src', name)
             core = self.cm.get_core(name)
-            core.setup()
+            try:
+                core.setup()
+            except urllib.URLError as e:
+                raise RuntimeError("Problem while fetching '" + core.name + "': " + str(e.reason))
+            except urllib.HTTPError as e:
+                raise RuntimeError("Problem while fetching '" + core.name + "': " + str(e.reason))
             core.export(dst_dir)
 
     def build(self):
