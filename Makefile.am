@@ -36,7 +36,8 @@ simulatordir = $(fusesocdir)/simulator
 build_PYTHON =      \
  fusesoc/build/__init__.py  \
  fusesoc/build/backend.py    \
- fusesoc/build/quartus.py
+ fusesoc/build/quartus.py    \
+ fusesoc/build/ise.py
 
 builddir = $(fusesocdir)/build
 
