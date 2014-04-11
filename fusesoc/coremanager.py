@@ -43,6 +43,8 @@ class CoreManager(object):
             f = os.path.join(path, d, d+'.core')
             if os.path.isfile(f) == False:
                 core_dir = os.path.join(path, d)
+                if not os.path.isdir(core_dir):
+                    continue
                 for core_subdir in os.listdir(core_dir):
                     subcore = os.path.join(core_dir, core_subdir, core_subdir+'.core')
                     self.load_core(core_subdir, subcore)
