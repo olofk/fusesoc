@@ -59,12 +59,12 @@ class CoreManager(object):
                 abspath = os.path.abspath(p)
                 if not abspath in self._cores_root:
                     self._cores_root += [abspath]
-                    self.load_cores(p)
+                    self.load_cores(os.path.expanduser(p))
         else:
             abspath = os.path.abspath(path)
             if not abspath in self._cores_root:
                 self._cores_root += [abspath]
-                self.load_cores(path)
+                self.load_cores(os.path.expanduser(path))
 
     def get_cores_root(self):
         return self._cores_root
