@@ -43,7 +43,12 @@ class GitHub(Provider):
         #TODO : Sanitize URL
         url = 'https://github.com/{user}/{repo}/archive/{version}.tar.gz'.format(user=self.user, repo=self.repo, version=self.version)
         pr_info("Checking out " + url + " revision " + self.version + " to " + local_dir)
-        (filename, headers) = urllib.urlretrieve(url)
+        try:
+            (filename, headers) = urllib.urlretrieve(url)
+        except urllib.URLError:
+            raise
+        except urllib.HTTPError:
+            raise
 
         t = tarfile.open(filename)
         (cache_root, core) = os.path.split(local_dir)

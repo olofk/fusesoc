@@ -4,6 +4,11 @@ import os
 import sys
 import signal
 
+if sys.version_info[0] >= 3:
+    import urllib.request as urllib
+else:
+    import urllib
+
 #Check if this is run from a local installation
 fusesocdir = os.path.abspath(os.path.join(os.path.dirname(os.path.realpath(__file__)), ".."))
 if os.path.exists(os.path.join(fusesocdir, "fusesoc")):
@@ -40,7 +45,11 @@ def build(known, remaining):
     if known.system in CoreManager().get_systems():
         core = CoreManager().get_core(known.system)
         backend = BackendFactory(core.system)
-        backend.configure()
+        try:
+            backend.configure()
+        except RuntimeError as e:
+            pr_err(str(e))
+            exit(1)
         print('')
         try:
             backend.build(remaining)
@@ -68,11 +77,25 @@ def fetch(known, remaining):
     core = CoreManager().get_core(known.core)
     if core:
         cores = CoreManager().get_depends(core.name)
-        core.setup()
+        try:
+            core.setup()
+        except urllib.URLError as e:
+            pr_err("Problem while fetching '" + core.name + "': " + str(e.reason))
+            exit(1)
+        except urllib.HTTPError as e:
+            pr_err("Problem while fetching '" + core.name + "': " + str(e.reason))
+            exit(1)
         for name in cores:
              pr_info("Fetching " + name)
              core = CoreManager().get_core(name)
-             core.setup()
+             try:
+                 core.setup()
+             except urllib.URLError as e:
+                 pr_err("Problem while fetching '" + core.name + "': " + str(e.reason))
+                 exit(1)
+             except urllib.HTTPError as e:
+                 pr_err("Problem while fetching '" + core.name + "': " + str(e.reason))
+                 exit(1)
         logging.debug('fetch() -Done-')
     else:
         pr_err("Can't find core '" + known.core + "'")
