@@ -1,3 +1,26 @@
+1.1 2014-04-15 Olof Kindgren <olof.kindgren@gmail.com>
+======================================================
+* Support system-installed Verilator
+* Allow tool-specific dependencies
+* Allow custom names on synthesis/simulator top levels
+* Allow subdirectories in cores_root
+* Colorized status output
+* Improved exception handling
+* Allow verilator test benches to access functions in other cores
+* Allow passing options directly to backend tools
+* Add preliminary VHDL support
+* Integrate Altera Qsys generation in Quartus flow
+* Add support for building with Xilinx ISE
+* + lots of bug fixes and refactoring
+
+Contributors:
+carlos <carlos@marte.inesc-id.pt>
+Franck Jullien <franck.jullien@gmail.com>
+Olof Kindgren <olof.kindgren@gmail.com>
+Stefan Kristiansson <stefan.kristiansson@saunalahti.fi>
+Kenneth Lorthioir <ibelimb@gmail.com>
+Jose T. de Sousa <jts@inesc-id.pt>
+
 1.0 2014-02-22 Olof Kindgren <olof.kindgren@gmail.com>
 ======================================================
 * Renamed version of ORPSoC 3.2 without any functional changes
