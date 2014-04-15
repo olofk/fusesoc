@@ -28,5 +28,4 @@ class Plusargs:
             elif _type == 'file':
                 parser.add_argument(_name, type=str, nargs=1, action=FileAction)
             else:
-                print("Error parsing plusargs: Unknown type " + _type)
-                exit(1)
+                raise Exception("Unknown plusargs type '"+_type+"'")
