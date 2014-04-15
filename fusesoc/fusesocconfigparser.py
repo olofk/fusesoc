@@ -12,8 +12,7 @@ class FusesocConfigParser(configparser.SafeConfigParser):
         else:
             super(FusesocConfigParser, self).__init__()
         if not os.path.exists(config_file):
-            print("Could not find " + config_file)
-            exit(1)
+            raise Exception("Could not find " + config_file)
         f = open(config_file)
         id_string = f.readline().split('=')
         
