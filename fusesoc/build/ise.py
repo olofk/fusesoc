@@ -63,7 +63,7 @@ process run "Generate Programming File"
             source_files = '\n'.join(['xfile add '+s for s in self.src_files])))
 
         for f in self.system.backend.tcl_files:
-            tcl_file.write(open(os.path.join(self.systems_root, self.system.name, f)).read())
+            tcl_file.write(open(os.path.join(self.system_root, f)).read())
 
         tcl_file.write(self.TCL_FUNCTIONS)
         tcl_file.close()

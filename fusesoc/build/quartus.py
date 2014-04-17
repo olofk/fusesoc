@@ -49,7 +49,7 @@ clean:
         qsys_script = open(os.path.join(self.work_root, 'qsys.sh'),'w')
 
         for f in self.system.backend.qsys_files:
-            src_file = os.path.join(self.systems_root, self.system.name, f)
+            src_file = os.path.join(self.system_root, f)
             dst_file = os.path.join(self.work_root, f)
             dst_dir = os.path.dirname(dst_file)
             if not os.path.exists(dst_dir):
@@ -118,7 +118,7 @@ clean:
         #FIXME: Handle multiple SDC files. Also handle SDC files directly from cores?
         sdc_files = self.system.backend.sdc_files
         for f in sdc_files:
-            src_file = os.path.join(self.systems_root, self.system.name, f)
+            src_file = os.path.join(self.system_root, f)
             dst_file =os.path.join(self.work_root, f)
             if not os.path.exists(os.path.dirname(dst_file)):
                 os.makedirs(os.path.dirname(dst_file))
@@ -134,7 +134,7 @@ clean:
 
         tcl_files = self.system.backend.tcl_files
         for f in tcl_files:
-            tcl_file.write(open(os.path.join(self.systems_root, self.system.name, f)).read())
+            tcl_file.write(open(os.path.join(self.system_root, f)).read())
         tcl_file.close()
 
     def _write_makefile(self):

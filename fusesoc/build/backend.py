@@ -17,7 +17,7 @@ class Backend(object):
         config = Config()
         self.system = system
         self.build_root = os.path.join(config.build_root, self.system.name)
-        self.systems_root = config.systems_root
+        self.system_root = system.system_root
 
         self.src_root = os.path.join(self.build_root, 'src')
 
@@ -27,7 +27,7 @@ class Backend(object):
         self.cm = CoreManager()
 
         self.env = os.environ.copy()
-        self.env['SYSTEM_ROOT'] = os.path.abspath(os.path.join(self.systems_root, self.system.name))
+        self.env['SYSTEM_ROOT'] = os.path.abspath(self.system_root)
         self.env['BUILD_ROOT'] = os.path.abspath(self.build_root)
         self.env['BACKEND'] = self.TOOL_NAME
 
@@ -63,7 +63,7 @@ class Backend(object):
 
     def build(self, args):
         for script in self.system.pre_build_scripts:
-            script = os.path.abspath(os.path.join(self.systems_root, self.system.name, script))
+            script = os.path.abspath(os.path.join(self.system_root, script))
             pr_info("Running " + script);
             try:
                 Launcher(script, cwd = os.path.abspath(self.build_root), env = self.env, shell=True).run()
@@ -72,7 +72,7 @@ class Backend(object):
 
     def done(self):
         for script in self.system.post_build_scripts:
-            script = os.path.abspath(os.path.join(self.systems_root, self.system.name, script))
+            script = os.path.abspath(os.path.join(self.system_root, script))
             pr_info("Running " + script);
             try:
                 Launcher(script, cwd = os.path.abspath(self.build_root), env = self.env, shell=True).run()
