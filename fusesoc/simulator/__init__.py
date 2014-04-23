@@ -9,4 +9,4 @@ def SimulatorFactory(sim,system):
     elif sim == 'verilator':
         return Verilator(system)
     else:
-        raise Exception
+        raise RuntimeError("Unknown simulator '"+sim+"'")
