@@ -247,9 +247,11 @@ Verilog top module      : {top_module}
 
         for src_file in self.src_files:
             print("Compiling " + src_file)
-            Launcher('g++',args + ['-o' + os.path.splitext(os.path.basename(src_file))[0]+'.o']+ [src_file],
-                     cwd=sim_root).run()
-        
+            l = Launcher('g++', args + [os.path.join(src_root, core, src_file)],
+                         cwd=sim_root)
+            print(l)
+            l.run()
+
 class IseSection(ToolSection):
     def __init__(self, items=None):
         super(IseSection, self).__init__()
