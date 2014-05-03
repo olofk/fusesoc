@@ -235,7 +235,10 @@ Verilog top module      : {top_module}
         args += ['-DVL_PRINTF=printf']
         args += ['-DVM_TRACE=1']
         args += ['-DVM_COVERAGE=0']
-        args += ['-I'+os.getenv('SYSTEMC_INCLUDE')]
+        if os.getenv('SYSTEMC_INCLUDE'):
+            args += ['-I'+os.getenv('SYSTEMC_INCLUDE')]
+        if os.getenv('SYSTEMC'):
+            args += ['-I'+os.path.join(os.getenv('SYSTEMC'),'include')]
         args += ['-Wno-deprecated']
         if os.getenv('SYSTEMC_CXX_FLAGS'):
              args += [os.getenv('SYSTEMC_CXX_FLAGS')]
