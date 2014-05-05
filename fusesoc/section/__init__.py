@@ -1,6 +1,6 @@
 import os
 from fusesoc import utils
-from fusesoc.utils import Launcher, pr_warn
+from fusesoc.utils import Launcher, pr_warn, pr_info
 
 class Section(object):
     def __init__(self):
@@ -193,6 +193,7 @@ Verilog top module      : {top_module}
             args += self._object_files
             Launcher('ar', args,
                      cwd=sim_root).run()
+            print()
 
     def build_C(self, core, sim_root, src_root):
         args = ['-c']
@@ -200,7 +201,7 @@ Verilog top module      : {top_module}
         args += ['-I'+src_root]
         args += ['-I'+os.path.join(src_root, core, s) for s in self.include_dirs]
         for src_file in self.src_files:
-            print("Compiling " + src_file)
+            pr_info("Compiling " + src_file)
             l = Launcher('gcc',
                      args + [os.path.join(src_root, core, src_file)],
                      cwd=sim_root)
@@ -217,7 +218,7 @@ Verilog top module      : {top_module}
         args += ['-I'+os.path.join(verilator_root,'include')]
         args += ['-I'+os.path.join(verilator_root,'include', 'vltstd')]
         for src_file in self.src_files:
-            print("Compiling " + src_file)
+            pr_info("Compiling " + src_file)
             l = Launcher('g++', args + [os.path.join(src_root, core, src_file)],
                          cwd=sim_root)
             print(l)
@@ -246,7 +247,7 @@ Verilog top module      : {top_module}
         args += ['-g']
 
         for src_file in self.src_files:
-            print("Compiling " + src_file)
+            pr_info("Compiling " + src_file)
             l = Launcher('g++', args + [os.path.join(src_root, core, src_file)],
                          cwd=sim_root)
             print(l)
