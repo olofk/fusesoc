@@ -130,12 +130,14 @@ class Verilator(Simulator):
                       self.archives += [core_name+'.a']
                  self.libs += core.verilator.libs
                  self.include_dirs += [os.path.join(self.src_root, core_name, d) for d in core.verilator.include_dirs]
+
         self._verilate()
         for core_name in self.cores:
             core = self.cm.get_core(core_name)
             if core.verilator:
                  core.verilator.build(core_name, self.sim_root, self.src_root)
 
+        pr_info("Building verilator executable:")
         utils.Launcher('make', ['-f', 'V' + self.top_module + '.mk', 'V' + self.top_module],
                        cwd=os.path.join(self.sim_root, 'obj_dir')).run()
 
