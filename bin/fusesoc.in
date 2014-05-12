@@ -35,41 +35,41 @@ def abort_handler(signal, frame):
 
 signal.signal(signal.SIGINT, abort_handler)
 
-def build(known, remaining):
+def build(args):
     logger.debug('build() *Entered*')
-    if known.system in CoreManager().get_systems():
-        core = CoreManager().get_core(known.system)
+    if args.system in CoreManager().get_systems():
+        core = CoreManager().get_core(args.system)
         try:
             backend = BackendFactory(core.system)
         except DependencyError as e:
-            pr_err("'" + known.system + "' or any of its dependencies requires '" + e.value + "', but this core was not found")
+            pr_err("'" + args.system + "' or any of its dependencies requires '" + e.value + "', but this core was not found")
             exit(1)
         backend.configure()
         print('')
         try:
-            backend.build(remaining)
+            backend.build(args.backendargs)
         except RuntimeError as e:
             pr_err("Failed to build FPGA: " + str(e))
         logging.debug('build() -Done-')
     else:
-        pr_err("Can't find system '" + known.system + "'")
+        pr_err("Can't find system '" + args.system + "'")
 
-def pgm(known, remaining):
+def pgm(args):
     logger.debug('pgm() *Entered*')
-    if known.system in CoreManager().get_systems():
-        core = CoreManager().get_core(known.system)
+    if args.system in CoreManager().get_systems():
+        core = CoreManager().get_core(args.system)
         backend = BackendFactory(core.system)
         try:
-            backend.pgm(remaining)
+            backend.pgm(args.backendargs)
             logging.debug('pgm() -Done-')
         except RuntimeError as e:
             pr_err("Failed to program the FPGA: " + str(e))
     else:
-        pr_err("Can't find system '" + known.system + "'")
+        pr_err("Can't find system '" + args.system + "'")
 
-def fetch(known, remaining):
+def fetch(args):
     logger.debug('fetch() *Entered*')
-    core = CoreManager().get_core(known.core)
+    core = CoreManager().get_core(args.core)
     if core:
         cores = CoreManager().get_depends(core.name)
         core.setup()
@@ -79,9 +79,9 @@ def fetch(known, remaining):
              core.setup()
         logging.debug('fetch() -Done-')
     else:
-        pr_err("Can't find core '" + known.core + "'")
+        pr_err("Can't find core '" + args.core + "'")
 
-def list_cores(known, remaining):
+def list_cores(args):
     cores = CoreManager().get_cores()
     print("\nAvailable cores:\n")
     if not cores:
@@ -98,56 +98,56 @@ def list_cores(known, remaining):
         print(name.ljust(maxlen) + ' : ' + core.cache_status())
     logger.debug('list_cores() -Done-')
 
-def core_info(known, remaining):
+def core_info(args):
     logger.debug('core_info() *Entered*')
-    core = CoreManager().get_core(known.core)
+    core = CoreManager().get_core(args.core)
     if core:
         core.info()
     else:
-        pr_err("Can't find core '" + known.core + "'")
+        pr_err("Can't find core '" + args.core + "'")
 
-def list_systems(known, remaining):
+def list_systems(args):
     logger.debug('list_systems() *Entered*')
     print("Available systems:")
     for system in CoreManager().get_systems():
         print(system)
 
-def system_info(known, remaining):
+def system_info(args):
     logger.debug('info() *Entered*')
-    if known.system in CoreManager().get_systems():
-        core = CoreManager().get_core(known.system)
+    if args.system in CoreManager().get_systems():
+        core = CoreManager().get_core(args.system)
         core.info()
         core.system.info()
     else:
-        pr_err("Can't find system '" + known.system + "'")
+        pr_err("Can't find system '" + args.system + "'")
 
-def sim(known, remaining):
+def sim(args):
     logger.debug('sim() *Entered*')
-    core = CoreManager().get_core(known.system)
+    core = CoreManager().get_core(args.system)
     if core == None:
-        pr_err("Can't find core '" + known.system + "'")
+        pr_err("Can't find core '" + args.system + "'")
         exit(1)
-    if known.sim:
-        sim_name = known.sim[0]
+    if args.sim:
+        sim_name = args.sim[0]
     elif core.simulators:
         sim_name = core.simulators[0]
     else:
-        pr_err("No simulator was found in '"+ known.system + "' core description")
-        logger.error("No simulator was found in '"+ known.system + "' core description")
+        pr_err("No simulator was found in '"+ args.system + "' core description")
+        logger.error("No simulator was found in '"+ args.system + "' core description")
         exit(1)
     try:
         CoreManager().tool = sim_name
         sim = SimulatorFactory(sim_name, core)
     except DependencyError as e:
-        pr_err("'" + known.system + "' or any of its dependencies requires '" + e.value + "', but this core was not found")
+        pr_err("'" + args.system + "' or any of its dependencies requires '" + e.value + "', but this core was not found")
         exit(1)
     except OptionSectionMissing as e:
-        pr_err("'" + known.system + "' miss a mandatory parameter for " + sim_name + " simulation (" + e.value + ")")
+        pr_err("'" + args.system + "' miss a mandatory parameter for " + sim_name + " simulation (" + e.value + ")")
         exit(1)
     except RuntimeError as e:
         pr_err(str(e))
         exit(1)
-    if known.force or not os.path.exists(sim.sim_root):
+    if args.force or not os.path.exists(sim.sim_root):
         try:
             sim.configure()
             print('')
@@ -164,22 +164,22 @@ def sim(known, remaining):
             pr_err("Failed to build simulation model")
             pr_err(str(e))
             exit(1)
-    if not known.build_only:
+    if not args.build_only:
         try:
-            sim.run(remaining)
+            sim.run(args.plusargs)
         except RuntimeError as e:
             pr_err("Failed to run the simulation")
             pr_err(str(e))
     logger.debug('sim() -Done-')
 
-def run(known, remaining):
+def run(args):
     try:
         cm = CoreManager()
         config = Config()
         cm.add_cores_root(config.cores_root)
         cm.add_cores_root(config.systems_root)
-        cm.add_cores_root(known.cores_root)
-        cm.add_cores_root(known.systems_root)
+        cm.add_cores_root(args.cores_root)
+        cm.add_cores_root(args.systems_root)
     except RuntimeError as e:
         pr_err("Failed to register cores root")
         pr_err(str(e))
@@ -188,7 +188,7 @@ def run(known, remaining):
         pr_err("Failed to register cores root")
         pr_err(str(e))
         exit(1)
-    known.func(known, remaining)
+    args.func(args)
 
 if __name__ == "__main__":
     logger.debug('__main__ *Entered*')
@@ -199,13 +199,16 @@ if __name__ == "__main__":
 
     parser.add_argument('--cores-root', help='Add additional directories containing cores', action='append')
     parser.add_argument('--systems-root', help='Add additional directories containing systems', action='append')
+
     #General options
     parser_build = subparsers.add_parser('build', help='Build an FPGA load module')
     parser_build.add_argument('system')
+    parser_build.add_argument('backendargs', nargs=argparse.REMAINDER)
     parser_build.set_defaults(func=build)
 
     parser_pgm = subparsers.add_parser('pgm', help='Program a FPGA with a system configuration')
     parser_pgm.add_argument('system')
+    parser_pgm.add_argument('backendargs', nargs=argparse.REMAINDER)
     parser_pgm.set_defaults(func=pgm)
 
     parser_fetch = subparsers.add_parser('fetch', help='Fetch a remote core and its dependencies to local cache')
@@ -234,9 +237,12 @@ if __name__ == "__main__":
     parser_sim.add_argument('--force', action='store_true', help='Force rebuilding simulation model when directory exists')
     parser_sim.add_argument('--dry-run', action='store_true')
     parser_sim.add_argument('system',help='Select a system to simulate') #, choices = Config().get_systems())
+    parser_sim.add_argument('plusargs', nargs=argparse.REMAINDER)
     parser_sim.set_defaults(func=sim)
 
-    known, remaining = parser.parse_known_args()
+    try:
+        run(parser.parse_args())
+    except AttributeError:
+        parser.print_help()
 
-    run(known, remaining)
     logger.debug('__main__ -Done-')
