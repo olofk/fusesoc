@@ -1,4 +1,3 @@
-from fusesoc.provider import Provider
 from fusesoc.utils import pr_info, pr_warn
 import subprocess
 import os.path
@@ -15,7 +14,7 @@ if sys.version_info[0] >= 3:
 else:
     import urllib
 
-class ProviderURL(Provider):
+class ProviderURL(object):
     def __init__(self, config):
         logger.debug('__init__() *Entered*')
         self.url      = config.get('url')
@@ -90,3 +89,5 @@ class ProviderURL(Provider):
             return 'empty'
         else:
             return 'downloaded'
+
+PROVIDER_CLASS = ProviderURL
