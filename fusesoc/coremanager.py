@@ -54,17 +54,13 @@ class CoreManager(object):
     def add_cores_root(self, path):
         if path is None:
             return
-        elif isinstance(path, list):
-            for p in path:
-                abspath = os.path.abspath(p)
-                if not abspath in self._cores_root:
-                    self._cores_root += [abspath]
-                    self.load_cores(os.path.expanduser(p))
-        else:
-            abspath = os.path.abspath(path)
+        elif not isinstance(path, list):
+            path = [path]
+        for p in path:
+            abspath = os.path.abspath(p)
             if not abspath in self._cores_root:
                 self._cores_root += [abspath]
-                self.load_cores(os.path.expanduser(path))
+                self.load_cores(os.path.expanduser(p))
 
     def get_cores_root(self):
         return self._cores_root
