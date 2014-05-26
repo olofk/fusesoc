@@ -36,7 +36,6 @@ def abort_handler(signal, frame):
 signal.signal(signal.SIGINT, abort_handler)
 
 def build(args):
-    logger.debug('build() *Entered*')
     if args.system in CoreManager().get_systems():
         core = CoreManager().get_core(args.system)
         try:
@@ -50,25 +49,21 @@ def build(args):
             backend.build(args.backendargs)
         except RuntimeError as e:
             pr_err("Failed to build FPGA: " + str(e))
-        logging.debug('build() -Done-')
     else:
         pr_err("Can't find system '" + args.system + "'")
 
 def pgm(args):
-    logger.debug('pgm() *Entered*')
     if args.system in CoreManager().get_systems():
         core = CoreManager().get_core(args.system)
         backend = BackendFactory(core.system)
         try:
             backend.pgm(args.backendargs)
-            logging.debug('pgm() -Done-')
         except RuntimeError as e:
             pr_err("Failed to program the FPGA: " + str(e))
     else:
         pr_err("Can't find system '" + args.system + "'")
 
 def fetch(args):
-    logger.debug('fetch() *Entered*')
     core = CoreManager().get_core(args.core)
     if core:
         cores = CoreManager().get_depends(core.name)
@@ -77,7 +72,6 @@ def fetch(args):
              pr_info("Fetching " + name)
              core = CoreManager().get_core(name)
              core.setup()
-        logging.debug('fetch() -Done-')
     else:
         pr_err("Can't find core '" + args.core + "'")
 
@@ -96,10 +90,8 @@ def list_cores(args):
     print("="*80)
     for name, core in cores.items():
         print(name.ljust(maxlen) + ' : ' + core.cache_status())
-    logger.debug('list_cores() -Done-')
 
 def core_info(args):
-    logger.debug('core_info() *Entered*')
     core = CoreManager().get_core(args.core)
     if core:
         core.info()
@@ -107,13 +99,11 @@ def core_info(args):
         pr_err("Can't find core '" + args.core + "'")
 
 def list_systems(args):
-    logger.debug('list_systems() *Entered*')
     print("Available systems:")
     for system in CoreManager().get_systems():
         print(system)
 
 def system_info(args):
-    logger.debug('info() *Entered*')
     if args.system in CoreManager().get_systems():
         core = CoreManager().get_core(args.system)
         core.info()
@@ -122,7 +112,6 @@ def system_info(args):
         pr_err("Can't find system '" + args.system + "'")
 
 def sim(args):
-    logger.debug('sim() *Entered*')
     core = CoreManager().get_core(args.system)
     if core == None:
         pr_err("Can't find core '" + args.system + "'")
@@ -170,7 +159,6 @@ def sim(args):
         except RuntimeError as e:
             pr_err("Failed to run the simulation")
             pr_err(str(e))
-    logger.debug('sim() -Done-')
 
 def run(args):
     try:
@@ -191,7 +179,6 @@ def run(args):
     args.func(args)
 
 if __name__ == "__main__":
-    logger.debug('__main__ *Entered*')
     logger.debug("Command line arguments: " + str(sys.argv))
 
     parser = argparse.ArgumentParser()
@@ -245,4 +232,3 @@ if __name__ == "__main__":
     except AttributeError:
         parser.print_help()
 
-    logger.debug('__main__ -Done-')

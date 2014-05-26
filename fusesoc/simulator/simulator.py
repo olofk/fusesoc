@@ -22,7 +22,6 @@ class _Verilog(object):
 class Simulator(object):
 
     def __init__(self, system):
-        logger.debug('__init__() *Entered*')
         config = Config()
         self.system = system
         self.build_root = os.path.join(config.build_root, self.system.name)
@@ -71,10 +70,8 @@ class Simulator(object):
                 vpi_module['libs']          = [l for l in core.vpi.libs]
                 self.vpi_modules += [vpi_module]
 
-        logger.debug('__init__() -Done-')
 
     def configure(self):
-        logger.debug('configure() *Entered*')
         if os.path.exists(self.sim_root):
             for f in os.listdir(self.sim_root):
                 if os.path.isdir(os.path.join(self.sim_root, f)):
@@ -92,13 +89,11 @@ class Simulator(object):
             core = self.cm.get_core(name)
             core.setup()
             core.export(dst_dir)
-        logger.debug('configure() -Done-')
 
     def build(self):
         return
 
     def run(self, args):
-        logger.debug('run() *Entered*')
 
         parser = argparse.ArgumentParser(prog ='fusesoc sim '+self.system.name, conflict_handler='resolve')
         for name in self.cores:
@@ -126,7 +121,6 @@ class Simulator(object):
                 print("Error: script " + script + " failed")
 
     def done(self, args):
-        logger.debug('done() *Entered*')
 
         for script in self.system.post_run_scripts:
             script = os.path.abspath(os.path.join(self.system.core_root, script))
