@@ -1,16 +1,18 @@
-from fusesoc.fusesocconfigparser import FusesocConfigParser
-from fusesoc.config import Config
-from fusesoc.plusargs import Plusargs
-from fusesoc.provider import ProviderFactory
-from fusesoc.system import System
-from fusesoc.section import Section
-from fusesoc.utils import pr_warn
+import importlib
+import logging
 import os
 import shutil
 import subprocess
-import logging
+
+from fusesoc.config import Config
+from fusesoc.fusesocconfigparser import FusesocConfigParser
+from fusesoc.plusargs import Plusargs
+from fusesoc.section import Section
+from fusesoc.system import System
+from fusesoc.utils import pr_warn
 
 logger = logging.getLogger(__name__)
+
 
 class OptionSectionMissing(Exception):
     def __init__(self, value):
@@ -57,8 +59,19 @@ class Core:
             if config.has_section('provider'):
                 self.cache_dir = os.path.join(Config().cache_root, self.name)
                 self.files_root = self.cache_dir
-                items    = config.items('provider')
-                self.provider = ProviderFactory(dict(items))
+                items    = dict(config.items('provider'))
+
+                provider_name = items.get('name')
+                if provider_name is None:
+                    raise RuntimeError('Missing "name" in section [provider]')
+                try:
+                    provider_module = importlib.import_module(
+                            'fusesoc.provider.%s' % provider_name)
+                    self.provider = provider_module.PROVIDER_CLASS(items)
+                except ImportError:
+                    raise RuntimeError(
+                            'Unknown provider "%s" in section [provider]' %
+                            provider_name)
             else:
                 self.files_root = self.core_root
 

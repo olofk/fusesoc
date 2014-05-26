@@ -1,4 +1,3 @@
-from fusesoc.provider import Provider
 from fusesoc.utils import Launcher, pr_info, pr_warn
 
 import os.path
@@ -6,7 +5,7 @@ import logging
 
 logger = logging.getLogger(__name__)
 
-class ProviderOpenCores(Provider):
+class ProviderOpenCores(object):
     def __init__(self, config):
         self.repo_path = 'http://opencores.org/ocsvn/' + \
             config.get('repo_name') + '/' + config.get('repo_name') + '/' + \
@@ -58,3 +57,5 @@ class ProviderOpenCores(Provider):
 
     def _update(self):
         pass
+
+PROVIDER_CLASS = ProviderOpenCores
