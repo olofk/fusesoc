@@ -4,12 +4,12 @@ import os
 import shutil
 import subprocess
 
+from fusesoc import section
+from fusesoc import utils
 from fusesoc.config import Config
 from fusesoc.fusesocconfigparser import FusesocConfigParser
 from fusesoc.plusargs import Plusargs
-from fusesoc.section import Section
 from fusesoc.system import System
-from fusesoc.utils import pr_warn
 
 logger = logging.getLogger(__name__)
 
@@ -30,8 +30,11 @@ class Core:
         self.plusargs = None
         self.provider = None
         self.system   = None
-        self.verilog  = None
-        self.vpi = None
+
+        for s in section.SECTION_MAP:
+            assert(not hasattr(self, s))
+            setattr(self, s, None)
+
         if core_file:
             config = FusesocConfigParser(core_file)
 
@@ -45,10 +48,10 @@ class Core:
 
             #FIXME : Make simulators part of the core object
             self.simulator        = config.get_section('simulator')
-            for name in ['icarus', 'modelsim', 'verilator', 'vhdl', 'verilog', 'vpi']:
-                items = config.get_section(name)
-                section = Section.factory(name, items) if items else None
-                setattr(self, name, section)
+
+            for s in section.load_all(config, name=self.name):
+                setattr(self, s.TAG, s)
+
             self.pre_run_scripts  = config.get_list('scripts','pre_run_scripts')
             self.post_run_scripts = config.get_list('scripts','post_run_scripts')
 
@@ -126,7 +129,8 @@ class Core:
                 shutil.copyfile(os.path.join(src_dir, f), 
                                 os.path.join(dst_dir, f))
             else:
-                pr_warn("File " + os.path.join(src_dir, f) + " doesn't exist")
+                utils.pr_warn('File %s does not exist' %
+                        os.path.join(src_dir, f))
 
     def patch(self, dst_dir):
         #FIXME: Use native python patch instead

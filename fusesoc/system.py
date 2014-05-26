@@ -1,6 +1,6 @@
+from fusesoc import section
 from fusesoc.fusesocconfigparser import FusesocConfigParser
 from fusesoc.config import Config
-from fusesoc.section import Section
 import os
 import logging
 
@@ -20,7 +20,8 @@ class System:
 
         if self.config.has_option('main', 'backend'):
             self.backend_name = self.config.get('main','backend')
-            self.backend = Section.factory(self.backend_name, self.config.get_section(self.backend_name))
+            self.backend = section.load_section(self.config, self.backend_name,
+                    name=self.name)
 
 
     def info(self):
