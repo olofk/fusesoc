@@ -9,7 +9,6 @@ class SimulatorIcarus(Simulator):
 
     TOOL_NAME = 'ICARUS'
     def __init__(self, system):
-        logger.debug('__init__() *Entered*')
 
         self.cores = []
         self.iverilog_options = []
@@ -19,18 +18,14 @@ class SimulatorIcarus(Simulator):
         super(SimulatorIcarus, self).__init__(system)
         self.sim_root = os.path.join(self.build_root, 'sim-icarus')
 
-        logger.debug('__init__() -Done-')
 
 
 
     def configure(self):
-        logger.debug('configure() *Entered*')
         super(SimulatorIcarus, self).configure()
         self._write_config_files()
-        logger.debug('configure()  -Done-')
 
     def _write_config_files(self):
-        logger.debug('_write_config_files() *Entered*')
         icarus_file = 'icarus.scr'
 
         f = open(os.path.join(self.sim_root,icarus_file),'w')
@@ -45,10 +40,8 @@ class SimulatorIcarus(Simulator):
             f.write(os.path.abspath(src_file) + '\n')
 
         f.close()
-        logger.debug('_write_config_files() -Done-')
 
     def build(self):
-        logger.debug('build() *Entered*')
         super(SimulatorIcarus, self).build()
         
         #Build VPI modules
@@ -74,10 +67,8 @@ class SimulatorIcarus(Simulator):
         Launcher('iverilog', args,
                  cwd      = self.sim_root,
                  errormsg = "Failed to compile Icarus Simulation model").run()
-        logger.debug('build() -Done-')
         
     def run(self, args):
-        logger.debug('run() *Entered*')
         super(SimulatorIcarus, self).run(args)
 
         #FIXME: Handle failures. Save stdout/stderr.
@@ -93,4 +84,3 @@ class SimulatorIcarus(Simulator):
                  errormsg = "Failed to run Icarus Simulation").run()
 
         super(SimulatorIcarus, self).done(args)
-        logger.debug('run() -Done-')
