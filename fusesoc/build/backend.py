@@ -13,7 +13,6 @@ logger = logging.getLogger(__name__)
 class Backend(object):
 
     def __init__(self, system):
-        logger.debug('__init__() *Entered*')
         config = Config()
         self.system = system
         self.build_root = os.path.join(config.build_root, self.system.name)
@@ -45,10 +44,8 @@ class Backend(object):
             if core.vhdl:
                 self.vhdl_src_files += [os.path.join(self.src_root, core_name, f) for f in core.vhdl.src_files]
 
-        logger.debug('__init__() -Done-')
 
     def configure(self):
-        logger.debug('configure() *Entered*')
         if os.path.exists(self.work_root): 
             shutil.rmtree(self.work_root)
         os.makedirs(self.work_root)
@@ -59,7 +56,6 @@ class Backend(object):
             dst_dir = os.path.join(Config().build_root, self.system.name, 'src', name)
             core.setup()
             core.export(dst_dir)
-        logger.debug('configure() -Done-')
 
     def build(self, args):
         for script in self.system.pre_build_scripts:

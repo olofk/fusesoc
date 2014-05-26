@@ -1,16 +1,18 @@
-from fusesoc.fusesocconfigparser import FusesocConfigParser
-from fusesoc.config import Config
-from fusesoc.plusargs import Plusargs
-from fusesoc.provider import ProviderFactory
-from fusesoc.system import System
-from fusesoc.section import Section
-from fusesoc.utils import pr_warn
+import importlib
+import logging
 import os
 import shutil
 import subprocess
-import logging
+
+from fusesoc import section
+from fusesoc import utils
+from fusesoc.config import Config
+from fusesoc.fusesocconfigparser import FusesocConfigParser
+from fusesoc.plusargs import Plusargs
+from fusesoc.system import System
 
 logger = logging.getLogger(__name__)
+
 
 class OptionSectionMissing(Exception):
     def __init__(self, value):
@@ -20,11 +22,6 @@ class OptionSectionMissing(Exception):
 
 class Core:
     def __init__(self, core_file=None, name=None, core_root=None):
-        logger.debug('__init__() *Entered*' +
-                     '\n    core_file=' + str(core_file) +
-                     '\n    name=' + str(name) + 
-                     '\n    core_root=' + str(core_root)
-                    )
         if core_file:
             basename = os.path.basename(core_file)
         self.depend = []
@@ -33,8 +30,11 @@ class Core:
         self.plusargs = None
         self.provider = None
         self.system   = None
-        self.verilog  = None
-        self.vpi = None
+
+        for s in section.SECTION_MAP:
+            assert(not hasattr(self, s))
+            setattr(self, s, None)
+
         if core_file:
             config = FusesocConfigParser(core_file)
 
@@ -48,14 +48,13 @@ class Core:
 
             #FIXME : Make simulators part of the core object
             self.simulator        = config.get_section('simulator')
-            for name in ['icarus', 'modelsim', 'verilator', 'vhdl', 'verilog', 'vpi']:
-                items = config.get_section(name)
-                section = Section.factory(name, items) if items else None
-                setattr(self, name, section)
+
+            for s in section.load_all(config, name=self.name):
+                setattr(self, s.TAG, s)
+
             self.pre_run_scripts  = config.get_list('scripts','pre_run_scripts')
             self.post_run_scripts = config.get_list('scripts','post_run_scripts')
 
-            logger.debug('name=' + str(self.name))
             self.core_root = os.path.dirname(core_file)
 
             if config.has_section('plusargs'):
@@ -63,8 +62,19 @@ class Core:
             if config.has_section('provider'):
                 self.cache_dir = os.path.join(Config().cache_root, self.name)
                 self.files_root = self.cache_dir
-                items    = config.items('provider')
-                self.provider = ProviderFactory(dict(items))
+                items    = dict(config.items('provider'))
+
+                provider_name = items.get('name')
+                if provider_name is None:
+                    raise RuntimeError('Missing "name" in section [provider]')
+                try:
+                    provider_module = importlib.import_module(
+                            'fusesoc.provider.%s' % provider_name)
+                    self.provider = provider_module.PROVIDER_CLASS(items)
+                except ImportError:
+                    raise RuntimeError(
+                            'Unknown provider "%s" in section [provider]' %
+                            provider_name)
             else:
                 self.files_root = self.core_root
 
@@ -79,27 +89,20 @@ class Core:
             self.files_root = core_root
 
             self.provider = None
-        logger.debug('__init__() -Done-')
 
 
     def cache_status(self):
-        logger.debug('cache_status() *Entered*')
         if self.provider:
             return self.provider.status(self.cache_dir)
         else:
             return 'local'
 
     def setup(self):
-        logger.debug('setup() *Entered*')
-        logger.debug("  name="+self.name)
         if self.provider:
             if self.provider.fetch(self.cache_dir, self.name):
                 self.patch(self.cache_dir)
-        logger.debug('setup() -Done-')
 
     def export(self, dst_dir):
-        logger.debug('export() *Entered*')
-        logger.debug("  name="+self.name)
         if os.path.exists(dst_dir):
             shutil.rmtree(dst_dir)
 
@@ -117,8 +120,6 @@ class Core:
             src_files += self.vhdl.export()
 
         dirs = list(set(map(os.path.dirname,src_files)))
-        logger.debug("export src_files=" + str(src_files))
-        logger.debug("export dirs=" + str(dirs))
         for d in dirs:
             if not os.path.exists(os.path.join(dst_dir, d)):
                 os.makedirs(os.path.join(dst_dir, d))
@@ -128,12 +129,10 @@ class Core:
                 shutil.copyfile(os.path.join(src_dir, f), 
                                 os.path.join(dst_dir, f))
             else:
-                pr_warn("File " + os.path.join(src_dir, f) + " doesn't exist")
-        logger.debug('export() -Done-')
-        
+                utils.pr_warn('File %s does not exist' %
+                        os.path.join(src_dir, f))
+
     def patch(self, dst_dir):
-        logger.debug('patch() *Entered*')
-        logger.debug("  name=" + self.name)
         #FIXME: Use native python patch instead
         patch_root = os.path.join(self.core_root, 'patches')
         if os.path.exists(patch_root):
@@ -149,11 +148,9 @@ class Core:
                     except OSError:
                         print("Error: Failed to call external command 'patch'")
                         return False
-        logger.debug('patch() -Done-')
         return True
 
     def info(self):
-        logger.debug('info() *Entered*')
 
         show_list = lambda l: "\n                        ".join(l)
         show_dict = lambda d: show_list(["%s: %s" % (k, d[k]) for k in d.keys()])
@@ -181,6 +178,5 @@ class Core:
             print("\nTestbench include files:" + show_list(self.verilog.tb_include_files))
         if self.verilog.tb_include_dirs:
             print("\nTestbench include dirs: " + show_list(self.verilog.tb_include_dirs))
-        logger.debug('info() -Done-')
 
 

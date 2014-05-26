@@ -1,4 +1,3 @@
-from fusesoc.provider import Provider
 from fusesoc.utils import pr_info, pr_warn
 import subprocess
 import os.path
@@ -15,19 +14,16 @@ if sys.version_info[0] >= 3:
 else:
     import urllib
 
-class ProviderURL(Provider):
+class ProviderURL(object):
     def __init__(self, config):
-        logger.debug('__init__() *Entered*')
         self.url      = config.get('url')
         self.filetype = config.get('filetype')
         if 'corename' in config:
             self.version = config.get('corename')
         else:
             self.version = '----'
-        logger.debug('__init__() -Done-')
 
     def fetch(self, local_dir, core_name):
-        logger.debug('fetch() *Entered*')
         status = self.status(local_dir)
         if '----' in self.version:
             self.corename = core_name
@@ -57,7 +53,6 @@ class ProviderURL(Provider):
             return False
 
     def _checkout(self, local_dir, core_name):
-        logger.debug('_checkout() *Entered*')
         pr_info("Checking out " + self.url + " to " + local_dir)
         (filename, headers) = urllib.urlretrieve(self.url)
         (cache_root, core) = os.path.split(local_dir)
@@ -82,11 +77,11 @@ class ProviderURL(Provider):
         else:
             raise RuntimeError("Unknown file type '" + self.filetype + "' in [provider] section")
 
-        logger.debug('_checkout() -Done-')
 
     def status(self, local_dir):
-        logger.debug('status() *Entered*')
         if not os.path.isdir(local_dir):
             return 'empty'
         else:
             return 'downloaded'
+
+PROVIDER_CLASS = ProviderURL

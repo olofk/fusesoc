@@ -1,4 +1,3 @@
-from fusesoc.provider import Provider
 from fusesoc.utils import pr_info, pr_warn
 import subprocess
 import os.path
@@ -10,7 +9,7 @@ if sys.version_info[0] >= 3:
 else:
     import urllib
 
-class GitHub(Provider):
+class GitHub(object):
     def __init__(self, config):
         self.user   = config.get('user')
         self.repo   = config.get('repo')
@@ -59,3 +58,5 @@ class GitHub(Provider):
             return 'empty'
         else:
             return 'downloaded'
+
+PROVIDER_CLASS = GitHub

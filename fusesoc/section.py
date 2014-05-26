@@ -2,12 +2,28 @@ import os
 from fusesoc import utils
 from fusesoc.utils import Launcher, pr_warn, pr_info
 
+
+class Error(Exception):
+    pass
+
+
+class NoSuchItemError(Error):
+    pass
+
+
+class UnknownSection(Error):
+    pass
+
+
 class Section(object):
+
+    TAG = None
+
     def __init__(self):
-        self.name = ""
         self.strings = []
         self.lists  = []
         self.export_files = []
+        self.warnings = []
 
     def _add_listitem(self, listitem):
         self.lists += [listitem]
@@ -27,7 +43,9 @@ class Section(object):
             elif item in self.strings:
                 setattr(self, item, items.get(item))
             else:
-                pr_warn("Warning: Unknown item '{item}' in section '{section}'".format(item=item, section=self.name))
+                self.warnings.append(
+                        'Unknown item "%(item)s" in section "%(section)s"' % {
+                            'item': item, 'section': self.TAG})
 
     def __str__(self):
         s = ''
@@ -37,38 +55,36 @@ class Section(object):
             s += item + ' : ' + getattr(self, item) + '\n'
         return s
 
-    @staticmethod
-    def factory(type, items=None):
-        if type == 'icarus'    : return IcarusSection(items)
-        if type == 'modelsim'  : return ModelsimSection(items)
-        if type == 'verilator' : return VerilatorSection(items)
-        if type == 'ise'       : return IseSection(items)
-        if type == 'quartus'   : return QuartusSection(items)
-        if type == 'vhdl'      : return VhdlSection(items)
-        if type == 'verilog'   : return VerilogSection(items)
-        if type == 'vpi'       : return VpiSection(items)
-        raise Exception
+
+class ToolSection(Section):
+    def __init__(self):
+        super(ToolSection, self).__init__()
+        self._add_listitem('depend')
+
 
 class VhdlSection(Section):
+
+    TAG = 'vhdl'
+
     def __init__(self, items=None):
         super(VhdlSection, self).__init__()
 
         self._add_listitem('src_files')
-
-        self.name = 'vhdl'
 
         if items:
             self.load_dict(items)
             self.export_files = self.src_files
 
 class VerilogSection(Section):
+
+    TAG = 'verilog'
+
     def __init__(self, items=None):
         super(VerilogSection, self).__init__()
 
         self.include_dirs = []
         self.tb_include_dirs = []
 
-        self.name = 'verilog'
         self._add_listitem('src_files')
         self._add_listitem('include_files')
         self._add_listitem('tb_src_files')
@@ -85,12 +101,14 @@ class VerilogSection(Section):
             self.export_files = self.src_files + self.include_files + self.tb_src_files + self.tb_include_files + self.tb_private_src_files
 
 class VpiSection(Section):
+
+    TAG = 'vpi'
+
     def __init__(self, items=None):
         super(VpiSection, self).__init__()
 
         self.include_dirs = []
 
-        self.name = 'vpi'
         self._add_listitem('src_files')
         self._add_listitem('include_files')
         self._add_listitem('libs')
@@ -102,16 +120,14 @@ class VpiSection(Section):
 
             self.export_files = self.src_files + self.include_files
 
-class ToolSection(Section):
-    def __init__(self):
-        super(ToolSection, self).__init__()
-        self._add_listitem('depend')
 
 class ModelsimSection(ToolSection):
+
+    TAG = 'modelsim'
+
     def __init__(self, items=None):
         super(ModelsimSection, self).__init__()
-        
-        self.name = 'modelsim'
+
         self._add_listitem('vlog_options')
         self._add_listitem('vsim_options')
 
@@ -119,20 +135,23 @@ class ModelsimSection(ToolSection):
             self.load_dict(items)
 
 class IcarusSection(ToolSection):
+
+    TAG = 'icarus'
+
     def __init__(self, items=None):
         super(IcarusSection, self).__init__()
 
-        self.name = 'icarus'
         self._add_listitem('iverilog_options')
 
         if items:
             self.load_dict(items)
 
 class VerilatorSection(ToolSection):
+
+    TAG = 'verilator'
+
     def __init__(self, items=None):
         super(VerilatorSection, self).__init__()
-
-        self.name ='verilator'
 
         self.include_dirs = []
         self.archive = False
@@ -143,7 +162,7 @@ class VerilatorSection(ToolSection):
         self._add_listitem('include_files')
         self._add_listitem('define_files')
         self._add_listitem('libs')
-        
+
         self._add_stringitem('tb_toplevel')
         self._add_stringitem('source_type')
         self._add_stringitem('top_module')
@@ -185,7 +204,7 @@ Verilog top module      : {top_module}
             self.build_SysC(core, sim_root, src_root)
         else:
             raise Source(self.source_type)
-        
+
         if self._object_files:
             args = []
             args += ['rvs']
@@ -254,10 +273,12 @@ Verilog top module      : {top_module}
             l.run()
 
 class IseSection(ToolSection):
+
+    TAG = 'ise'
+
     def __init__(self, items=None):
         super(IseSection, self).__init__()
-        
-        self.name = 'ise'
+
         self._add_listitem('ucf_files')
         self._add_listitem('tcl_files')
         self._add_stringitem('family')
@@ -271,10 +292,12 @@ class IseSection(ToolSection):
             self.export_files = self.ucf_files
 
 class QuartusSection(ToolSection):
+
+    TAG = 'quartus'
+
     def __init__(self, items=None):
         super(QuartusSection, self).__init__()
-        
-        self.name = 'quartus'
+
         self._add_listitem('qsys_files')
         self._add_listitem('sdc_files')
         self._add_listitem('tcl_files')
@@ -287,3 +310,37 @@ class QuartusSection(ToolSection):
         if items:
             self.load_dict(items)
             self.export_files = self.qsys_files + self.sdc_files
+
+
+def load_section(config, section_name, name='<unknown>'):
+    cls = SECTION_MAP.get(section_name)
+    if cls is None:
+        return None
+
+    items = config.get_section(section_name)
+    section = cls(items)
+    if section.warnings:
+        for warning in section.warnings:
+            pr_warn('Warning: %s in %s' % (warning, name))
+    return section
+
+
+def load_all(config, name='<unknown>'):
+    for section_name in config.sections():
+        section = load_section(config, section_name, name)
+        if section:
+            yield section
+
+
+SECTION_MAP = {}
+
+
+def _register_subclasses(parent):
+    for cls in parent.__subclasses__():
+        _register_subclasses(cls)
+        if cls.TAG is None:
+            continue
+        SECTION_MAP[cls.TAG] = cls
+
+
+_register_subclasses(Section)
