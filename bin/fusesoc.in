@@ -228,7 +228,8 @@ if __name__ == "__main__":
     parser_sim.set_defaults(func=sim)
 
     try:
-        run(parser.parse_args())
+        parsed_args = parser.parse_args()
     except AttributeError:
         parser.print_help()
 
+    run(parsed_args)
