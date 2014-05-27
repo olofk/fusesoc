@@ -227,9 +227,8 @@ if __name__ == "__main__":
     parser_sim.add_argument('plusargs', nargs=argparse.REMAINDER)
     parser_sim.set_defaults(func=sim)
 
-    try:
-        parsed_args = parser.parse_args()
-    except AttributeError:
+    parsed_args = parser.parse_args()
+    if hasattr(parsed_args, 'func'):
+        run(parsed_args)
+    else:
         parser.print_help()
-
-    run(parsed_args)
