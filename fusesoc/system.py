@@ -26,15 +26,4 @@ class System:
 
     def info(self):
         print("\nSYSTEM INFO")
-        print("Name:                   " + self.name)
-
-        show_list = lambda s: "\n                        ".join(s.split('\n'))
-
-        if self.backend_name:
-            print("Backend name:           " + self.backend_name)
-            print("    family:             " + self.backend['family'])
-            print("    device:             " + self.backend['device'])
-
-            print("\n    tcl_files:          " + show_list(self.backend['tcl_files']))
-            print("\n    sdc_files:          " + show_list(self.backend['sdc_files']))
-
+        print(self.backend)
