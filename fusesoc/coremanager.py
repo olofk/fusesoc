@@ -39,17 +39,13 @@ class CoreManager(object):
             logger.debug("Checking for cores in " + path)
         if os.path.isdir(path) == False:
             raise IOError(path + " is not a directory")
-        for d in os.listdir(path):
-            f = os.path.join(path, d, d+'.core')
-            if os.path.isfile(f) == False:
-                core_dir = os.path.join(path, d)
-                if not os.path.isdir(core_dir):
-                    continue
-                for core_subdir in os.listdir(core_dir):
-                    subcore = os.path.join(core_dir, core_subdir, core_subdir+'.core')
-                    self.load_core(core_subdir, subcore)
-            else:
-                self.load_core(d, f)
+        for root, dirs, files in os.walk(path):
+            for f in files:
+                if f.endswith('.core'):
+                    d = os.path.basename(root)
+                    if f.split('.')[0] == d:
+                        self.load_core(d, os.path.join(root, f))
+                        del dirs[:]
 
     def add_cores_root(self, path):
         if path is None:
