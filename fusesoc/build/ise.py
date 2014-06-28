@@ -13,6 +13,7 @@ project set family {family}
 project set device {device}
 project set package {package}
 project set speed {speed}
+project set "Generate Detailed MAP Report" true
 project set "Verilog Include Directories" "{verilog_include_dirs}" -process "Synthesize - XST"
 {source_files}
 project set top "{top_module}"
