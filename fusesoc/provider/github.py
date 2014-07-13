@@ -10,7 +10,7 @@ else:
     import urllib
 
 class GitHub(object):
-    def __init__(self, config):
+    def __init__(self, core_name, config, core_root, cache_root):
         self.user   = config.get('user')
         self.repo   = config.get('repo')
         self.branch = config.get('branch')
@@ -18,15 +18,16 @@ class GitHub(object):
             self.version = config.get('version')
         else:
             self.version = 'master'
+        self.files_root = cache_root
 
-    def fetch(self, local_dir, core_name):
-        status = self.status(local_dir)
+    def fetch(self):
+        status = self.status()
         if status == 'empty':
-            self._checkout(local_dir)
+            self._checkout(self.files_root)
             return True
         elif status == 'modified':
             self.clean_cache()
-            self._checkout(local_dir)
+            self._checkout(self.files_root)
             return True
         elif status == 'outofdate':
             self._update()
@@ -36,7 +37,7 @@ class GitHub(object):
         else:
             pr_warn("Provider status is: '" + status + "'. This shouldn't happen")
             return False
-            #TODO: throw an exception here 
+            #TODO: throw an exception here
 
     def _checkout(self, local_dir):
         #TODO : Sanitize URL
@@ -53,8 +54,8 @@ class GitHub(object):
         os.rename(os.path.join(cache_root, tmp),
                   os.path.join(cache_root, core))
 
-    def status(self, local_dir):
-        if not os.path.isdir(local_dir):
+    def status(self):
+        if not os.path.isdir(self.files_root):
             return 'empty'
         else:
             return 'downloaded'

@@ -35,6 +35,9 @@ class Core:
             assert(not hasattr(self, s))
             setattr(self, s, None)
 
+        self.core_root = os.path.dirname(core_file)
+        self.files_root = self.core_root
+
         if core_file:
             config = FusesocConfigParser(core_file)
 
@@ -55,13 +58,10 @@ class Core:
             self.pre_run_scripts  = config.get_list('scripts','pre_run_scripts')
             self.post_run_scripts = config.get_list('scripts','post_run_scripts')
 
-            self.core_root = os.path.dirname(core_file)
-
+            cache_root = os.path.join(Config().cache_root, self.name)
             if config.has_section('plusargs'):
                 self.plusargs = Plusargs(dict(config.items('plusargs')))
             if config.has_section('provider'):
-                self.cache_dir = os.path.join(Config().cache_root, self.name)
-                self.files_root = self.cache_dir
                 items    = dict(config.items('provider'))
 
                 provider_name = items.get('name')
@@ -70,37 +70,33 @@ class Core:
                 try:
                     provider_module = importlib.import_module(
                             'fusesoc.provider.%s' % provider_name)
-                    self.provider = provider_module.PROVIDER_CLASS(items)
+                    self.provider = provider_module.PROVIDER_CLASS(self.name,
+                        items, self.core_root, cache_root)
                 except ImportError:
                     raise RuntimeError(
                             'Unknown provider "%s" in section [provider]' %
                             provider_name)
-            else:
-                self.files_root = self.core_root
+            if self.provider:
+                self.files_root = self.provider.files_root
 
             system_file = os.path.join(self.core_root, self.name+'.system')
             if os.path.exists(system_file):
                 self.system = System(system_file)
         else:
             self.name = name
-
-            self.core_root = core_root
-            self.cache_root = core_root
-            self.files_root = core_root
-
             self.provider = None
 
 
     def cache_status(self):
         if self.provider:
-            return self.provider.status(self.cache_dir)
+            return self.provider.status()
         else:
             return 'local'
 
     def setup(self):
         if self.provider:
-            if self.provider.fetch(self.cache_dir, self.name):
-                self.patch(self.cache_dir)
+            if self.provider.fetch():
+                self.patch(self.files_root)
 
     def export(self, dst_dir):
         if os.path.exists(dst_dir):

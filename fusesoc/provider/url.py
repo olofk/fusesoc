@@ -15,31 +15,27 @@ else:
     import urllib
 
 class ProviderURL(object):
-    def __init__(self, config):
+    def __init__(self, core_name, config, core_root, cache_root):
         self.url      = config.get('url')
         self.filetype = config.get('filetype')
         if 'corename' in config:
             self.version = config.get('corename')
         else:
-            self.version = '----'
+            self.version = core_name
+        self.files_root = cache_root
 
-    def fetch(self, local_dir, core_name):
-        status = self.status(local_dir)
-        if '----' in self.version:
-            self.corename = core_name
-        else:
-            self.corename = self.version
-
+    def fetch(self):
+        status = self.status()
         if status == 'empty':
             try:
-                self._checkout(local_dir, self.corename)
+                self._checkout(self.files_root, self.version)
                 return True
             except RuntimeError:
                 raise
         elif status == 'modified':
             self.clean_cache()
             try:
-                self._checkout(local_dir, self.corename)
+                self._checkout(self.files_root, self.version)
                 return True
             except RuntimeError:
                 raise
@@ -78,8 +74,8 @@ class ProviderURL(object):
             raise RuntimeError("Unknown file type '" + self.filetype + "' in [provider] section")
 
 
-    def status(self, local_dir):
-        if not os.path.isdir(local_dir):
+    def status(self):
+        if not os.path.isdir(self.files_root):
             return 'empty'
         else:
             return 'downloaded'
