@@ -1,6 +1,7 @@
 #!/usr/bin/env @PYTHON@
 import argparse
 import os
+import platform
 import sys
 import signal
 
@@ -176,6 +177,15 @@ def run(args):
         pr_err("Failed to register cores root")
         pr_err(str(e))
         exit(1)
+    if vars(args)['32']:
+        config.archbits = 32
+        logger.debug("Forcing 32-bit mode")
+    elif vars(args)['64']:
+        config.archbits = 64
+        logger.debug("Forcing 64-bit mode")
+    else:
+        config.archbits = 64 if platform.architecture()[0] == '64bit' else 32
+        logger.debug("Autodetected " + str(config.archbits) + "-bit mode")
     args.func(args)
 
 if __name__ == "__main__":
@@ -186,6 +196,8 @@ if __name__ == "__main__":
 
     parser.add_argument('--cores-root', help='Add additional directories containing cores', action='append')
     parser.add_argument('--systems-root', help='Add additional directories containing systems', action='append')
+    parser.add_argument('--32', help='Force 32 bit mode for invoked tools', action='store_true')
+    parser.add_argument('--64', help='Force 64 bit mode for invoked tools', action='store_true')
 
     #General options
     parser_build = subparsers.add_parser('build', help='Build an FPGA load module')

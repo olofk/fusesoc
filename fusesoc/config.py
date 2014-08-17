@@ -13,6 +13,8 @@ logger = logging.getLogger(__name__)
 class Config(object):
     _instance = None
     _init_done = False
+
+    archbits = 0
     def __new__(cls, *args, **kwargs):
         if not cls._instance:
             cls._instance = super(Config, cls).__new__(cls, *args, **kwargs)
