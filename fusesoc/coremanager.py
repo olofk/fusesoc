@@ -43,9 +43,8 @@ class CoreManager(object):
             for f in files:
                 if f.endswith('.core'):
                     d = os.path.basename(root)
-                    if f.split('.')[0] == d:
-                        self.load_core(d, os.path.join(root, f))
-                        del dirs[:]
+                    self.load_core(f.split('.')[0], os.path.join(root, f))
+                    del dirs[:]
 
     def add_cores_root(self, path):
         if path is None:
