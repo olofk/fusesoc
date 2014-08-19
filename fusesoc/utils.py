@@ -5,12 +5,13 @@ if sys.version[0] == '2':
     FileNotFoundError = OSError
 
 class Launcher:
-    def __init__(self, cmd, args=[], shell=False, cwd=None, stderr=None, errormsg=None, env=None):
+    def __init__(self, cmd, args=[], shell=False, cwd=None, stderr=None, stdout=None, errormsg=None, env=None):
         self.cmd      = cmd
         self.args     = args
         self.shell    = shell
         self.cwd      = cwd
         self.stderr   = stderr
+        self.stdout   = stdout
         self.errormsg = errormsg
         self.env      = env
 
@@ -21,6 +22,7 @@ class Launcher:
                                   env = self.env,
                                   shell = self.shell,
                                   stderr = self.stderr,
+                                  stdout = self.stdout,
                                   stdin=subprocess.PIPE),
         except FileNotFoundError:
             raise RuntimeError("Command '" + self.cmd + "' not found. Make sure it is in $PATH")

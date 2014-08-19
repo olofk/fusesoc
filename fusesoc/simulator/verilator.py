@@ -112,11 +112,11 @@ class Verilator(Simulator):
         l = utils.Launcher(cmd,
                            shell=True,
                            cwd = self.sim_root,
-                           stderr = open(os.path.join(self.sim_root,'verilator.log'),'w')
+                           stderr = open(os.path.join(self.sim_root,'verilator.log'),'w'),
+                           stdout = open(os.path.join(self.sim_root, 'verilator.out.log'),'w')
         )
         print('')
         pr_info("Starting Verilator:")
-        print(l)
         print('')
         l.run()
 
@@ -133,6 +133,7 @@ class Verilator(Simulator):
                  self.include_dirs += [os.path.dirname(os.path.join(self.sim_root, self.tb_toplevel))]
 
         self.include_dirs += [self.src_root]
+        pr_info("Verilating source")
         self._verilate()
         for core_name in self.cores:
             core = self.cm.get_core(core_name)
@@ -140,11 +141,14 @@ class Verilator(Simulator):
                  core.verilator.build(core_name, self.sim_root, self.src_root)
 
         pr_info("Building verilator executable:")
-        utils.Launcher('make', ['-f', 'V' + self.top_module + '.mk', 'V' + self.top_module],
-                       cwd=os.path.join(self.sim_root, 'obj_dir')).run()
+        args = ['-f', 'V' + self.top_module + '.mk', 'V' + self.top_module]
+        utils.Launcher('make', args,
+                       cwd=os.path.join(self.sim_root, 'obj_dir'),
+                       stdout = open(os.path.join(self.sim_root, 'verilator.make.log'),'w')).run()
 
     def run(self, args):
         #TODO: Handle arguments parsing
+        pr_info("Running simulation")
         utils.Launcher('./V' + self.top_module,
                        args,
                        cwd=os.path.join(self.sim_root, 'obj_dir')).run()

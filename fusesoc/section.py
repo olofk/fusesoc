@@ -223,8 +223,9 @@ Verilog top module      : {top_module}
             pr_info("Compiling " + src_file)
             l = Launcher('gcc',
                      args + [os.path.join(src_root, core, src_file)],
-                     cwd=sim_root)
-            print(l)
+                         cwd=sim_root,
+                         stderr = open(os.path.join(sim_root, src_file+'.err.log'),'w'),
+                         stdout = open(os.path.join(sim_root, src_file+'.out.log'),'w'))
             l.run()
 
     def build_CPP(self, core, sim_root, src_root):
@@ -239,8 +240,8 @@ Verilog top module      : {top_module}
         for src_file in self.src_files:
             pr_info("Compiling " + src_file)
             l = Launcher('g++', args + [os.path.join(src_root, core, src_file)],
-                         cwd=sim_root)
-            print(l)
+                         cwd=sim_root,
+                         stderr = open(os.path.join(sim_root, src_file+'.log'),'w'))
             l.run()
 
     def build_SysC(self, core, sim_root, src_root):
@@ -268,8 +269,8 @@ Verilog top module      : {top_module}
         for src_file in self.src_files:
             pr_info("Compiling " + src_file)
             l = Launcher('g++', args + [os.path.join(src_root, core, src_file)],
-                         cwd=sim_root)
-            print(l)
+                         cwd=sim_root,
+                         stderr = open(os.path.join(sim_root, src_file+'.log'),'w'))
             l.run()
 
 class IseSection(ToolSection):
