@@ -14,8 +14,10 @@ fusesocdir = $(pkgpythondir)
 provider_PYTHON =      \
  fusesoc/provider/__init__.py  \
  fusesoc/provider/github.py    \
- fusesoc/provider/opencores.py \
  fusesoc/provider/url.py
+if HAVE_SVN
+ provider_PYTHON += fusesoc/provider/opencores.py
+endif
 
 providerdir = $(fusesocdir)/provider
 
