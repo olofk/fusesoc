@@ -67,14 +67,14 @@ class CoreManager(object):
         except (AttributeError, KeyError):
             pass
         if depends:
-            return list(set(self._get_depends(core)))
+            return list(collections.OrderedDict.fromkeys(self._get_depends(core)))
         else:
             return [core]
 
     def _get_depends(self, core):
         #FIXME: Check for circular dependencies
         try:
-            cores = [core]
+            cores = []
             try:
                 cores += getattr(self._cores[core], self.tool).depend
             except (AttributeError, KeyError):
@@ -82,6 +82,7 @@ class CoreManager(object):
             if self._cores[core].depend:
                 for c in self._cores[core].depend:
                     cores += self._get_depends(c)
+            cores += [core]
             return cores
         except(KeyError):
             raise DependencyError(core)
