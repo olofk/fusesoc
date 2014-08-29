@@ -168,7 +168,6 @@ def run(args):
         cm.add_cores_root(config.cores_root)
         cm.add_cores_root(config.systems_root)
         cm.add_cores_root(args.cores_root)
-        cm.add_cores_root(args.systems_root)
     except RuntimeError as e:
         pr_err("Failed to register cores root")
         pr_err(str(e))
@@ -195,7 +194,6 @@ if __name__ == "__main__":
     subparsers = parser.add_subparsers()
 
     parser.add_argument('--cores-root', help='Add additional directories containing cores', action='append')
-    parser.add_argument('--systems-root', help='Add additional directories containing systems', action='append')
     parser.add_argument('--32', help='Force 32 bit mode for invoked tools', action='store_true')
     parser.add_argument('--64', help='Force 64 bit mode for invoked tools', action='store_true')
 
