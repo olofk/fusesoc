@@ -162,20 +162,15 @@ def sim(args):
             pr_err(str(e))
 
 def run(args):
-    try:
-        cm = CoreManager()
-        config = Config()
-        cm.add_cores_root(config.cores_root)
-        cm.add_cores_root(config.systems_root)
-        cm.add_cores_root(args.cores_root)
-    except RuntimeError as e:
-        pr_err("Failed to register cores root")
-        pr_err(str(e))
-        exit(1)
-    except IOError as e:
-        pr_err("Failed to register cores root")
-        pr_err(str(e))
-        exit(1)
+    cm = CoreManager()
+    config = Config()
+    for cores_root in [config.cores_root,
+                       config.systems_root,
+                       args.cores_root]:
+        try:
+            cm.add_cores_root(cores_root)
+        except (RuntimeError, IOError) as e:
+            pr_warn("Failed to register cores root '{}'".format(str(e)))
     if vars(args)['32']:
         config.archbits = 32
         logger.debug("Forcing 32-bit mode")
