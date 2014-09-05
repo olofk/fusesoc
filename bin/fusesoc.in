@@ -2,6 +2,7 @@
 import argparse
 import os
 import platform
+import subprocess
 import sys
 import signal
 
@@ -19,12 +20,15 @@ from fusesoc.simulator import SimulatorFactory
 from fusesoc.simulator.verilator import Source
 from fusesoc.system import System
 from fusesoc.core import Core, OptionSectionMissing
-from fusesoc.utils import pr_err, pr_info, pr_warn
+from fusesoc.utils import pr_err, pr_info, pr_warn, Launcher
 
 import logging
 
 logging.basicConfig(filename='fusesoc.log', filemode='w', level=logging.DEBUG)
 logger = logging.getLogger(__name__)
+
+REPO_NAME = 'orpsoc-cores'
+REPO_URI  = 'https://github.com/openrisc/orpsoc-cores'
 
 def abort_handler(signal, frame):
         print('');
@@ -75,6 +79,46 @@ def fetch(args):
              core.setup()
     else:
         pr_err("Can't find core '" + args.core + "'")
+
+def init(args):
+    # Fix Python 2.x.
+    global input
+    try:
+        input = raw_input
+    except NameError:
+        pass
+
+    xdg_data_home = os.environ.get('XDG_DATA_HOME') or \
+                     os.path.join(os.path.expanduser('~'), '.local', 'share')
+    default_dir = default_dir=os.path.join(xdg_data_home, REPO_NAME)
+    prompt = 'Directory to use for {} [{}] : '
+    cores_root = input(prompt.format(REPO_NAME, default_dir))
+    if not cores_root:
+        cores_root = default_dir
+    if os.path.exists(cores_root):
+        pr_warn("'{}' already exists".format(cores_root))
+        #TODO: Check if it's a valid orspoc-cores repo
+    else:
+        pr_info("Initializing orpsoc-cores")
+        args = ['clone', REPO_URI, cores_root]
+        Launcher('git', args).run()
+
+    xdg_config_home = os.environ.get('XDG_CONFIG_HOME') or \
+                      os.path.join(os.path.expanduser('~'), '.config')
+    config_file = os.path.join(xdg_config_home, 'fusesoc', 'fusesoc.conf')
+
+
+    if os.path.exists(config_file):
+        pr_warn("'{}' already exists".format(config_file))
+        #TODO. Prepend cores_root to file if it doesn't exist
+    else:
+        pr_info("Writing configuration file to '{}'".format(config_file))
+        if not os.path.exists(os.path.dirname(config_file)):
+            os.makedirs(os.path.dirname(config_file))
+        f = open(config_file,'w')
+        f.write("[main]\n")
+        f.write("cores_root = {}\n".format(cores_root))
+    pr_info("FuseSoC is ready to use!")
 
 def list_cores(args):
     cores = CoreManager().get_cores()
@@ -197,6 +241,9 @@ if __name__ == "__main__":
     parser_build.add_argument('system')
     parser_build.add_argument('backendargs', nargs=argparse.REMAINDER)
     parser_build.set_defaults(func=build)
+
+    parser_init = subparsers.add_parser('init', help='Initialize the FuseSoC core libraries')
+    parser_init.set_defaults(func=init)
 
     parser_pgm = subparsers.add_parser('pgm', help='Program a FPGA with a system configuration')
     parser_pgm.add_argument('system')
