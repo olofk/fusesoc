@@ -205,6 +205,21 @@ def sim(args):
             pr_err("Failed to run the simulation")
             pr_err(str(e))
 
+def update(args):
+    for root in CoreManager().get_cores_root():
+        if os.path.exists(root):
+            args = ['-C', root,
+                    'config', '--get', 'remote.origin.url']
+            repo_root = ""
+            try:
+                repo_root = subprocess.check_output(['git'] + args).decode("utf-8")
+                if repo_root.strip() == REPO_URI:
+                    pr_info("Updating '{}'".format(root))
+                    args = ['-C', root, 'pull']
+                    Launcher('git', args).run()
+            except subprocess.CalledProcessError:
+                pass
+
 def run(args):
     cm = CoreManager()
     config = Config()
@@ -278,6 +293,9 @@ if __name__ == "__main__":
     parser_sim.add_argument('system',help='Select a system to simulate') #, choices = Config().get_systems())
     parser_sim.add_argument('plusargs', nargs=argparse.REMAINDER)
     parser_sim.set_defaults(func=sim)
+
+    parser_update = subparsers.add_parser('update', help='Update the FuseSoC core libraries')
+    parser_update.set_defaults(func=update)
 
     parsed_args = parser.parse_args()
     if hasattr(parsed_args, 'func'):
