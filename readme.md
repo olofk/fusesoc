@@ -25,16 +25,7 @@ Quick start
 Install by cloning the repo. cd into fusesoc and run:
 autoreconf -i && ./configure && make
 sudo make install
-
-Clone orpsoc-cores (https://github.com/openrisc/orpsoc-cores)
-
-Make a new directory that will become your working directory. Inside of that directory create a file called fusesoc.conf with the following contents
-
-[main]
-cores_root=/path/to/orpsoc-cores/cores
-systems_root=/path/to/orpsoc-cores/systems
-
-This will let FuseSoC know where to find it's cores. (Note: You can add more cores_root directories by adding --cores-root=<path> on your fusesoc command line)
+fusesoc init
 
 Test your installation by running 'fusesoc list-cores'. This should return the list of cores that FuseSoC has found
 
