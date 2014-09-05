@@ -52,7 +52,7 @@ class CoreManager(object):
         elif not isinstance(path, list):
             path = [path]
         for p in path:
-            abspath = os.path.abspath(p)
+            abspath = os.path.abspath(os.path.expanduser(p))
             if not abspath in self._cores_root:
                 self._cores_root += [abspath]
                 self.load_cores(os.path.expanduser(p))
