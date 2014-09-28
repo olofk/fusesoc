@@ -39,7 +39,7 @@ class CoreManager(object):
             logger.debug("Checking for cores in " + path)
         if os.path.isdir(path) == False:
             raise IOError(path + " is not a directory")
-        for root, dirs, files in os.walk(path):
+        for root, dirs, files in os.walk(path, followlinks=True):
             for f in files:
                 if f.endswith('.core'):
                     d = os.path.basename(root)
