@@ -55,12 +55,23 @@ class Section(object):
             s += item + ' : ' + getattr(self, item) + '\n'
         return s
 
-
 class ToolSection(Section):
     def __init__(self):
         super(ToolSection, self).__init__()
         self._add_listitem('depend')
 
+class MainSection(Section):
+    TAG = 'main'
+
+    def __init__(self, items=None):
+        super(MainSection, self).__init__()
+
+        self._add_stringitem('description')
+        self._add_listitem('depend')
+        self._add_listitem('simulators')
+
+        if items:
+            self.load_dict(items)
 
 class VhdlSection(Section):
 

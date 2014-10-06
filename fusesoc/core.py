@@ -39,21 +39,17 @@ class Core:
         self.files_root = self.core_root
 
         if core_file:
+
+            self.name = ""
             config = FusesocConfigParser(core_file)
-
-            if config.has_option('main', 'name'):
-                self.name = config.get('main','name')
-            else:
-                self.name = basename.split('.core')[0]
-
-            self.depend     = config.get_list('main', 'depend')
-            self.simulators = config.get_list('main', 'simulators')
 
             #FIXME : Make simulators part of the core object
             self.simulator        = config.get_section('simulator')
 
             for s in section.load_all(config, name=self.name):
                 setattr(self, s.TAG, s)
+            self.depend     = self.main.depend
+            self.simulators = self.main.simulators
 
             self.pre_run_scripts  = config.get_list('scripts','pre_run_scripts')
             self.post_run_scripts = config.get_list('scripts','post_run_scripts')
