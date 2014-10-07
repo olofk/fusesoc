@@ -1,6 +1,7 @@
 from fusesoc.utils import pr_info, pr_warn
 import subprocess
 import os.path
+import shutil
 import sys
 import tarfile
 
@@ -14,12 +15,19 @@ class GitHub(object):
         self.user   = config.get('user')
         self.repo   = config.get('repo')
         self.branch = config.get('branch')
+
+        self.cachable = True
+        if 'cachable' in config:
+            self.cachable = not (config.get('cachable') == 'false')
         if 'version' in config:
             self.version = config.get('version')
         else:
             self.version = 'master'
         self.files_root = cache_root
 
+    def clean_cache(self):
+        shutil.rmtree(self.files_root)
+        
     def fetch(self):
         status = self.status()
         if status == 'empty':
@@ -30,7 +38,9 @@ class GitHub(object):
             self._checkout(self.files_root)
             return True
         elif status == 'outofdate':
-            self._update()
+            self.clean_cache()
+            self._checkout(self.files_root)
+            #self._update()
             return True
         elif status == 'downloaded':
             pass
@@ -55,6 +65,8 @@ class GitHub(object):
                   os.path.join(cache_root, core))
 
     def status(self):
+        if not self.cachable:
+            return 'outofdate'
         if not os.path.isdir(self.files_root):
             return 'empty'
         else:
