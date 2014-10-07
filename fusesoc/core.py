@@ -40,7 +40,7 @@ class Core:
 
         if core_file:
 
-            self.name = ""
+            self.name = basename.split('.core')[0]
             config = FusesocConfigParser(core_file)
 
             #FIXME : Make simulators part of the core object
