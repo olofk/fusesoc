@@ -10,6 +10,8 @@ if sys.version_info[0] >= 3:
 else:
     import urllib
 
+from urllib.error import URLError
+
 class GitHub(object):
     def __init__(self, core_name, config, core_root, cache_root):
         self.user   = config.get('user')
@@ -26,7 +28,8 @@ class GitHub(object):
         self.files_root = cache_root
 
     def clean_cache(self):
-        shutil.rmtree(self.files_root)
+        if os.path.exists(self.files_root):
+            shutil.rmtree(self.files_root)
         
     def fetch(self):
         status = self.status()
@@ -53,8 +56,10 @@ class GitHub(object):
         #TODO : Sanitize URL
         url = 'https://github.com/{user}/{repo}/archive/{version}.tar.gz'.format(user=self.user, repo=self.repo, version=self.version)
         pr_info("Checking out " + url + " revision " + self.version + " to " + local_dir)
-        (filename, headers) = urllib.urlretrieve(url)
-
+        try:
+            (filename, headers) = urllib.urlretrieve(url)
+        except URLError as e:
+            raise RuntimeError("Failed to download '{}'. '{}'".format(url, e.reason))
         t = tarfile.open(filename)
         (cache_root, core) = os.path.split(local_dir)
 
