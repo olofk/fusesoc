@@ -102,14 +102,11 @@ class Core:
 
         #FIXME: Separate tb_files to an own directory tree (src/tb/core_name ?)
         src_files = []
-        if self.verilog:
-            src_files += self.verilog.export()
-        if self.vpi:
-            src_files += self.vpi.export()
-        if self.verilator:
-            src_files += self.verilator.export()
-        if self.vhdl:
-            src_files += self.vhdl.export()
+
+        for s in section.SECTION_MAP:
+            obj = getattr(self, s)
+            if obj:
+                src_files += obj.export()
 
         dirs = list(set(map(os.path.dirname,src_files)))
         for d in dirs:
