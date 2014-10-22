@@ -148,24 +148,15 @@ class Core:
         print("Name:                   " + self.name)
         print("Core root:              " + self.core_root)
         if self.simulators:
-            print("Simulators:             " + show_list(self.simulators))
+            print("Supported simulators:   " + show_list(self.simulators))
         if self.plusargs: 
             print("\nPlusargs:               " + show_dict(self.plusargs.items))
         if self.depend:
-            print("\nCores:                  " + show_list(self.depend))
-        if self.verilog.include_dirs:
-            print("\nInclude dirs:           " + show_list(self.verilog.include_dirs))
-        if self.verilog.include_files:
-            print("\nInclude files:          " + show_list(self.verilog.include_files))
-        if self.verilog.src_files:
-            print("\nSrc files:              " + show_list(self.verilog.src_files))
-        if self.verilog.tb_src_files:
-            print("\nTestbench files:        " + show_list(self.verilog.tb_src_files))
-        if self.verilog.tb_private_src_files:
-            print("\nPrivate Testbench files:" + show_list(self.verilog.tb_private_src_files))
-        if self.verilog.tb_include_files:
-            print("\nTestbench include files:" + show_list(self.verilog.tb_include_files))
-        if self.verilog.tb_include_dirs:
-            print("\nTestbench include dirs: " + show_list(self.verilog.tb_include_dirs))
-
-
+            print("\nCommon dependencies:    " + show_list(self.depend))
+        for s in section.SECTION_MAP:
+            if s == 'main':
+                continue
+            obj = getattr(self, s)
+            if obj:
+                print("== " + s + " ==")
+                print(obj)

@@ -110,6 +110,17 @@ class VerilogSection(Section):
                 self.tb_include_dirs  += list(set(map(os.path.dirname, self.tb_include_files)))
 
             self.export_files = self.src_files + self.include_files + self.tb_src_files + self.tb_include_files + self.tb_private_src_files
+    def __str__(self):
+        s = ""
+        if self.src_files:            s += "\nRTL source files :\n {}".format('\n '.join(self.src_files))
+        if self.include_files:        s += "\nRTL include files :\n {}".format('\n '.join(self.include_files))
+        if self.include_dirs:         s += "\nRTL Include directories :\n {}".format('\n '.join(self.include_dirs))
+        if self.tb_src_files:         s += "\nPublic testbench source files :\n {}".format('\n '.join(self.tb_src_files))
+        if self.tb_private_src_files: s += "\nPrivate testbench source files :\n {}".format('\n '.join(self.tb_private_src_files))
+        if self.tb_include_files:     s += "\nTestbench include files :\n {}".format('\n '.join(self.tb_include_files))
+        if self.tb_include_dirs:      s += "\nTestbench include directories :\n {}".format('\n '.join(self.tb_include_dirs))
+
+        return s
 
 class VpiSection(Section):
 
@@ -156,6 +167,13 @@ class IcarusSection(ToolSection):
 
         if items:
             self.load_dict(items)
+
+    def __str__(self):
+        s = ""
+        if self.depend: s += "Icarus-specific dependencies : {}".format(' '.join(self.depend))
+        if self.iverilog_options: s += "Icarus compile options : {}".format(' '.join(self.iverilog_options))
+        return s
+
 
 class VerilatorSection(ToolSection):
 
