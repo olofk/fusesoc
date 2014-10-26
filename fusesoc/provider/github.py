@@ -7,10 +7,11 @@ import tarfile
 
 if sys.version_info[0] >= 3:
     import urllib.request as urllib
+    from urllib.error import URLError
 else:
     import urllib
+    from urllib2 import URLError
 
-from urllib.error import URLError
 
 class GitHub(object):
     def __init__(self, core_name, config, core_root, cache_root):
