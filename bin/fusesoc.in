@@ -245,6 +245,11 @@ def run(args):
         logger.debug("Monochrome output")
     else:
         logger.debug("Colorful output")
+    config.verbose = vars(args)['verbose']
+    if config.verbose:
+        logger.debug("Verbose output")
+    else:
+        logger.debug("Concise output")
     # Run the function
     args.func(args)
 
@@ -259,6 +264,7 @@ if __name__ == "__main__":
     parser.add_argument('--32', help='Force 32 bit mode for invoked tools', action='store_true')
     parser.add_argument('--64', help='Force 64 bit mode for invoked tools', action='store_true')
     parser.add_argument('--monochrome', help='Don\'t use color for messages', action='store_true')
+    parser.add_argument('--verbose', help='More info messages', action='store_true')
 
     #General options
     parser_build = subparsers.add_parser('build', help='Build an FPGA load module')

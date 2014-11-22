@@ -1,4 +1,5 @@
 import os
+from fusesoc.config import Config
 from fusesoc import utils
 from fusesoc.utils import Launcher, pr_warn, pr_info
 
@@ -239,8 +240,12 @@ Verilog top module      : {top_module}
             args += ['rvs']
             args += [core+'.a']
             args += self._object_files
-            Launcher('ar', args,
-                     cwd=sim_root).run()
+            l = Launcher('ar', args,
+                     cwd=sim_root)
+            if Config().verbose:
+                pr_info("  linker working dir: " + sim_root)
+                pr_info("  linker command: ar " + ' '.join(args))
+            l.run()
             print()
 
     def build_C(self, core, sim_root, src_root):
@@ -255,6 +260,9 @@ Verilog top module      : {top_module}
                          cwd=sim_root,
                          stderr = open(os.path.join(sim_root, src_file+'.err.log'),'w'),
                          stdout = open(os.path.join(sim_root, src_file+'.out.log'),'w'))
+            if Config().verbose:
+                pr_info("  C compilation working dir: " + sim_root)
+                pr_info("  C compilation command: gcc " + ' '.join(args))
             l.run()
 
     def build_CPP(self, core, sim_root, src_root):
@@ -271,6 +279,9 @@ Verilog top module      : {top_module}
             l = Launcher('g++', args + [os.path.join(src_root, core, src_file)],
                          cwd=sim_root,
                          stderr = open(os.path.join(sim_root, src_file+'.log'),'w'))
+            if Config().verbose:
+                pr_info("  C++ compilation working dir: " + sim_root)
+                pr_info("  C++ compilation command: g++ " + ' '.join(args))
             l.run()
 
     def build_SysC(self, core, sim_root, src_root):
@@ -300,6 +311,9 @@ Verilog top module      : {top_module}
             l = Launcher('g++', args + [os.path.join(src_root, core, src_file)],
                          cwd=sim_root,
                          stderr = open(os.path.join(sim_root, src_file+'.log'),'w'))
+            if Config().verbose:
+                pr_info("  SystemC compilation working dir: " + sim_root)
+                pr_info("  SystemC compilation command: g++ " + ' '.join(args))
             l.run()
 
 class IseSection(ToolSection):

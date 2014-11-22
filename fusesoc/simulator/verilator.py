@@ -3,6 +3,7 @@ import os
 import shutil
 import subprocess
 
+from fusesoc.config import Config
 from fusesoc import utils
 from fusesoc.utils import pr_info
 from fusesoc.core import OptionSectionMissing
@@ -117,6 +118,9 @@ class Verilator(Simulator):
         )
         print('')
         pr_info("Starting Verilator:")
+        if Config().verbose:
+             pr_info("  Verilator working dir: " + self.sim_root)
+             pr_info("  Verilator command: " + cmd)
         print('')
         l.run()
 
@@ -142,9 +146,15 @@ class Verilator(Simulator):
 
         pr_info("Building verilator executable:")
         args = ['-f', 'V' + self.top_module + '.mk', 'V' + self.top_module]
-        utils.Launcher('make', args,
+        l = utils.Launcher('make', args,
                        cwd=os.path.join(self.sim_root, 'obj_dir'),
-                       stdout = open(os.path.join(self.sim_root, 'verilator.make.log'),'w')).run()
+                       stdout = open(os.path.join(self.sim_root,
+                                                  'verilator.make.log'),'w'))
+        if Config().verbose:
+             pr_info("  Verilator executable working dir: "
+                     + os.path.join(self.sim_root, 'obj_dir'))
+             pr_info("  Verilator executable command: make " + ' '.join(args))
+        l.run()
 
     def run(self, args):
         #TODO: Handle arguments parsing
