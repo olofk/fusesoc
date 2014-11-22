@@ -1,8 +1,11 @@
 import subprocess
 import re
 import sys
+
 if sys.version[0] == '2':
     FileNotFoundError = OSError
+
+from fusesoc.config import Config
 
 class Launcher:
     def __init__(self, cmd, args=[], shell=False, cwd=None, stderr=None, stdout=None, errormsg=None, env=None):
@@ -142,10 +145,20 @@ def which(name, flags=os.X_OK):
     return result
 
 def pr_err(msg):
-    print('\033[1;31m' + 'ERROR: ' + msg + '\033[0m')
+    if Config().monochrome:
+        print('ERROR: ' + msg)
+    else:
+        print('\033[1;31m' + 'ERROR: ' + msg + '\033[0m')
+
 
 def pr_warn(msg):
-    print('\033[1;33m' + 'WARN:  ' + msg + '\033[0m')
+    if Config().monochrome:
+        print('WARN:  ' + msg)
+    else:
+        print('\033[1;33m' + 'WARN:  ' + msg + '\033[0m')
 
 def pr_info(msg):
-    print('\033[1;37m' + 'INFO:  ' + msg + '\033[0m')
+    if Config().monochrome:
+        print('INFO:  ' + msg)
+    else:
+        print('\033[1;37m' + 'INFO:  ' + msg + '\033[0m')

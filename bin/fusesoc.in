@@ -230,6 +230,7 @@ def run(args):
             cm.add_cores_root(cores_root)
         except (RuntimeError, IOError) as e:
             pr_warn("Failed to register cores root '{}'".format(str(e)))
+    # Process global options
     if vars(args)['32']:
         config.archbits = 32
         logger.debug("Forcing 32-bit mode")
@@ -239,6 +240,12 @@ def run(args):
     else:
         config.archbits = 64 if platform.architecture()[0] == '64bit' else 32
         logger.debug("Autodetected " + str(config.archbits) + "-bit mode")
+    config.monochrome = vars(args)['monochrome']
+    if config.monochrome:
+        logger.debug("Monochrome output")
+    else:
+        logger.debug("Colorful output")
+    # Run the function
     args.func(args)
 
 if __name__ == "__main__":
@@ -247,9 +254,11 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     subparsers = parser.add_subparsers()
 
+    # Global options
     parser.add_argument('--cores-root', help='Add additional directories containing cores', action='append')
     parser.add_argument('--32', help='Force 32 bit mode for invoked tools', action='store_true')
     parser.add_argument('--64', help='Force 64 bit mode for invoked tools', action='store_true')
+    parser.add_argument('--monochrome', help='Don\'t use color for messages', action='store_true')
 
     #General options
     parser_build = subparsers.add_parser('build', help='Build an FPGA load module')
