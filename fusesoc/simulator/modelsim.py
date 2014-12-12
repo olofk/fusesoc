@@ -66,6 +66,7 @@ class Modelsim(Simulator):
                 args += ['-c']
                 args += ['-std=c99']
                 args += ['-fPIC']
+                args += ['-fno-stack-protector']
                 args += ['-g']
                 args += ['-m32']
                 args += ['-DMODELSIM_VPI']
