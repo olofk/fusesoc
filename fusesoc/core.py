@@ -114,12 +114,13 @@ class Core:
                 os.makedirs(os.path.join(dst_dir, d))
 
         for f in src_files:
-            if(os.path.exists(os.path.join(src_dir, f))):
-                shutil.copyfile(os.path.join(src_dir, f), 
-                                os.path.join(dst_dir, f))
-            else:
-                utils.pr_warn('File %s does not exist' %
-                        os.path.join(src_dir, f))
+            if not os.path.isabs(f):
+                if(os.path.exists(os.path.join(src_dir, f))):
+                    shutil.copyfile(os.path.join(src_dir, f), 
+                                    os.path.join(dst_dir, f))
+                else:
+                    utils.pr_warn('File %s does not exist' %
+                                  os.path.join(src_dir, f))
 
     def patch(self, dst_dir):
         #FIXME: Use native python patch instead
