@@ -30,6 +30,8 @@ class FusesocConfigParser(configparser.SafeConfigParser):
             self.readfp(f)
         except configparser.MissingSectionHeaderError:
             raise SyntaxError("Missing section header")
+        except configparser.ParsingError as e:
+            raise SyntaxError(e.message)
 
     def get_list(self, section, item):
         if self.has_option(section, item):
