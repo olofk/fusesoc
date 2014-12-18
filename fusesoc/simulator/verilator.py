@@ -110,6 +110,10 @@ class Verilator(Simulator):
         if cmd is None:
              raise RuntimeError("VERILATOR_ROOT not set and there is no verilator program in your PATH")
         cmd += ' ' + ' '.join(args)
+
+        if utils.check_systemc_env() is False:
+            raise RuntimeError("Need $SYSTEMC_LIBDIR and $SYSTEMC_INCLUDE in environment or when Verilator configured")
+
         l = utils.Launcher(cmd,
                            shell=True,
                            cwd = self.sim_root,
