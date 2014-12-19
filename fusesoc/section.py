@@ -262,7 +262,7 @@ Verilog top module      : {top_module}
                          stdout = open(os.path.join(sim_root, src_file+'.out.log'),'w'))
             if Config().verbose:
                 pr_info("  C compilation working dir: " + sim_root)
-                pr_info("  C compilation command: gcc " + ' '.join(args))
+                pr_info("  C compilation command: gcc " + ' '.join(args) + ' ' + os.path.join(src_root, core, src_file))
             l.run()
 
     def build_CPP(self, core, sim_root, src_root):
@@ -281,7 +281,7 @@ Verilog top module      : {top_module}
                          stderr = open(os.path.join(sim_root, src_file+'.log'),'w'))
             if Config().verbose:
                 pr_info("  C++ compilation working dir: " + sim_root)
-                pr_info("  C++ compilation command: g++ " + ' '.join(args))
+                pr_info("  C++ compilation command: g++ " + ' '.join(args) + ' ' + os.path.join(src_root, core, src_file))
             l.run()
 
     def build_SysC(self, core, sim_root, src_root):
@@ -313,7 +313,7 @@ Verilog top module      : {top_module}
                          stderr = open(os.path.join(sim_root, src_file+'.log'),'w'))
             if Config().verbose:
                 pr_info("  SystemC compilation working dir: " + sim_root)
-                pr_info("  SystemC compilation command: g++ " + ' '.join(args))
+                pr_info("  SystemC compilation command: g++ " + ' '.join(args) + ' ' + os.path.join(src_root, core, src_file))
             l.run()
 
 class IseSection(ToolSection):
