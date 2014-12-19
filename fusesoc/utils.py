@@ -1,6 +1,7 @@
 import subprocess
 import re
 import sys
+from fusesoc.config import Config
 
 if sys.version[0] == '2':
     FileNotFoundError = OSError
@@ -34,6 +35,10 @@ class Launcher:
                 output = "stderr"
             else:
                 output = self.stderr.name
+                if Config().verbose:
+                    with open(self.stderr.name, 'r') as f:
+                        pr_err(f.read())
+
             if self.errormsg is None:
                 self.errormsg = '"' + str(self) + '" exited with an error code.\nERROR: See ' + output + ' for details.'
             raise RuntimeError(self.errormsg)
