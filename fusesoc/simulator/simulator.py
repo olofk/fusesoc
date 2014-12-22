@@ -1,6 +1,6 @@
 from fusesoc.config import Config
 from fusesoc.coremanager import CoreManager
-from fusesoc.utils import Launcher, pr_info
+from fusesoc.utils import Launcher, pr_info, pr_err
 import argparse
 import shutil
 import os
@@ -91,6 +91,13 @@ class Simulator(object):
             core.export(dst_dir)
 
     def build(self):
+        for script in self.system.pre_build_scripts:
+            script = os.path.abspath(os.path.join(self.system.core_root, script))
+            pr_info("Running " + script);
+            try:
+                Launcher(script, cwd = self.sim_root, env = self.env, shell=True).run()
+            except RuntimeError:
+                pr_err("Error: script " + script + " failed")
         return
 
     def run(self, args):
@@ -118,7 +125,7 @@ class Simulator(object):
             try:
                 Launcher(script, cwd = self.sim_root, env = self.env, shell=True).run()
             except RuntimeError:
-                print("Error: script " + script + " failed")
+                pr_err("Error: script " + script + " failed")
 
     def done(self, args):
 
@@ -128,4 +135,4 @@ class Simulator(object):
             try:
                 Launcher(script, cwd = self.sim_root, env = self.env, shell=True).run()
             except RuntimeError:
-                print("Error: script " + script + " failed")
+                pr_err("Error: script " + script + " failed")
