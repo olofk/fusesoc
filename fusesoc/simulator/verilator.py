@@ -160,8 +160,13 @@ class Verilator(Simulator):
         l.run()
 
     def run(self, args):
+        self.env = os.environ.copy()
+        self.env['CORE_ROOT'] = os.path.abspath(self.system.core_root)
+        self.env['BUILD_ROOT'] = os.path.abspath(self.build_root)
+        self.env['SIM_ROOT'] = os.path.abspath(self.sim_root)
         #TODO: Handle arguments parsing
         pr_info("Running simulation")
         utils.Launcher('./V' + self.top_module,
                        args,
-                       cwd=os.path.join(self.sim_root, 'obj_dir')).run()
+                       cwd=os.path.join(self.sim_root, 'obj_dir'),
+                       env = self.env).run()
