@@ -41,7 +41,6 @@ class Verilator(Simulator):
              self.tb_toplevel        = system.verilator.tb_toplevel
              self.src_type           = system.verilator.source_type
              self.define_files       = system.verilator.define_files
-             self.libs               = system.verilator.libs
              self.top_module         = system.verilator.top_module
 
         self.sim_root = os.path.join(self.build_root, 'sim-verilator')
@@ -111,7 +110,7 @@ class Verilator(Simulator):
              raise RuntimeError("VERILATOR_ROOT not set and there is no verilator program in your PATH")
         cmd += ' ' + ' '.join(args)
 
-        if utils.check_systemc_env() is False:
+        if (self.src_type == 'systemC') and not utils.check_systemc_env():
             raise RuntimeError("Need $SYSTEMC_LIBDIR and $SYSTEMC_INCLUDE in environment or when Verilator configured")
 
         l = utils.Launcher(cmd,
