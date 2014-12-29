@@ -135,7 +135,6 @@ class Verilator(Simulator):
             if core.verilator:
                  if core.verilator.archive:
                       self.archives += [core_name+'.a']
-                 self.libs += core.verilator.libs
                  self.include_dirs += [os.path.join(self.src_root, core_name, d) for d in core.verilator.include_dirs]
                  self.include_dirs += [os.path.dirname(os.path.join(self.sim_root, self.tb_toplevel))]
 
