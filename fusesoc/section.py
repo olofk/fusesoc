@@ -258,8 +258,8 @@ Verilog top module      : {top_module}
             l = Launcher('gcc',
                      args + [os.path.join(src_root, core, src_file)],
                          cwd=sim_root,
-                         stderr = open(os.path.join(sim_root, src_file+'.err.log'),'w'),
-                         stdout = open(os.path.join(sim_root, src_file+'.out.log'),'w'))
+                         stderr = open(os.path.join(sim_root, 'gcc.err.log'),'a'),
+                         stdout = open(os.path.join(sim_root, 'gcc.out.log'),'a'))
             if Config().verbose:
                 pr_info("  C compilation working dir: " + sim_root)
                 pr_info("  C compilation command: gcc " + ' '.join(args) + ' ' + os.path.join(src_root, core, src_file))
@@ -278,7 +278,7 @@ Verilog top module      : {top_module}
             pr_info("Compiling " + src_file)
             l = Launcher('g++', args + [os.path.join(src_root, core, src_file)],
                          cwd=sim_root,
-                         stderr = open(os.path.join(sim_root, src_file+'.log'),'w'))
+                         stderr = open(os.path.join(sim_root, 'g++.err.log'),'a'))
             if Config().verbose:
                 pr_info("  C++ compilation working dir: " + sim_root)
                 pr_info("  C++ compilation command: g++ " + ' '.join(args) + ' ' + os.path.join(src_root, core, src_file))
@@ -310,7 +310,7 @@ Verilog top module      : {top_module}
             pr_info("Compiling " + src_file)
             l = Launcher('g++', args + [os.path.join(src_root, core, src_file)],
                          cwd=sim_root,
-                         stderr = open(os.path.join(sim_root, src_file+'.log'),'w'))
+                         stderr = open(os.path.join(sim_root, 'g++.err.log'),'a'))
             if Config().verbose:
                 pr_info("  SystemC compilation working dir: " + sim_root)
                 pr_info("  SystemC compilation command: g++ " + ' '.join(args) + ' ' + os.path.join(src_root, core, src_file))
