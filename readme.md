@@ -22,18 +22,19 @@ FuseSoC does not contain any RTL code or core description files. The official re
 
 Quick start
 -----------
-Install by cloning the repo. cd into fusesoc and run:
-autoreconf -i && ./configure && make
-sudo make install
-fusesoc init
+Install by cloning the repo, cd into fusesoc and run:
 
-Test your installation by running 'fusesoc list-cores'. This should return the list of cores that FuseSoC has found
+    autoreconf -i && ./configure && make
+    sudo make install
+    fusesoc init
+
+Test your installation by running `fusesoc list-cores`. This should return the list of cores that FuseSoC has found
 
 If you have any of the supported simulators installed, you can try to run a simulation on one of the cores as well.
-For example, 'fusesoc sim --sim=icarus wb_sdram_ctrl' will run a regression test on the core wb_sdram_ctrl with icarus verilog
-If you also have Altera Quartus installed, you can try to build an example system. For example, 'fusesoc build de0_nano'
+For example, `fusesoc sim --sim=icarus wb_sdram_ctrl` will run a regression test on the core wb_sdram_ctrl with icarus verilog
+If you also have Altera Quartus installed, you can try to build an example system. For example, `fusesoc build de0_nano`
 
-fusesoc --help will give you more information on commands and switches
+`fusesoc --help` will give you more information on commands and switches
 
 Further reading
 ---------------
