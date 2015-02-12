@@ -14,7 +14,7 @@ AC_ARG_ENABLE([svn],
 AS_IF([test "x$enable_svn" != "xno"], [
 	AC_CHECK_PROG(HAVE_SVN, svn, yes, no)
 	AS_IF([test "x$HAVE_SVN" = "xno"],
-		AC_MSG_ERROR([Program svn not found. Install it, or rerun with --disable-svn])
+		AC_MSG_ERROR([Program svn not found. Install it or rerun with --disable-svn])
 	)
 ])
 
