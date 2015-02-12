@@ -99,8 +99,6 @@ class Core:
         if os.path.exists(dst_dir):
             shutil.rmtree(dst_dir)
 
-        src_dir = self.files_root
-
         #FIXME: Separate tb_files to an own directory tree (src/tb/core_name ?)
         src_files = []
 
@@ -116,12 +114,15 @@ class Core:
 
         for f in src_files:
             if not os.path.isabs(f):
-                if(os.path.exists(os.path.join(src_dir, f))):
-                    shutil.copyfile(os.path.join(src_dir, f), 
+                if(os.path.exists(os.path.join(self.core_root, f))):
+                    shutil.copyfile(os.path.join(self.core_root, f),
+                                    os.path.join(dst_dir, f))
+                elif (os.path.exists(os.path.join(self.files_root, f))):
+                    shutil.copyfile(os.path.join(self.files_root, f),
                                     os.path.join(dst_dir, f))
                 else:
-                    utils.pr_warn('File %s does not exist' %
-                                  os.path.join(src_dir, f))
+                    raise RuntimeError('Cannot find %s in :\n\t%s\n\t%s'
+                                  % (f, self.files_root, self.core_root))
 
     def patch(self, dst_dir):
         #FIXME: Use native python patch instead
