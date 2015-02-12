@@ -84,6 +84,8 @@ converted to #define directives in corresponding .h files
 * *tb_toplevel (optional)       :* Name of the test bench top file
 * *depend (optional)            :* List of cores that only Verilator simulation depends on
 * *top_module (optional)        :* Name of the verilog top module
+* *tb_src_files (optional)      :* List of Verilog test bench files
+* *tb_include_files = (optional) :* List of Verilog test bench include files
 
 verilog (optional)
 ~~~~~~~~~~~~~~~~~~

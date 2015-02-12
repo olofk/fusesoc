@@ -189,6 +189,8 @@ class VerilatorSection(ToolSection):
 
         self._add_listitem('verilator_options')
         self._add_listitem('src_files')
+        self._add_listitem('tb_src_files')
+        self._add_listitem('tb_include_files')
         self._add_listitem('include_files')
         self._add_listitem('define_files')
         self._add_listitem('libs')
@@ -203,7 +205,7 @@ class VerilatorSection(ToolSection):
             if self.src_files:
                 self._object_files = [os.path.splitext(os.path.basename(s))[0]+'.o' for s in self.src_files]
                 self.archive = True
-                self.export_files = self.src_files + self.include_files
+                self.export_files = self.src_files + self.include_files + self.tb_src_files + self.tb_include_files
 
 
     def __str__(self):

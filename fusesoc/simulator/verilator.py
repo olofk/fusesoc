@@ -26,7 +26,9 @@ class Verilator(Simulator):
 
         self.verilator_options = []
         self.src_files = []
+        self.tb_src_files = []
         self.include_files = []
+        self.tb_include_dirs = []
         self.include_dirs = []
         self.tb_toplevel = ""
         self.src_type = ''
@@ -37,11 +39,22 @@ class Verilator(Simulator):
         if system.verilator is not None:
              self.verilator_options  = system.verilator.verilator_options
              self.src_files          = system.verilator.src_files
+             self.tb_src_files       = system.verilator.tb_src_files
+             self.tb_include_files   = system.verilator.tb_include_files
              self.include_files      = system.verilator.include_files
              self.tb_toplevel        = system.verilator.tb_toplevel
              self.src_type           = system.verilator.source_type
              self.define_files       = system.verilator.define_files
              self.top_module         = system.verilator.top_module
+
+             print(self.src_files)
+
+             for core_name in self.cores:
+                 core = self.cm.get_core(core_name)
+                 if core.verilator:
+                     self.tb_include_dirs    = list(set(map(os.path.dirname, self.tb_include_files)))
+                     self.tb_include_dirs    = [os.path.join(self.src_root, core_name, d) for d in self.tb_include_dirs]
+                     self.tb_src_files       = [os.path.join(self.src_root, core_name, d) for d in self.tb_src_files]
 
         self.sim_root = os.path.join(self.build_root, 'sim-verilator')
         if self.top_module == '':
@@ -78,8 +91,13 @@ class Verilator(Simulator):
 
         for include_dir in self.verilog.include_dirs:
             f.write("+incdir+" + os.path.abspath(include_dir) + '\n')
+        for include_dir in self.tb_include_dirs:
+            f.write("+incdir+" + os.path.abspath(include_dir) + '\n')
         for src_file in self.verilog.src_files:
             f.write(os.path.abspath(src_file) + '\n')
+        for src_file in self.tb_src_files:
+            f.write(os.path.abspath(src_file) + '\n')
+
         f.close()
         #convert verilog defines into C file
         for files in self.define_files:
