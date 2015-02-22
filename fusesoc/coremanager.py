@@ -4,6 +4,7 @@ import os
 
 from fusesoc.config import Config
 from fusesoc.core import Core
+from fusesoc.utils import pr_warn
 
 logger = logging.getLogger(__name__)
 
@@ -33,6 +34,8 @@ class CoreManager(object):
                 w = "Warning: Failed to parse " + file + ": " + e.msg
                 print(w)
                 logger.warning(w)
+            except ImportError as e:
+                pr_warn('Failed to register core "{}"  due to unknown provider: {}'.format(name, str(e)))
         
     def load_cores(self, path):
         if path:

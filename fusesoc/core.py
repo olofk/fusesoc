@@ -70,9 +70,7 @@ class Core:
                     self.provider = provider_module.PROVIDER_CLASS(self.name,
                         items, self.core_root, cache_root)
                 except ImportError:
-                    raise RuntimeError(
-                            'Unknown provider "%s" in section [provider]' %
-                            provider_name)
+                    raise
             if self.provider:
                 self.files_root = self.provider.files_root
 
