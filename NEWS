@@ -1,3 +1,31 @@
+1.2 2015-02-24 Olof Kindgren <olof.kindgren@gmail.com>
+======================================================
+* Allow files in core root to overlay files in cache
+* Add support for pre_build_scripts in cores
+* Fix checks for SystemC environment variables
+* Allow absolute file paths in core files
+* Add --verbose flag for detailed output
+* Add --monochrome flag for monochrome output
+* Report all sections in core-info
+* Allow cores to specify themselves as non-cachable
+* Allow symlinks in core libraries
+* Add update command to update core libraries
+* Add init command for initial setup of core libraries
+* Remove deprecated --systems-root flag
+* Add configure flag to optionally disable SVN providers
+* Allow cores to be located anywhere in the core libraries
+* Add 32/64-bit autodetection with override
+* Add git submodule provider
+* Generate detailed ISE map report
+* + improved error handling, bug fixes and refactoring
+
+Contributors:
+Christian Svensson <blue@cmd.nu>
+Franck Jullien <franck.jullien@gmail.com>
+Jeremy Bennett <jeremy.bennett@embecosm.com>
+Olof Kindgren <olof.kindgren@gmail.com>
+Stefan Kristiansson <stefan.kristiansson@saunalahti.fi>
+
 1.1 2014-04-15 Olof Kindgren <olof.kindgren@gmail.com>
 ======================================================
 * Support system-installed Verilator
