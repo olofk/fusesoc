@@ -125,19 +125,23 @@ class Core:
     def patch(self, dst_dir):
         #FIXME: Use native python patch instead
         patch_root = os.path.join(self.core_root, 'patches')
+        patches = self.main.patches
         if os.path.exists(patch_root):
-            for f in sorted(os.listdir(patch_root)):
-                patch_file = os.path.abspath(os.path.join(patch_root, f))
-                if os.path.isfile(patch_file):
-                    logger.debug("  applying patch file: " + patch_file + "\n" +
-                                 "                   to: " + os.path.join(dst_dir))
-                    try:
-                        subprocess.call(['patch','-p1', '-s',
-                                         '-d', os.path.join(dst_dir),
-                                         '-i', patch_file])
-                    except OSError:
-                        print("Error: Failed to call external command 'patch'")
-                        return False
+            for p in sorted(os.listdir(patch_root)):
+                patches += os.path.join('patches', p)
+
+        for f in patches:
+            patch_file = os.path.abspath(os.path.join(self.core_root, f))
+            if os.path.isfile(patch_file):
+                logger.debug("  applying patch file: " + patch_file + "\n" +
+                             "                   to: " + os.path.join(dst_dir))
+                try:
+                    subprocess.call(['patch','-p1', '-s',
+                                     '-d', os.path.join(dst_dir),
+                                     '-i', patch_file])
+                except OSError:
+                    print("Error: Failed to call external command 'patch'")
+                    return False
         return True
 
     def info(self):

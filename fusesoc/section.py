@@ -70,6 +70,7 @@ class MainSection(Section):
         self._add_stringitem('description')
         self._add_listitem('depend')
         self._add_listitem('simulators')
+        self._add_listitem('patches')
 
         if items:
             self.load_dict(items)
