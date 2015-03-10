@@ -128,7 +128,7 @@ class Core:
         patches = self.main.patches
         if os.path.exists(patch_root):
             for p in sorted(os.listdir(patch_root)):
-                patches += os.path.join('patches', p)
+                patches.append(os.path.join('patches', p))
 
         for f in patches:
             patch_file = os.path.abspath(os.path.join(self.core_root, f))
