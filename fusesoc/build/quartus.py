@@ -109,11 +109,11 @@ clean:
             top_module = self.system.backend.top_module
         tcl_file.write("set_global_assignment -name TOP_LEVEL_ENTITY " + top_module + '\n')
         for src_file in self.src_files:
-            tcl_file.write("set_global_assignment -name VERILOG_FILE " + src_file + '\n')
+            tcl_file.write("set_global_assignment -name VERILOG_FILE " + os.path.relpath(src_file, self.work_root) + '\n')
         for vhdl_src_files in self.vhdl_src_files:
-            tcl_file.write("set_global_assignment -name VHDL_FILE " + vhdl_src_files + '\n')
+            tcl_file.write("set_global_assignment -name VHDL_FILE " + os.path.relpath(vhdl_src_files, self.work_root) + '\n')
         for include_dir in self.include_dirs:
-            tcl_file.write("set_global_assignment -name SEARCH_PATH " + include_dir + '\n')
+            tcl_file.write("set_global_assignment -name SEARCH_PATH " + os.path.relpath(include_dir, self.work_root) + '\n')
 
         #FIXME: Handle multiple SDC files. Also handle SDC files directly from cores?
         sdc_files = self.system.backend.sdc_files
@@ -123,7 +123,7 @@ clean:
             if not os.path.exists(os.path.dirname(dst_file)):
                 os.makedirs(os.path.dirname(dst_file))
             shutil.copyfile(src_file, dst_file)
-            tcl_file.write("set_global_assignment -name SDC_FILE " + dst_file + '\n')
+            tcl_file.write("set_global_assignment -name SDC_FILE " + os.path.relpath(dst_file, self.work_root) + '\n')
 
         # NOTE: The relative path _have_ to be used here, if the absolute path
         # is used, quartus_asm will fail with an error message that
