@@ -31,13 +31,13 @@ class SimulatorIcarus(Simulator):
         f = open(os.path.join(self.sim_root,icarus_file),'w')
 
         for include_dir in self.verilog.include_dirs:
-            f.write("+incdir+" + os.path.abspath(include_dir) + '\n')
+            f.write("+incdir+" + os.path.relpath(include_dir, self.sim_root) + '\n')
         for src_file in self.verilog.src_files:
-            f.write(os.path.abspath(src_file) + '\n')
+            f.write(os.path.relpath(src_file, self.sim_root) + '\n')
         for include_dir in self.verilog.tb_include_dirs:
-            f.write("+incdir+" + os.path.abspath(include_dir) + '\n')
+            f.write("+incdir+" + os.path.relpath(include_dir, self.sim_root) + '\n')
         for src_file in self.verilog.tb_src_files:
-            f.write(os.path.abspath(src_file) + '\n')
+            f.write(os.path.relpath(src_file, self.sim_root) + '\n')
 
         f.close()
 
