@@ -29,9 +29,6 @@ class Section(object):
         self._members[name] = {'type' : _type, 'desc' : desc}
         setattr(self, name, _type())
 
-    def _add_stringitem(self, s):
-        self._add_member(s, str, "")
-
     def export(self):
         return self.export_files
 
@@ -68,7 +65,7 @@ class MainSection(Section):
     def __init__(self, items=None):
         super(MainSection, self).__init__()
 
-        self._add_stringitem('description')
+        self._add_member('description', str, "Core description")
         self._add_member('depend', list, "Dependencies")
         self._add_member('simulators', list, "Supported simulators")
         self._add_member('patches', list, "FuseSoC-specific patches")
@@ -195,9 +192,9 @@ class VerilatorSection(ToolSection):
         self._add_member('define_files'     , list, "Verilator testbench include files (converts to verilog include files)")
         self._add_member('libs'             , list, "Verilator C/C++ libraries")
 
-        self._add_stringitem('tb_toplevel')
-        self._add_stringitem('source_type')
-        self._add_stringitem('top_module')
+        self._add_member('tb_toplevel', str, 'Testbench top-level C/C++/SC file')
+        self._add_member('source_type', str, 'Testbench source code language (systemC/Cpp)')
+        self._add_member('top_module' , str, 'verilog top-level module')
 
         if items:
             self.load_dict(items)
@@ -325,13 +322,13 @@ class IseSection(ToolSection):
     def __init__(self, items=None):
         super(IseSection, self).__init__()
 
-        self._add_member('ucf_files', list, "UCF constraint files")
-        self._add_member('tcl_files', list, "Extra TCL scripts")
-        self._add_stringitem('family')
-        self._add_stringitem('device')
-        self._add_stringitem('package')
-        self._add_stringitem('speed')
-        self._add_stringitem('top_module')
+        self._add_member('ucf_files' , list, "UCF constraint files")
+        self._add_member('tcl_files' , list, "Extra TCL scripts")
+        self._add_member('family'    , str, 'FPGA device family')
+        self._add_member('device'    , str, 'FPGA device identifier')
+        self._add_member('package'   , str, 'FPGA device package')
+        self._add_member('speed'     , str, 'FPGA device speed grade')
+        self._add_member('top_module', str, 'RTL top-level module')
 
         if items:
             self.load_dict(items)
@@ -348,10 +345,10 @@ class QuartusSection(ToolSection):
         self._add_member('sdc_files' , list, "SDC constraint files")
         self._add_member('tcl_files', list, "Extra script files")
 
-        self._add_stringitem('quartus_options')
-        self._add_stringitem('family')
-        self._add_stringitem('device')
-        self._add_stringitem('top_module')
+        self._add_member('quartus_options', str, 'Quartus command-line options')
+        self._add_member('family'         , str, 'FPGA device family')
+        self._add_member('device'         , str, 'FPGA device identifier')
+        self._add_member('top_module'     , str, 'RTL top-level module')
 
         if items:
             self.load_dict(items)
