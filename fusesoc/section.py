@@ -172,8 +172,8 @@ class IcarusSection(ToolSection):
 
     def __str__(self):
         s = ""
-        if self.depend: s += "Icarus-specific dependencies : {}".format(' '.join(self.depend))
-        if self.iverilog_options: s += "Icarus compile options : {}".format(' '.join(self.iverilog_options))
+        if self.depend: s += "Icarus-specific dependencies : {}\n".format(' '.join(self.depend))
+        if self.iverilog_options: s += "Icarus compile options : {}\n".format(' '.join(self.iverilog_options))
         return s
 
 
