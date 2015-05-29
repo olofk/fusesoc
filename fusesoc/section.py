@@ -29,9 +29,6 @@ class Section(object):
         self._members[name] = {'type' : _type, 'desc' : desc}
         setattr(self, name, _type())
 
-    def _add_listitem(self, listitem):
-        self._add_member(listitem, list, "")
-
     def _add_stringitem(self, s):
         self._add_member(s, str, "")
 
@@ -63,7 +60,7 @@ class Section(object):
 class ToolSection(Section):
     def __init__(self):
         super(ToolSection, self).__init__()
-        self._add_listitem('depend')
+        self._add_member('depend', list, "Dependencies")
 
 class MainSection(Section):
     TAG = 'main'
@@ -72,9 +69,9 @@ class MainSection(Section):
         super(MainSection, self).__init__()
 
         self._add_stringitem('description')
-        self._add_listitem('depend')
-        self._add_listitem('simulators')
-        self._add_listitem('patches')
+        self._add_member('depend', list, "Dependencies")
+        self._add_member('simulators', list, "Supported simulators")
+        self._add_member('patches', list, "FuseSoC-specific patches")
 
         if items:
             self.load_dict(items)
@@ -86,7 +83,7 @@ class VhdlSection(Section):
     def __init__(self, items=None):
         super(VhdlSection, self).__init__()
 
-        self._add_listitem('src_files')
+        self._add_member('src_files', list, "VHDL source files")
 
         if items:
             self.load_dict(items)
@@ -102,11 +99,11 @@ class VerilogSection(Section):
         self.include_dirs = []
         self.tb_include_dirs = []
 
-        self._add_listitem('src_files')
-        self._add_listitem('include_files')
-        self._add_listitem('tb_src_files')
-        self._add_listitem('tb_private_src_files')
-        self._add_listitem('tb_include_files')
+        self._add_member('src_files'    , list, "Verilog source files")
+        self._add_member('include_files', list, "Verilog include files")
+        self._add_member('tb_src_files' , list, "Testbench verilog source files")
+        self._add_member('tb_private_src_files', list, "Private testbench verilog source files")
+        self._add_member('tb_include_files'    , list, "Testbench include files")
 
         if items:
             self.load_dict(items)
@@ -137,9 +134,9 @@ class VpiSection(Section):
 
         self.include_dirs = []
 
-        self._add_listitem('src_files')
-        self._add_listitem('include_files')
-        self._add_listitem('libs')
+        self._add_member('src_files', list, "VPI C files")
+        self._add_member('include_files', list, "VPI C include files")
+        self._add_member('libs', list, "VPI C libraries")
 
         if items:
             self.load_dict(items)
@@ -156,8 +153,8 @@ class ModelsimSection(ToolSection):
     def __init__(self, items=None):
         super(ModelsimSection, self).__init__()
 
-        self._add_listitem('vlog_options')
-        self._add_listitem('vsim_options')
+        self._add_member('vlog_options', list, "Modelsim verilog compile options")
+        self._add_member('vsim_options', list, "Modelsim runtime options")
 
         if items:
             self.load_dict(items)
@@ -169,7 +166,7 @@ class IcarusSection(ToolSection):
     def __init__(self, items=None):
         super(IcarusSection, self).__init__()
 
-        self._add_listitem('iverilog_options')
+        self._add_member('iverilog_options', list, "Icarus verilog compile options")
 
         if items:
             self.load_dict(items)
@@ -192,11 +189,11 @@ class VerilatorSection(ToolSection):
         self.archive = False
         self._object_files = []
 
-        self._add_listitem('verilator_options')
-        self._add_listitem('src_files')
-        self._add_listitem('include_files')
-        self._add_listitem('define_files')
-        self._add_listitem('libs')
+        self._add_member('verilator_options', list, "Verilator build options")
+        self._add_member('src_files'        , list, "Verilator testbench source files")
+        self._add_member('include_files'    , list, "Verilator testbench include files")
+        self._add_member('define_files'     , list, "Verilator testbench include files (converts to verilog include files)")
+        self._add_member('libs'             , list, "Verilator C/C++ libraries")
 
         self._add_stringitem('tb_toplevel')
         self._add_stringitem('source_type')
@@ -328,8 +325,8 @@ class IseSection(ToolSection):
     def __init__(self, items=None):
         super(IseSection, self).__init__()
 
-        self._add_listitem('ucf_files')
-        self._add_listitem('tcl_files')
+        self._add_member('ucf_files', list, "UCF constraint files")
+        self._add_member('tcl_files', list, "Extra TCL scripts")
         self._add_stringitem('family')
         self._add_stringitem('device')
         self._add_stringitem('package')
@@ -347,9 +344,9 @@ class QuartusSection(ToolSection):
     def __init__(self, items=None):
         super(QuartusSection, self).__init__()
 
-        self._add_listitem('qsys_files')
-        self._add_listitem('sdc_files')
-        self._add_listitem('tcl_files')
+        self._add_member('qsys_files', list, "Qsys IP description files")
+        self._add_member('sdc_files' , list, "SDC constraint files")
+        self._add_member('tcl_files', list, "Extra script files")
 
         self._add_stringitem('quartus_options')
         self._add_stringitem('family')
