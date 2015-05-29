@@ -20,29 +20,32 @@ class Section(object):
 
     TAG = None
 
+    _members = {}
     def __init__(self):
-        self.strings = []
-        self.lists  = []
         self.export_files = []
         self.warnings = []
 
+    def _add_member(self, name, _type, desc):
+        self._members[name] = {'type' : _type, 'desc' : desc}
+        setattr(self, name, _type())
+
     def _add_listitem(self, listitem):
-        self.lists += [listitem]
-        setattr(self, listitem, [])
+        self._add_member(listitem, list, "")
 
     def _add_stringitem(self, s):
-        self.strings += [s]
-        setattr(self, s, "")
+        self._add_member(s, str, "")
 
     def export(self):
         return self.export_files
 
     def load_dict(self, items):
         for item in items:
-            if item in self.lists:
-                setattr(self, item, items.get(item).split())
-            elif item in self.strings:
-                setattr(self, item, items.get(item))
+            if item in self._members:
+                _type = self._members.get(item)['type']
+                if issubclass(_type, list):
+                    setattr(self, item, items.get(item).split())
+                else:
+                    setattr(self, item, _type(items.get(item)))
             else:
                 self.warnings.append(
                         'Unknown item "%(item)s" in section "%(section)s"' % {
@@ -50,10 +53,11 @@ class Section(object):
 
     def __str__(self):
         s = ''
-        for item in self.lists:
-            s += item + ' : ' + ';'.join(getattr(self, item)) + '\n'
-        for item in self.strings:
-            s += item + ' : ' + getattr(self, item) + '\n'
+        for k,v in self._members.items():
+            if isinstance(v.get('type'), list):
+                s += k + ' : ' + ';'.join(getattr(self, item)) + '\n'
+            elif isinstance(v.get('type'), str):
+                s += k + ' : ' + getattr(self, k) + '\n'
         return s
 
 class ToolSection(Section):
