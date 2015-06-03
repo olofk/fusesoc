@@ -20,8 +20,8 @@ class Section(object):
 
     TAG = None
 
-    _members = {}
     def __init__(self):
+        self._members = {}
         self.export_files = []
         self.warnings = []
 
