@@ -387,3 +387,25 @@ def _register_subclasses(parent):
 
 
 _register_subclasses(Section)
+
+if __name__ == "__main__":
+    typenames = {str : 'String',
+                 list : 'List'}
+    SECTION_TEMPLATE = """
+{}
+{}
+
+[cols="2,1,5",options="header"]
+|==============================
+|Name | Type | Description
+{}        
+|==============================
+
+"""
+
+    print("CAPI 1")
+    print("======")
+    for k,v in sorted(SECTION_MAP.items()):
+        c = v()
+        s="\n".join(["|{} | {} | {}".format(k2, typenames[v2['type']], v2['desc']) for k2, v2 in c._members.items()])
+        print(SECTION_TEMPLATE.format(k, '-'*len(k), s))
