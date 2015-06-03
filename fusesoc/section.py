@@ -57,7 +57,7 @@ class Section(object):
 class ToolSection(Section):
     def __init__(self):
         super(ToolSection, self).__init__()
-        self._add_member('depend', list, "Dependencies")
+        self._add_member('depend', list, "Tool-specific Dependencies")
 
 class MainSection(Section):
     TAG = 'main'
