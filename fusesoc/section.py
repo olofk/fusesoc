@@ -15,6 +15,39 @@ class NoSuchItemError(Error):
 class UnknownSection(Error):
     pass
 
+class StringList(list):
+    def __new__(cls, *args, **kwargs):
+        if not args:
+            return list()
+        else:
+            return list(args[0].split())
+    
+class EnumList(list):
+    def __new__(cls, *args, **kwargs):
+        if not args:
+            return super(EnumList, cls).__new__(cls)
+        else:
+            values = kwargs['values']
+            _args = args[0].split()
+            for arg in _args:
+                if not arg in values:
+                    raise ValueError("Invalid value '" + str(arg) + "'. Allowed values are '" + "', '".join(values)+"'")
+            return list(args[0].split())
+        
+class SimulatorList(EnumList):
+    def __new__(cls, *args, **kwargs):
+        values = ['icarus', 'modelsim', 'verilator']
+        return super(SimulatorList, cls).__new__(cls, *args, values=values)
+
+class SourceType(str):
+    def __new__(cls, *args, **kwargs):
+        if args:
+            arg = args[0]
+            values = ['C', 'CPP', 'systemC']
+            if arg in values:
+                return str(arg)
+            raise ValueError("Invalid value '" + str(arg) + "'. Allowed values are '" + "', '".join(values)+"'")
+        return str
 
 class Section(object):
 
@@ -36,10 +69,7 @@ class Section(object):
         for item in items:
             if item in self._members:
                 _type = self._members.get(item)['type']
-                if issubclass(_type, list):
-                    setattr(self, item, items.get(item).split())
-                else:
-                    setattr(self, item, _type(items.get(item)))
+                setattr(self, item, _type(items.get(item)))
             else:
                 self.warnings.append(
                         'Unknown item "%(item)s" in section "%(section)s"' % {
@@ -57,7 +87,7 @@ class Section(object):
 class ToolSection(Section):
     def __init__(self):
         super(ToolSection, self).__init__()
-        self._add_member('depend', list, "Tool-specific Dependencies")
+        self._add_member('depend', StringList, "Tool-specific Dependencies")
 
 class MainSection(Section):
     TAG = 'main'
@@ -66,9 +96,9 @@ class MainSection(Section):
         super(MainSection, self).__init__()
 
         self._add_member('description', str, "Core description")
-        self._add_member('depend', list, "Dependencies")
-        self._add_member('simulators', list, "Supported simulators")
-        self._add_member('patches', list, "FuseSoC-specific patches")
+        self._add_member('depend'     , StringList, "Dependencies")
+        self._add_member('simulators' , SimulatorList, "Supported simulators. Valid values are icarus, modelsim and verilator")
+        self._add_member('patches'    , StringList, "FuseSoC-specific patches")
 
         if items:
             self.load_dict(items)
@@ -80,7 +110,7 @@ class VhdlSection(Section):
     def __init__(self, items=None):
         super(VhdlSection, self).__init__()
 
-        self._add_member('src_files', list, "VHDL source files")
+        self._add_member('src_files', StringList, "VHDL source files")
 
         if items:
             self.load_dict(items)
@@ -96,11 +126,11 @@ class VerilogSection(Section):
         self.include_dirs = []
         self.tb_include_dirs = []
 
-        self._add_member('src_files'    , list, "Verilog source files")
-        self._add_member('include_files', list, "Verilog include files")
-        self._add_member('tb_src_files' , list, "Testbench verilog source files")
-        self._add_member('tb_private_src_files', list, "Private testbench verilog source files")
-        self._add_member('tb_include_files'    , list, "Testbench include files")
+        self._add_member('src_files'           , StringList, "Verilog source files")
+        self._add_member('include_files'       , StringList, "Verilog include files")
+        self._add_member('tb_src_files'        , StringList, "Testbench verilog source files")
+        self._add_member('tb_private_src_files', StringList, "Private testbench verilog source files")
+        self._add_member('tb_include_files'    , StringList, "Testbench include files")
 
         if items:
             self.load_dict(items)
@@ -131,9 +161,9 @@ class VpiSection(Section):
 
         self.include_dirs = []
 
-        self._add_member('src_files', list, "VPI C files")
-        self._add_member('include_files', list, "VPI C include files")
-        self._add_member('libs', list, "VPI C libraries")
+        self._add_member('src_files'    , StringList, "VPI C files")
+        self._add_member('include_files', StringList, "VPI C include files")
+        self._add_member('libs'         , StringList, "VPI C libraries")
 
         if items:
             self.load_dict(items)
@@ -150,8 +180,8 @@ class ModelsimSection(ToolSection):
     def __init__(self, items=None):
         super(ModelsimSection, self).__init__()
 
-        self._add_member('vlog_options', list, "Modelsim verilog compile options")
-        self._add_member('vsim_options', list, "Modelsim runtime options")
+        self._add_member('vlog_options', StringList, "Modelsim verilog compile options")
+        self._add_member('vsim_options', StringList, "Modelsim runtime options")
 
         if items:
             self.load_dict(items)
@@ -163,7 +193,7 @@ class IcarusSection(ToolSection):
     def __init__(self, items=None):
         super(IcarusSection, self).__init__()
 
-        self._add_member('iverilog_options', list, "Icarus verilog compile options")
+        self._add_member('iverilog_options', StringList, "Icarus verilog compile options")
 
         if items:
             self.load_dict(items)
@@ -186,14 +216,14 @@ class VerilatorSection(ToolSection):
         self.archive = False
         self._object_files = []
 
-        self._add_member('verilator_options', list, "Verilator build options")
-        self._add_member('src_files'        , list, "Verilator testbench source files")
-        self._add_member('include_files'    , list, "Verilator testbench include files")
-        self._add_member('define_files'     , list, "Verilator testbench include files (converts to verilog include files)")
-        self._add_member('libs'             , list, "Verilator C/C++ libraries")
+        self._add_member('verilator_options', StringList, "Verilator build options")
+        self._add_member('src_files'        , StringList, "Verilator testbench source files")
+        self._add_member('include_files'    , StringList, "Verilator testbench include files")
+        self._add_member('define_files'     , StringList, "Verilator testbench include files (converts to verilog include files)")
+        self._add_member('libs'             , StringList, "Verilator C/C++ libraries")
 
         self._add_member('tb_toplevel', str, 'Testbench top-level C/C++/SC file')
-        self._add_member('source_type', str, 'Testbench source code language (systemC/Cpp)')
+        self._add_member('source_type', SourceType, 'Testbench source code language (Legal values are systemC, C, CPP)')
         self._add_member('top_module' , str, 'verilog top-level module')
 
         if items:
@@ -322,8 +352,8 @@ class IseSection(ToolSection):
     def __init__(self, items=None):
         super(IseSection, self).__init__()
 
-        self._add_member('ucf_files' , list, "UCF constraint files")
-        self._add_member('tcl_files' , list, "Extra TCL scripts")
+        self._add_member('ucf_files' , StringList, "UCF constraint files")
+        self._add_member('tcl_files' , StringList, "Extra TCL scripts")
         self._add_member('family'    , str, 'FPGA device family')
         self._add_member('device'    , str, 'FPGA device identifier')
         self._add_member('package'   , str, 'FPGA device package')
@@ -341,9 +371,9 @@ class QuartusSection(ToolSection):
     def __init__(self, items=None):
         super(QuartusSection, self).__init__()
 
-        self._add_member('qsys_files', list, "Qsys IP description files")
-        self._add_member('sdc_files' , list, "SDC constraint files")
-        self._add_member('tcl_files', list, "Extra script files")
+        self._add_member('qsys_files', StringList, "Qsys IP description files")
+        self._add_member('sdc_files' , StringList, "SDC constraint files")
+        self._add_member('tcl_files' , StringList, "Extra script files")
 
         self._add_member('quartus_options', str, 'Quartus command-line options')
         self._add_member('family'         , str, 'FPGA device family')
@@ -389,7 +419,10 @@ def _register_subclasses(parent):
 _register_subclasses(Section)
 
 if __name__ == "__main__":
-    typenames = {str : 'String',
+    typenames = {str           : 'String',
+                 SimulatorList : 'Space-separated list',
+                 SourceType    : 'String',
+                 StringList    : 'Space-separated list',
                  list : 'List'}
     SECTION_TEMPLATE = """
 {}
@@ -407,5 +440,5 @@ if __name__ == "__main__":
     print("======")
     for k,v in sorted(SECTION_MAP.items()):
         c = v()
-        s="\n".join(["|{} | {} | {}".format(k2, typenames[v2['type']], v2['desc']) for k2, v2 in c._members.items()])
+        s="\n".join(["|{} | {} | {}".format(k2, typenames[v2['type']], v2['desc']) for k2, v2 in sorted(c._members.items())])
         print(SECTION_TEMPLATE.format(k, '-'*len(k), s))
