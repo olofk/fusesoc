@@ -96,8 +96,8 @@ class MainSection(Section):
         super(MainSection, self).__init__()
 
         self._add_member('description', str, "Core description")
-        self._add_member('depend'     , StringList, "Dependencies")
-        self._add_member('simulators' , SimulatorList, "Supported simulators. Valid values are icarus, modelsim and verilator")
+        self._add_member('depend'     , StringList, "Common dependencies")
+        self._add_member('simulators' , SimulatorList, "Supported simulators. Valid values are icarus, modelsim and verilator. Each simulator have a dedicated section desribed elsewhere in this document")
         self._add_member('patches'    , StringList, "FuseSoC-specific patches")
 
         if items:
@@ -110,7 +110,7 @@ class VhdlSection(Section):
     def __init__(self, items=None):
         super(VhdlSection, self).__init__()
 
-        self._add_member('src_files', StringList, "VHDL source files")
+        self._add_member('src_files', StringList, "VHDL source files for simulation and synthesis")
 
         if items:
             self.load_dict(items)
@@ -126,10 +126,10 @@ class VerilogSection(Section):
         self.include_dirs = []
         self.tb_include_dirs = []
 
-        self._add_member('src_files'           , StringList, "Verilog source files")
+        self._add_member('src_files'           , StringList, "Verilog source files for synthesis/simulation")
         self._add_member('include_files'       , StringList, "Verilog include files")
-        self._add_member('tb_src_files'        , StringList, "Testbench verilog source files")
-        self._add_member('tb_private_src_files', StringList, "Private testbench verilog source files")
+        self._add_member('tb_src_files'        , StringList, "Verilog source files that are only used in simulation. Visible to other cores")
+        self._add_member('tb_private_src_files', StringList, "Verilog source files that are only used in the core's own testbench. Not visible to other cores")
         self._add_member('tb_include_files'    , StringList, "Testbench include files")
 
         if items:
@@ -161,9 +161,9 @@ class VpiSection(Section):
 
         self.include_dirs = []
 
-        self._add_member('src_files'    , StringList, "VPI C files")
-        self._add_member('include_files', StringList, "VPI C include files")
-        self._add_member('libs'         , StringList, "VPI C libraries")
+        self._add_member('src_files'    , StringList, "C source files for VPI library")
+        self._add_member('include_files', StringList, "C include files for VPI library")
+        self._add_member('libs'         , StringList, "External libraries linked with the VPI library")
 
         if items:
             self.load_dict(items)
@@ -180,8 +180,8 @@ class ModelsimSection(ToolSection):
     def __init__(self, items=None):
         super(ModelsimSection, self).__init__()
 
-        self._add_member('vlog_options', StringList, "Modelsim verilog compile options")
-        self._add_member('vsim_options', StringList, "Modelsim runtime options")
+        self._add_member('vlog_options', StringList, "Additional arguments for vlog")
+        self._add_member('vsim_options', StringList, "Additional arguments for vsim")
 
         if items:
             self.load_dict(items)
@@ -193,7 +193,7 @@ class IcarusSection(ToolSection):
     def __init__(self, items=None):
         super(IcarusSection, self).__init__()
 
-        self._add_member('iverilog_options', StringList, "Icarus verilog compile options")
+        self._add_member('iverilog_options', StringList, "Extra Icarus verilog compile options")
 
         if items:
             self.load_dict(items)
@@ -217,13 +217,13 @@ class VerilatorSection(ToolSection):
         self._object_files = []
 
         self._add_member('verilator_options', StringList, "Verilator build options")
-        self._add_member('src_files'        , StringList, "Verilator testbench source files")
-        self._add_member('include_files'    , StringList, "Verilator testbench include files")
-        self._add_member('define_files'     , StringList, "Verilator testbench include files (converts to verilog include files)")
-        self._add_member('libs'             , StringList, "Verilator C/C++ libraries")
+        self._add_member('src_files'        , StringList, "Verilator testbench C/cpp/sysC source files")
+        self._add_member('include_files'    , StringList, "Verilator testbench C include files")
+        self._add_member('define_files'     , StringList, "Verilog include files containing `define directives to be converted to C #define directives in corresponding .h files")
+        self._add_member('libs'             , StringList, "External libraries linked with the generated model")
 
         self._add_member('tb_toplevel', str, 'Testbench top-level C/C++/SC file')
-        self._add_member('source_type', SourceType, 'Testbench source code language (Legal values are systemC, C, CPP)')
+        self._add_member('source_type', SourceType, 'Testbench source code language (Legal values are systemC, C, CPP. Default is C)')
         self._add_member('top_module' , str, 'verilog top-level module')
 
         if items:
@@ -436,8 +436,6 @@ if __name__ == "__main__":
 
 """
 
-    print("CAPI 1")
-    print("======")
     for k,v in sorted(SECTION_MAP.items()):
         c = v()
         s="\n".join(["|{} | {} | {}".format(k2, typenames[v2['type']], v2['desc']) for k2, v2 in sorted(c._members.items())])

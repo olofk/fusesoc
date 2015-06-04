@@ -1,174 +1,98 @@
 Core Description files
 ======================
 :Author: Olof Kindgren
-:Email: <olof@opencores.org>
-:Date: 2013-06-04
-:Revision: 1.0 (draft)
-
-:Author: Jose T. de Sousa
-:Email: <jts@inesc-id.pt>
-:Date: 2014-01-28
-:Revision: 1.1 (verilator rev)
-
+:Email: olof.kindgren@gmail.com
+:Date: 2015-06-04
+:Revision: 1.0
 
 capi (Core API) is the format for core description files. Current version is version 1.0. A capi 1.0 file is identified by the string "CAPI=1" in the beginning of a file. The rest of the file is a standard http://en.wikipedia.org/wiki/INI_file[INI file] that is compatible with Python's http://docs.python.org/2/library/configparser.html[configparser] module
 
 File location
 -------------
 
-capi 1.0 files must reside in a sub directory of the cores directory and have the same name as the directory with a .core suffix, i.e. <cores_root>/<core_name>/<core_name>.core
+FuseSoC searches recursively for files with a _.core_ suffix in all directories listed either in the _cores_root_ option in _fusesoc.conf_ or specified with the _--cores-root_ parameter when FuseSoC is launched.
 
-.Locations of core description files
-========
-cores/or1200/or1200.core
+Once a _.core_ file is encountered in a directory and successfully parsed, FuseSoC will not search its subdirectories. Several _.core_ files can reside in the same directory and they will all be parsed. The name of the _.core_file_, without the _.core_ suffix will be used to uniquely identify the name of the core. There are no formal requirements on the naming of the _.core_ file, but best practice is to use _<name>-<version>.core_ ,e.g. _mor1kx-3.2.core_ for mor1kx version 3.2.
 
-cores/uart16550/uart16550.core
+If several cores with the same name are encountered the latter name will be used. The directories specified in _fusesoc.conf_ will be scanned in the order they appear in the file, and directories specified with the command-line argument _--cores-root_ will be scanned after that. This means that you can temporarily override your default core libraries by adding a new _--cores-root_ argument, or more permanently override cores by adding them to the end of the _cores_root_ option in _fusesoc.conf_
+
+.Locations of core description files. 
 ========
+. library/mor1kx/mor1kx-3.2.core
+. library/mor1kx/mor1kx.core
+. cores/uart16550/uart16550.core
+. de0_nano/de0_nano.core
+. de0_nano/uart/spi/simple_spi.core +
+_1 and 2 reside in the same directory and are both parsed. 5 is not parsed since it resides in a subdirectory of 4_
+========
+
 
 File contents
 -------------
 
 CAPI 1.0 files are divided into sections, with each section containing related configuration options. See http://en.wikipedia.org/wiki/INI_file[INI file] for more general information about ini files.
 
-Only sections defined in this document are recognized by FuseSoC. All other sections are ignored. The same applies for the options inside each section. CAPI 1.0 defines the following required and optional sections and values. 
+Only sections defined in this document are recognized by FuseSoC. All other sections are ignored. The same applies for the options inside each section. CAPI 1.0 defines the following sections and values. 
 
-main
-~~~~
-The main section contain options that does not fit into any of the other
-categories.
+include::capi1.txt[Core API]
 
-description (optional)
-^^^^^^^^^^^^^^^^^^^^^^
-A string with a description can be added to the core.
-
-depend (optional)
-^^^^^^^^^^^^^^^^^
-List of cores that this core depends on.
-
-simulators (optional)
-^^^^^^^^^^^^^^^^^^^^^
-A white-space separated list of FuseSoC-supported simulators that can be used to simulate the system. Currently supported simulators are:
-
-* *modelsim :* Mentor Modelsim
-* *icarus :* Icarus Verilog Open-Source simulator
-* *verilator :* Verilog Open-Source compiler and simulator
-
-Each of the simulator targets have a dedicated section described in further detail below.
-
-modelsim (optional)
-~~~~~~~~~~~~~~~~~~~
-Additional options used when simulating with modelsim:
-
-* *vlog_options :* Options to be sent as additional arguments to vlog
-* *vsim_options :* Options to be sent as additional arguments to vsim
-* *depend       :* List of cores that only Modelsim simulation depends on
-
-icarus (optional)
-~~~~~~~~~~~~~~~~~
-Additional options used when simulating with Icarus Verilog:
-
-* *iverilog_options :* Options to be sent as additional arguments to iverilog
-* *depend           :* List of cores that only Icarus simulation depends on
-
-verilator (optional)
-~~~~~~~~~~~~~~~~~~~~
-Additional options used when simulating with Verilator:
-
-* *source_type (optional)       :* Currently can be set to C or SystemC (default is C)
-* *define_files (optional)      :* List of .v files containing `define directives to be
-converted to #define directives in corresponding .h files
-* *libs (optional)              :* List of external libraries linked with the generated model
-* *verilator_options (optional) :* List of options passed to Verilator
-* *src_files (optional)         :* List of C or SystemC files
-* *include_files (optional)     :* List of C or SystemC include files
-* *tb_toplevel (optional)       :* Name of the test bench top file
-* *depend (optional)            :* List of cores that only Verilator simulation depends on
-* *top_module (optional)        :* Name of the verilog top module
-
-verilog (optional)
-~~~~~~~~~~~~~~~~~~
-The verilog section contains options for verilog source code:
-
-* *src_files (optional) :*
-List of verilog files containing modules that are a part of the synthesized design.
-
-* *include_files (optional) :*
-List of verilog files that are used in `include statements of the src_files.
-
-* *tb_src_files (optional) :*
-List of verilog files containing modules that are only used in test benches and not part of the synthesized design.
-
-* *tb_include_files (optional) :*
-List of verilog files that are referenced with `include statements from tb_src_files.
-
-vhdl (optional)
-~~~~~~~~~~~~~~~
-The vhdl section contains options for vhdl source code:
-
-* *src_files (optional) :*
-List of vhdl files containing modules that are a part of the synthesized design.
-
-vpi (optional)
-~~~~~~~~~~~~~~
-The VPI section contains information on how to compile C source files into a VPI library:
-
-* *name :*
-Name of the compiled VPI library.
-
-* *src_files :*
-List of C source files for the VPI library.
-
-* *include_files (optional) :*
-List of C include files for the VPI library.
-
-* *libs (optional) :*
-List of external libraries linked with the VPI library.
-
-scripts (optional)
-~~~~~~~~~~~~~~~~~~
+scripts
+-------
 External scripts that are executed during the simulation process.
 
-pre_run_scripts (optional)
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-A white-space separated list of scripts that are executed before the simulation.
+[cols="2,1,5",options="header"]
+|==============================
+|Name | Type | Description
+|pre_run_scripts | Space-separated list | Shell scripts that are executed before the simulation
+|post_run_scripts | Space-separated list | Shell scripts that are executed after the simulation
+|==============================
 
-post_run_scripts (optional)
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-A white-space separated list of scripts that are executed after the simulation is started.
 
-provider (optional)
-~~~~~~~~~~~~~~~~~~~
+provider
+--------
 The provider section gives information on where to find the source code for the core. If the provider section is missing, the core is assumed to be local, with the directory of the .core file as the root directory.
 
-* *name :*
-The name option selects which provider backend to use. All other provider options are specific to the selected provider. Currently three backends are supported.
+[cols="2,1,5",options="header"]
+|==============================
+|Name | Type | Description
+|name | String | The name option selects which provider backend to use. All other provider options are specific to the selected provider. Currently supported backends are github, opencores, submodule and url.
+|==============================
+
+Provider-specific options
+-------------------------
+
+name = github
+~~~~~~~~~~~~~
+* *user :* Name of the github user or organisation.
+
+* *repo :* Name of the GIT repository.
+
+* *version :* Name of the GIT ref (i.e. commit SHA, branch or tag) to use
+
+* *cachable :* If the cachable option is set to false, FuseSoc will unconditionally refetch the core even if it is found in the cache
 
 name  = opencores
-^^^^^^^^^^^^^^^^^
+~~~~~~~~~~~~~~~~~
 * *repo_name :* Name of the opencores project. Can be found under Details on the project homepage.
 
 * *repo_root :* The sub directory in the repo that contains the files of interest. In most cases the value "trunk" is used to avoid pulling in tags and branches.
 
 * *revision :* The svn revision of the repository.
 
-name = github
-^^^^^^^^^^^^^
-* *user :* Name of the github user or organisation.
-
-* *repo :* Name of the GIT repository.
-
-* *branch :* Name of the GIT branch to use.
+name = submodule
+~~~~~~~~~~
+* *repo :* Path to the GIT repository to use for the submodule
 
 name = url
-^^^^^^^^^^
+~~~~~~~~~~
 * *url :* URL of the core file (or archive).
 
 * *filetype :* File type (zip, tar, simple).
 
 * *corename :* Name of the directory where the archive is unpacked (or the simple file is copied). If not provided, the name of the cache/build directory is the same as the core.
 
-plusargs (optional)
-~~~~~~~~~~~~~~~~~~~
+plusargs
+--------
 
 Plusargs are additional options that are sent to the verilog simulator at runtime. Cores that use plusargs internally (with $test$plusargs or $value$plusargs) can expose them to FuseSoc by adding an entry in the plusargs section.
 

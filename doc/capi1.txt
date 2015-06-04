@@ -1,0 +1,133 @@
+
+icarus
+------
+
+[cols="2,1,5",options="header"]
+|==============================
+|Name | Type | Description
+|depend | Space-separated list | Tool-specific Dependencies
+|iverilog_options | Space-separated list | Extra Icarus verilog compile options        
+|==============================
+
+
+
+ise
+---
+
+[cols="2,1,5",options="header"]
+|==============================
+|Name | Type | Description
+|depend | Space-separated list | Tool-specific Dependencies
+|device | String | FPGA device identifier
+|family | String | FPGA device family
+|package | String | FPGA device package
+|speed | String | FPGA device speed grade
+|tcl_files | Space-separated list | Extra TCL scripts
+|top_module | String | RTL top-level module
+|ucf_files | Space-separated list | UCF constraint files        
+|==============================
+
+
+
+main
+----
+
+[cols="2,1,5",options="header"]
+|==============================
+|Name | Type | Description
+|depend | Space-separated list | Common dependencies
+|description | String | Core description
+|patches | Space-separated list | FuseSoC-specific patches
+|simulators | Space-separated list | Supported simulators. Valid values are icarus, modelsim and verilator. Each simulator have a dedicated section desribed elsewhere in this document        
+|==============================
+
+
+
+modelsim
+--------
+
+[cols="2,1,5",options="header"]
+|==============================
+|Name | Type | Description
+|depend | Space-separated list | Tool-specific Dependencies
+|vlog_options | Space-separated list | Additional arguments for vlog
+|vsim_options | Space-separated list | Additional arguments for vsim        
+|==============================
+
+
+
+quartus
+-------
+
+[cols="2,1,5",options="header"]
+|==============================
+|Name | Type | Description
+|depend | Space-separated list | Tool-specific Dependencies
+|device | String | FPGA device identifier
+|family | String | FPGA device family
+|qsys_files | Space-separated list | Qsys IP description files
+|quartus_options | String | Quartus command-line options
+|sdc_files | Space-separated list | SDC constraint files
+|tcl_files | Space-separated list | Extra script files
+|top_module | String | RTL top-level module        
+|==============================
+
+
+
+verilator
+---------
+
+[cols="2,1,5",options="header"]
+|==============================
+|Name | Type | Description
+|define_files | Space-separated list | Verilog include files containing `define directives to be converted to C #define directives in corresponding .h files
+|depend | Space-separated list | Tool-specific Dependencies
+|include_files | Space-separated list | Verilator testbench C include files
+|libs | Space-separated list | External libraries linked with the generated model
+|source_type | String | Testbench source code language (Legal values are systemC, C, CPP. Default is C)
+|src_files | Space-separated list | Verilator testbench C/cpp/sysC source files
+|tb_toplevel | String | Testbench top-level C/C++/SC file
+|top_module | String | verilog top-level module
+|verilator_options | Space-separated list | Verilator build options        
+|==============================
+
+
+
+verilog
+-------
+
+[cols="2,1,5",options="header"]
+|==============================
+|Name | Type | Description
+|include_files | Space-separated list | Verilog include files
+|src_files | Space-separated list | Verilog source files for synthesis/simulation
+|tb_include_files | Space-separated list | Testbench include files
+|tb_private_src_files | Space-separated list | Verilog source files that are only used in the core's own testbench. Not visible to other cores
+|tb_src_files | Space-separated list | Verilog source files that are only used in simulation. Visible to other cores        
+|==============================
+
+
+
+vhdl
+----
+
+[cols="2,1,5",options="header"]
+|==============================
+|Name | Type | Description
+|src_files | Space-separated list | VHDL source files for simulation and synthesis        
+|==============================
+
+
+
+vpi
+---
+
+[cols="2,1,5",options="header"]
+|==============================
+|Name | Type | Description
+|include_files | Space-separated list | C include files for VPI library
+|libs | Space-separated list | External libraries linked with the VPI library
+|src_files | Space-separated list | C source files for VPI library        
+|==============================
+
+
