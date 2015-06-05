@@ -204,6 +204,8 @@ def sim(args):
     except RuntimeError as e:
         pr_err(str(e))
         exit(1)
+    if (args.testbench):
+        sim.toplevel = args.testbench[0]
     if not args.keep or not os.path.exists(sim.sim_root):
         try:
             sim.configure()
@@ -329,6 +331,7 @@ if __name__ == "__main__":
     parser_sim.add_argument('--force', action='store_true', help='Force rebuilding simulation model when directory exists')
     parser_sim.add_argument('--keep', action='store_true', help='Prevent rebuilding simulation model if it exists')
     parser_sim.add_argument('--dry-run', action='store_true')
+    parser_sim.add_argument('--testbench', nargs=1, help='Override default testbench')
     parser_sim.add_argument('system',help='Select a system to simulate') #, choices = Config().get_systems())
     parser_sim.add_argument('plusargs', nargs=argparse.REMAINDER)
     parser_sim.set_defaults(func=sim)
