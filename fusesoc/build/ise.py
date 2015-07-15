@@ -23,6 +23,20 @@ project set top "{top_module}"
 process run "Generate Programming File"
 """
 
+    PGM_FILE_TEMPLATE = """
+# Batch script for programming the device using a JTAG interface.
+# Used with:
+# $ impact -batch {pgm_file}
+
+setMode -bscan
+setCable -port auto
+addDevice -p 1 -file {bit_file}
+program -p 1
+saveCDF -file {cdf_file}
+quit
+"""
+
+
     TOOL_NAME = 'ise'
 
     def __init__(self, system):
@@ -78,4 +92,16 @@ process run "Generate Programming File"
         super(Ise, self).done()
 
     def pgm(self, remaining):
-        pass
+        pgm_file_name = os.path.join(self.work_root, self.system.name+'.pgm')
+        self._write_pgm_file(pgm_file_name)
+        utils.Launcher('impact', ['-batch', pgm_file_name],
+                           cwd = self.work_root,
+                           errormsg = "impact tool returned an error").run()
+
+    def _write_pgm_file(self, pgm_file_name):
+        pgm_file = open(pgm_file_name,'w')
+        pgm_file.write(self.PGM_FILE_TEMPLATE.format(
+            pgm_file             = pgm_file_name,
+            bit_file             = os.path.join(self.work_root, self.system.backend.top_module+'.bit'),
+            cdf_file             = os.path.join(self.work_root, self.system.backend.top_module+'.cdf')))
+        pgm_file.close()
