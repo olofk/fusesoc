@@ -20,6 +20,9 @@ class Launcher:
         self.env      = env
 
     def run(self):
+        if Config().verbose:
+            pr_info(self.cwd)
+            pr_info('    ' + str(self))
         try:
             subprocess.check_call([self.cmd] + self.args,
                                   cwd = self.cwd,
