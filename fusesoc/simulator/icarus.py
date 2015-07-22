@@ -78,6 +78,7 @@ class SimulatorIcarus(Simulator):
         args += ['-l', 'icarus.log']                       # Log file
         args += ['-m'+s['name'] for s in self.vpi_modules] # Load VPI modules
         args += ['fusesoc.elf']                            # Simulation binary file
+        args += ['-lxt2']
         args += ['+'+s for s in self.plusargs]             # Plusargs
         Launcher('vvp', args,
                  cwd = self.sim_root,
