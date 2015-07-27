@@ -11,8 +11,10 @@ logger = logging.getLogger(__name__)
 
 if sys.version_info[0] >= 3:
     import urllib.request as urllib
+    from urllib.error import URLError
 else:
     import urllib
+    from urllib2 import URLError
 
 class ProviderURL(object):
     def __init__(self, core_name, config, core_root, cache_root):
@@ -52,7 +54,7 @@ class ProviderURL(object):
         pr_info("Checking out " + self.url + " to " + local_dir)
         try:
             (filename, headers) = urllib.urlretrieve(self.url)
-        except urllib.URLError:
+        except URLError:
             raise
         except urllib.HTTPError:
             raise
