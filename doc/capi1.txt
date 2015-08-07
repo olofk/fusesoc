@@ -29,6 +29,18 @@ ise
 
 
 
+isim
+----
+
+[cols="2,1,5",options="header"]
+|==============================
+|Name | Type | Description
+|depend | Space-separated list | Tool-specific Dependencies
+|isim_options | Space-separated list | Extra Isim compile options        
+|==============================
+
+
+
 main
 ----
 
@@ -38,7 +50,7 @@ main
 |depend | Space-separated list | Common dependencies
 |description | String | Core description
 |patches | Space-separated list | FuseSoC-specific patches
-|simulators | Space-separated list | Supported simulators. Valid values are icarus, modelsim and verilator. Each simulator have a dedicated section desribed elsewhere in this document        
+|simulators | Space-separated list | Supported simulators. Valid values are icarus, modelsim, verilator and isim. Each simulator have a dedicated section desribed elsewhere in this document        
 |==============================
 
 
