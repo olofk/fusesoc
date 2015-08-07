@@ -41,6 +41,18 @@ isim
 
 
 
+isim
+------
+
+[cols="2,1,5",options="header"]
+|==============================
+|Name | Type | Description
+|depend | Space-separated list | Tool-specific Dependencies
+|isim_options | Space-separated list | Extra Isim compile options        
+|==============================
+
+
+
 main
 ----
 
