@@ -26,6 +26,7 @@ simulator_PYTHON =      \
  fusesoc/simulator/__init__.py  \
  fusesoc/simulator/icarus.py    \
  fusesoc/simulator/isim.py      \
+ fusesoc/simulator/xsim.py      \
  fusesoc/simulator/modelsim.py  \
  fusesoc/simulator/simulator.py \
  fusesoc/simulator/verilator.py

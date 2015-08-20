@@ -2,6 +2,7 @@ from fusesoc.simulator.icarus import SimulatorIcarus
 from fusesoc.simulator.modelsim import Modelsim
 from fusesoc.simulator.verilator import Verilator
 from fusesoc.simulator.isim import Isim
+from fusesoc.simulator.xsim import Xsim
 def SimulatorFactory(sim,system):
     if sim == 'icarus':
         return SimulatorIcarus(system)
@@ -11,5 +12,7 @@ def SimulatorFactory(sim,system):
         return Verilator(system)
     elif sim == 'isim':
         return Isim(system)
+    elif sim == 'xsim':
+        return Xsim(system)
     else:
         raise RuntimeError("Unknown simulator '"+sim+"'")
