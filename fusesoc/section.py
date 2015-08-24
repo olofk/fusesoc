@@ -21,6 +21,13 @@ class StringList(list):
             return list()
         else:
             return list(args[0].split())
+
+class PathList(StringList):
+    def __new__(cls, *args, **kwargs):
+        if not args:
+            return list()
+        else:
+            return [os.path.expandvars(p) for p in args[0].split()]
     
 class EnumList(list):
     def __new__(cls, *args, **kwargs):
@@ -110,7 +117,7 @@ class VhdlSection(Section):
     def __init__(self, items=None):
         super(VhdlSection, self).__init__()
 
-        self._add_member('src_files', StringList, "VHDL source files for simulation and synthesis")
+        self._add_member('src_files', PathList, "VHDL source files for simulation and synthesis")
 
         if items:
             self.load_dict(items)
@@ -126,11 +133,11 @@ class VerilogSection(Section):
         self.include_dirs = []
         self.tb_include_dirs = []
 
-        self._add_member('src_files'           , StringList, "Verilog source files for synthesis/simulation")
-        self._add_member('include_files'       , StringList, "Verilog include files")
-        self._add_member('tb_src_files'        , StringList, "Verilog source files that are only used in simulation. Visible to other cores")
-        self._add_member('tb_private_src_files', StringList, "Verilog source files that are only used in the core's own testbench. Not visible to other cores")
-        self._add_member('tb_include_files'    , StringList, "Testbench include files")
+        self._add_member('src_files'           , PathList, "Verilog source files for synthesis/simulation")
+        self._add_member('include_files'       , PathList, "Verilog include files")
+        self._add_member('tb_src_files'        , PathList, "Verilog source files that are only used in simulation. Visible to other cores")
+        self._add_member('tb_private_src_files', PathList, "Verilog source files that are only used in the core's own testbench. Not visible to other cores")
+        self._add_member('tb_include_files'    , PathList, "Testbench include files")
 
         if items:
             self.load_dict(items)
@@ -161,9 +168,9 @@ class VpiSection(Section):
 
         self.include_dirs = []
 
-        self._add_member('src_files'    , StringList, "C source files for VPI library")
-        self._add_member('include_files', StringList, "C include files for VPI library")
-        self._add_member('libs'         , StringList, "External libraries linked with the VPI library")
+        self._add_member('src_files'    , PathList, "C source files for VPI library")
+        self._add_member('include_files', PathList, "C include files for VPI library")
+        self._add_member('libs'         , PathList, "External libraries linked with the VPI library")
 
         if items:
             self.load_dict(items)
@@ -236,10 +243,10 @@ class VerilatorSection(ToolSection):
         self._object_files = []
 
         self._add_member('verilator_options', StringList, "Verilator build options")
-        self._add_member('src_files'        , StringList, "Verilator testbench C/cpp/sysC source files")
-        self._add_member('include_files'    , StringList, "Verilator testbench C include files")
-        self._add_member('define_files'     , StringList, "Verilog include files containing `define directives to be converted to C #define directives in corresponding .h files")
-        self._add_member('libs'             , StringList, "External libraries linked with the generated model")
+        self._add_member('src_files'        , PathList  , "Verilator testbench C/cpp/sysC source files")
+        self._add_member('include_files'    , PathList  , "Verilator testbench C include files")
+        self._add_member('define_files'     , PathList  , "Verilog include files containing `define directives to be converted to C #define directives in corresponding .h files")
+        self._add_member('libs'             , PathList  , "External libraries linked with the generated model")
 
         self._add_member('tb_toplevel', str, 'Testbench top-level C/C++/SC file')
         self._add_member('source_type', SourceType, 'Testbench source code language (Legal values are systemC, C, CPP. Default is C)')
@@ -371,8 +378,8 @@ class IseSection(ToolSection):
     def __init__(self, items=None):
         super(IseSection, self).__init__()
 
-        self._add_member('ucf_files' , StringList, "UCF constraint files")
-        self._add_member('tcl_files' , StringList, "Extra TCL scripts")
+        self._add_member('ucf_files' , PathList, "UCF constraint files")
+        self._add_member('tcl_files' , PathList, "Extra TCL scripts")
         self._add_member('family'    , str, 'FPGA device family')
         self._add_member('device'    , str, 'FPGA device identifier')
         self._add_member('package'   , str, 'FPGA device package')
@@ -390,9 +397,9 @@ class QuartusSection(ToolSection):
     def __init__(self, items=None):
         super(QuartusSection, self).__init__()
 
-        self._add_member('qsys_files', StringList, "Qsys IP description files")
-        self._add_member('sdc_files' , StringList, "SDC constraint files")
-        self._add_member('tcl_files' , StringList, "Extra script files")
+        self._add_member('qsys_files', PathList, "Qsys IP description files")
+        self._add_member('sdc_files' , PathList, "SDC constraint files")
+        self._add_member('tcl_files' , PathList, "Extra script files")
 
         self._add_member('quartus_options', str, 'Quartus command-line options')
         self._add_member('family'         , str, 'FPGA device family')
@@ -439,6 +446,7 @@ _register_subclasses(Section)
 
 if __name__ == "__main__":
     typenames = {str           : 'String',
+                 PathList      : 'Space-separated list of paths',
                  SimulatorList : 'Space-separated list',
                  SourceType    : 'String',
                  StringList    : 'Space-separated list',
