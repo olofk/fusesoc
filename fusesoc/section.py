@@ -288,7 +288,7 @@ Verilog top module      : {top_module}
         elif self.source_type == 'systemC':
             self.build_SysC(core, sim_root, src_root)
         else:
-            raise Source(self.source_type)
+            raise SourceType(self.source_type)
 
         if self._object_files:
             args = []
