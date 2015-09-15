@@ -10,9 +10,11 @@ import sys
 if sys.version_info[0] >= 3:
     import urllib.request as urllib
     from urllib.error import URLError
+    from urllib.error import HTTPError
 else:
     import urllib
     from urllib2 import URLError
+    from urllib2 import HTTPError
 
 logger = logging.getLogger(__name__)
 
@@ -99,7 +101,7 @@ class Simulator(object):
                 core.setup()
             except URLError as e:
                 raise RuntimeError("Problem while fetching '" + core.name + "': " + str(e.reason))
-            except urllib.HTTPError as e:
+            except HTTPError as e:
                 raise RuntimeError("Problem while fetching '" + core.name + "': " + str(e.reason))
             core.export(dst_dir)
 
@@ -149,3 +151,4 @@ class Simulator(object):
                 Launcher(script, cwd = self.sim_root, env = self.env, shell=True).run()
             except RuntimeError:
                 pr_err("Error: script " + script + " failed")
+
