@@ -12,9 +12,11 @@ logger = logging.getLogger(__name__)
 if sys.version_info[0] >= 3:
     import urllib.request as urllib
     from urllib.error import URLError
+    from urllib.error import HTTPError
 else:
     import urllib
     from urllib2 import URLError
+    from urllib2 import HTTPError
 
 class ProviderURL(object):
     def __init__(self, core_name, config, core_root, cache_root):
@@ -56,7 +58,7 @@ class ProviderURL(object):
             (filename, headers) = urllib.urlretrieve(self.url)
         except URLError:
             raise
-        except urllib.HTTPError:
+        except HTTPError:
             raise
 
         (cache_root, core) = os.path.split(local_dir)

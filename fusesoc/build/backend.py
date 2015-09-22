@@ -6,9 +6,11 @@ import sys
 if sys.version_info[0] >= 3:
     import urllib.request as urllib
     from urllib.error import URLError
+    from urllib.error import HTTPError
 else:
     import urllib
     from urllib2 import URLError
+    from urllib2 import HTTPError
 
 from fusesoc.config import Config
 from fusesoc.coremanager import CoreManager
@@ -66,7 +68,7 @@ class Backend(object):
                 core.setup()
             except URLError as e:
                 raise RuntimeError("Problem while fetching '" + core.name + "': " + str(e.reason))
-            except urllib.HTTPError as e:
+            except HTTPError as e:
                 raise RuntimeError("Problem while fetching '" + core.name + "': " + str(e.reason))
             core.export(dst_dir)
 

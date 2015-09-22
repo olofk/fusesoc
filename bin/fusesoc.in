@@ -9,9 +9,11 @@ import signal
 if sys.version_info[0] >= 3:
     import urllib.request as urllib
     from urllib.error import URLError
+    from urllib.error import HTTPError
 else:
     import urllib
     from urllib2 import URLError
+    from urllib2 import HTTPError
 
 #Check if this is run from a local installation
 fusesocdir = os.path.abspath(os.path.join(os.path.dirname(os.path.realpath(__file__)), ".."))
@@ -88,7 +90,7 @@ def fetch(args):
         except URLError as e:
             pr_err("Problem while fetching '" + core.name + "': " + str(e.reason))
             exit(1)
-        except urllib.HTTPError as e:
+        except HTTPError as e:
             pr_err("Problem while fetching '" + core.name + "': " + str(e.reason))
             exit(1)
         for name in cores:
@@ -99,7 +101,7 @@ def fetch(args):
              except URLError as e:
                  pr_err("Problem while fetching '" + core.name + "': " + str(e.reason))
                  exit(1)
-             except urllib.HTTPError as e:
+             except HTTPError as e:
                  pr_err("Problem while fetching '" + core.name + "': " + str(e.reason))
                  exit(1)
     else:
