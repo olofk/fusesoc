@@ -1,12 +1,11 @@
 FuseSoC
 =======
 
-
 Introduction
 ------------
 FuseSoC is a package manager and a set of build tools for HDL code.
 
-It's main purpose is to increase reuse of IP cores and be an aid for creating, building and simulating SoC solutions.
+Its main purpose is to increase reuse of IP cores and be an aid for creating, building and simulating SoC solutions.
 
 The package manager part can be seen as an apt, portage, yum, dnf, pacman for FPGA/ASIC IP cores.
 A simple ini file describes mainly which files the IP core contains, which other IP cores it depends on and where FuseSoC shall fetch the code.
@@ -28,17 +27,17 @@ Install by cloning the repo, cd into fusesoc and run:
     sudo make install
     fusesoc init
 
-Test your installation by running `fusesoc list-cores`. This should return the list of cores that FuseSoC has found
+Test your installation by running `fusesoc list-cores`. This should return the list of cores that FuseSoC has found.
 
 If you have any of the supported simulators installed, you can try to run a simulation on one of the cores as well.
-For example, `fusesoc sim --sim=icarus wb_sdram_ctrl` will run a regression test on the core wb_sdram_ctrl with icarus verilog
-If you also have Altera Quartus installed, you can try to build an example system. For example, `fusesoc build de0_nano`
+For example, `fusesoc sim --sim=icarus wb_sdram_ctrl` will run a regression test on the core wb_sdram_ctrl with icarus verilog.
+If you also have Altera Quartus installed, you can try to build an example system - for example, `fusesoc build de0_nano`.
 
-`fusesoc --help` will give you more information on commands and switches
+`fusesoc --help` will give you more information on commands and switches.
 
 Further reading
 ---------------
-A few tutorials using FuseSoC are available, but they are unfortunately all written before fusesoc was renamed from orpsocv3
+A few tutorials using FuseSoC are available, but they are unfortunately all written before FuseSoC was renamed from orpsocv3:
 
 http://www.elec4fun.fr/2011-03-30-10-16-30/2012-08-22-20-50-31/or1200-barebox-on-de1 (
 http://designandmake.designspark.com/blog/booting-linux-on-a-de0-nano-with-orpsoc
