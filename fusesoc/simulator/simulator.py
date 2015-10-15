@@ -106,16 +106,17 @@ class Simulator(object):
             core.export(dst_dir)
 
     def build(self):
-        if not self.system.scripts:
-            return
+        for core_name in self.cores:
+            core = self.cm.get_core(core_name)
+            if core.scripts:
+                for script_name in core.scripts.pre_build_scripts:
 
-        for script in self.system.scripts.pre_build_scripts:
-            script = os.path.abspath(os.path.join(self.system.core_root, script))
-            pr_info("Running " + script);
-            try:
-                Launcher(script, cwd = self.sim_root, env = self.env, shell=True).run()
-            except RuntimeError:
-                pr_err("Error: script " + script + " failed")
+                    script = os.path.abspath(os.path.join(core.core_root, script_name))
+                    pr_info("Running " + script);
+                    try:
+                        Launcher(script, cwd = self.sim_root, env = self.env, shell=True).run()
+                    except RuntimeError:
+                        pr_err("Error: script " + script + " failed")
         return
 
     def run(self, args):
@@ -137,27 +138,28 @@ class Simulator(object):
             else:
                 self.plusargs += [key+'='+str(value[0])]
 
-        if not self.system.scripts:
-            return
+        for core_name in self.cores:
+            core = self.cm.get_core(core_name)
+            if core.scripts:
+                for script_name in core.scripts.pre_run_scripts:
 
-        for script in self.system.scripts.pre_run_scripts:
-            script = os.path.abspath(os.path.join(self.system.core_root, script))
-            pr_info("Running " + script);
-            try:
-                Launcher(script, cwd = self.sim_root, env = self.env, shell=True).run()
-            except RuntimeError:
-                pr_err("Error: script " + script + " failed")
+                    script = os.path.abspath(os.path.join(core.core_root, script_name))
+                    pr_info("Running " + script);
+                    try:
+                        Launcher(script, cwd = self.sim_root, env = self.env, shell=True).run()
+                    except RuntimeError:
+                        pr_err("Error: script " + script + " failed")
 
     def done(self, args):
 
-        if not self.system.scripts:
-            return
+        for core_name in self.cores:
+            core = self.cm.get_core(core_name)
+            if core.scripts:
+                for script_name in core.scripts.post_run_scripts:
 
-        for script in self.system.scripts.post_run_scripts:
-            script = os.path.abspath(os.path.join(self.system.core_root, script))
-            pr_info("Running " + script);
-            try:
-                Launcher(script, cwd = self.sim_root, env = self.env, shell=True).run()
-            except RuntimeError:
-                pr_err("Error: script " + script + " failed")
-
+                    script = os.path.abspath(os.path.join(core.core_root, script_name))
+                    pr_info("Running " + script);
+                    try:
+                        Launcher(script, cwd = self.sim_root, env = self.env, shell=True).run()
+                    except RuntimeError:
+                        pr_err("Error: script " + script + " failed")
