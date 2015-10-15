@@ -51,10 +51,6 @@ class Core:
             self.depend     = self.main.depend
             self.simulators = self.main.simulators
 
-            self.pre_build_scripts  = config.get_list('scripts','pre_build_scripts')
-            self.pre_run_scripts  = config.get_list('scripts','pre_run_scripts')
-            self.post_run_scripts = config.get_list('scripts','post_run_scripts')
-
             cache_root = os.path.join(Config().cache_root, self.name)
             if config.has_section('plusargs'):
                 self.plusargs = Plusargs(dict(config.items('plusargs')))

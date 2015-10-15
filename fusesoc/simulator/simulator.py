@@ -106,7 +106,10 @@ class Simulator(object):
             core.export(dst_dir)
 
     def build(self):
-        for script in self.system.pre_build_scripts:
+        if not self.system.scripts:
+            return
+
+        for script in self.system.scripts.pre_build_scripts:
             script = os.path.abspath(os.path.join(self.system.core_root, script))
             pr_info("Running " + script);
             try:
@@ -134,7 +137,10 @@ class Simulator(object):
             else:
                 self.plusargs += [key+'='+str(value[0])]
 
-        for script in self.system.pre_run_scripts:
+        if not self.system.scripts:
+            return
+
+        for script in self.system.scripts.pre_run_scripts:
             script = os.path.abspath(os.path.join(self.system.core_root, script))
             pr_info("Running " + script);
             try:
@@ -144,7 +150,10 @@ class Simulator(object):
 
     def done(self, args):
 
-        for script in self.system.post_run_scripts:
+        if not self.system.scripts:
+            return
+
+        for script in self.system.scripts.post_run_scripts:
             script = os.path.abspath(os.path.join(self.system.core_root, script))
             pr_info("Running " + script);
             try:
