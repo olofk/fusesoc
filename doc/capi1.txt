@@ -86,6 +86,19 @@ quartus
 
 
 
+scripts
+-------
+
+[cols="2,1,5",options="header"]
+|==============================
+|Name | Type | Description
+|post_run_scripts | Space-separated list | Scripts to run after simulations
+|pre_build_scripts | Space-separated list | Scripts to run before building
+|pre_run_scripts | Space-separated list | Scripts to run before running simulations
+|==============================
+
+
+
 verilator
 ---------
 

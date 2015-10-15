@@ -91,6 +91,14 @@ class Section(object):
                 s += k + ' : ' + getattr(self, k) + '\n'
         return s
 
+class ScriptsSection(Section):
+    TAG = 'scripts'
+    def __init__(self):
+        super(ScriptsSection, self).__init__()
+        self._add_member('pre_build_scripts', StringList, 'Scripts to run before building')
+        self._add_member('pre_run_scripts'  , StringList, 'Scripts to run before running simulations')
+        self._add_member('post_run_scripts' , StringList, 'Scripts to run after simulations')
+
 class ToolSection(Section):
     def __init__(self):
         super(ToolSection, self).__init__()
