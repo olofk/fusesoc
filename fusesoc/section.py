@@ -93,11 +93,14 @@ class Section(object):
 
 class ScriptsSection(Section):
     TAG = 'scripts'
-    def __init__(self):
+    def __init__(self, items=None):
         super(ScriptsSection, self).__init__()
         self._add_member('pre_build_scripts', StringList, 'Scripts to run before building')
         self._add_member('pre_run_scripts'  , StringList, 'Scripts to run before running simulations')
         self._add_member('post_run_scripts' , StringList, 'Scripts to run after simulations')
+
+        if items:
+            self.load_dict(items)
 
 class ToolSection(Section):
     def __init__(self):
