@@ -6,7 +6,7 @@ icarus
 |==============================
 |Name | Type | Description
 |depend | Space-separated list | Tool-specific Dependencies
-|iverilog_options | Space-separated list | Extra Icarus verilog compile options        
+|iverilog_options | Space-separated list | Extra Icarus verilog compile options
 |==============================
 
 
@@ -24,7 +24,7 @@ ise
 |speed | String | FPGA device speed grade
 |tcl_files | Space-separated list of paths | Extra TCL scripts
 |top_module | String | RTL top-level module
-|ucf_files | Space-separated list of paths | UCF constraint files        
+|ucf_files | Space-separated list of paths | UCF constraint files
 |==============================
 
 
@@ -36,7 +36,7 @@ isim
 |==============================
 |Name | Type | Description
 |depend | Space-separated list | Tool-specific Dependencies
-|isim_options | Space-separated list | Extra Isim compile options        
+|isim_options | Space-separated list | Extra Isim compile options
 |==============================
 
 
@@ -50,7 +50,7 @@ main
 |depend | Space-separated list | Common dependencies
 |description | String | Core description
 |patches | Space-separated list | FuseSoC-specific patches
-|simulators | Space-separated list | Supported simulators. Valid values are icarus, modelsim, verilator and isim. Each simulator have a dedicated section desribed elsewhere in this document        
+|simulators | Space-separated list | Supported simulators. Valid values are icarus, modelsim, verilator and isim. Each simulator have a dedicated section desribed elsewhere in this document
 |==============================
 
 
@@ -63,7 +63,7 @@ modelsim
 |Name | Type | Description
 |depend | Space-separated list | Tool-specific Dependencies
 |vlog_options | Space-separated list | Additional arguments for vlog
-|vsim_options | Space-separated list | Additional arguments for vsim        
+|vsim_options | Space-separated list | Additional arguments for vsim
 |==============================
 
 
@@ -81,7 +81,7 @@ quartus
 |quartus_options | String | Quartus command-line options
 |sdc_files | Space-separated list of paths | SDC constraint files
 |tcl_files | Space-separated list of paths | Extra script files
-|top_module | String | RTL top-level module        
+|top_module | String | RTL top-level module
 |==============================
 
 
@@ -100,7 +100,7 @@ verilator
 |src_files | Space-separated list of paths | Verilator testbench C/cpp/sysC source files
 |tb_toplevel | String | Testbench top-level C/C++/SC file
 |top_module | String | verilog top-level module
-|verilator_options | Space-separated list | Verilator build options        
+|verilator_options | Space-separated list | Verilator build options
 |==============================
 
 
@@ -115,7 +115,7 @@ verilog
 |src_files | Space-separated list of paths | Verilog source files for synthesis/simulation
 |tb_include_files | Space-separated list of paths | Testbench include files
 |tb_private_src_files | Space-separated list of paths | Verilog source files that are only used in the core's own testbench. Not visible to other cores
-|tb_src_files | Space-separated list of paths | Verilog source files that are only used in simulation. Visible to other cores        
+|tb_src_files | Space-separated list of paths | Verilog source files that are only used in simulation. Visible to other cores
 |==============================
 
 
@@ -126,7 +126,7 @@ vhdl
 [cols="2,1,5",options="header"]
 |==============================
 |Name | Type | Description
-|src_files | Space-separated list of paths | VHDL source files for simulation and synthesis        
+|src_files | Space-separated list of paths | VHDL source files for simulation and synthesis
 |==============================
 
 
@@ -139,7 +139,7 @@ vpi
 |Name | Type | Description
 |include_files | Space-separated list of paths | C include files for VPI library
 |libs | Space-separated list of paths | External libraries linked with the VPI library
-|src_files | Space-separated list of paths | C source files for VPI library        
+|src_files | Space-separated list of paths | C source files for VPI library
 |==============================
 
 
