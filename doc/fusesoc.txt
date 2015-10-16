@@ -3,13 +3,13 @@ FuseSoC
 
 FuseSoC is a package manager and a set of build tools for HDL code.
 
-It's main purpose is to increase reuse of IP cores and be an aid for creating, building and simulating SoC solutions.
+Its main purpose is to increase reuse of IP cores and be an aid for creating, building and simulating SoC solutions.
 
 The package manager part can be seen as an apt, portage, yum, dnf, pacman for FPGA/ASIC IP cores. A simple ini file describes mainly which files the IP core contains, which other IP cores it depends on and where FuseSoC shall fetch the code.
 
 A collection of cores together with a top-level is called a system, and systems can be simulated or passed through the FPGA vendor tools to build a loadable FPGA image.
 
-Currently FuseSoc supports simulations with ModelSim, Icarus Verilog, Verilator and Isim. It also supports building FPGA images with Xilinx ISE and Altera Quartus
+Currently FuseSoc supports simulations with ModelSim, Icarus Verilog, Verilator and Isim. It also supports building FPGA images with Xilinx ISE and Altera Quartus.
 
 link:quickstart.html[Quick start]
 
