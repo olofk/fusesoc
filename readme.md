@@ -3,11 +3,11 @@ FuseSoC
 
 Introduction
 ------------
-FuseSoC is a package manager and a set of build tools for HDL code.
+FuseSoC is a package manager and a set of build tools for HDL (Hardware Description Language) code.
 
-Its main purpose is to increase reuse of IP cores and be an aid for creating, building and simulating SoC solutions.
+Its main purpose is to increase reuse of IP (Intellectual Property) cores and be an aid for creating, building and simulating SoC solutions.
 
-The package manager part can be seen as an apt, portage, yum, dnf, pacman for FPGA/ASIC IP cores.
+The package manager part can be seen as an apt, portage, yum, dnf, pacman for FPGA (Field-Programmable Gate Array)/ASIC (Application-Specific Integrated Circuit) IP cores.
 A simple ini file describes mainly which files the IP core contains, which other IP cores it depends on and where FuseSoC shall fetch the code.
 
 
@@ -17,7 +17,7 @@ Currently FuseSoc supports simulations with ModelSim, Icarus Verilog, Verilator 
 
 Cores
 -----
-FuseSoC does not contain any RTL code or core description files. The official repository for FuseSoC compatible cores is https://github.com/openrisc/orpsoc-cores
+FuseSoC does not contain any RTL (Register-Transfer Level) code or core description files. The official repository for FuseSoC compatible cores is https://github.com/openrisc/orpsoc-cores
 
 Quick start
 -----------
@@ -39,5 +39,5 @@ Further reading
 ---------------
 A few tutorials using FuseSoC are available, but they are unfortunately all written before FuseSoC was renamed from orpsocv3:
 
-http://www.elec4fun.fr/2011-03-30-10-16-30/2012-08-22-20-50-31/or1200-barebox-on-de1 (
-http://designandmake.designspark.com/blog/booting-linux-on-a-de0-nano-with-orpsoc
+http://web.archive.org/web/20150208222518/http://elec4fun.fr/2011-03-30-10-16-30/2012-08-22-20-50-31/or1200-barebox-on-de1
+http://www.rs-online.com/designspark/electronics/eng/blog/booting-linux-on-a-de0-nano-with-orpsoc
