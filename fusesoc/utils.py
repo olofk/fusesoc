@@ -64,6 +64,12 @@ def convert_V2H( read_file, write_file):
             fC.close
             fV.close
 
+def run_scripts(scripts, scripts_root, cwd, env):
+    for script_name in scripts:
+        script = os.path.abspath(os.path.join(scripts_root, script_name))
+        pr_info("Running " + script);
+        Launcher(script, cwd = cwd, env = env, shell=True).run()
+    
 def find_verilator():
     verilator_root = os.getenv('VERILATOR_ROOT')
     if verilator_root is None:
