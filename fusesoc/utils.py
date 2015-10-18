@@ -47,7 +47,7 @@ class Launcher:
             raise RuntimeError(self.errormsg)
 
     def __str__(self):
-        return self.cmd + ' ' + ' '.join(self.args)
+        return ' '.join([self.cmd] + self.args)
 
 
 def convert_V2H( read_file, write_file):
