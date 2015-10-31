@@ -59,7 +59,7 @@ class SourceType(str):
 class Section(object):
 
     TAG = None
-
+    named = False
     def __init__(self):
         self._members = {}
         self.export_files = []
@@ -421,9 +421,14 @@ class QuartusSection(ToolSection):
             self.load_dict(items)
             self.export_files = self.qsys_files + self.sdc_files
 
-
 def load_section(config, section_name, name='<unknown>'):
-    cls = SECTION_MAP.get(section_name)
+    tmp = section_name.split(' ')
+    _type = tmp[0]
+    if len(tmp) == 2:
+        _name = tmp[1]
+    else:
+        _name = None
+    cls = SECTION_MAP.get(_type)
     if cls is None:
         return None
 
@@ -432,7 +437,10 @@ def load_section(config, section_name, name='<unknown>'):
     if section.warnings:
         for warning in section.warnings:
             pr_warn('Warning: %s in %s' % (warning, name))
-    return section
+    if _name:
+        return (section, _name)
+    else:
+        return section
 
 
 def load_all(config, name='<unknown>'):

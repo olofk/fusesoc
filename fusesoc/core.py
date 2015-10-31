@@ -1,3 +1,4 @@
+import copy
 import importlib
 import logging
 import os
@@ -47,7 +48,14 @@ class Core:
             self.simulator        = config.get_section('simulator')
 
             for s in section.load_all(config, name=self.name):
-                setattr(self, s.TAG, s)
+                if type(s) == tuple:
+                    _l = getattr(self, s[0].TAG)
+                    if _l is None:
+                        _l = {}
+                    _l[s[1]] = s[0]
+                    setattr(self, s[0].TAG, _l)
+                else:
+                    setattr(self, s.TAG, s)
             self.depend     = self.main.depend
             self.simulators = self.main.simulators
 
@@ -160,4 +168,9 @@ class Core:
             obj = getattr(self, s)
             if obj:
                 print("== " + s + " ==")
-                print(obj)
+                if(type(obj) == dict):
+                    for k, v in obj.items():
+                        print(str(k))
+                        print(str(v))
+                else:
+                    print(obj)
