@@ -430,6 +430,9 @@ def load_section(config, section_name, name='<unknown>'):
         _name = None
     cls = SECTION_MAP.get(_type)
     if cls is None:
+        #Note: The following sections are not in section.py yet
+        if not section_name in ['plusargs', 'simulator', 'provider']:
+            pr_warn("Unknown section '{}' in '{}'".format(section_name, name))
         return None
 
     items = config.get_section(section_name)
