@@ -106,7 +106,8 @@ class Core:
         for s in section.SECTION_MAP:
             obj = getattr(self, s)
             if obj:
-                src_files += obj.export()
+                if not (type(obj) == dict):
+                    src_files += obj.export()
 
         dirs = list(set(map(os.path.dirname,src_files)))
         for d in dirs:
