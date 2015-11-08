@@ -45,7 +45,6 @@ class SimulatorList(EnumList):
     def __new__(cls, *args, **kwargs):
         values = ['icarus', 'modelsim', 'verilator', 'isim']
         return super(SimulatorList, cls).__new__(cls, *args, values=values)
-
 class SourceType(str):
     def __new__(cls, *args, **kwargs):
         if args:
@@ -420,6 +419,20 @@ class QuartusSection(ToolSection):
         if items:
             self.load_dict(items)
             self.export_files = self.qsys_files + self.sdc_files
+
+class ParameterSection(Section):
+    TAG = 'parameter'
+    named = True
+    def __init__(self, items=None):
+        super(ParameterSection, self).__init__()
+
+        self._add_member('datatype'   , str, 'Data type of argument (int, str, bool, file')
+        self._add_member('description', str, 'Parameter description')
+        self._add_member('paramtype'  , str, 'Type of parameter (plusarg, vlogparam, generic, cmdlinearg')
+        self._add_member('scope'      , str, 'Visibility of parameter. Private parameters are only visible when this core is the top-level. Public parameters are visible also when this core is pulled in as a dependency of another core')
+
+        if items:
+            self.load_dict(items)
 
 def load_section(config, section_name, name='<unknown>'):
     tmp = section_name.split(' ')

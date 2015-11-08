@@ -18,6 +18,10 @@ else:
 
 logger = logging.getLogger(__name__)
 
+class FileAction(argparse.Action):
+    def __call__(self, parser, namespace, values, option_string=None):
+        setattr(namespace, self.dest, [os.path.abspath(values[0])])
+
 class _Verilog(object):
     def __init__(self):
         self.src_files = []
@@ -116,12 +120,22 @@ class Simulator(object):
         return
 
     def run(self, args):
-
+        typedict = {'bool' : {'action' : 'store_true'},
+                    'file' : {'type' : str , 'nargs' : 1, 'action' : FileAction},
+                    'int'  : {'type' : int , 'nargs' : 1},
+                    'str'  : {'type' : str , 'nargs' : 1},
+                    }
         parser = argparse.ArgumentParser(prog ='fusesoc sim '+self.system.name, conflict_handler='resolve')
         for name in self.cores:
             core = self.cm.get_core(name)
             if core.plusargs:
                 core.plusargs.add_arguments(parser)
+
+            for param_name, param in core.parameter.items():
+                if name == self.system.name or param.scope == 'public':
+                    parser.add_argument('--'+param_name,
+                                        help=param.description,
+                                        **typedict[param.datatype])
 
         p = parser.parse_args(args)
 
