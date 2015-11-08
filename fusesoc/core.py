@@ -33,7 +33,10 @@ class Core:
 
         for s in section.SECTION_MAP:
             assert(not hasattr(self, s))
-            setattr(self, s, None)
+            if(section.SECTION_MAP[s].named):
+                setattr(self, s, {})
+            else:
+                setattr(self, s, None)
 
         self.core_root = os.path.dirname(core_file)
         self.files_root = self.core_root
@@ -49,8 +52,6 @@ class Core:
             for s in section.load_all(config, name=self.name):
                 if type(s) == tuple:
                     _l = getattr(self, s[0].TAG)
-                    if _l is None:
-                        _l = {}
                     _l[s[1]] = s[0]
                     setattr(self, s[0].TAG, _l)
                 else:
