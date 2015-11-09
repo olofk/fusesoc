@@ -41,18 +41,6 @@ isim
 
 
 
-isim
-------
-
-[cols="2,1,5",options="header"]
-|==============================
-|Name | Type | Description
-|depend | Space-separated list | Tool-specific Dependencies
-|isim_options | Space-separated list | Extra Isim compile options        
-|==============================
-
-
-
 main
 ----
 
@@ -76,6 +64,20 @@ modelsim
 |depend | Space-separated list | Tool-specific Dependencies
 |vlog_options | Space-separated list | Additional arguments for vlog
 |vsim_options | Space-separated list | Additional arguments for vsim
+|==============================
+
+
+
+parameter
+---------
+
+[cols="2,1,5",options="header"]
+|==============================
+|Name | Type | Description
+|datatype | String | Data type of argument (int, str, bool, file
+|description | String | Parameter description
+|paramtype | String | Type of parameter (plusarg, vlogparam, generic, cmdlinearg
+|scope | String | Visibility of parameter. Private parameters are only visible when this core is the top-level. Public parameters are visible also when this core is pulled in as a dependency of another core
 |==============================
 
 
