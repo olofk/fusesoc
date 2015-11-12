@@ -12,10 +12,10 @@ from .simulator import Simulator
 logger = logging.getLogger(__name__)
 
 class Source(Exception):
-     def __init__(self, value):
-         self.value = value
-     def __str__(self):
-         return repr(self.value)
+    def __init__(self, value):
+        self.value = value
+    def __str__(self):
+        return repr(self.value)
 
 
 class Verilator(Simulator):
@@ -70,7 +70,7 @@ class Verilator(Simulator):
         super(Verilator, self).configure()
         self.export()
         self._write_config_files()
-        self.object_files = [os.path.splitext(os.path.basename(s))[0]+'.o' for s in self.src_files]
+        #self.object_files = [os.path.splitext(os.path.basename(s))[0]+'.o' for s in self.src_files]
 
     def _write_config_files(self):
         self.verilator_file = 'input.vc'
@@ -137,15 +137,16 @@ class Verilator(Simulator):
                       self.archives += [core_name+'.a']
                  self.libs += core.verilator.libs
                  self.include_dirs += [os.path.join(self.src_root, core_name, d) for d in core.verilator.include_dirs]
-                 self.include_dirs += [os.path.dirname(os.path.join(self.sim_root, self.tb_toplevel))]
+        self.include_dirs += [os.path.dirname(os.path.join(self.sim_root, self.tb_toplevel))]
 
         self.include_dirs += [self.src_root]
+        print('\n'.join(self.include_dirs))
         pr_info("Verilating source")
         self._verilate()
         for core_name in self.cores:
             core = self.cm.get_core(core_name)
             if core.verilator:
-                 core.verilator.build(core_name, self.sim_root, self.src_root)
+                 self._build(core, self.sim_root, self.src_root)
 
         pr_info("Building verilator executable:")
         args = ['-f', 'V' + self.top_module + '.mk', 'V' + self.top_module]
@@ -159,6 +160,99 @@ class Verilator(Simulator):
              pr_info("  Verilator executable command: make " + ' '.join(args))
         l.run()
 
+    def _build(self, core, sim_root, src_root):
+        source_type = core.verilator.source_type
+        if source_type == 'C' or source_type == '':
+             self.build_C(core, sim_root, src_root)
+        elif source_type == 'CPP':
+            self.build_CPP(core, sim_root, src_root)
+        elif source_type == 'systemC':
+            self.build_SysC(core, sim_root, src_root)
+        else:
+            raise Source(core.verilator.source_type)
+
+        if core.verilator._object_files:
+            args = []
+            args += ['rvs']
+            args += [core.name+'.a']
+            args += core.verilator._object_files
+            l = utils.Launcher('ar', args,
+                     cwd=sim_root)
+            if Config().verbose:
+                pr_info("  linker working dir: " + sim_root)
+                pr_info("  linker command: ar " + ' '.join(args))
+            l.run()
+            print()
+
+    def build_C(self, core, sim_root, src_root):
+        args = ['-c']
+        args += ['-std=c99']
+        args += ['-I'+src_root]
+        args += ['-I'+os.path.join(src_root, core.name, s) for s in core.verilator.include_dirs]
+        for src_file in core.verilator.src_files:
+            pr_info("Compiling " + src_file)
+            l = utils.Launcher('gcc',
+                     args + [os.path.join(src_root, core.name, src_file)],
+                         cwd=sim_root,
+                         stderr = open(os.path.join(sim_root, 'gcc.err.log'),'a'),
+                         stdout = open(os.path.join(sim_root, 'gcc.out.log'),'a'))
+            if Config().verbose:
+                pr_info("  C compilation working dir: " + sim_root)
+                pr_info("  C compilation command: gcc " + ' '.join(args) + ' ' + os.path.join(src_root, core, src_file))
+            l.run()
+
+    def build_CPP(self, core, sim_root, src_root):
+        verilator_root = utils.get_verilator_root()
+        if verilator_root is None:
+            verilator_root = utils.get_verilator_root()
+        args = ['-c']
+        args += ['-I'+src_root]
+        args += ['-I'+os.path.join(src_root, core.name, s) for s in self.include_dirs]
+        args += ['-Iobj_dir']
+        args += ['-I'+os.path.join(verilator_root,'include')]
+        args += ['-I'+os.path.join(verilator_root,'include', 'vltstd')]
+        for src_file in core.verilator.src_files:
+            pr_info("Compiling " + src_file)
+            l = utils.Launcher('g++', args + [os.path.join(src_root, core.name, src_file)],
+                         cwd=sim_root,
+                         stderr = open(os.path.join(sim_root, 'g++.err.log'),'a'))
+            if Config().verbose:
+                pr_info("  C++ compilation working dir: " + sim_root)
+                pr_info("  C++ compilation command: g++ " + ' '.join(args) + ' ' + os.path.join(src_root, core.name, src_file))
+            l.run()
+
+    def build_SysC(self, core, sim_root, src_root):
+        verilator_root = utils.get_verilator_root()
+        args = ['-I.']
+        args += ['-MMD']
+        args += ['-I'+src_root]
+        args += ['-I'+s for s in self.include_dirs]
+        args += ['-Iobj_dir']
+        args += ['-I'+os.path.join(verilator_root,'include')]
+        args += ['-I'+os.path.join(verilator_root,'include', 'vltstd')]  
+        args += ['-DVL_PRINTF=printf']
+        args += ['-DVM_TRACE=1']
+        args += ['-DVM_COVERAGE=0']
+        if os.getenv('SYSTEMC_INCLUDE'):
+            args += ['-I'+os.getenv('SYSTEMC_INCLUDE')]
+        if os.getenv('SYSTEMC'):
+            args += ['-I'+os.path.join(os.getenv('SYSTEMC'),'include')]
+        args += ['-Wno-deprecated']
+        if os.getenv('SYSTEMC_CXX_FLAGS'):
+             args += [os.getenv('SYSTEMC_CXX_FLAGS')]
+        args += ['-c']
+        args += ['-g']
+
+        for src_file in self.src_files:
+            pr_info("Compiling " + src_file)
+            l = Launcher('g++', args + [os.path.join(src_root, core.name, src_file)],
+                         cwd=sim_root,
+                         stderr = open(os.path.join(sim_root, 'g++.err.log'),'a'))
+            if Config().verbose:
+                pr_info("  SystemC compilation working dir: " + sim_root)
+                pr_info("  SystemC compilation command: g++ " + ' '.join(args) + ' ' + os.path.join(src_root, core.name, src_file))
+            l.run()
+        
     def run(self, args):
         self.env = os.environ.copy()
         self.env['CORE_ROOT'] = os.path.abspath(self.system.core_root)
