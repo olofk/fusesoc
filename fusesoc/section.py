@@ -259,7 +259,7 @@ class VerilatorSection(ToolSection):
         self._add_member('libs'             , PathList  , "External libraries linked with the generated model")
 
         self._add_member('tb_toplevel', str, 'Testbench top-level C/C++/SC file')
-        self._add_member('source_type', SourceType, 'Testbench source code language (Legal values are systemC, C, CPP. Default is C)')
+        self._add_member('source_type', str, 'Testbench source code language (Legal values are systemC, C, CPP. Default is C)')
         self._add_member('top_module' , str, 'verilog top-level module')
 
         if items:
@@ -290,96 +290,6 @@ Verilog top module      : {top_module}
                         source_type=self.source_type,
                         top_module=self.top_module)
 
-    def build(self, core, sim_root, src_root):
-        if self.source_type == 'C' or self.source_type == '':
-            self.build_C(core, sim_root, src_root)
-        elif self.source_type == 'CPP':
-            self.build_CPP(core, sim_root, src_root)
-        elif self.source_type == 'systemC':
-            self.build_SysC(core, sim_root, src_root)
-        else:
-            raise Source(self.source_type)
-
-        if self._object_files:
-            args = []
-            args += ['rvs']
-            args += [core+'.a']
-            args += self._object_files
-            l = Launcher('ar', args,
-                     cwd=sim_root)
-            if Config().verbose:
-                pr_info("  linker working dir: " + sim_root)
-                pr_info("  linker command: ar " + ' '.join(args))
-            l.run()
-            print()
-
-    def build_C(self, core, sim_root, src_root):
-        args = ['-c']
-        args += ['-std=c99']
-        args += ['-I'+src_root]
-        args += ['-I'+os.path.join(src_root, core, s) for s in self.include_dirs]
-        for src_file in self.src_files:
-            pr_info("Compiling " + src_file)
-            l = Launcher('gcc',
-                     args + [os.path.join(src_root, core, src_file)],
-                         cwd=sim_root,
-                         stderr = open(os.path.join(sim_root, 'gcc.err.log'),'a'),
-                         stdout = open(os.path.join(sim_root, 'gcc.out.log'),'a'))
-            if Config().verbose:
-                pr_info("  C compilation working dir: " + sim_root)
-                pr_info("  C compilation command: gcc " + ' '.join(args) + ' ' + os.path.join(src_root, core, src_file))
-            l.run()
-
-    def build_CPP(self, core, sim_root, src_root):
-        verilator_root = utils.get_verilator_root()
-        if verilator_root is None:
-            verilator_root = utils.get_verilator_root()
-        args = ['-c']
-        args += ['-I'+src_root]
-        args += ['-I'+os.path.join(src_root, core, s) for s in self.include_dirs]
-        args += ['-I'+os.path.join(verilator_root,'include')]
-        args += ['-I'+os.path.join(verilator_root,'include', 'vltstd')]
-        for src_file in self.src_files:
-            pr_info("Compiling " + src_file)
-            l = Launcher('g++', args + [os.path.join(src_root, core, src_file)],
-                         cwd=sim_root,
-                         stderr = open(os.path.join(sim_root, 'g++.err.log'),'a'))
-            if Config().verbose:
-                pr_info("  C++ compilation working dir: " + sim_root)
-                pr_info("  C++ compilation command: g++ " + ' '.join(args) + ' ' + os.path.join(src_root, core, src_file))
-            l.run()
-
-    def build_SysC(self, core, sim_root, src_root):
-        verilator_root = utils.get_verilator_root()
-        args = ['-I.']
-        args += ['-MMD']
-        args += ['-I'+src_root]
-        args += ['-I'+s for s in self.include_dirs]
-        args += ['-Iobj_dir']
-        args += ['-I'+os.path.join(verilator_root,'include')]
-        args += ['-I'+os.path.join(verilator_root,'include', 'vltstd')]  
-        args += ['-DVL_PRINTF=printf']
-        args += ['-DVM_TRACE=1']
-        args += ['-DVM_COVERAGE=0']
-        if os.getenv('SYSTEMC_INCLUDE'):
-            args += ['-I'+os.getenv('SYSTEMC_INCLUDE')]
-        if os.getenv('SYSTEMC'):
-            args += ['-I'+os.path.join(os.getenv('SYSTEMC'),'include')]
-        args += ['-Wno-deprecated']
-        if os.getenv('SYSTEMC_CXX_FLAGS'):
-             args += [os.getenv('SYSTEMC_CXX_FLAGS')]
-        args += ['-c']
-        args += ['-g']
-
-        for src_file in self.src_files:
-            pr_info("Compiling " + src_file)
-            l = Launcher('g++', args + [os.path.join(src_root, core, src_file)],
-                         cwd=sim_root,
-                         stderr = open(os.path.join(sim_root, 'g++.err.log'),'a'))
-            if Config().verbose:
-                pr_info("  SystemC compilation working dir: " + sim_root)
-                pr_info("  SystemC compilation command: g++ " + ' '.join(args) + ' ' + os.path.join(src_root, core, src_file))
-            l.run()
 
 class IseSection(ToolSection):
 
