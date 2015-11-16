@@ -50,7 +50,7 @@ main
 |depend | Space-separated list | Common dependencies
 |description | String | Core description
 |patches | Space-separated list | FuseSoC-specific patches
-|simulators | Space-separated list | Supported simulators. Valid values are icarus, modelsim, verilator and isim. Each simulator have a dedicated section desribed elsewhere in this document
+|simulators | Space-separated list | Supported simulators. Valid values are icarus, modelsim, verilator, isim and xsim. Each simulator have a dedicated section desribed elsewhere in this document
 |==============================
 
 
@@ -167,6 +167,18 @@ vpi
 |include_files | Space-separated list of paths | C include files for VPI library
 |libs | Space-separated list of paths | External libraries linked with the VPI library
 |src_files | Space-separated list of paths | C source files for VPI library
+|==============================
+
+
+
+xsim
+----
+
+[cols="2,1,5",options="header"]
+|==============================
+|Name | Type | Description
+|depend | Space-separated list | Tool-specific Dependencies
+|xsim_options | Space-separated list | Extra Xsim compile options
 |==============================
 
 
