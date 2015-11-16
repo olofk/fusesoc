@@ -42,6 +42,11 @@ build_PYTHON =      \
 
 builddir = $(fusesocdir)/build
 
-EXTRA_DIST = INSTALL
+EXTRA_DIST = INSTALL doc
 
 SUBDIRS = bin
+
+dist-hook:
+	make -C $(distdir)/doc clean all
+	rm `find $(distdir)/doc -name '*.txt'`
+	rm $(distdir)/doc/Makefile
