@@ -1,4 +1,4 @@
-OBJECTS := $(patsubst %.txt,%.html,$(wildcard *.txt))
+OBJECTS := $(filter-out capi1.html,$(patsubst %.txt,%.html,$(wildcard *.txt)))
 
 all: $(OBJECTS)
 
