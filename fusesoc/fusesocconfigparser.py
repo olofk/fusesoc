@@ -32,6 +32,8 @@ class FusesocConfigParser(configparser.SafeConfigParser):
             raise SyntaxError("Missing section header")
         except configparser.ParsingError as e:
             raise SyntaxError(e.message)
+        except configparser.DuplicateSectionError as e:
+            raise SyntaxError(e.message)
 
     def get_list(self, section, item):
         if self.has_option(section, item):

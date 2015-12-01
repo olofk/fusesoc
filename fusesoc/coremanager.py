@@ -31,8 +31,8 @@ class CoreManager(object):
                 self._cores[name] = Core(file)
                 logger.debug("Adding core " + file)
             except SyntaxError as e:
-                w = "Warning: Failed to parse " + file + ": " + e.msg
-                print(w)
+                w = "Failed to parse " + file + ": " + e.msg
+                pr_warn(w)
                 logger.warning(w)
             except ImportError as e:
                 pr_warn('Failed to register core "{}"  due to unknown provider: {}'.format(name, str(e)))
