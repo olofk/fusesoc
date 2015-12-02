@@ -25,6 +25,9 @@ Install by cloning the repo, cd into fusesoc and run:
 
     autoreconf -i && ./configure && make
     sudo make install
+
+FuseSoC should now be installed. Next step is to download the standard IP core library (orpsoc-cores). Create a new directory that will be used as a workspace directory for building and simulating cores. Enter the newly created directory and run
+
     fusesoc init
 
 Test your installation by running `fusesoc list-cores`. This should return the list of cores that FuseSoC has found.
