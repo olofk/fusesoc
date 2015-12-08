@@ -198,7 +198,7 @@ class Verilator(Simulator):
                          stdout = open(os.path.join(sim_root, 'gcc.out.log'),'a'))
             if Config().verbose:
                 pr_info("  C compilation working dir: " + sim_root)
-                pr_info("  C compilation command: gcc " + ' '.join(args) + ' ' + os.path.join(src_root, core, src_file))
+                pr_info("  C compilation command: gcc " + ' '.join(args) + ' ' + os.path.join(src_root, core.name, src_file))
             l.run()
 
     def build_CPP(self, core, sim_root, src_root):
