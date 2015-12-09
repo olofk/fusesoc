@@ -4,8 +4,8 @@ all: $(OBJECTS)
 
 capi.html: capi1.txt
 
-capi1.txt:
-	PYTHONPATH=.. python ../fusesoc/section.py > $@
+capi1.txt: ../fusesoc/section.py
+	PYTHONPATH=.. python $< > $@
 
 %.html: %.txt
 	asciidoc $<
