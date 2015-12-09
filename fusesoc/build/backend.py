@@ -50,7 +50,7 @@ class Backend(object):
                 else:
                     logger.debug('core.include_dirs=None')
                 self.include_dirs += [os.path.join(self.src_root, core_name, d) for d in core.verilog.include_dirs]
-                self.src_files    += [os.path.join(self.src_root, core_name, f) for f in core.verilog.src_files]
+                self.src_files    += [os.path.join(self.src_root, core_name, f.name) for f in core.verilog.src_files]
             if core.vhdl:
                 self.vhdl_src_files += [os.path.join(self.src_root, core_name, f) for f in core.vhdl.src_files]
 

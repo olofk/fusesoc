@@ -190,9 +190,9 @@ class Verilator(Simulator):
         args += ['-I'+src_root]
         args += ['-I'+os.path.join(src_root, core.name, s) for s in core.verilator.include_dirs]
         for src_file in core.verilator.src_files:
-            pr_info("Compiling " + src_file)
+            pr_info("Compiling " + src_file.name)
             l = utils.Launcher('gcc',
-                     args + [os.path.join(src_root, core.name, src_file)],
+                     args + [os.path.join(src_root, core.name, src_file.name)],
                          cwd=sim_root,
                          stderr = open(os.path.join(sim_root, 'gcc.err.log'),'a'),
                          stdout = open(os.path.join(sim_root, 'gcc.out.log'),'a'))
@@ -212,8 +212,8 @@ class Verilator(Simulator):
         args += ['-I'+os.path.join(verilator_root,'include')]
         args += ['-I'+os.path.join(verilator_root,'include', 'vltstd')]
         for src_file in core.verilator.src_files:
-            pr_info("Compiling " + src_file)
-            l = utils.Launcher('g++', args + [os.path.join(src_root, core.name, src_file)],
+            pr_info("Compiling " + src_file.name)
+            l = utils.Launcher('g++', args + [os.path.join(src_root, core.name, src_file.name)],
                          cwd=sim_root,
                          stderr = open(os.path.join(sim_root, 'g++.err.log'),'a'))
             if Config().verbose:

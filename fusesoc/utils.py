@@ -201,3 +201,6 @@ def pr_info(msg):
         print('INFO:  ' + msg)
     else:
         print('\033[1;37m' + 'INFO:  ' + msg + '\033[0m')
+
+def unique_dirs(file_list):
+    return list(set([os.path.dirname(f.name) for f in file_list]))

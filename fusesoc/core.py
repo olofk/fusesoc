@@ -109,7 +109,7 @@ class Core:
             obj = getattr(self, s)
             if obj:
                 if not (type(obj) == dict):
-                    src_files += obj.export()
+                    src_files += [f.name for f in obj.export()]
 
         dirs = list(set(map(os.path.dirname,src_files)))
         for d in dirs:

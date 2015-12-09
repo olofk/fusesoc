@@ -1,8 +1,30 @@
 import os
 from fusesoc.config import Config
 from fusesoc import utils
-from fusesoc.utils import Launcher, pr_warn, pr_info
+from fusesoc.utils import Launcher, pr_warn, pr_info, unique_dirs
 
+class File(object):
+    name      = ""
+    file_type = ""
+    is_include_file = False
+    def __init__(self, s):
+        self.is_include_file = False
+        if s[-1:] == ']':
+            _tmp = s[:-1].split('[')
+            if(len(_tmp) != 2):
+                raise SyntaxError("Expected '['")
+            self.name = _tmp[0]
+            for _arg in [x.strip() for x in _tmp[1].split(',')]:
+                if _arg == "is_include_file":
+                    self.is_include_file = True
+                elif '=' in _arg:
+                    _tmp = [x.strip() for x in _arg.split('=')]
+                    if _tmp[0] == 'file_type':
+                        self.file_type = _tmp[1]
+                else:
+                    raise SyntaxError("Unexpected argument '"+_arg+"'")
+        else:
+            self.name = s
 
 class Error(Exception):
     pass
@@ -28,7 +50,14 @@ class PathList(StringList):
             return list()
         else:
             return [os.path.expandvars(p) for p in args[0].split()]
-    
+
+class FileList(PathList):
+    def __new__(clk, *args, **kwargs):
+        if not args:
+            return list()
+        else:
+            return [File(p) for p in PathList(args[0])]
+
 class EnumList(list):
     def __new__(cls, *args, **kwargs):
         if not args:
@@ -143,18 +172,18 @@ class VerilogSection(Section):
         self.include_dirs = []
         self.tb_include_dirs = []
 
-        self._add_member('src_files'           , PathList, "Verilog source files for synthesis/simulation")
-        self._add_member('include_files'       , PathList, "Verilog include files")
-        self._add_member('tb_src_files'        , PathList, "Verilog source files that are only used in simulation. Visible to other cores")
-        self._add_member('tb_private_src_files', PathList, "Verilog source files that are only used in the core's own testbench. Not visible to other cores")
-        self._add_member('tb_include_files'    , PathList, "Testbench include files")
+        self._add_member('src_files'           , FileList, "Verilog source files for synthesis/simulation")
+        self._add_member('include_files'       , FileList, "Verilog include files")
+        self._add_member('tb_src_files'        , FileList, "Verilog source files that are only used in simulation. Visible to other cores")
+        self._add_member('tb_private_src_files', FileList, "Verilog source files that are only used in the core's own testbench. Not visible to other cores")
+        self._add_member('tb_include_files'    , FileList, "Testbench include files")
 
         if items:
             self.load_dict(items)
             if self.include_files:
-                self.include_dirs  += list(set(map(os.path.dirname, self.include_files)))
+                self.include_dirs  += utils.unique_dirs(self.include_files)
             if self.tb_include_files:
-                self.tb_include_dirs  += list(set(map(os.path.dirname, self.tb_include_files)))
+                self.tb_include_dirs  += utils.unique_dirs(self.tb_include_files)
 
             self.export_files = self.src_files + self.include_files + self.tb_src_files + self.tb_include_files + self.tb_private_src_files
     def __str__(self):
@@ -178,14 +207,14 @@ class VpiSection(Section):
 
         self.include_dirs = []
 
-        self._add_member('src_files'    , PathList, "C source files for VPI library")
-        self._add_member('include_files', PathList, "C include files for VPI library")
-        self._add_member('libs'         , PathList, "External libraries linked with the VPI library")
+        self._add_member('src_files'    , FileList, "C source files for VPI library")
+        self._add_member('include_files', FileList, "C include files for VPI library")
+        self._add_member('libs'         , StringList, "External libraries linked with the VPI library")
 
         if items:
             self.load_dict(items)
             if self.include_files:
-                self.include_dirs  += list(set(map(os.path.dirname, self.include_files)))
+                self.include_dirs  += unique_dirs(self.include_files)
 
             self.export_files = self.src_files + self.include_files
 
@@ -272,8 +301,8 @@ class VerilatorSection(ToolSection):
         self._object_files = []
 
         self._add_member('verilator_options', StringList, "Verilator build options")
-        self._add_member('src_files'        , PathList  , "Verilator testbench C/cpp/sysC source files")
-        self._add_member('include_files'    , PathList  , "Verilator testbench C include files")
+        self._add_member('src_files'        , FileList  , "Verilator testbench C/cpp/sysC source files")
+        self._add_member('include_files'    , FileList  , "Verilator testbench C include files")
         self._add_member('define_files'     , PathList  , "Verilog include files containing `define directives to be converted to C #define directives in corresponding .h files")
         self._add_member('libs'             , PathList  , "External libraries linked with the generated model")
 
@@ -283,9 +312,9 @@ class VerilatorSection(ToolSection):
 
         if items:
             self.load_dict(items)
-            self.include_dirs  = list(set(map(os.path.dirname, self.include_files)))
+            self.include_dirs  = unique_dirs(self.include_files)
             if self.src_files:
-                self._object_files = [os.path.splitext(os.path.basename(s))[0]+'.o' for s in self.src_files]
+                self._object_files = [os.path.splitext(os.path.basename(s.name))[0]+'.o' for s in self.src_files]
                 self.archive = True
                 self.export_files = self.src_files + self.include_files
 
