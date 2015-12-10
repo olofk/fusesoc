@@ -59,6 +59,8 @@ class Core:
             self.depend     = self.main.depend
             self.simulators = self.main.simulators
 
+            self._collect_filesets()
+
             cache_root = os.path.join(Config().cache_root, self.name)
             if config.has_section('plusargs'):
                 utils.pr_warn("plusargs section is deprecated and will be removed in future versions. Please migrate to parameters")
@@ -149,6 +151,46 @@ class Core:
                     print("Error: Failed to call external command 'patch'")
                     return False
         return True
+
+    def _collect_filesets(self):
+        #Filesets can come from three sources. In case of name conflicts
+        #they will have the following priority.
+        #1. fileset sections from .core file
+        #2. verilog/vhdl sections from .core file
+        #3. filesets from ipxact file
+        self.file_sets = {}
+
+        if self.verilog:
+            _files = []
+            for f in self.verilog.include_files:
+                if not f.file_type:
+                    f.file_type = self.verilog.file_type
+                    f.is_include_file = True
+                _files.append(f)
+            for f in self.verilog.src_files:
+                if not f.file_type:
+                    f.file_type = self.verilog.file_type
+                _files.append(f)
+            self.file_sets["verilog_src_files"] = _files
+
+            _files = []
+            for f in self.verilog.tb_include_files:
+                if not f.file_type:
+                    f.file_type = self.verilog.file_type
+                    f.is_include_file = True
+                _files.append(f)
+            for f in self.verilog.tb_src_files:
+                if not f.file_type:
+                    f.file_type = self.verilog.file_type
+                _files.append(f)
+            self.file_sets["verilog_tb_src_files"] = _files
+
+            _files = []
+            for f in self.verilog.tb_private_src_files:
+                if not f.file_type:
+                    f.file_type = self.verilog.file_type
+                _files.append(f)
+            self.file_sets["verilog_private_tb_src_files"] = _files
 
     def info(self):
 
