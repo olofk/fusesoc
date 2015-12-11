@@ -13,6 +13,12 @@ from fusesoc.system import System
 
 logger = logging.getLogger(__name__)
 
+class FileSet(object):
+    def __init__(self, name="", file=[], usage = [], private=False):
+        self.name    = name
+        self.file    = file
+        self.usage   = usage
+        self.private = private
 
 class OptionSectionMissing(Exception):
     def __init__(self, value):
@@ -153,25 +159,24 @@ class Core:
         return True
 
     def _collect_filesets(self):
-        #Filesets can come from three sources. In case of name conflicts
-        #they will have the following priority.
-        #1. fileset sections from .core file
-        #2. verilog/vhdl sections from .core file
-        #3. filesets from ipxact file
-        self.file_sets = {}
+
+        self.file_sets = []
 
         if self.verilog:
             _files = []
             for f in self.verilog.include_files:
                 if not f.file_type:
                     f.file_type = self.verilog.file_type
-                    f.is_include_file = True
+                f.is_include_file = True
                 _files.append(f)
             for f in self.verilog.src_files:
                 if not f.file_type:
                     f.file_type = self.verilog.file_type
                 _files.append(f)
-            self.file_sets["verilog_src_files"] = _files
+
+            self.file_sets.append(FileSet(name  = "verilog_src_files",
+                                          file  = _files,
+                                          usage = ['sim', 'synth']))
 
             _files = []
             for f in self.verilog.tb_include_files:
@@ -183,14 +188,19 @@ class Core:
                 if not f.file_type:
                     f.file_type = self.verilog.file_type
                 _files.append(f)
-            self.file_sets["verilog_tb_src_files"] = _files
+            self.file_sets.append(FileSet(name  = "verilog_tb_src_files",
+                                          file  = _files,
+                                          usage = ['sim']))
 
             _files = []
             for f in self.verilog.tb_private_src_files:
                 if not f.file_type:
                     f.file_type = self.verilog.file_type
                 _files.append(f)
-            self.file_sets["verilog_private_tb_src_files"] = _files
+            self.file_sets.append(FileSet(name    = "verilog_tb_private_src_files",
+                                          file    = _files,
+                                          usage   = ['sim'],
+                                          private = True))
 
     def info(self):
 
