@@ -439,6 +439,7 @@ _register_subclasses(Section)
 
 if __name__ == "__main__":
     typenames = {str           : 'String',
+                 FileList      : 'Space-separated list of files',
                  PathList      : 'Space-separated list of paths',
                  SimulatorList : 'Space-separated list',
                  SourceType    : 'String',
