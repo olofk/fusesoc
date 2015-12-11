@@ -29,14 +29,15 @@ class Modelsim(Simulator):
 
         f = open(os.path.join(self.sim_root,self.cfg_file),'w')
 
-        for include_dir in self.verilog.include_dirs:
-            f.write("+incdir+" + include_dir + '\n')
-        for src_file in self.verilog.src_files:
-            f.write(src_file + '\n')
-        for include_dir in self.verilog.tb_include_dirs:
-            f.write("+incdir+" + include_dir + '\n')
-        for src_file in self.verilog.tb_src_files:
-            f.write(src_file + '\n')
+        incdirs = set()
+        src_files = []
+
+        (src_files, incdirs) = self._get_fileset_files(['sim', 'modelsim'])
+
+        for id in incdirs:
+            f.write("+incdir+" + id + '\n')
+        for src_file in src_files:
+            f.write(src_file.name + '\n')
 
         f.close()
 

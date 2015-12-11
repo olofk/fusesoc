@@ -58,22 +58,9 @@ class Simulator(object):
         self.env['BUILD_ROOT'] = os.path.abspath(self.build_root)
         self.env['SIMULATOR'] = self.TOOL_NAME
 
-        self.verilog = _Verilog()
         for core_name in self.cores:
             logger.debug('core_name=' + core_name)
             core = self.cm.get_core(core_name)
-
-            if core.verilog:
-                if core.verilog.include_dirs:
-                    logger.debug('core.include_dirs=' + str(core.verilog.include_dirs))
-                else:
-                    logger.debug('core.include_dirs=None')
-                self.verilog.include_dirs    += [os.path.join(self.src_root, core_name, d) for d in core.verilog.include_dirs]
-                self.verilog.tb_include_dirs += [os.path.join(self.src_root, core_name, d) for d in core.verilog.tb_include_dirs]
-                self.verilog.src_files       += [os.path.join(self.src_root, core_name, f.name) for f in core.verilog.src_files]
-                self.verilog.tb_src_files    += [os.path.join(self.src_root, core_name, f.name) for f in core.verilog.tb_src_files]
-                if core_name == self.system.name:
-                    self.verilog.tb_src_files    += [os.path.join(self.src_root, core_name, f.name) for f in core.verilog.tb_private_src_files]
 
             if core.vpi:
                 vpi_module = {}
@@ -84,6 +71,22 @@ class Simulator(object):
                 vpi_module['libs']          = [l for l in core.vpi.libs]
                 self.vpi_modules += [vpi_module]
 
+    def _get_fileset_files(self, usage):
+        incdirs = set()
+        src_files = []
+        for core_name in self.cores:
+            core = self.cm.get_core(core_name)
+            basepath = os.path.relpath(os.path.join(self.src_root, core_name), self.sim_root)
+            for fs in core.file_sets:
+                if (set(fs.usage) & set(usage)) and ((core_name == self.system.name) or not fs.private):
+                    for file in fs.file:
+                        if file.is_include_file:
+                            incdirs.add(os.path.join(basepath, os.path.dirname(file.name)))
+                        else:
+                            file.name = os.path.join(basepath, file.name)
+                            src_files.append(file)
+
+        return (src_files, incdirs)
 
     def configure(self):
         if os.path.exists(self.sim_root):

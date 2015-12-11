@@ -76,10 +76,14 @@ class Verilator(Simulator):
         self.verilator_file = 'input.vc'
         f = open(os.path.join(self.sim_root,self.verilator_file),'w')
 
-        for include_dir in self.verilog.include_dirs:
-            f.write("+incdir+" + os.path.abspath(include_dir) + '\n')
-        for src_file in self.verilog.src_files:
-            f.write(os.path.abspath(src_file) + '\n')
+        incdirs = set()
+        src_files = []
+
+        (src_files, incdirs) = self._get_fileset_files(['synth', 'verilator'])
+        for include_dir in incdirs:
+            f.write("+incdir+" + include_dir + '\n')
+        for src_file in src_files:
+            f.write(src_file.name + '\n')
         f.close()
         #convert verilog defines into C file
         for files in self.define_files:
@@ -198,7 +202,7 @@ class Verilator(Simulator):
                          stdout = open(os.path.join(sim_root, 'gcc.out.log'),'a'))
             if Config().verbose:
                 pr_info("  C compilation working dir: " + sim_root)
-                pr_info("  C compilation command: gcc " + ' '.join(args) + ' ' + os.path.join(src_root, core.name, src_file))
+                pr_info("  C compilation command: gcc " + ' '.join(args) + ' ' + os.path.join(src_root, core.name, src_file.name))
             l.run()
 
     def build_CPP(self, core, sim_root, src_root):
@@ -218,7 +222,7 @@ class Verilator(Simulator):
                          stderr = open(os.path.join(sim_root, 'g++.err.log'),'a'))
             if Config().verbose:
                 pr_info("  C++ compilation working dir: " + sim_root)
-                pr_info("  C++ compilation command: g++ " + ' '.join(args) + ' ' + os.path.join(src_root, core.name, src_file))
+                pr_info("  C++ compilation command: g++ " + ' '.join(args) + ' ' + os.path.join(src_root, core.name, src_file.name))
             l.run()
 
     def build_SysC(self, core, sim_root, src_root):

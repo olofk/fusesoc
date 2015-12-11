@@ -28,10 +28,13 @@ class Isim(Simulator):
     def _write_config_files(self):
         isim_file = 'isim.prj'
         f1 = open(os.path.join(self.sim_root,isim_file),'w')
-        for src_file in self.verilog.src_files:
-            f1.write('verilog work ' + os.path.relpath(src_file, self.sim_root) + '\n')
-        for src_file in self.verilog.tb_src_files:
-            f1.write('verilog work ' + os.path.relpath(src_file, self.sim_root) + '\n')
+        self.incdirs = set()
+        src_files = []
+
+        (src_files, self.incdirs) = self._get_fileset_files(['sim', 'isim'])
+        for src_file in src_files:
+            f1.write('verilog work ' + src_file.name + '\n')
+
         f1.close()
 
         tcl_file = 'isim.tcl'
@@ -54,10 +57,8 @@ class Isim(Simulator):
         args += ['-prj', 'isim.prj']
         args += ['-o', 'fusesoc.elf']
 
-        for include_dir in self.verilog.include_dirs:
-            args += ['-i', os.path.relpath(include_dir, self.sim_root)]
-        for include_dir in self.verilog.tb_include_dirs:
-            args += ['-i', os.path.relpath(include_dir, self.sim_root)]
+        for include_dir in self.incdirs:
+            args += ['-i', include_dir]
 
         args += self.isim_options
 
