@@ -138,6 +138,7 @@ verilog
 [cols="2,1,5",options="header"]
 |==============================
 |Name | Type | Description
+|file_type | String | Default file type of the files in fileset
 |include_files | Space-separated list of files | Verilog include files
 |src_files | Space-separated list of files | Verilog source files for synthesis/simulation
 |tb_include_files | Space-separated list of files | Testbench include files

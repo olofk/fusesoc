@@ -177,9 +177,12 @@ class VerilogSection(Section):
         self._add_member('tb_src_files'        , FileList, "Verilog source files that are only used in simulation. Visible to other cores")
         self._add_member('tb_private_src_files', FileList, "Verilog source files that are only used in the core's own testbench. Not visible to other cores")
         self._add_member('tb_include_files'    , FileList, "Testbench include files")
+        self._add_member('file_type'           , str     , "Default file type of the files in fileset")
 
         if items:
             self.load_dict(items)
+            if not self.file_type:
+                self.file_type = "verilog_source"
             if self.include_files:
                 self.include_dirs  += utils.unique_dirs(self.include_files)
             if self.tb_include_files:
