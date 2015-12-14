@@ -182,7 +182,7 @@ class VerilogSection(Section):
         if items:
             self.load_dict(items)
             if not self.file_type:
-                self.file_type = "verilog_source"
+                self.file_type = "verilogSource"
             if self.include_files:
                 self.include_dirs  += utils.unique_dirs(self.include_files)
             if self.tb_include_files:
