@@ -1,3 +1,4 @@
+from collections import OrderedDict
 import importlib
 import logging
 import os
@@ -40,7 +41,7 @@ class Core:
         for s in section.SECTION_MAP:
             assert(not hasattr(self, s))
             if(section.SECTION_MAP[s].named):
-                setattr(self, s, {})
+                setattr(self, s, OrderedDict())
             else:
                 setattr(self, s, None)
 
@@ -116,8 +117,11 @@ class Core:
         for s in section.SECTION_MAP:
             obj = getattr(self, s)
             if obj:
-                if not (type(obj) == dict):
+                if not (type(obj) == OrderedDict):
                     src_files += [f.name for f in obj.export()]
+                else:
+                    for item in obj.values():
+                        src_files += [f.name for f in item.export()]
 
         dirs = list(set(map(os.path.dirname,src_files)))
         for d in dirs:
