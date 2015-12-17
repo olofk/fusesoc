@@ -205,7 +205,11 @@ class Core:
                                           file    = _files,
                                           usage   = ['sim'],
                                           private = True))
-
+        for k, v in self.fileset.items():
+            self.file_sets.append(FileSet(name = k,
+                                          file = v.files,
+                                          usage = v.usage,
+                                          private = (v.scope == 'private')))
     def info(self):
 
         show_list = lambda l: "\n                        ".join(l)

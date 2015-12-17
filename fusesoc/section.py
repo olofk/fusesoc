@@ -7,6 +7,7 @@ class File(object):
     name      = ""
     file_type = ""
     is_include_file = False
+    logical_name = ""
     def __init__(self, s):
         self.is_include_file = False
         if s[-1:] == ']':
@@ -19,8 +20,8 @@ class File(object):
                     self.is_include_file = True
                 elif '=' in _arg:
                     _tmp = [x.strip() for x in _arg.split('=')]
-                    if _tmp[0] == 'file_type':
-                        self.file_type = _tmp[1]
+                    if _tmp[0] in ['file_type', 'logical_name']:
+                        setattr(self, _tmp[0], _tmp[1])
                 else:
                     raise SyntaxError("Unexpected argument '"+_arg+"'")
         else:
@@ -200,6 +201,30 @@ class VerilogSection(Section):
         if self.tb_include_dirs:      s += "\nTestbench include directories :\n {}".format('\n '.join(self.tb_include_dirs))
 
         return s
+
+class FileSetSection(Section):
+    TAG = 'fileset'
+    named = True
+    def __init__(self, items=None):
+        super(FileSetSection, self).__init__()
+
+        self._add_member('files'          , FileList, "List of files in fileset")
+        self._add_member('file_type'      , str     , "Default file type of the files in fileset")
+        self._add_member('is_include_file', str     , "Specify all files in fileset as include files")
+        self._add_member('logical_name'   , str     , "Default logical_name (e.g. library) of the files in fileset")
+        self._add_member('scope'          , str     , "Visibility of fileset (private/public). Private filesets are only visible when this core is the top-level. Public filesets are visible also for cores that depend on this core. Default is public")
+        self._add_member('usage'          , StringList, "List of tags describing when this fileset should be used. Can be general such as sim or synth, or tool-specific such as quartus, verilator, icarus")
+        if items:
+            self.load_dict(items)
+            for f in self.files:
+                if not f.file_type:
+                    f.file_type = self.file_type
+                if self.is_include_file.lower() == "true":
+                    f.is_include_file = True
+                if not f.logical_name:
+                    f.logical_name = self.logical_name 
+            self.export_files = self.files
+
 
 class VpiSection(Section):
 
