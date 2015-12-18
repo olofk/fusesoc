@@ -1,7 +1,8 @@
 import os
 import subprocess
 from .simulator import Simulator
-from fusesoc.utils import Launcher
+from fusesoc.config import Config
+from fusesoc.utils import Launcher, pr_warn
 
 class Modelsim(Simulator):
 
@@ -22,41 +23,56 @@ class Modelsim(Simulator):
 
     def configure(self):
         super(Modelsim, self).configure()
-        self._write_config_files()
-
-    def _write_config_files(self):
-        self.cfg_file = self.system.name+'.scr'
-
-        f = open(os.path.join(self.sim_root,self.cfg_file),'w')
-
-        incdirs = set()
-        src_files = []
-
-        (src_files, incdirs) = self._get_fileset_files(['sim', 'modelsim'])
-
-        for id in incdirs:
-            f.write("+incdir+" + id + '\n')
-        for src_file in src_files:
-            f.write(src_file.name + '\n')
-
-        f.close()
 
     def build(self):
         super(Modelsim, self).build()
 
-        #FIXME: Handle failures. Save stdout/stderr.
-        Launcher(self.model_tech+'/vlib', ['work'],
-                 cwd      = self.sim_root,
-                 errormsg = "Failed to create library 'work'").run()
-        
+        (src_files, incdirs) = self._get_fileset_files(['sim', 'modelsim'])
         logfile = os.path.join(self.sim_root, 'vlog.log')
-        args = []
-        args += ['-f', self.cfg_file]
-        args += ['-quiet']
-        args += ['-l', logfile]
-        args += self.vlog_options
+        vlog_include_dirs = ['+incdir+'+d for d in incdirs]
+        for f in src_files:
+            if not f.logical_name:
+                f.logical_name = 'work'
+            if not os.path.exists(os.path.join(self.sim_root, f.logical_name)):
+                Launcher(self.model_tech+'/vlib', [f.logical_name],
+                         cwd      = self.sim_root,
+                         errormsg = "Failed to create library '{}'".format(f.logical_name)).run()
 
-        Launcher(self.model_tech+'/vlog', args,
+            if f.file_type in ["verilogSource",
+		               "verilogSource-95",
+		               "verilogSource-2001",
+		               "verilogSource-2005"]:
+                cmd = 'vlog'
+                args = self.vlog_options[:]
+                args += vlog_include_dirs
+            elif f.file_type in ["systemVerilogSource",
+			         "systemVerilogSource-3.0",
+			         "systemVerilogSource-3.1",
+			         "systemVerilogSource-3.1a"]:
+                cmd = 'vlog'
+                args = self.vlog_options[:]
+                args += ['-sv']
+                args += vlog_include_dirs
+            elif f.file_type == 'vhdlSource':
+                cmd = 'vcom'
+            elif f.file_type == 'vhdlSource-87':
+                cmd = 'vcom'
+                args = ['-87']
+            elif f.file_type == 'vhdlSource-93':
+                cmd = 'vcom'
+                args = ['-93']
+            elif f.file_type == 'vhdlSource-2008':
+                cmd = 'vcom'
+                args = ['-2008']
+            else:
+                _s = "{} has unknown file type '{}'"
+                pr_warn(_s.format(f.name,
+                                  f.file_type))
+            if not Config().verbose:
+                args += ['-quiet']
+            args += ['-work', f.logical_name]
+            args += [f.name]
+            Launcher(os.path.join(self.model_tech, cmd), args,
                  cwd      = self.sim_root,
                  errormsg = "Failed to compile simulation model. Compile log is available in " + logfile).run()
 
@@ -107,7 +123,7 @@ class Modelsim(Simulator):
         args += ['-l', logfile]
         args += self.vsim_options
         args += vpi_options
-        args += ['work.'+self.toplevel]
+        args += [self.toplevel]
         args += ['+'+s for s in self.plusargs]
 
         Launcher(self.model_tech+'/vsim', args,
