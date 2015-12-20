@@ -64,7 +64,10 @@ class CoreManager(object):
         return self._cores_root
 
     def get_depends(self, core):
-        depends = self._cores[core].depend
+        try:
+            depends = self._cores[core].depend
+        except(KeyError):
+            raise DependencyError(core)
         try:
             depends += getattr(self._cores[core], self.tool).depend
         except (AttributeError, KeyError):
