@@ -1,3 +1,16 @@
+bin_SCRIPTS = out/fusesoc
+CLEANFILES = $(bin_SCRIPTS)
+
+do_substitution = sed -e 's,[@]pythondir[@],$(pythondir),g' \
+	-e 's,[@]PACKAGE[@],$(PACKAGE),g' \
+	-e 's,[@]VERSION[@],$(VERSION),g' \
+	-e 's,[@]PYTHON[@],$(PYTHON),g'
+
+$(bin_SCRIPTS): bin/fusesoc Makefile
+	$(MKDIR_P) out
+	$(do_substitution) < $< > $@
+	chmod +x $@
+
 fusesoc_PYTHON =        \
  fusesoc/__init__.py           \
  fusesoc/config.py             \
@@ -42,9 +55,7 @@ build_PYTHON =      \
 
 builddir = $(fusesocdir)/build
 
-EXTRA_DIST = INSTALL doc
-
-SUBDIRS = bin
+EXTRA_DIST = INSTALL bin doc
 
 dist-hook:
 	make -C $(distdir)/doc clean all

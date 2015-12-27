@@ -3,7 +3,9 @@ AC_INIT([FuseSoC], [1.4-dev])
 AM_INIT_AUTOMAKE([foreign])
 AM_PATH_PYTHON([2.7])
 
-AC_CONFIG_FILES([Makefile bin/Makefile])
+AC_PROG_MKDIR_P
+
+AC_CONFIG_FILES([Makefile])
 
 AC_ARG_ENABLE([svn],
 	[AS_HELP_STRING([--disable-svn],
