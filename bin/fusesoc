@@ -19,8 +19,6 @@ else:
 fusesocdir = os.path.abspath(os.path.join(os.path.dirname(os.path.realpath(__file__)), ".."))
 if os.path.exists(os.path.join(fusesocdir, "fusesoc")):
     sys.path[0:0] = [fusesocdir]
-else:
-    sys.path[0:0] = ['@pythondir@']
 
 from fusesoc.build import BackendFactory
 from fusesoc.config import Config

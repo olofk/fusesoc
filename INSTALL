@@ -1,20 +1,22 @@
 FuseSoC can be run directly from a downloaded tarball release or from a
-checked out repository. In these cases the main program is available as
-bin/fusesoc.in. This is handy if you want to work on FuseSoC itself.
+checked out repository, or installed from the Python Package Index via pip.
 
 Unless you want to do development on FuseSoC itself, it is better to do a system
 installation. Follow these steps to do a system-wide installation.
 
-(If you install FuseSoC from from a GIT repository instead of using a released
-tarball, you first need to run "autoreconf -i").
+Install from PyPI:
 
-If your system uses an incompatible version of Python (i.e. < 2.7) or if
-you want to use a specific version of Python, you need to set an environment
-variable, $PYTHON, to point to where the Python binary is.
+    sudo pip install fusesoc
 
-Run "./configure && make" to build FuseSoC.
-Install it with "make install" and make sure you have write permissions to the
-target directory.
+Install from git checkout:
+
+    sudo python setup.py install
+
+Install using autotools:
+
+    autoreconf -i
+    ./configure && make
+    make install
 
 You most certainly want the default collection of cores to get started as well.
 These are currently hosted at github.com/openrisc/orpsoc-cores. Download the
