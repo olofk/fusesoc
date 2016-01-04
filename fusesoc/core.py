@@ -225,7 +225,7 @@ class Core:
         if self.depend:
             print("\nCommon dependencies:    " + show_list(self.depend))
         for s in section.SECTION_MAP:
-            if s == 'main':
+            if s in ['main', 'verilog']:
                 continue
             obj = getattr(self, s)
             if obj:
@@ -236,3 +236,19 @@ class Core:
                         print(str(v))
                 else:
                     print(obj)
+        print("File sets:")
+        for s in self.file_sets:
+            print("""
+ Name  : {}
+ Scope : {}
+ Usage : {}
+ Files :""".format(s.name, "private" if s.private else "public", '/'.join(s.usage)))
+            if not s.file:
+                print(" <No files>")
+            else:
+                _longest_name = max([len(x.name) for x in s.file])
+                _longest_type = max([len(x.file_type) for x in s.file])
+                for f in s.file:
+                    print("  {} {} {}".format(f.name.ljust(_longest_name),
+                                              f.file_type.ljust(_longest_type),
+                                              f.is_include_file))
