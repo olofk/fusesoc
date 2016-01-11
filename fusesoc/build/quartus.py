@@ -108,12 +108,37 @@ clean:
         if self.system.backend.top_module:
             top_module = self.system.backend.top_module
         tcl_file.write("set_global_assignment -name TOP_LEVEL_ENTITY " + top_module + '\n')
-        for src_file in self.src_files:
-            tcl_file.write("set_global_assignment -name VERILOG_FILE " + os.path.relpath(src_file, self.work_root) + '\n')
-        for vhdl_src_files in self.vhdl_src_files:
-            tcl_file.write("set_global_assignment -name VHDL_FILE " + os.path.relpath(vhdl_src_files, self.work_root) + '\n')
-        for include_dir in self.include_dirs:
-            tcl_file.write("set_global_assignment -name SEARCH_PATH " + os.path.relpath(include_dir, self.work_root) + '\n')
+
+        (src_files, incdirs) = self._get_fileset_files(['synth', 'quartus'])
+
+        for f in src_files:
+            if f.file_type in ["verilogSource",
+		               "verilogSource-95",
+                               "verilogSource-2001",
+		               "verilogSource-2005"]:
+                _type = 'VERILOG_FILE'
+            elif f.file_type in ["systemVerilogSource",
+			         "systemVerilogSource-3.0",
+			         "systemVerilogSource-3.1",
+			         "systemVerilogSource-3.1a"]:
+                _type = 'SYSTEMVERILOG_FILE'
+            elif f.file_type in ['vhdlSource',
+                                 'vhdlSource-87',
+                                 'vhdlSource-93',
+                                 'vhdlSource-2008']:
+                _type = 'VHDL_FILE'
+            else:
+                _type = None
+                _s = "{} has unknown file type '{}'"
+                pr_warn(_s.format(f.name,
+                                  f.file_type))
+            if _type:
+                _s = "set_global_assignment -name {} {}\n"
+                tcl_file.write(_s.format(_type,
+                                         f.name))
+
+        for include_dir in incdirs:
+            tcl_file.write("set_global_assignment -name SEARCH_PATH " + include_dir + '\n')
 
         #FIXME: Handle multiple SDC files. Also handle SDC files directly from cores?
         sdc_files = self.system.backend.sdc_files

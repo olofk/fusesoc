@@ -54,6 +54,21 @@ class Backend(object):
             if core.vhdl:
                 self.vhdl_src_files += [os.path.join(self.src_root, core_name, f) for f in core.vhdl.src_files]
 
+    def _get_fileset_files(self, usage):
+        incdirs = set()
+        src_files = []
+        for core_name in self.cores:
+            core = self.cm.get_core(core_name)
+            basepath = os.path.relpath(os.path.join(self.src_root, core_name), self.work_root)
+            for fs in core.file_sets:
+                if (set(fs.usage) & set(usage)) and ((core_name == self.system.name) or not fs.private):
+                    for file in fs.file:
+                        if file.is_include_file:
+                            incdirs.add(os.path.join(basepath, os.path.dirname(file.name)))
+                        else:
+                            file.name = os.path.join(basepath, file.name)
+                            src_files.append(file)
+        return (src_files, incdirs)
 
     def configure(self):
         if os.path.exists(self.work_root): 
