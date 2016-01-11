@@ -230,10 +230,9 @@ class Core:
             obj = getattr(self, s)
             if obj:
                 print("== " + s + " ==")
-                if(type(obj) == dict):
+                if(type(obj) == OrderedDict):
                     for k, v in obj.items():
                         print(str(k))
-                        print(str(v))
                 else:
                     print(obj)
         print("File sets:")
