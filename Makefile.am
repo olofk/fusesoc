@@ -55,6 +55,13 @@ build_PYTHON =      \
 
 builddir = $(fusesocdir)/build
 
+ipyxact_PYTHON =                \
+ fusesoc/ipyxact/__init__.py    \
+ fusesoc/ipyxact/ipxact_yaml.py \
+ fusesoc/ipyxact/ipyxact.py
+
+ipyxactdir = $(fusesocdir)/ipyxact
+
 EXTRA_DIST = INSTALL bin doc
 
 dist-hook:

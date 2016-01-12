@@ -142,6 +142,7 @@ class MainSection(Section):
     def __init__(self, items=None):
         super(MainSection, self).__init__()
 
+        self._add_member('component'  , PathList, "Core IP-Xact component file")
         self._add_member('description', str, "Core description")
         self._add_member('depend'     , StringList, "Common dependencies")
         self._add_member('simulators' , SimulatorList, "Supported simulators. Valid values are icarus, modelsim, verilator, isim and xsim. Each simulator have a dedicated section desribed elsewhere in this document")

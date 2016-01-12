@@ -63,6 +63,7 @@ main
 [cols="2,1,5",options="header"]
 |==============================
 |Name | Type | Description
+|component | Space-separated list of paths | Core IP-Xact component file
 |depend | Space-separated list | Common dependencies
 |description | String | Core description
 |patches | Space-separated list | FuseSoC-specific patches

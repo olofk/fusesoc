@@ -5,6 +5,7 @@ import os
 import shutil
 import subprocess
 
+from fusesoc.ipyxact.ipyxact import Component
 from fusesoc import section
 from fusesoc import utils
 from fusesoc.config import Config
@@ -48,6 +49,7 @@ class Core:
         self.core_root = os.path.dirname(core_file)
         self.files_root = self.core_root
 
+        self.export_files = []
         if core_file:
 
             self.name = basename.split('.core')[0]
@@ -88,6 +90,9 @@ class Core:
             if self.provider:
                 self.files_root = self.provider.files_root
 
+            for f in self.main.component:
+                self._parse_component(os.path.join(self.files_root, f))
+
             system_file = os.path.join(self.core_root, self.name+'.system')
             if os.path.exists(system_file):
                 self.system = System(system_file)
@@ -112,7 +117,7 @@ class Core:
             shutil.rmtree(dst_dir)
 
         #FIXME: Separate tb_files to an own directory tree (src/tb/core_name ?)
-        src_files = []
+        src_files = self.export_files
 
         for s in section.SECTION_MAP:
             obj = getattr(self, s)
@@ -210,6 +215,28 @@ class Core:
                                           file = v.files,
                                           usage = v.usage,
                                           private = (v.scope == 'private')))
+
+    def _parse_component(self, component_file):
+        component = Component()
+        component.load(component_file)
+
+        if not self.main.description:
+            self.main.description = component.description
+
+        for file_set in component.fileSets.fileSet:
+            _name = file_set.name
+            for f in file_set.file:
+                self.export_files.append(f.name)
+                #FIXME: Harmonize underscore vs camelcase
+                f.file_type = f.fileType
+                if f.isIncludeFile == 'true':
+                    f.is_include_file = True
+                else:
+                    f.is_include_file = False
+            #FIXME: Handle duplicates. Resolution function? (merge/replace, prio ipxact/core)
+            self.file_sets.append(FileSet(name = file_set.name,
+                                          file = file_set.file[:],
+                                          usage = ['sim', 'synth']))
     def info(self):
 
         show_list = lambda l: "\n                        ".join(l)
