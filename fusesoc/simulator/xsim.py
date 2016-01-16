@@ -40,9 +40,10 @@ class Xsim(Simulator):
             elif src_file.file_type in ['vhdlSource-2008']:
                 f1.write('vhdl2008 ' + src_file.logical_name + " " + src_file.name + '\n')
             elif src_file.file_type in ["systemVerilogSource",
-			                "systemVerilogSource-3.0",
-			                "systemVerilogSource-3.1",
-			                "systemVerilogSource-3.1a"]:
+                                        "systemVerilogSource-3.0",
+                                        "systemVerilogSource-3.1",
+                                        "systemVerilogSource-3.1a",
+                                        "verilogSource-2005"]:
                 f1.write('sv work ' + src_file.name + '\n')
             else:
                 _s = "{} has unknown file type '{}'"
