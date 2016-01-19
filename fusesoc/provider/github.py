@@ -12,6 +12,7 @@ else:
     import urllib
     from urllib2 import URLError
 
+URL = 'https://github.com/{user}/{repo}/archive/{version}.tar.gz'
 
 class GitHub(object):
     def __init__(self, core_name, config, core_root, cache_root):
@@ -55,8 +56,11 @@ class GitHub(object):
 
     def _checkout(self, local_dir):
         #TODO : Sanitize URL
-        url = 'https://github.com/{user}/{repo}/archive/{version}.tar.gz'.format(user=self.user, repo=self.repo, version=self.version)
-        pr_info("Checking out " + url + " revision " + self.version + " to " + local_dir)
+        url = URL.format(user=self.user,
+                         repo=self.repo,
+                         version=self.version)
+        pr_info("Downloading {}/{} from github".format(self.user,
+                                                       self.repo))
         try:
             (filename, headers) = urllib.urlretrieve(url)
         except URLError as e:
