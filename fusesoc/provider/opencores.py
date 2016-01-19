@@ -5,11 +5,14 @@ import logging
 
 logger = logging.getLogger(__name__)
 
+REPO_PATH = 'http://opencores.org/ocsvn/{}/{}/{}'
+
 class ProviderOpenCores(object):
     def __init__(self, core_name, config, core_root, cache_root):
-        self.repo_path = 'http://opencores.org/ocsvn/' + \
-            config.get('repo_name') + '/' + config.get('repo_name') + '/' + \
-            config.get('repo_root')
+        self.repo_name = config.get('repo_name')
+        self.repo_path = REPO_PATH.format(self.repo_name,
+                                          self.repo_name,
+                                          config.get('repo_root'))
         self.revision_number  = config.get('revision')
         self.files_root = cache_root
 
@@ -46,7 +49,7 @@ class ProviderOpenCores(object):
             return 'downloaded'
 
     def _checkout(self, local_dir):
-        pr_info("Checking out " + self.repo_path + " revision " + self.revision_number + " to " + local_dir)
+        pr_info("Downloading " + self.repo_name + " from OpenCores")
 
         Launcher('svn', ['co', '-q', '--no-auth-cache',
                          '-r', self.revision_number,
