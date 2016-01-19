@@ -13,10 +13,8 @@ Add glob support in CAPI (wildcards in src_files et. al.)
 Switch to a better format (YAML?) for CAPI2
 Add checksums to cache
 Add use flag support
-Export IP-XACT data (for top-level generation with kactus2)
 Check if cache is clean and revision is equal to core description
 Add checksum to local cores
 Add support for version requirement in dependencies
 Add support for programming devices with urjtag
 Allow cores to register themselves as generators
-Improve VHDL support (libraries, tb_files...)
