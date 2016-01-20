@@ -37,6 +37,10 @@ class Xsim(Simulator):
 		                      "verilogSource-95",
 		                      "verilogSource-2001"]:
                 f1.write('verilog work ' + src_file.name + '\n')
+            elif src_file.file_type in ["vhdlSource",
+                                        "vhdlSource-87",
+                                        "vhdlSource-93"]:
+                f1.write('vhdl work ' + src_file.logical_name + " " + src_file.name + '\n')
             elif src_file.file_type in ['vhdlSource-2008']:
                 f1.write('vhdl2008 ' + src_file.logical_name + " " + src_file.name + '\n')
             elif src_file.file_type in ["systemVerilogSource",
