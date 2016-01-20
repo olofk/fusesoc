@@ -96,7 +96,8 @@ class Xsim(Simulator):
         args += ['--log', 'xsim.log']                      # Log file
         args += ['--wdb', 'xsim.wdb']                      # Simulation waveforms database
         args += ['fusesoc']                                # Snapshot name
-        #args += ['+'+s for s in self.plusargs]             # Plusargs
+        for s in self.plusargs:
+            args += ['--testplusarg', s]
         Launcher('xsim', args,
                  cwd = self.sim_root,
                  errormsg = "Failed to run Xsim simulation").run()
