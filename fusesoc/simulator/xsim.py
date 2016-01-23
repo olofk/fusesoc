@@ -21,8 +21,8 @@ class Xsim(Simulator):
 
 
 
-    def configure(self):
-        super(Xsim, self).configure()
+    def configure(self, args):
+        super(Xsim, self).configure(args)
         self._write_config_files()
 
     def _write_config_files(self):

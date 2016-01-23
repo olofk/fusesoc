@@ -21,8 +21,8 @@ class Modelsim(Simulator):
             raise RuntimeError("Environment variable MODEL_TECH was not found. It should be set to <modelsim install path>/bin")
         self.sim_root = os.path.join(self.build_root, 'sim-modelsim')
 
-    def configure(self):
-        super(Modelsim, self).configure()
+    def configure(self, args):
+        super(Modelsim, self).configure(args)
 
     def build(self):
         super(Modelsim, self).build()

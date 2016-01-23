@@ -21,8 +21,8 @@ class Isim(Simulator):
 
 
 
-    def configure(self):
-        super(Isim, self).configure()
+    def configure(self, args):
+        super(Isim, self).configure(args)
         self._write_config_files()
 
     def _write_config_files(self):

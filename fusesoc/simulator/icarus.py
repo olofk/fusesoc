@@ -18,8 +18,8 @@ class SimulatorIcarus(Simulator):
         super(SimulatorIcarus, self).__init__(system)
         self.sim_root = os.path.join(self.build_root, 'sim-icarus')
 
-    def configure(self):
-        super(SimulatorIcarus, self).configure()
+    def configure(self, args):
+        super(SimulatorIcarus, self).configure(args)
         self._write_config_files()
 
     def _write_config_files(self):

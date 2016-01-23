@@ -66,8 +66,8 @@ class Verilator(Simulator):
                 shutil.copyfile(os.path.join(src_dir, f), 
                                 os.path.join(dst_dir, f))
 
-    def configure(self):
-        super(Verilator, self).configure()
+    def configure(self, args):
+        super(Verilator, self).configure(args)
         self.export()
         self._write_config_files()
         #self.object_files = [os.path.splitext(os.path.basename(s))[0]+'.o' for s in self.src_files]

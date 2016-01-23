@@ -212,7 +212,7 @@ def sim(args):
         sim.toplevel = args.testbench[0]
     if not args.keep or not os.path.exists(sim.sim_root):
         try:
-            sim.configure()
+            sim.configure(args.plusargs)
             print('')
         except RuntimeError as e:
             pr_err("Failed to configure the system")
