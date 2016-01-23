@@ -42,6 +42,7 @@ class Verilator(Simulator):
              self.src_type           = system.verilator.source_type
              self.define_files       = system.verilator.define_files
              self.top_module         = system.verilator.top_module
+             self.fusesoc_cli_parser = system.verilator.cli_parser and (system.verilator.cli_parser == 'fusesoc')
 
         self.sim_root = os.path.join(self.build_root, 'sim-verilator')
         if self.top_module == '':
@@ -67,6 +68,8 @@ class Verilator(Simulator):
                                 os.path.join(dst_dir, f))
 
     def configure(self, args):
+        if not self.fusesoc_cli_parser:
+            self.plusargs = []
         super(Verilator, self).configure(args)
         self.export()
         self._write_config_files()
@@ -258,13 +261,19 @@ class Verilator(Simulator):
             l.run()
         
     def run(self, args):
+        if not self.fusesoc_cli_parser:
+            self.plusargs = []
+        super(Verilator, self).run(args)
         self.env = os.environ.copy()
         self.env['CORE_ROOT'] = os.path.abspath(self.system.core_root)
         self.env['BUILD_ROOT'] = os.path.abspath(self.build_root)
         self.env['SIM_ROOT'] = os.path.abspath(self.sim_root)
-        #TODO: Handle arguments parsing
+        if self.fusesoc_cli_parser:
+            _args = ['+'+s for s in self.plusargs]
+        else:
+            _args = args
         pr_info("Running simulation")
         utils.Launcher('./V' + self.top_module,
-                       args,
+                       _args,
                        cwd=os.path.join(self.sim_root, 'obj_dir'),
                        env = self.env).run()

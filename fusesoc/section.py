@@ -327,6 +327,7 @@ class VerilatorSection(ToolSection):
         self._add_member('tb_toplevel', str, 'Testbench top-level C/C++/SC file')
         self._add_member('source_type', str, 'Testbench source code language (Legal values are systemC, C, CPP. Default is C)')
         self._add_member('top_module' , str, 'verilog top-level module')
+        self._add_member('cli_parser' , str, "Select CLI argument parser. Set to 'fusesoc' to handle parameter sections like other simulators. Set to 'passthrough' to send the arguments directly to the verilated model. Default is 'passthrough'")
 
         if items:
             self.load_dict(items)

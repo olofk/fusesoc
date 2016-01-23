@@ -136,6 +136,7 @@ verilator
 [cols="2,1,5",options="header"]
 |==============================
 |Name | Type | Description
+|cli_parser | String | Select CLI argument parser. Set to 'fusesoc' to handle parameter sections like other simulators. Set to 'passthrough' to send the arguments directly to the verilated model. Default is 'passthrough'
 |define_files | Space-separated list of paths | Verilog include files containing `define directives to be converted to C #define directives in corresponding .h files
 |depend | Space-separated list | Tool-specific Dependencies
 |include_files | Space-separated list of files | Verilator testbench C include files
