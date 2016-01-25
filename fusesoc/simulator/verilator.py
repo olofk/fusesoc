@@ -250,14 +250,14 @@ class Verilator(Simulator):
         args += ['-c']
         args += ['-g']
 
-        for src_file in self.src_files:
-            pr_info("Compiling " + src_file)
-            l = Launcher('g++', args + [os.path.join(src_root, core.name, src_file)],
+        for src_file in core.verilator.src_files:
+            pr_info("Compiling " + src_file.name)
+            l = utils.Launcher('g++', args + [os.path.join(src_root, core.name, src_file.name)],
                          cwd=sim_root,
                          stderr = open(os.path.join(sim_root, 'g++.err.log'),'a'))
             if Config().verbose:
                 pr_info("  SystemC compilation working dir: " + sim_root)
-                pr_info("  SystemC compilation command: g++ " + ' '.join(args) + ' ' + os.path.join(src_root, core.name, src_file))
+                pr_info("  SystemC compilation command: g++ " + ' '.join(args) + ' ' + os.path.join(src_root, core.name, src_file.name))
             l.run()
         
     def run(self, args):
