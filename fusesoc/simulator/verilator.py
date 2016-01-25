@@ -55,7 +55,7 @@ class Verilator(Simulator):
         src_dir = self.system.files_root
         dst_dir = os.path.join(self.src_root, self.system.name)
         src_files = [f.name for f in self.src_files]
-        src_files += self.include_files
+        src_files += [f.name for f in self.include_files]
         src_files += [self.tb_toplevel]
         dirs = list(set(map(os.path.dirname, src_files)))
         for d in dirs:
