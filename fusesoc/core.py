@@ -72,7 +72,7 @@ class Core:
 
             cache_root = os.path.join(Config().cache_root, self.name)
             if config.has_section('plusargs'):
-                utils.pr_warn("plusargs section is deprecated and will be removed in future versions. Please migrate to parameters")
+                utils.pr_warn("plusargs section is deprecated and will be removed in future versions. Please migrate to parameters in " + self.name)
                 self.plusargs = Plusargs(dict(config.items('plusargs')))
             if config.has_section('provider'):
                 items    = dict(config.items('provider'))
