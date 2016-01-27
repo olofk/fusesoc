@@ -71,6 +71,25 @@ class Backend(object):
             except HTTPError as e:
                 raise RuntimeError("Problem while fetching '" + core.name + "': " + str(e.reason))
             core.export(dst_dir)
+        self._export_backend_files()
+
+    def _export_backend_files(self):
+        src_dir = self.system.system_root
+        dst_dir = os.path.join(self.src_root, self.system.name)
+
+        export_files = self.system.backend.export()
+        dirs = list(set(map(os.path.dirname, export_files)))
+
+        for d in dirs:
+            if not os.path.exists(os.path.join(dst_dir, d)):
+                os.makedirs(os.path.join(dst_dir, d))
+
+        for f in export_files:
+            if(os.path.exists(os.path.join(src_dir, f))):
+                shutil.copyfile(os.path.join(src_dir, f),
+                                os.path.join(dst_dir, f))
+            else:
+                pr_warn("File " + os.path.join(src_dir, f) + " doesn't exist")
 
     def build(self, args):
         for script in self.system.pre_build_scripts:

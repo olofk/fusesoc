@@ -49,12 +49,8 @@ clean:
         qsys_script = open(os.path.join(self.work_root, 'qsys.sh'),'w')
 
         for f in self.system.backend.qsys_files:
-            src_file = os.path.join(self.system_root, f)
             dst_file = os.path.join(self.work_root, f)
             dst_dir = os.path.dirname(dst_file)
-            if not os.path.exists(dst_dir):
-                os.makedirs(dst_dir)
-            shutil.copyfile(src_file, dst_file)
 
             args = []
             args += ['--project-directory=' + dst_dir]
@@ -140,15 +136,8 @@ clean:
         for include_dir in incdirs:
             tcl_file.write("set_global_assignment -name SEARCH_PATH " + include_dir + '\n')
 
-        #FIXME: Handle multiple SDC files. Also handle SDC files directly from cores?
-        sdc_files = self.system.backend.sdc_files
-        for f in sdc_files:
-            src_file = os.path.join(self.system_root, f)
-            dst_file =os.path.join(self.work_root, f)
-            if not os.path.exists(os.path.dirname(dst_file)):
-                os.makedirs(os.path.dirname(dst_file))
-            shutil.copyfile(src_file, dst_file)
-            tcl_file.write("set_global_assignment -name SDC_FILE " + os.path.relpath(dst_file, self.work_root) + '\n')
+        for f in self.system.backend.sdc_files:
+            tcl_file.write("set_global_assignment -name SDC_FILE " + f + '\n')
 
         # NOTE: The relative path _have_ to be used here, if the absolute path
         # is used, quartus_asm will fail with an error message that

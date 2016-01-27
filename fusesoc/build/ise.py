@@ -45,23 +45,6 @@ quit
 
     def configure(self):
         super(Ise, self).configure()
-        src_dir = self.system.system_root
-        dst_dir = os.path.join(self.src_root, self.system.name)
-
-        export_files = self.system.backend.export()
-        dirs = list(set(map(os.path.dirname, export_files)))
-
-        for d in dirs:
-            if not os.path.exists(os.path.join(dst_dir, d)):
-                os.makedirs(os.path.join(dst_dir, d))
-
-        for f in export_files:
-            if(os.path.exists(os.path.join(src_dir, f))):
-                shutil.copyfile(os.path.join(src_dir, f),
-                                os.path.join(dst_dir, f))
-            else:
-                pr_warn("File " + os.path.join(src_dir, f) + " doesn't exist")
-
         self._write_tcl_file()
 
     def _write_tcl_file(self):
