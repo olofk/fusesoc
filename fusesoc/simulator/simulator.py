@@ -36,7 +36,6 @@ class Simulator(object):
         else:
             self.toplevel = 'orpsoc_tb'
             
-        self.vpi_modules = []
 
         self.cm = CoreManager()
         self.cores = self.cm.get_depends(self.system.name)
@@ -46,7 +45,10 @@ class Simulator(object):
         self.env['CORE_ROOT'] = os.path.abspath(self.system.core_root)
         self.env['BUILD_ROOT'] = os.path.abspath(self.build_root)
         self.env['SIMULATOR'] = self.TOOL_NAME
+        self._get_vpi_modules()
 
+    def _get_vpi_modules(self):
+        self.vpi_modules = []
         for core_name in self.cores:
             logger.debug('core_name=' + core_name)
             core = self.cm.get_core(core_name)
