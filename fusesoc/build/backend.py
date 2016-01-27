@@ -30,9 +30,6 @@ class Backend(object):
 
         self.src_root = os.path.join(self.build_root, 'src')
 
-        self.include_dirs = []
-        self.src_files = []
-        self.vhdl_src_files = []
         self.cm = CoreManager()
 
         self.env = os.environ.copy()
@@ -41,18 +38,6 @@ class Backend(object):
         self.env['BACKEND'] = self.TOOL_NAME
 
         self.cores = self.cm.get_depends(self.system.name)
-        for core_name in self.cores:
-            logger.debug('core_name=' + core_name)
-            core = self.cm.get_core(core_name)
-            if core.verilog:
-                if core.verilog.include_dirs:
-                    logger.debug('core.include_dirs=' + str(core.verilog.include_dirs))
-                else:
-                    logger.debug('core.include_dirs=None')
-                self.include_dirs += [os.path.join(self.src_root, core_name, d) for d in core.verilog.include_dirs]
-                self.src_files    += [os.path.join(self.src_root, core_name, f.name) for f in core.verilog.src_files]
-            if core.vhdl:
-                self.vhdl_src_files += [os.path.join(self.src_root, core_name, f) for f in core.vhdl.src_files]
 
     def _get_fileset_files(self, usage):
         incdirs = set()
