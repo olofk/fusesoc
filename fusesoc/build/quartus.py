@@ -130,7 +130,7 @@ clean:
             else:
                 _type = None
                 _s = "{} has unknown file type '{}'"
-                pr_warn(_s.format(f.name,
+                utils.pr_warn(_s.format(f.name,
                                   f.file_type))
             if _type:
                 _s = "set_global_assignment -name {} {}\n"
