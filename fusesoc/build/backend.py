@@ -14,30 +14,21 @@ else:
 
 from fusesoc.config import Config
 from fusesoc.coremanager import CoreManager
+from fusesoc.edatool import EdaTool
 from fusesoc.utils import Launcher, pr_info, pr_warn
 from fusesoc import utils
 import logging
 
 logger = logging.getLogger(__name__)
 
-class Backend(object):
+class Backend(EdaTool):
 
     def __init__(self, system):
-        config = Config()
-        self.system = system
-        self.build_root = os.path.join(config.build_root, self.system.name)
+        super(Backend, self).__init__(system)
+
         self.system_root = system.system_root
-
-        self.src_root = os.path.join(self.build_root, 'src')
-
-        self.cm = CoreManager()
-
-        self.env = os.environ.copy()
         self.env['SYSTEM_ROOT'] = os.path.abspath(self.system_root)
-        self.env['BUILD_ROOT'] = os.path.abspath(self.build_root)
         self.env['BACKEND'] = self.TOOL_NAME
-
-        self.cores = self.cm.get_depends(self.system.name)
 
     def _get_fileset_files(self, usage):
         incdirs = set()
