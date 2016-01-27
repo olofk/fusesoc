@@ -22,17 +22,6 @@ class FileAction(argparse.Action):
     def __call__(self, parser, namespace, values, option_string=None):
         setattr(namespace, self.dest, [os.path.abspath(values[0])])
 
-class _Verilog(object):
-    def __init__(self):
-        self.src_files = []
-        self.include_files = []
-        self.include_dirs = []
-
-        self.tb_src_files = []
-        self.tb_private_src_files = []
-        self.tb_include_files = []
-        self.tb_include_dirs = []
-
 class Simulator(object):
 
     def __init__(self, system):
