@@ -1,5 +1,5 @@
 from fusesoc.config import Config
-from fusesoc.coremanager import CoreManager
+from fusesoc.edatool import EdaTool
 from fusesoc.utils import Launcher, pr_info, pr_err, run_scripts
 import argparse
 import shutil
@@ -22,29 +22,20 @@ class FileAction(argparse.Action):
     def __call__(self, parser, namespace, values, option_string=None):
         setattr(namespace, self.dest, [os.path.abspath(values[0])])
 
-class Simulator(object):
+class Simulator(EdaTool):
 
     def __init__(self, system):
-        config = Config()
-        self.system = system
-        self.build_root = os.path.join(config.build_root, self.system.name)
+        super(Simulator, self).__init__(system)
 
-        self.src_root = os.path.join(self.build_root, 'src')
+        self.env['CORE_ROOT'] = os.path.abspath(self.system.core_root)
+        self.env['SIMULATOR'] = self.TOOL_NAME
 
+        logger.debug( "depend -->  " +str (self.cores))
         if 'toplevel' in self.system.simulator:
             self.toplevel = self.system.simulator['toplevel']
         else:
             self.toplevel = 'orpsoc_tb'
-            
 
-        self.cm = CoreManager()
-        self.cores = self.cm.get_depends(self.system.name)
-        logger.debug( "depend -->  " +str (self.cores))
-
-        self.env = os.environ.copy()
-        self.env['CORE_ROOT'] = os.path.abspath(self.system.core_root)
-        self.env['BUILD_ROOT'] = os.path.abspath(self.build_root)
-        self.env['SIMULATOR'] = self.TOOL_NAME
         self._get_vpi_modules()
 
     def _get_vpi_modules(self):
