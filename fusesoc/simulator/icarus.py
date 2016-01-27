@@ -16,7 +16,6 @@ class SimulatorIcarus(Simulator):
         if system.icarus is not None:
             self.iverilog_options = system.icarus.iverilog_options
         super(SimulatorIcarus, self).__init__(system)
-        self.sim_root = os.path.join(self.build_root, 'sim-icarus')
 
     def configure(self, args):
         super(SimulatorIcarus, self).configure(args)

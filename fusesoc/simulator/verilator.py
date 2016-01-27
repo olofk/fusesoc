@@ -44,7 +44,6 @@ class Verilator(Simulator):
              self.top_module         = system.verilator.top_module
              self.fusesoc_cli_parser = system.verilator.cli_parser and (system.verilator.cli_parser == 'fusesoc')
 
-        self.sim_root = os.path.join(self.build_root, 'sim-verilator')
         if self.top_module == '':
             raise OptionSectionMissing('top_module')
         if self.tb_toplevel == '':

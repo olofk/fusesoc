@@ -16,7 +16,6 @@ class Isim(Simulator):
         if system.isim is not None:
             self.isim_options = system.isim.isim_options
         super(Isim, self).__init__(system)
-        self.sim_root = os.path.join(self.build_root, 'sim-isim')
 
 
 

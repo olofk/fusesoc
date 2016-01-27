@@ -16,7 +16,6 @@ class Xsim(Simulator):
         if system.xsim is not None:
             self.xsim_options = system.xsim.xsim_options
         super(Xsim, self).__init__(system)
-        self.sim_root = os.path.join(self.build_root, 'sim-xsim')
 
 
 
