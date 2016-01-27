@@ -58,7 +58,7 @@ def build(args):
             pr_err("'" + args.system + "' or any of its dependencies requires '" + e.value + "', but this core was not found")
             exit(1)
         try:
-            backend.configure()
+            backend.configure(args.backendargs)
         except RuntimeError as e:
             pr_err(str(e))
             exit(1)

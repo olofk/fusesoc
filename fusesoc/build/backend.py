@@ -46,7 +46,7 @@ class Backend(EdaTool):
                             src_files.append(file)
         return (src_files, incdirs)
 
-    def configure(self):
+    def configure(self, args):
         if os.path.exists(self.work_root): 
             shutil.rmtree(self.work_root)
         os.makedirs(self.work_root)

@@ -34,8 +34,8 @@ clean:
         super(Quartus, self).__init__(system)
         self.work_root = os.path.join(self.build_root, 'bld-'+self.TOOL_NAME)
 
-    def configure(self):
-        super(Quartus, self).configure()
+    def configure(self, args):
+        super(Quartus, self).configure(args)
         self._run_qsys()
         self._write_tcl_file()
         self._write_makefile()
