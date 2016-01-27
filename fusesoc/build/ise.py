@@ -41,7 +41,6 @@ quit
 
     def __init__(self, system):
         super(Ise, self).__init__(system)
-        self.src_files    += [os.path.join(self.src_root, self.system.name, f) for f in self.system.backend.ucf_files]
         self.work_root = os.path.join(self.build_root, 'bld-'+self.TOOL_NAME)
 
     def configure(self):
@@ -66,6 +65,8 @@ quit
         self._write_tcl_file()
 
     def _write_tcl_file(self):
+        (src_files, incdirs) = self._get_fileset_files(['synth', 'ise'])
+        ucf_files = [os.path.join(self.src_root, self.system.name, f) for f in self.system.backend.ucf_files]
         tcl_file = open(os.path.join(self.work_root, self.system.name+'.tcl'),'w')
         tcl_file.write(self.TCL_FILE_TEMPLATE.format(
             design               = self.system.name,
@@ -74,8 +75,9 @@ quit
             package              = self.system.backend.package,
             speed                = self.system.backend.speed,
             top_module           = self.system.backend.top_module,
-            verilog_include_dirs = '|'.join(self.include_dirs),
-            source_files = '\n'.join(['xfile add '+s for s in self.src_files])))
+            verilog_include_dirs = '|'.join(incdirs),
+            source_files = '\n'.join(['xfile add '+s.name for s in src_files] +
+                                     ['xfile add '+s      for s in ucf_files])))
 
         for f in self.system.backend.tcl_files:
             tcl_file.write(open(os.path.join(self.system_root, f)).read())
