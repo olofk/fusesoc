@@ -16,6 +16,7 @@ fusesoc_PYTHON =        \
  fusesoc/config.py             \
  fusesoc/core.py               \
  fusesoc/coremanager.py        \
+ fusesoc/edatool.py             \
  fusesoc/fusesocconfigparser.py \
  fusesoc/plusargs.py           \
  fusesoc/section.py            \
