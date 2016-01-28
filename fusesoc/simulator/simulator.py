@@ -1,20 +1,9 @@
-from fusesoc.config import Config
-from fusesoc.edatool import EdaTool
-from fusesoc.utils import Launcher, pr_info, pr_err, run_scripts
 import argparse
-import shutil
 import os
 import logging
-import sys
 
-if sys.version_info[0] >= 3:
-    import urllib.request as urllib
-    from urllib.error import URLError
-    from urllib.error import HTTPError
-else:
-    import urllib
-    from urllib2 import URLError
-    from urllib2 import HTTPError
+from fusesoc.edatool import EdaTool
+from fusesoc.utils import run_scripts
 
 logger = logging.getLogger(__name__)
 
@@ -30,6 +19,7 @@ class Simulator(EdaTool):
         self.sim_root = os.path.join(self.build_root, 'sim-'+self.TOOL_NAME.lower())
 
         self.env['CORE_ROOT'] = os.path.abspath(self.system.core_root)
+        self.env['SIM_ROOT'] = os.path.abspath(self.sim_root)
         self.env['SIMULATOR'] = self.TOOL_NAME
 
         logger.debug( "depend -->  " +str (self.cores))
@@ -106,28 +96,8 @@ class Simulator(EdaTool):
 
     def configure(self, args):
         self.parse_args(args)
-        if os.path.exists(self.sim_root):
-            for f in os.listdir(self.sim_root):
-                if os.path.isdir(os.path.join(self.sim_root, f)):
-                    shutil.rmtree(os.path.join(self.sim_root, f))
-                else:
-                    os.remove(os.path.join(self.sim_root, f))
-        else:
-            os.makedirs(self.sim_root)
-
-        self.env['SIM_ROOT'] = os.path.abspath(self.sim_root)
-
-        for name in self.cores:
-            pr_info("Preparing " + name)
-            dst_dir = os.path.join(Config().build_root, self.system.name, 'src', name)
-            core = self.cm.get_core(name)
-            try:
-                core.setup()
-            except URLError as e:
-                raise RuntimeError("Problem while fetching '" + core.name + "': " + str(e.reason))
-            except HTTPError as e:
-                raise RuntimeError("Problem while fetching '" + core.name + "': " + str(e.reason))
-            core.export(dst_dir)
+        self.work_root = self.sim_root
+        super(Simulator, self).configure(args)
 
     def build(self):
         for core_name in self.cores:

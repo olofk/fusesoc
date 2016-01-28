@@ -1,23 +1,10 @@
+import logging
 import os.path
 import shutil
-import subprocess
-import sys
 
-if sys.version_info[0] >= 3:
-    import urllib.request as urllib
-    from urllib.error import URLError
-    from urllib.error import HTTPError
-else:
-    import urllib
-    from urllib2 import URLError
-    from urllib2 import HTTPError
-
-from fusesoc.config import Config
-from fusesoc.coremanager import CoreManager
 from fusesoc.edatool import EdaTool
 from fusesoc.utils import Launcher, pr_info, pr_warn
-from fusesoc import utils
-import logging
+
 
 logger = logging.getLogger(__name__)
 
@@ -47,21 +34,7 @@ class Backend(EdaTool):
         return (src_files, incdirs)
 
     def configure(self, args):
-        if os.path.exists(self.work_root): 
-            shutil.rmtree(self.work_root)
-        os.makedirs(self.work_root)
-        cm = CoreManager()
-        for name in self.cores:
-            pr_info("Preparing " + name)
-            core = cm.get_core(name)
-            dst_dir = os.path.join(Config().build_root, self.system.name, 'src', name)
-            try:
-                core.setup()
-            except URLError as e:
-                raise RuntimeError("Problem while fetching '" + core.name + "': " + str(e.reason))
-            except HTTPError as e:
-                raise RuntimeError("Problem while fetching '" + core.name + "': " + str(e.reason))
-            core.export(dst_dir)
+        super(Backend, self).configure(args)
         self._export_backend_files()
 
     def _export_backend_files(self):
