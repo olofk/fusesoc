@@ -137,7 +137,9 @@ clean:
             tcl_file.write("set_global_assignment -name SEARCH_PATH " + include_dir + '\n')
 
         for f in self.system.backend.sdc_files:
-            tcl_file.write("set_global_assignment -name SDC_FILE " + f + '\n')
+            dst_dir = os.path.join(self.src_root, self.system.name)
+            sdc_file = os.path.relpath(os.path.join(dst_dir, f) , self.work_root)
+            tcl_file.write("set_global_assignment -name SDC_FILE " + sdc_file + '\n')
 
         # NOTE: The relative path _have_ to be used here, if the absolute path
         # is used, quartus_asm will fail with an error message that
