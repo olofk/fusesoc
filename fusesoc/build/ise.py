@@ -61,7 +61,9 @@ quit
             verilog_include_dirs = '|'.join(incdirs),
             source_files = '\n'.join(['xfile add '+s.name for s in src_files] +
                                      ['xfile add '+s      for s in ucf_files])))
-
+        if self.vlogparam:
+            s = 'project set "Generics, Parameters" "{}" -process "Synthesize - XST"\n'
+            tcl_file.write(s.format('|'.join([k+'='+str(v) for k,v in self.vlogparam.items()])))
         for f in self.system.backend.tcl_files:
             tcl_file.write(open(os.path.join(self.system_root, f)).read())
 
