@@ -34,6 +34,7 @@ class Backend(EdaTool):
         return (src_files, incdirs)
 
     def configure(self, args):
+        self.parse_args(args, 'build', ['vlogparam'])
         super(Backend, self).configure(args)
         self._export_backend_files()
 

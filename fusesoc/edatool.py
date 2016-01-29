@@ -1,3 +1,4 @@
+import argparse
 import os
 import shutil
 import sys
@@ -14,6 +15,13 @@ else:
 from fusesoc.config import Config
 from fusesoc.coremanager import CoreManager
 from fusesoc.utils import pr_info
+
+class FileAction(argparse.Action):
+    def __call__(self, parser, namespace, values, option_string=None):
+        path = os.path.expandvars(values[0])
+        path = os.path.expanduser(path)
+        path = os.path.abspath(path)
+        setattr(namespace, self.dest, [path])
 
 class EdaTool(object):
 
@@ -50,4 +58,38 @@ class EdaTool(object):
             except HTTPError as e:
                 raise RuntimeError("Problem while fetching '" + core.name + "': " + str(e.reason))
             core.export(dst_dir)
+
+    def parse_args(self, args, prog, paramtypes):
+        typedict = {'bool' : {'action' : 'store_true'},
+                    'file' : {'type' : str , 'nargs' : 1, 'action' : FileAction},
+                    'int'  : {'type' : int , 'nargs' : 1},
+                    'str'  : {'type' : str , 'nargs' : 1},
+                    }
+        progname = 'fusesoc {} {}'.format(prog,
+                                          self.system.name)
+        parser = argparse.ArgumentParser(prog = progname,
+                                         conflict_handler='resolve')
+        for name in self.cores:
+            core = self.cm.get_core(name)
+
+            for param_name, param in core.parameter.items():
+                if param.paramtype in paramtypes and \
+                   (name == self.system.name or \
+                   param.scope == 'public'):
+                    parser.add_argument('--'+param_name,
+                                        help=param.description,
+                                        **typedict[param.datatype])
+
+        p = parser.parse_args(args)
+
+        for paramtype in ['plusarg',
+                          'vlogparam']:
+            setattr(self, paramtype, {})
+            for key,value in vars(p).items():
+                if value == True:
+                    getattr(self, paramtype)[key] = "true"
+                elif value == False or value is None:
+                    pass
+                else:
+                    getattr(self, paramtype)[key] = str(value[0])
 
