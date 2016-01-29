@@ -105,6 +105,8 @@ clean:
             top_module = self.system.backend.top_module
         tcl_file.write("set_global_assignment -name TOP_LEVEL_ENTITY " + top_module + '\n')
 
+        for key, value in self.vlogparam.items():
+            tcl_file.write("set_parameter -name {} {}\n".format(key, value))
         (src_files, incdirs) = self._get_fileset_files(['synth', 'quartus'])
 
         for f in src_files:
