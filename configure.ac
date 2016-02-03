@@ -1,4 +1,4 @@
-AC_INIT([FuseSoC], [1.4-dev])
+AC_INIT([FuseSoC], [1.4])
 
 AM_INIT_AUTOMAKE([foreign])
 AM_PATH_PYTHON([2.7])
