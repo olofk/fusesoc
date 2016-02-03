@@ -6,7 +6,11 @@ def read(fname):
 
 setup(
     name = "fusesoc",
-    packages=['fusesoc', 'fusesoc.build', 'fusesoc.simulator', 'fusesoc.provider'],
+    packages=['fusesoc',
+              'fusesoc.build',
+              'fusesoc.ipyxact',
+              'fusesoc.simulator',
+              'fusesoc.provider'],
     scripts=["bin/fusesoc"],
     version = "1.4.dev2",
     author = "Olof Kindgren",
