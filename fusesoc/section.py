@@ -349,8 +349,8 @@ Testbench source type   : {source_type}
 Verilog top module      : {top_module}
 """
         return s.format(verilator_options=' '.join(self.verilator_options),
-                        src_files = ' '.join(self.src_files),
-                        include_files=' '.join(self.include_files),
+                        src_files = ' '.join([f.name for f in self.src_files]),
+                        include_files=' '.join([f.name for f in self.include_files]),
                         define_files=' '.join(self.define_files),
                         libs=' '.join(self.libs),
                         tb_toplevel=self.tb_toplevel,
