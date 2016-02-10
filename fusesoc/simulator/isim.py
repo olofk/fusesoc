@@ -74,7 +74,11 @@ class Isim(Simulator):
         args += ['-tclbatch', 'isim.tcl']                  # Simulation commands
         args += ['-log', 'isim.log']                       # Log file
         args += ['-wdb', 'isim.wdb']                       # Simulation waveforms database
-        args += ['+'+s for s in self.plusargs]             # Plusargs
+        # Plusargs
+        for key, value in self.plusarg.items():
+            args += ['-testplusarg', '{}={}'.format(key, value)]
+        #FIXME Top-level parameters
+
         Launcher('./fusesoc.elf', args,
                  cwd = self.sim_root,
                  errormsg = "Failed to run Isim simulation").run()

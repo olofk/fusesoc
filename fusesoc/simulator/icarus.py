@@ -75,7 +75,11 @@ class SimulatorIcarus(Simulator):
         args += ['-m'+s['name'] for s in self.vpi_modules] # Load VPI modules
         args += ['fusesoc.elf']                            # Simulation binary file
         args += ['-lxt2']
-        args += ['+'+s for s in self.plusargs]             # Plusargs
+
+        # Plusargs
+        for key, value in self.plusarg.items():
+            args += ['+{}={}'.format(key, value)]
+        #FIXME Top-level parameters
         Launcher('vvp', args,
                  cwd = self.sim_root,
                  errormsg = "Failed to run Icarus Simulation").run()

@@ -123,7 +123,11 @@ class Modelsim(Simulator):
         args += self.vsim_options
         args += vpi_options
         args += [self.toplevel]
-        args += ['+'+s for s in self.plusargs]
+
+        # Plusargs
+        for key, value in self.plusarg.items():
+            args += ['+{}={}'.format(key, value)]
+        #FIXME Top-level parameters
 
         Launcher(self.model_tech+'/vsim', args,
                  cwd      = self.sim_root,

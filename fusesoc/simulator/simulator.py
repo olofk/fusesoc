@@ -62,40 +62,9 @@ class Simulator(EdaTool):
 
         return (src_files, incdirs)
 
-    def parse_args(self, args):
-        if hasattr(self, 'plusargs'):
-            return
-
-        typedict = {'bool' : {'action' : 'store_true'},
-                    'file' : {'type' : str , 'nargs' : 1, 'action' : FileAction},
-                    'int'  : {'type' : int , 'nargs' : 1},
-                    'str'  : {'type' : str , 'nargs' : 1},
-                    }
-        parser = argparse.ArgumentParser(prog ='fusesoc sim '+self.system.name, conflict_handler='resolve')
-        for name in self.cores:
-            core = self.cm.get_core(name)
-            if core.plusargs:
-                core.plusargs.add_arguments(parser)
-
-            for param_name, param in core.parameter.items():
-                if name == self.system.name or param.scope == 'public':
-                    parser.add_argument('--'+param_name,
-                                        help=param.description,
-                                        **typedict[param.datatype])
-
-        p = parser.parse_args(args)
-
-        self.plusargs = []
-        for key,value in vars(p).items():
-            if value == True:
-                self.plusargs += [key]
-            elif value == False or value is None:
-                pass
-            else:
-                self.plusargs += [key+'='+str(value[0])]
-
     def configure(self, args):
-        self.parse_args(args)
+        if not hasattr(self, 'plusarg'):
+            self.parse_args(args, 'sim', ['plusarg'])
         self.work_root = self.sim_root
         super(Simulator, self).configure(args)
 
@@ -110,7 +79,8 @@ class Simulator(EdaTool):
         return
 
     def run(self, args):
-        self.parse_args(args)
+        if not hasattr(self, 'plusarg'):
+            self.parse_args(args, 'sim', ['plusarg'])
         for core_name in self.cores:
             core = self.cm.get_core(core_name)
             if core.scripts:
