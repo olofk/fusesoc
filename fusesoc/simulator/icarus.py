@@ -55,7 +55,7 @@ class SimulatorIcarus(Simulator):
                                       
         #Build simulation model
         args = []
-        args += ['-s', self.toplevel]
+        args += ['-s'+s for s in self.toplevel.split(' ')]
         args += ['-c', 'icarus.scr']
         args += ['-o', 'fusesoc.elf']
         args += self.iverilog_options
