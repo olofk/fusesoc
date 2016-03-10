@@ -68,7 +68,7 @@ class Verilator(Simulator):
 
     def configure(self, args):
         if not self.fusesoc_cli_parser:
-            self.plusargs = []
+            self.plusarg = []
         super(Verilator, self).configure(args)
         self.export()
         self._write_config_files()
@@ -261,14 +261,16 @@ class Verilator(Simulator):
         
     def run(self, args):
         if not self.fusesoc_cli_parser:
-            self.plusargs = []
+            self.plusarg = []
         super(Verilator, self).run(args)
         self.env = os.environ.copy()
         self.env['CORE_ROOT'] = os.path.abspath(self.system.core_root)
         self.env['BUILD_ROOT'] = os.path.abspath(self.build_root)
         self.env['SIM_ROOT'] = os.path.abspath(self.sim_root)
         if self.fusesoc_cli_parser:
-            _args = ['+'+s for s in self.plusargs]
+            _args = []
+            for key, value in self.plusarg.items():
+                _args += ['+{}={}'.format(key, value)]
         else:
             _args = args
         pr_info("Running simulation")
