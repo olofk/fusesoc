@@ -206,6 +206,8 @@ class FileSetSection(Section):
         self._add_member('usage'          , StringList, "List of tags describing when this fileset should be used. Can be general such as sim or synth, or tool-specific such as quartus, verilator, icarus")
         if items:
             self.load_dict(items)
+            if not self.scope:
+                self.scope = 'public'
             for f in self.files:
                 if not f.file_type:
                     f.file_type = self.file_type
