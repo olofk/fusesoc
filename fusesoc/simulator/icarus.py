@@ -58,6 +58,8 @@ class SimulatorIcarus(Simulator):
         args += ['-s'+s for s in self.toplevel.split(' ')]
         args += ['-c', 'icarus.scr']
         args += ['-o', 'fusesoc.elf']
+        for key, value in self.vlogparam.items():
+            args += ['-P{}.{}={}'.format(self.toplevel, key, value)]
         args += self.iverilog_options
 
         Launcher('iverilog', args,
