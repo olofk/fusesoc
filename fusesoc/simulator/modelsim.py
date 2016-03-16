@@ -54,6 +54,7 @@ class Modelsim(Simulator):
                 args += vlog_include_dirs
             elif f.file_type == 'vhdlSource':
                 cmd = 'vcom'
+                args = []
             elif f.file_type == 'vhdlSource-87':
                 cmd = 'vcom'
                 args = ['-87']
