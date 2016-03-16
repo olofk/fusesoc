@@ -69,6 +69,12 @@ class EdaTool(object):
                                           self.system.name)
         parser = argparse.ArgumentParser(prog = progname,
                                          conflict_handler='resolve')
+        param_groups = {}
+        _descr = {'plusarg'    : 'Verilog plusargs (Run-time option)',
+                  'vlogparam'  : 'Verilog parameters (Compile-time option)',
+                  'generic'    : 'VHDL generic (Run-time option)',
+                  'cmdlinearg' : 'Command-line arguments (Run-time option)'}
+        all_params = {}
         for name in self.cores:
             core = self.cm.get_core(name)
 
@@ -76,20 +82,29 @@ class EdaTool(object):
                 if param.paramtype in paramtypes and \
                    (name == self.system.name or \
                    param.scope == 'public'):
-                    parser.add_argument('--'+param_name,
-                                        help=param.description,
-                                        **typedict[param.datatype])
-
+                    if not param.paramtype in param_groups:
+                        param_groups[param.paramtype] = \
+                        parser.add_argument_group(_descr[param.paramtype])
+                    param_groups[param.paramtype].add_argument('--'+param_name,
+                                                              help=param.description,
+                                                              **typedict[param.datatype])
+                    all_params[param_name] = param.paramtype
         p = parser.parse_args(args)
 
-        for paramtype in ['plusarg',
-                          'vlogparam']:
-            setattr(self, paramtype, {})
-            for key,value in vars(p).items():
-                if value == True:
-                    getattr(self, paramtype)[key] = "true"
-                elif value == False or value is None:
-                    pass
-                else:
-                    getattr(self, paramtype)[key] = str(value[0])
+        self.plusarg    = {}
+        self.vlogparam  = {}
+        self.generic    = {}
+        self.cmdlinearg = {}
 
+        for key,value in vars(p).items():
+            paramtype = all_params[key]
+            if value == True:
+                getattr(self, paramtype)[key] = "true"
+            elif value == False or value is None:
+                pass
+            else:
+                if type(value[0]) == str and paramtype == 'vlogparam':
+                    _value = '"'+str(value[0])+'"'
+                else:
+                    _value = str(value[0])
+                getattr(self, paramtype)[key] = _value
