@@ -64,7 +64,7 @@ class Simulator(EdaTool):
 
     def configure(self, args):
         if not hasattr(self, 'plusarg'):
-            self.parse_args(args, 'sim', ['plusarg'])
+            self.parse_args(args, 'sim', ['plusarg', 'vlogparam'])
         self.work_root = self.sim_root
         super(Simulator, self).configure(args)
 
@@ -80,7 +80,7 @@ class Simulator(EdaTool):
 
     def run(self, args):
         if not hasattr(self, 'plusarg'):
-            self.parse_args(args, 'sim', ['plusarg'])
+            self.parse_args(args, 'sim', ['plusarg', 'vlogparam'])
         for core_name in self.cores:
             core = self.cm.get_core(core_name)
             if core.scripts:
