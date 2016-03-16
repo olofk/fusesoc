@@ -128,7 +128,9 @@ class Modelsim(Simulator):
         # Plusargs
         for key, value in self.plusarg.items():
             args += ['+{}={}'.format(key, value)]
-        #FIXME Top-level parameters
+        #Top-level parameters
+        for key, value in self.vlogparam.items():
+            args += ['-g{}={}'.format(key, value)]
 
         Launcher(self.model_tech+'/vsim', args,
                  cwd      = self.sim_root,
