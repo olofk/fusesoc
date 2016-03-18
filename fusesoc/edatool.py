@@ -88,7 +88,7 @@ class EdaTool(object):
                     param_groups[param.paramtype].add_argument('--'+param_name,
                                                               help=param.description,
                                                               **typedict[param.datatype])
-                    all_params[param_name] = param.paramtype
+                    all_params[param_name.replace('-','_')] = param.paramtype
         p = parser.parse_args(args)
 
         self.plusarg    = {}
