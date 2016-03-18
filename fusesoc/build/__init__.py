@@ -7,4 +7,4 @@ def BackendFactory(system):
     elif system.backend_name == 'ise':
         return Ise(system)
     else:
-        raise RuntimeError('Backend "{}" not found'.format(systaem.backend_name))
+        raise RuntimeError('Backend "{}" not found'.format(system.backend_name))

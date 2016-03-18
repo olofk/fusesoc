@@ -57,6 +57,9 @@ def build(args):
         except DependencyError as e:
             pr_err("'" + args.system + "' or any of its dependencies requires '" + e.value + "', but this core was not found")
             exit(1)
+        except RuntimeError as e:
+            pr_err("Failed to build '{}': {}".format(args.system, e))
+            exit(1)
         try:
             backend.configure(args.backendargs)
         except RuntimeError as e:
