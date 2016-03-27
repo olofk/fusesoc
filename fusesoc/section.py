@@ -379,6 +379,19 @@ class IseSection(ToolSection):
             self.load_dict(items)
             self.export_files = self.ucf_files
 
+class VivadoSection(ToolSection):
+
+    TAG = 'vivado'
+
+    def __init__(self, items=None):
+        super(VivadoSection, self).__init__()
+
+        self._add_member('part'       , str, 'FPGA device part')
+        self._add_member('hw_device'  , str, 'FPGA device identifier')
+
+        if items:
+            self.load_dict(items)
+
 class QuartusSection(ToolSection):
 
     TAG = 'quartus'

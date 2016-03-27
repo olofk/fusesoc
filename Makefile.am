@@ -52,7 +52,8 @@ build_PYTHON =      \
  fusesoc/build/__init__.py  \
  fusesoc/build/backend.py    \
  fusesoc/build/ise.py        \
- fusesoc/build/quartus.py
+ fusesoc/build/quartus.py    \
+ fusesoc/build/vivado.py
 
 builddir = $(fusesocdir)/build
 
