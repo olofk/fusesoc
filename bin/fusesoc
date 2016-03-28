@@ -163,7 +163,8 @@ def list_cores(args):
     maxlen = max(map(len,cores.keys()))
     print('Core'.ljust(maxlen) + '   Cache status')
     print("="*80)
-    for name, core in cores.items():
+    for name in sorted(cores.keys()):
+        core = cores[name]
         print(name.ljust(maxlen) + ' : ' + core.cache_status())
 
 def core_info(args):
