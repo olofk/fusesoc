@@ -414,7 +414,7 @@ class ParameterSection(Section):
         if items:
             self.load_dict(items)
 
-def load_section(config, section_name, name='<unknown>'):
+def load_section(config, section_name, file_name='<unknown>'):
     tmp = section_name.split(' ')
     _type = tmp[0]
     if len(tmp) == 2:
@@ -425,23 +425,23 @@ def load_section(config, section_name, name='<unknown>'):
     if cls is None:
         #Note: The following sections are not in section.py yet
         if not section_name in ['plusargs', 'simulator', 'provider']:
-            pr_warn("Unknown section '{}' in '{}'".format(section_name, name))
+            pr_warn("Unknown section '{}' in '{}'".format(section_name, file_name))
         return None
 
     items = config.get_section(section_name)
     section = cls(items)
     if section.warnings:
         for warning in section.warnings:
-            pr_warn('Warning: %s in %s' % (warning, name))
+            pr_warn('Warning: %s in %s' % (warning, file_name))
     if _name:
         return (section, _name)
     else:
         return section
 
 
-def load_all(config, name='<unknown>'):
+def load_all(config, file_name='<unknown>'):
     for section_name in config.sections():
-        section = load_section(config, section_name, name)
+        section = load_section(config, section_name, file_name)
         if section:
             yield section
 

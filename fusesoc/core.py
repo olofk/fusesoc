@@ -58,7 +58,7 @@ class Core:
             #FIXME : Make simulators part of the core object
             self.simulator        = config.get_section('simulator')
 
-            for s in section.load_all(config, name=self.name):
+            for s in section.load_all(config, core_file):
                 if type(s) == tuple:
                     _l = getattr(self, s[0].TAG)
                     _l[s[1]] = s[0]
