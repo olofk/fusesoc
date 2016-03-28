@@ -25,10 +25,11 @@ class CoreManager(object):
             cls._instance = super(CoreManager, cls).__new__(cls, *args, **kwargs)
         return cls._instance
 
-    def load_core(self, name, file):
+    def load_core(self, file):
         if os.path.exists(file):
             try:
-                self._cores[name] = Core(file)
+                core = Core(file)
+                self._cores[core.name] = core
                 logger.debug("Adding core " + file)
             except SyntaxError as e:
                 w = "Failed to parse " + file + ": " + e.msg
@@ -46,7 +47,7 @@ class CoreManager(object):
             for f in files:
                 if f.endswith('.core'):
                     d = os.path.basename(root)
-                    self.load_core(f.rsplit('.',1)[0], os.path.join(root, f))
+                    self.load_core(os.path.join(root, f))
                     del dirs[:]
 
     def add_cores_root(self, path):
