@@ -27,6 +27,7 @@ fusesocdir = $(pkgpythondir)
 
 provider_PYTHON =      \
  fusesoc/provider/__init__.py  \
+ fusesoc/provider/coregen.py   \
  fusesoc/provider/git.py       \
  fusesoc/provider/github.py    \
  fusesoc/provider/logicore.py  \
