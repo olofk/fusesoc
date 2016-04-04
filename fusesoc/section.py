@@ -392,6 +392,21 @@ Verilog top module      : {top_module}
                         source_type=self.source_type,
                         top_module=self.top_module)
 
+class IcestormSection(ToolSection):
+
+    TAG = 'icestorm'
+
+    def __init__(self, items=None):
+        super(IcestormSection, self).__init__()
+
+        self._add_member('arachne_pnr_options', StringList, "arachne-pnr options")
+        self._add_member('pcf_file' , FileList, "Physical constraint file")
+        self._add_member('top_module', str, 'RTL top-level module')
+
+        if items:
+            self.load_dict(items)
+            self.export_files = self.pcf_file
+
 class IseSection(ToolSection):
 
     TAG = 'ise'
