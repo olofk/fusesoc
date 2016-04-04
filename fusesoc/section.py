@@ -203,11 +203,13 @@ class FileSetSection(Section):
         self._add_member('is_include_file', str     , "Specify all files in fileset as include files")
         self._add_member('logical_name'   , str     , "Default logical_name (e.g. library) of the files in fileset")
         self._add_member('scope'          , str     , "Visibility of fileset (private/public). Private filesets are only visible when this core is the top-level. Public filesets are visible also for cores that depend on this core. Default is public")
-        self._add_member('usage'          , StringList, "List of tags describing when this fileset should be used. Can be general such as sim or synth, or tool-specific such as quartus, verilator, icarus")
+        self._add_member('usage'          , StringList, "List of tags describing when this fileset should be used. Can be general such as sim or synth, or tool-specific such as quartus, verilator, icarus. Defaults to 'sim synth'.")
         if items:
             self.load_dict(items)
             if not self.scope:
                 self.scope = 'public'
+            if not self.usage:
+                self.usage = ['sim', 'synth']
             for f in self.files:
                 if not f.file_type:
                     f.file_type = self.file_type
@@ -358,7 +360,6 @@ Verilog top module      : {top_module}
                         tb_toplevel=self.tb_toplevel,
                         source_type=self.source_type,
                         top_module=self.top_module)
-
 
 class IseSection(ToolSection):
 
