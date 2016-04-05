@@ -115,12 +115,10 @@ class Modelsim(Simulator):
         for vpi_module in self.vpi_modules:
             vpi_options += ['-pli', vpi_module['name']]
 
-        logfile = os.path.join(self.sim_root, 'vsim.log')
         args = []
         args += ['-quiet']
         args += ['-c']
         args += ['-do', 'run -all']
-        args += ['-l', logfile]
         args += self.vsim_options
         args += vpi_options
         args += [self.toplevel]
@@ -134,6 +132,6 @@ class Modelsim(Simulator):
 
         Launcher(self.model_tech+'/vsim', args,
                  cwd      = self.sim_root,
-                 errormsg = "Simulation failed. Simulation log is available in " + logfile).run()
+                 errormsg = "Simulation failed. Simulation log is available in '{}'".format(os.path.join(self.sim_root, 'transcript'))).run()
 
         super(Modelsim, self).done(args)
