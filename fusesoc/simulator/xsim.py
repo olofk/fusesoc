@@ -79,6 +79,8 @@ class Xsim(Simulator):
         for include_dir in self.incdirs:
             args += ['-i', include_dir]
 
+        for key, value in self.vlogparam.items():
+            args += ['--generic_top', '{}={}'.format(key, value)]
         args += self.xsim_options
 
         Launcher('xelab', args,
