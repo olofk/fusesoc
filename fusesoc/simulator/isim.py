@@ -59,6 +59,8 @@ class Isim(Simulator):
         for include_dir in self.incdirs:
             args += ['-i', include_dir]
 
+        for key, value in self.vlogparam.items():
+            args += ['--generic_top', '{}={}'.format(key, value)]
         args += self.isim_options
 
         Launcher('fuse', args,
