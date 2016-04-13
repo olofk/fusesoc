@@ -180,7 +180,7 @@ class Verilator(Simulator):
         if core.verilator._object_files:
             args = []
             args += ['rvs']
-            args += [core.name+'.a']
+            args += [core.sanitized_name+'.a']
             args += core.verilator._object_files
             l = utils.Launcher('ar', args,
                      cwd=sim_root)
@@ -194,17 +194,17 @@ class Verilator(Simulator):
         args = ['-c']
         args += ['-std=c99']
         args += ['-I'+src_root]
-        args += ['-I'+os.path.join(src_root, core.name, s) for s in core.verilator.include_dirs]
+        args += ['-I'+os.path.join(src_root, core.sanitized_name, s) for s in core.verilator.include_dirs]
         for src_file in core.verilator.src_files:
             pr_info("Compiling " + src_file.name)
             l = utils.Launcher('gcc',
-                     args + [os.path.join(src_root, core.name, src_file.name)],
+                     args + [os.path.join(src_root, core.sanitized_name, src_file.name)],
                          cwd=sim_root,
                          stderr = open(os.path.join(sim_root, 'gcc.err.log'),'a'),
                          stdout = open(os.path.join(sim_root, 'gcc.out.log'),'a'))
             if Config().verbose:
                 pr_info("  C compilation working dir: " + sim_root)
-                pr_info("  C compilation command: gcc " + ' '.join(args) + ' ' + os.path.join(src_root, core.name, src_file.name))
+                pr_info("  C compilation command: gcc " + ' '.join(args) + ' ' + os.path.join(src_root, core.sanitized_name, src_file.name))
             l.run()
 
     def build_CPP(self, core, sim_root, src_root):
@@ -213,18 +213,18 @@ class Verilator(Simulator):
             verilator_root = utils.get_verilator_root()
         args = ['-c']
         args += ['-I'+src_root]
-        args += ['-I'+os.path.join(src_root, core.name, s) for s in self.include_dirs]
+        args += ['-I'+os.path.join(src_root, core.sanitized_name, s) for s in self.include_dirs]
         args += ['-Iobj_dir']
         args += ['-I'+os.path.join(verilator_root,'include')]
         args += ['-I'+os.path.join(verilator_root,'include', 'vltstd')]
         for src_file in core.verilator.src_files:
             pr_info("Compiling " + src_file.name)
-            l = utils.Launcher('g++', args + [os.path.join(src_root, core.name, src_file.name)],
+            l = utils.Launcher('g++', args + [os.path.join(src_root, core.sanitized_name, src_file.name)],
                          cwd=sim_root,
                          stderr = open(os.path.join(sim_root, 'g++.err.log'),'a'))
             if Config().verbose:
                 pr_info("  C++ compilation working dir: " + sim_root)
-                pr_info("  C++ compilation command: g++ " + ' '.join(args) + ' ' + os.path.join(src_root, core.name, src_file.name))
+                pr_info("  C++ compilation command: g++ " + ' '.join(args) + ' ' + os.path.join(src_root, core.sanitized_name, src_file.name))
             l.run()
 
     def build_SysC(self, core, sim_root, src_root):
@@ -251,12 +251,12 @@ class Verilator(Simulator):
 
         for src_file in core.verilator.src_files:
             pr_info("Compiling " + src_file.name)
-            l = utils.Launcher('g++', args + [os.path.join(src_root, core.name, src_file.name)],
+            l = utils.Launcher('g++', args + [os.path.join(src_root, core.sanitized_name, src_file.name)],
                          cwd=sim_root,
                          stderr = open(os.path.join(sim_root, 'g++.err.log'),'a'))
             if Config().verbose:
                 pr_info("  SystemC compilation working dir: " + sim_root)
-                pr_info("  SystemC compilation command: g++ " + ' '.join(args) + ' ' + os.path.join(src_root, core.name, src_file.name))
+                pr_info("  SystemC compilation command: g++ " + ' '.join(args) + ' ' + os.path.join(src_root, core.sanitized_name, src_file.name))
             l.run()
         
     def run(self, args):

@@ -13,7 +13,6 @@ class System:
         self.system_root = os.path.dirname(system_file)
         self.config = FusesocConfigParser(system_file)
 
-        self.name = os.path.basename(system_file).split('.')[0]
 
         self.pre_build_scripts  = self.config.get_list('scripts','pre_build_scripts')
         self.post_build_scripts = self.config.get_list('scripts','post_build_scripts')

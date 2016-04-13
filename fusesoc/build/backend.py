@@ -23,7 +23,7 @@ class Backend(EdaTool):
         src_files = []
         for core_name in self.cores:
             core = self.cm.get_core(core_name)
-            basepath = os.path.relpath(os.path.join(self.src_root, core_name), self.work_root)
+            basepath = os.path.relpath(os.path.join(self.src_root, core.sanitized_name), self.work_root)
             for fs in core.file_sets:
                 if (set(fs.usage) & set(usage)) and ((core_name == self.system.name) or not fs.private):
                     for file in fs.file:
@@ -41,7 +41,7 @@ class Backend(EdaTool):
 
     def _export_backend_files(self):
         src_dir = self.system_root
-        dst_dir = os.path.join(self.src_root, self.system.name)
+        dst_dir = os.path.join(self.src_root, self.system.sanitized_name)
 
         export_files = self.backend.export()
         dirs = list(set([os.path.dirname(f.name) for f in export_files]))

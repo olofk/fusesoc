@@ -236,7 +236,7 @@ class FileSetSection(Section):
                 if self.is_include_file.lower() == "true":
                     f.is_include_file = True
                 if not f.logical_name:
-                    f.logical_name = self.logical_name 
+                    f.logical_name = self.logical_name
             self.export_files = self.files
 
 
