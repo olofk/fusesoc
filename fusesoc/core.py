@@ -52,13 +52,12 @@ class Core:
         self.export_files = []
         if core_file:
 
-            self.name = basename.split('.core')[0]
             config = FusesocConfigParser(core_file)
 
             #FIXME : Make simulators part of the core object
             self.simulator        = config.get_section('simulator')
 
-            for s in section.load_all(config, name=self.name):
+            for s in section.load_all(config, core_file):
                 if type(s) == tuple:
                     _l = getattr(self, s[0].TAG)
                     _l[s[1]] = s[0]
@@ -67,6 +66,11 @@ class Core:
                     setattr(self, s.TAG, s)
             self.depend     = self.main.depend
             self.simulators = self.main.simulators
+
+            if self.main.name:
+                self.name = self.main.name
+            else:
+                self.name = basename.split('.core')[0]
 
             self._collect_filesets()
 

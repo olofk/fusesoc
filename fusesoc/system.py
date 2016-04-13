@@ -21,7 +21,7 @@ class System:
         if self.config.has_option('main', 'backend'):
             self.backend_name = self.config.get('main','backend')
             self.backend = section.load_section(self.config, self.backend_name,
-                    name=self.name)
+                                                file_name=system_file)
 
 
     def info(self):
