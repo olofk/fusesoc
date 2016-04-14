@@ -254,6 +254,25 @@ class ModelsimSection(ToolSection):
         if items:
             self.load_dict(items)
 
+class GhdlSection(ToolSection):
+    TAG = 'ghdl'
+
+    def __init__(self, items=None):
+        super(GhdlSection, self).__init__()
+
+        self._add_member('analyze_options', StringList, "Extra GHDL analyzer options")
+        self._add_member('run_options', StringList, "Extra GHDL run options")
+
+        if items:
+            self.load_dict(items)
+
+    def __str__(self):
+        s = ""
+        if self.depend: s += "GHDL-specific dependencies : {}\n".format(' '.join(self.depend))
+        if self.analyze_options: s += "Extra GHDL analyzer options : {}\n".format(' '.join(self.analyze_options))
+        if self.run_options: s += "Extra GHDL run options : {}\n".format(' '.join(self.run_options))
+        return s
+
 class IcarusSection(ToolSection):
 
     TAG = 'icarus'

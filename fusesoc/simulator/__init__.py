@@ -1,3 +1,4 @@
+from fusesoc.simulator.ghdl import Ghdl
 from fusesoc.simulator.icarus import SimulatorIcarus
 from fusesoc.simulator.modelsim import Modelsim
 from fusesoc.simulator.verilator import Verilator
@@ -6,6 +7,8 @@ from fusesoc.simulator.xsim import Xsim
 def SimulatorFactory(sim,system):
     if sim == 'icarus':
         return SimulatorIcarus(system)
+    elif sim == 'ghdl':
+        return Ghdl(system)
     elif sim == 'modelsim':
         return Modelsim(system)
     elif sim == 'verilator':
