@@ -368,8 +368,8 @@ class IseSection(ToolSection):
     def __init__(self, items=None):
         super(IseSection, self).__init__()
 
-        self._add_member('ucf_files' , PathList, "UCF constraint files")
-        self._add_member('tcl_files' , PathList, "Extra TCL scripts")
+        self._add_member('ucf_files' , FileList, "UCF constraint files")
+        self._add_member('tcl_files' , FileList, "Extra TCL scripts")
         self._add_member('family'    , str, 'FPGA device family')
         self._add_member('device'    , str, 'FPGA device identifier')
         self._add_member('package'   , str, 'FPGA device package')
@@ -387,9 +387,9 @@ class QuartusSection(ToolSection):
     def __init__(self, items=None):
         super(QuartusSection, self).__init__()
 
-        self._add_member('qsys_files', PathList, "Qsys IP description files")
-        self._add_member('sdc_files' , PathList, "SDC constraint files")
-        self._add_member('tcl_files' , PathList, "Extra script files")
+        self._add_member('qsys_files', FileList, "Qsys IP description files")
+        self._add_member('sdc_files' , FileList, "SDC constraint files")
+        self._add_member('tcl_files' , FileList, "Extra script files")
 
         self._add_member('quartus_options', str, 'Quartus command-line options')
         self._add_member('family'         , str, 'FPGA device family')

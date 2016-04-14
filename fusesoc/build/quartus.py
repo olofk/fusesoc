@@ -49,7 +49,7 @@ clean:
         qsys_script = open(os.path.join(self.work_root, 'qsys.sh'),'w')
 
         for f in self.system.backend.qsys_files:
-            dst_file = os.path.join(self.work_root, f)
+            dst_file = os.path.join(self.work_root, f.name)
             dst_dir = os.path.dirname(dst_file)
 
             args = []
@@ -140,7 +140,7 @@ clean:
 
         for f in self.system.backend.sdc_files:
             dst_dir = os.path.join(self.src_root, self.system.name)
-            sdc_file = os.path.relpath(os.path.join(dst_dir, f) , self.work_root)
+            sdc_file = os.path.relpath(os.path.join(dst_dir, f.name) , self.work_root)
             tcl_file.write("set_global_assignment -name SDC_FILE " + sdc_file + '\n')
 
         # NOTE: The relative path _have_ to be used here, if the absolute path
@@ -152,7 +152,7 @@ clean:
 
         tcl_files = self.system.backend.tcl_files
         for f in tcl_files:
-            tcl_file.write(open(os.path.join(self.system_root, f)).read())
+            tcl_file.write(open(os.path.join(self.system_root, f.name)).read())
         tcl_file.close()
 
     def _write_makefile(self):

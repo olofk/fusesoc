@@ -43,18 +43,18 @@ class Backend(EdaTool):
         dst_dir = os.path.join(self.src_root, self.system.name)
 
         export_files = self.system.backend.export()
-        dirs = list(set(map(os.path.dirname, export_files)))
+        dirs = list(set([os.path.dirname(f.name) for f in export_files]))
 
         for d in dirs:
             if not os.path.exists(os.path.join(dst_dir, d)):
                 os.makedirs(os.path.join(dst_dir, d))
 
         for f in export_files:
-            if(os.path.exists(os.path.join(src_dir, f))):
-                shutil.copyfile(os.path.join(src_dir, f),
-                                os.path.join(dst_dir, f))
+            if(os.path.exists(os.path.join(src_dir, f.name))):
+                shutil.copyfile(os.path.join(src_dir, f.name),
+                                os.path.join(dst_dir, f.name))
             else:
-                pr_warn("File " + os.path.join(src_dir, f) + " doesn't exist")
+                pr_warn("File " + os.path.join(src_dir, f.name) + " doesn't exist")
 
     def build(self, args):
         for script in self.system.pre_build_scripts:
