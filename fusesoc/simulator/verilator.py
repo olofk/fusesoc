@@ -146,7 +146,7 @@ class Verilator(Simulator):
         self.include_dirs += [os.path.dirname(os.path.join(self.sim_root, self.tb_toplevel))]
 
         self.include_dirs += [self.src_root]
-        print('\n'.join(self.include_dirs))
+
         pr_info("Verilating source")
         self._verilate()
         for core_name in self.cores:
