@@ -38,6 +38,7 @@ providerdir = $(fusesocdir)/provider
 
 simulator_PYTHON =      \
  fusesoc/simulator/__init__.py  \
+ fusesoc/simulator/ghdl.py      \
  fusesoc/simulator/icarus.py    \
  fusesoc/simulator/isim.py      \
  fusesoc/simulator/xsim.py      \

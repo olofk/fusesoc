@@ -15,6 +15,19 @@ fileset
 
 
 
+ghdl
+----
+
+[cols="2,1,5",options="header"]
+|==============================
+|Name | Type | Description
+|analyze_options | Space-separated list | Extra GHDL analyzer options
+|depend | Space-separated list | Tool-specific Dependencies
+|run_options | Space-separated list | Extra GHDL run options
+|==============================
+
+
+
 icarus
 ------
 
