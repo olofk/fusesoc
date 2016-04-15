@@ -38,9 +38,9 @@ ise
 |family | String | FPGA device family
 |package | String | FPGA device package
 |speed | String | FPGA device speed grade
-|tcl_files | Space-separated list of paths | Extra TCL scripts
+|tcl_files | Space-separated list of files | Extra TCL scripts
 |top_module | String | RTL top-level module
-|ucf_files | Space-separated list of paths | UCF constraint files
+|ucf_files | Space-separated list of files | UCF constraint files
 |==============================
 
 
@@ -108,10 +108,10 @@ quartus
 |depend | Space-separated list | Tool-specific Dependencies
 |device | String | FPGA device identifier
 |family | String | FPGA device family
-|qsys_files | Space-separated list of paths | Qsys IP description files
+|qsys_files | Space-separated list of files | Qsys IP description files
 |quartus_options | String | Quartus command-line options
-|sdc_files | Space-separated list of paths | SDC constraint files
-|tcl_files | Space-separated list of paths | Extra script files
+|sdc_files | Space-separated list of files | SDC constraint files
+|tcl_files | Space-separated list of files | Extra script files
 |top_module | String | RTL top-level module
 |==============================
 
