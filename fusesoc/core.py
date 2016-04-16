@@ -223,6 +223,7 @@ class Core:
         if not self.main.description:
             self.main.description = component.description
 
+        _file_sets = []
         for file_set in component.fileSets.fileSet:
             _name = file_set.name
             for f in file_set.file:
@@ -235,9 +236,17 @@ class Core:
                     f.is_include_file = False
                 f.logical_name = f.logicalName
             #FIXME: Handle duplicates. Resolution function? (merge/replace, prio ipxact/core)
-            self.file_sets.append(FileSet(name = file_set.name,
+            _taken = False
+            for fs in self.file_sets:
+                print("=="+fs.name)
+                if fs.name == file_set.name:
+                    print("taken")
+                    _taken = True
+            if not _taken:
+                _file_sets.append(FileSet(name = file_set.name,
                                           file = file_set.file[:],
                                           usage = ['sim', 'synth']))
+        self.file_sets += _file_sets
     def info(self):
 
         show_list = lambda l: "\n                        ".join(l)
