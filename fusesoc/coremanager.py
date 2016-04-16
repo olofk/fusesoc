@@ -122,3 +122,19 @@ class CoreManager(object):
             if core.system:
                 systems[name] = core
         return systems
+
+    def get_dependency_graph(self, core):
+        deps = []
+        graph = []
+        try:
+            deps += self._cores[core].depend
+        except(KeyError):
+            raise DependencyError(core)
+        try:
+            deps += getattr(self._cores[core], self.tool).depend
+        except (AttributeError, KeyError):
+            pass
+        for c in deps:
+            graph.append((core, c))
+            graph += self.get_dependency_graph(c)
+        return graph

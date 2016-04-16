@@ -253,6 +253,19 @@ def update(args):
             except subprocess.CalledProcessError:
                 pass
 
+def depgraph(args):
+    core = CoreManager().get_core(args.core)
+    if core:
+        deps = CoreManager().get_dependency_graph(args.core)
+        f = open("{}.dot".format(core.sanitized_name), "w")
+        f.write("digraph dependencies {\n")
+        for d in deps:
+            f.write("\"{}\"->\"{}\"\n".format(d[0], d[1]))
+        f.write("}\n")
+        pr_info("Successfully written: {}.dot\n".format(core.sanitized_name))
+    else:
+        pr_err("Can't find core '" + args.core + "'")
+
 def run(args):
     cm = CoreManager()
     config = Config()
@@ -346,6 +359,10 @@ if __name__ == "__main__":
 
     parser_update = subparsers.add_parser('update', help='Update the FuseSoC core libraries')
     parser_update.set_defaults(func=update)
+
+    parser_depgraph = subparsers.add_parser('depgraph', help='Print dependency graph')
+    parser_depgraph.add_argument('core')
+    parser_depgraph.set_defaults(func=depgraph)
 
     parsed_args = parser.parse_args()
     if hasattr(parsed_args, 'func'):
