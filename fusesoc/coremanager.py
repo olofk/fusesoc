@@ -36,7 +36,7 @@ class CoreManager(object):
                 pr_warn(w)
                 logger.warning(w)
             except ImportError as e:
-                pr_warn('Failed to register core "{}"  due to unknown provider: {}'.format(name, str(e)))
+                pr_warn('Failed to register "{}" due to unknown provider: {}'.format(file, str(e)))
         
     def load_cores(self, path):
         if path:
