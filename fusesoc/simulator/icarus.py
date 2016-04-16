@@ -33,7 +33,19 @@ class SimulatorIcarus(Simulator):
         for id in incdirs:
             f.write("+incdir+" + id+'\n')
         for src_file in src_files:
-            f.write(src_file.name+'\n')
+            if src_file.file_type in ["verilogSource",
+		                      "verilogSource-95",
+		                      "verilogSource-2001",
+		                      "verilogSource-2005",
+                                      "systemVerilogSource",
+			              "systemVerilogSource-3.0",
+			              "systemVerilogSource-3.1",
+			              "systemVerilogSource-3.1a"]:
+                f.write(src_file.name+'\n')
+            else:
+                _s = "{} has unknown file type '{}'"
+                pr_warn(_s.format(src_file.name,
+                                  src_file.file_type))
 
         f.close()
 
