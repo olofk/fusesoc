@@ -73,7 +73,7 @@ class EnumList(list):
         
 class SimulatorList(EnumList):
     def __new__(cls, *args, **kwargs):
-        values = ['icarus', 'modelsim', 'verilator', 'isim', 'xsim']
+        values = ['ghdl', 'icarus', 'modelsim', 'verilator', 'isim', 'xsim']
         return super(SimulatorList, cls).__new__(cls, *args, values=values)
 class SourceType(str):
     def __new__(cls, *args, **kwargs):
