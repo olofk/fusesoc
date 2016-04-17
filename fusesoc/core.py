@@ -90,6 +90,12 @@ class Core:
             if self.provider:
                 self.files_root = self.provider.files_root
 
+            # We need the component file here, but it might not be
+            # available until the core is fetched. Try to fetch first if any
+            # of the component files are missing
+            if False in [os.path.exists(f) for f in self.main.component]:
+                self.setup()
+
             for f in self.main.component:
                 self._parse_component(os.path.join(self.files_root, f))
 
