@@ -233,6 +233,7 @@ class Core:
                     f.is_include_file = True
                 else:
                     f.is_include_file = False
+                f.logical_name = f.logicalName
             #FIXME: Handle duplicates. Resolution function? (merge/replace, prio ipxact/core)
             self.file_sets.append(FileSet(name = file_set.name,
                                           file = file_set.file[:],

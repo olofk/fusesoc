@@ -65,6 +65,7 @@ file:
     name: str
     fileType: str
     isIncludeFile: IpxactBool
+    logicalName: str
 fileSet:
   MEMBERS:
     name: str
