@@ -52,8 +52,11 @@ class IpxactBool(str):
             raise Exception
 
 class IpxactItem(object):
-    nsmap = {'1.4' : ('spirit' , 'http://www.spiritconsortium.org/XMLSchema/SPIRIT/1.4'),
-             '1.5' : ('spirit' , 'http://www.spiritconsortium.org/XMLSchema/SPIRIT/1.5')}
+    nsmap = {'1.4'  : ('spirit' , 'http://www.spiritconsortium.org/XMLSchema/SPIRIT/1.4'),
+             '1.5'  : ('spirit' , 'http://www.spiritconsortium.org/XMLSchema/SPIRIT/1.5'),
+             '2009' : ('spirit' , 'http://www.spiritconsortium.org/XMLSchema/SPIRIT/1685-2009'),
+             '2014' : ('ipxact' , 'http://www.accellera.org/XMLSchema/IPXACT/1685-2014'),
+    }
     nsversion = '1.5'
 
     ATTRIBS = {}
@@ -74,13 +77,10 @@ class IpxactItem(object):
         tree = ET.parse(f)
         root = tree.getroot()
 
-        #Warning: Horrible hack to find out which IP-Xact version that is used
-        for key, value in root.attrib.items():
-            if key == '{http://www.w3.org/2001/XMLSchema-instance}schemaLocation':
-                nstags = value.split()
-                for version, _val in self.nsmap.items():
-                    if _val[1] in nstags:
-                        self.nsversion = version
+        #Warning: Semi-horrible hack to find out which IP-Xact version that is used
+        for key, value in self.nsmap.items():
+            if root.tag[1:].startswith(value[1]):
+                self.nsversion = key
 
         S = '{%s}' % self.nsmap[self.nsversion][1]
         if not (root.tag == S+self._tag):
