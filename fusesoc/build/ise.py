@@ -51,6 +51,20 @@ quit
         (src_files, incdirs) = self._get_fileset_files(['synth', 'ise'])
         ucf_files = [os.path.join(self.src_root, self.system.name, f.name) for f in self.system.backend.ucf_files]
         tcl_file = open(os.path.join(self.work_root, self.system.name+'.tcl'),'w')
+        source_files = ""
+        _libraries = []
+        for f in src_files:
+            if f.logical_name:
+                if not f.logical_name in _libraries:
+                    source_files += 'lib_vhdl new {}\n'.format(f.logical_name)
+                    _libraries.append(f.logical_name)
+                _s = 'xfile add {} -lib_vhdl {}\n'
+                source_files += _s.format(f.name,
+                                          f.logical_name)
+            else:
+                source_files +='xfile add {}\n'.format(f.name)
+        for f in ucf_files:
+            source_files += 'xfile add '+f
         tcl_file.write(self.TCL_FILE_TEMPLATE.format(
             design               = self.system.name,
             family               = self.system.backend.family,
@@ -59,8 +73,8 @@ quit
             speed                = self.system.backend.speed,
             top_module           = self.system.backend.top_module,
             verilog_include_dirs = '|'.join(incdirs),
-            source_files = '\n'.join(['xfile add '+s.name for s in src_files] +
-                                     ['xfile add '+s      for s in ucf_files])))
+            source_files = source_files))
+
         if self.vlogparam:
             s = 'project set "Generics, Parameters" "{}" -process "Synthesize - XST"\n'
             tcl_file.write(s.format('|'.join([k+'='+str(v) for k,v in self.vlogparam.items()])))
