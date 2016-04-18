@@ -244,9 +244,7 @@ class Core:
             #FIXME: Handle duplicates. Resolution function? (merge/replace, prio ipxact/core)
             _taken = False
             for fs in self.file_sets:
-                print("=="+fs.name)
                 if fs.name == file_set.name:
-                    print("taken")
                     _taken = True
             if not _taken:
                 _file_sets.append(FileSet(name = file_set.name,
