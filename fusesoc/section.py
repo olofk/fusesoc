@@ -66,11 +66,17 @@ class EnumList(list):
         else:
             values = kwargs['values']
             _args = args[0].split()
+            _valid = []
+            _invalid = []
             for arg in _args:
-                if not arg in values:
-                    raise ValueError("Invalid value '" + str(arg) + "'. Allowed values are '" + "', '".join(values)+"'")
-            return list(args[0].split())
-        
+                if arg in values:
+                    _valid.append(arg)
+                else:
+                    _invalid.append(arg)
+            if _invalid:
+                raise ValueError(' '.join(_valid), _invalid, values)
+            return _valid
+
 class SimulatorList(EnumList):
     def __new__(cls, *args, **kwargs):
         values = ['ghdl', 'icarus', 'modelsim', 'verilator', 'isim', 'xsim']
@@ -105,7 +111,13 @@ class Section(object):
         for item in items:
             if item in self._members:
                 _type = self._members.get(item)['type']
-                setattr(self, item, _type(items.get(item)))
+                try:
+                    setattr(self, item, _type(items.get(item)))
+                except ValueError as e:
+                    _s = "Invalid value '{}'. Allowed values are '{}'"
+                    pr_warn(_s.format(', '.join(e.args[1]),
+                                      ', '.join(e.args[2])))
+                    setattr(self, item, _type(e.args[0]))
             else:
                 self.warnings.append(
                         'Unknown item "%(item)s" in section "%(section)s"' % {
