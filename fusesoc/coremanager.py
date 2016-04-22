@@ -14,11 +14,32 @@ class DependencyError(Exception):
     def __str__(self):
         return repr(self.value)
 
+class CoreDB(object):
+    def __init__(self):
+        self._cores = {}
+
+    def add(self, core):
+        name = str(core.name)
+        logger.debug("Adding core " + name)
+        if name in self._cores:
+            _s = "Replacing {} in {} with the version found in {}"
+            logger.debug(_s.format(name,
+                                   self._cores[name].core_root,
+                                   core.core_root))
+        self._cores[name] = core
+
+    def find(self, vlnv=None):
+        if vlnv:
+            found = self._cores[str(vlnv)]
+        else:
+            found = list(self._cores.values())
+        return found
+
 class CoreManager(object):
     _instance = None
-    _cores = {}
     _cores_root = []
     tool = ''
+    db = CoreDB()
 
     def __new__(cls, *args, **kwargs):
         if not cls._instance:
@@ -29,8 +50,7 @@ class CoreManager(object):
         if os.path.exists(file):
             try:
                 core = Core(file)
-                self._cores[core.name] = core
-                logger.debug("Adding core " + file)
+                self.db.add(core)
             except SyntaxError as e:
                 w = "Failed to parse " + file + ": " + e.msg
                 pr_warn(w)
@@ -65,16 +85,18 @@ class CoreManager(object):
         return self._cores_root
 
     def get_depends(self, core):
+        _core = self.db.find(core)
+        depends = _core.depend
         try:
-            depends = self._cores[core].depend
-        except(KeyError):
-            raise DependencyError(core)
-        try:
-            depends += getattr(self._cores[core], self.tool).depend
+            depends += getattr(_core, self.tool).depend
         except (AttributeError, KeyError):
             pass
         if depends:
-            return list(collections.OrderedDict.fromkeys(self._get_depends(core)))
+            _l = []
+            for c in self._get_depends(core):
+                if not str(c) in [str(x) for x in _l]:
+                    _l.append(c)
+            return(_l)
         else:
             return [core]
 
@@ -82,26 +104,29 @@ class CoreManager(object):
         #FIXME: Check for circular dependencies
         try:
             cores = []
+            _core = self.db.find(core)
+            depends = _core.depend
             try:
-                cores += getattr(self._cores[core], self.tool).depend
+                depends += getattr(_core, self.tool).depend
             except (AttributeError, KeyError):
                 pass
-            if self._cores[core].depend:
-                for c in self._cores[core].depend:
-                    cores += self._get_depends(c)
+            for c in depends:
+                cores += self._get_depends(c)
             cores += [core]
             return cores
         except(KeyError):
             raise DependencyError(core)
 
     def get_cores(self):
-        return self._cores
+        return {str(x.name) : x for x in self.db.find()}
 
     def get_core(self, name):
-        if name in self._cores:
-            return self._cores[name]
-        else:
-            return None
+        c = None
+        try:
+            c = self.db.find(name)
+        except KeyError:
+            pass
+        return c
 
     def get_property(self, core, attr, recursive=True):
         retval = collections.OrderedDict()
@@ -117,8 +142,4 @@ class CoreManager(object):
         return retval
 
     def get_systems(self):
-        systems = {}
-        for name, core in self._cores.items():
-            if core.system:
-                systems[name] = core
-        return systems
+        return {str(x.name) : x for x in self.db.find() if x.system}
