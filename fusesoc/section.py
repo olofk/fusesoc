@@ -161,6 +161,7 @@ class MainSection(Section):
     def __init__(self, items=None):
         super(MainSection, self).__init__()
 
+        self._add_member('name'       , str     , "Component name")
         self._add_member('component'  , PathList, "Core IP-Xact component file")
         self._add_member('description', str, "Core description")
         self._add_member('depend'     , StringList, "Common dependencies")

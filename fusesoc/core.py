@@ -52,7 +52,6 @@ class Core:
         self.export_files = []
         if core_file:
 
-            self.name = basename.split('.core')[0]
             config = FusesocConfigParser(core_file)
 
             #FIXME : Make simulators part of the core object
@@ -65,6 +64,12 @@ class Core:
                     setattr(self, s[0].TAG, _l)
                 else:
                     setattr(self, s.TAG, s)
+
+            if self.main.name:
+                self.name = self.main.name
+            else:
+                self.name = basename.split('.core')[0]
+
             self.depend     = self.main.depend
             self.simulators = self.main.simulators
 
