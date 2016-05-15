@@ -147,6 +147,13 @@ class ToolSection(Section):
     def __init__(self):
         super(ToolSection, self).__init__()
         self._add_member('depend', StringList, "Tool-specific Dependencies")
+    def __str__(self):
+        s = ""
+        if self.depend:
+            _s = "{}-specific dependencies : {}\n"
+            s += _s.format(self.TAG,
+                     ' '.join([str(x) for x in self.depend]))
+        return(s)
 
 class MainSection(Section):
     TAG = 'main'
@@ -279,8 +286,7 @@ class GhdlSection(ToolSection):
             self.load_dict(items)
 
     def __str__(self):
-        s = ""
-        if self.depend: s += "GHDL-specific dependencies : {}\n".format(' '.join(self.depend))
+        s = super(GhdlSection, self).__str__()
         if self.analyze_options: s += "Extra GHDL analyzer options : {}\n".format(' '.join(self.analyze_options))
         if self.run_options: s += "Extra GHDL run options : {}\n".format(' '.join(self.run_options))
         return s
@@ -298,8 +304,7 @@ class IcarusSection(ToolSection):
             self.load_dict(items)
 
     def __str__(self):
-        s = ""
-        if self.depend: s += "Icarus-specific dependencies : {}\n".format(' '.join(self.depend))
+        s = super(IcarusSection, self).__str__()
         if self.iverilog_options: s += "Icarus compile options : {}\n".format(' '.join(self.iverilog_options))
         return s
 
@@ -317,8 +322,7 @@ class IsimSection(ToolSection):
             self.load_dict(items)
 
     def __str__(self):
-        s = ""
-        if self.depend: s += "Isim-specific dependencies : {}\n".format(' '.join(self.depend))
+        s = super(IsimSection, self).__str__()
         if self.isim_options: s += "Isim compile options : {}\n".format(' '.join(self.isim_options))
         return s
 
@@ -336,11 +340,9 @@ class XsimSection(ToolSection):
             self.load_dict(items)
 
     def __str__(self):
-        s = ""
-        if self.depend: s += "Xsim-specific dependencies : {}\n".format(' '.join(self.depend))
+        s = super(XsimSection, self).__str__()
         if self.xsim_options: s += "Xsim compile options : {}\n".format(' '.join(self.xsim_options))
         return s
-
 
 class VerilatorSection(ToolSection):
 
@@ -374,7 +376,8 @@ class VerilatorSection(ToolSection):
 
 
     def __str__(self):
-        s = """Verilator options       : {verilator_options}
+        s = super(VerilatorSection, self).__str__()
+        s += """Verilator options       : {verilator_options}
 Testbench source files  : {src_files}
 Testbench include files : {include_files}
 Testbench define files  : {define_files}
