@@ -3,11 +3,12 @@ from fusesoc.build.ise import Ise
 from fusesoc.build.icestorm import Icestorm
 
 def BackendFactory(system):
-    if system.backend_name == 'quartus':
+    backend = system.system.backend_name
+    if backend == 'quartus':
         return Quartus(system)
-    elif system.backend_name == 'ise':
+    elif backend == 'ise':
         return Ise(system)
-    elif system.backend_name == 'icestorm':
+    elif backend == 'icestorm':
         return Icestorm(system)
     else:
-        raise RuntimeError('Backend "{}" not found'.format(system.backend_name))
+        raise RuntimeError('Backend "{}" not found'.format(backend))

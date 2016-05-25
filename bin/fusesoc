@@ -54,7 +54,7 @@ def build(args):
     if system in CoreManager().get_systems():
         core = CoreManager().get_core(system)
         try:
-            backend = BackendFactory(core.system)
+            backend = BackendFactory(core)
         except DependencyError as e:
             pr_err("'" + args.system + "' or any of its dependencies requires '" + e.value + "', but this core was not found")
             exit(1)
