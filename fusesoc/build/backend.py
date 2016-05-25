@@ -13,6 +13,7 @@ class Backend(EdaTool):
     def __init__(self, system):
         super(Backend, self).__init__(system)
 
+        self.backend = self.system.backend
         self.system_root = system.system_root
         self.env['SYSTEM_ROOT'] = os.path.abspath(self.system_root)
         self.env['BACKEND'] = self.TOOL_NAME
@@ -39,10 +40,10 @@ class Backend(EdaTool):
         self._export_backend_files()
 
     def _export_backend_files(self):
-        src_dir = self.system.system_root
+        src_dir = self.system_root
         dst_dir = os.path.join(self.src_root, self.system.name)
 
-        export_files = self.system.backend.export()
+        export_files = self.backend.export()
         dirs = list(set([os.path.dirname(f.name) for f in export_files]))
 
         for d in dirs:

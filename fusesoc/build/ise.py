@@ -49,7 +49,7 @@ quit
 
     def _write_tcl_file(self):
         (src_files, incdirs) = self._get_fileset_files(['synth', 'ise'])
-        ucf_files = [os.path.join(self.src_root, self.system.name, f.name) for f in self.system.backend.ucf_files]
+        ucf_files = [os.path.join(self.src_root, self.system.name, f.name) for f in self.backend.ucf_files]
         tcl_file = open(os.path.join(self.work_root, self.system.name+'.tcl'),'w')
         source_files = ""
         _libraries = []
@@ -67,18 +67,18 @@ quit
             source_files += 'xfile add '+f
         tcl_file.write(self.TCL_FILE_TEMPLATE.format(
             design               = self.system.name,
-            family               = self.system.backend.family,
-            device               = self.system.backend.device,
-            package              = self.system.backend.package,
-            speed                = self.system.backend.speed,
-            top_module           = self.system.backend.top_module,
+            family               = self.backend.family,
+            device               = self.backend.device,
+            package              = self.backend.package,
+            speed                = self.backend.speed,
+            top_module           = self.backend.top_module,
             verilog_include_dirs = '|'.join(incdirs),
             source_files = source_files))
 
         if self.vlogparam:
             s = 'project set "Generics, Parameters" "{}" -process "Synthesize - XST"\n'
             tcl_file.write(s.format('|'.join([k+'='+str(v) for k,v in self.vlogparam.items()])))
-        for f in self.system.backend.tcl_files:
+        for f in self.backend.tcl_files:
             tcl_file.write(open(os.path.join(self.system_root, f.name)).read())
 
         tcl_file.write(self.TCL_FUNCTIONS)
@@ -103,6 +103,6 @@ quit
         pgm_file = open(pgm_file_name,'w')
         pgm_file.write(self.PGM_FILE_TEMPLATE.format(
             pgm_file             = pgm_file_name,
-            bit_file             = os.path.join(self.work_root, self.system.backend.top_module+'.bit'),
-            cdf_file             = os.path.join(self.work_root, self.system.backend.top_module+'.cdf')))
+            bit_file             = os.path.join(self.work_root, self.backend.top_module+'.bit'),
+            cdf_file             = os.path.join(self.work_root, self.backend.top_module+'.cdf')))
         pgm_file.close()

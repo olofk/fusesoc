@@ -47,14 +47,14 @@ ARACHNE_PNR_OPTIONS := {arachne_pnr_options}
         # Write config.mk
         _pcf_file = os.path.relpath(os.path.join(self.src_root,
                                                  self.system.name,
-                                                 self.system.backend.pcf_file[0].name),
+                                                 self.backend.pcf_file[0].name),
                                     self.work_root)
 
         with open(os.path.join(self.work_root, 'config.mk'), 'w') as config_mk:
             config_mk.write(self.CONFIG_MK_TEMPLATE.format(
                 target              =  self.system.name,
                 pcf_file            = _pcf_file,
-                arachne_pnr_options = ' '.join(self.system.backend.arachne_pnr_options)))
+                arachne_pnr_options = ' '.join(self.backend.arachne_pnr_options)))
 
         # Write yosys script file
         (src_files, incdirs) = self._get_fileset_files(['synth', 'icestorm'])
@@ -72,14 +72,14 @@ ARACHNE_PNR_OPTIONS := {arachne_pnr_options}
                 _s = "chparam -set {} {} $abstract\{}\n"
                 yosys_file.write(_s.format(key,
                                            value,
-                                           self.system.backend.top_module))
-            if self.system.backend.top_module:
-                _top = "-top " + self.system.backend.top_module
+                                           self.backend.top_module))
+            if self.backend.top_module:
+                _top = "-top " + self.backend.top_module
             yosys_file.write("verilog_defaults -pop\n")
             yosys_file.write("synth_ice40")
             yosys_file.write(" -blif {}.blif".format(self.system.name))
-            if self.system.backend.top_module:
-                yosys_file.write(" -top " + self.system.backend.top_module)
+            if self.backend.top_module:
+                yosys_file.write(" -top " + self.backend.top_module)
             yosys_file.write("\n")
 
 
