@@ -77,7 +77,7 @@ class Core:
 
             self._collect_filesets()
 
-            cache_root = os.path.join(Config().cache_root, self.name)
+            cache_root = os.path.join(Config().cache_root, self.sanitized_name)
             if config.has_section('plusargs'):
                 utils.pr_warn("plusargs section is deprecated and will not be parsed by FuseSoC. Please migrate to parameters in " + str(self.name))
                 self.plusargs = Plusargs(dict(config.items('plusargs')))

@@ -49,8 +49,8 @@ quit
 
     def _write_tcl_file(self):
         (src_files, incdirs) = self._get_fileset_files(['synth', 'ise'])
-        ucf_files = [os.path.join(self.src_root, self.system.name, f.name) for f in self.backend.ucf_files]
-        tcl_file = open(os.path.join(self.work_root, self.system.name+'.tcl'),'w')
+        ucf_files = [os.path.join(self.src_root, self.system.sanitized_name, f.name) for f in self.backend.ucf_files]
+        tcl_file = open(os.path.join(self.work_root, self.system.sanitized_name+'.tcl'),'w')
         source_files = ""
         _libraries = []
         for f in src_files:
@@ -66,7 +66,7 @@ quit
         for f in ucf_files:
             source_files += 'xfile add '+f
         tcl_file.write(self.TCL_FILE_TEMPLATE.format(
-            design               = self.system.name,
+            design               = self.system.sanitized_name,
             family               = self.backend.family,
             device               = self.backend.device,
             package              = self.backend.package,
@@ -87,13 +87,13 @@ quit
     def build(self, args):
         super(Ise, self).build(args)
 
-        utils.Launcher('xtclsh', [os.path.join(self.work_root, self.system.name+'.tcl')],
+        utils.Launcher('xtclsh', [os.path.join(self.work_root, self.system.sanitized_name+'.tcl')],
                            cwd = self.work_root,
                            errormsg = "Failed to make FPGA load module").run()
         super(Ise, self).done()
 
     def pgm(self, remaining):
-        pgm_file_name = os.path.join(self.work_root, self.system.name+'.pgm')
+        pgm_file_name = os.path.join(self.work_root, self.system.sanitized_name+'.pgm')
         self._write_pgm_file(pgm_file_name)
         utils.Launcher('impact', ['-batch', pgm_file_name],
                            cwd = self.work_root,

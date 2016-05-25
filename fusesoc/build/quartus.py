@@ -57,7 +57,7 @@ clean:
             args += ['--output-directory=' +
                      os.path.join(self.build_root, 'src/qsys')]
             args += ['--report-file=bsf:' +
-                     os.path.join(dst_dir, self.system.name+'.bsf')]
+                     os.path.join(dst_dir, self.system.sanitized_name+'.bsf')]
             args += ['--system-info=DEVICE_FAMILY=' +
                      self.backend.family]
             args += ['--system-info=DEVICE=' +
@@ -68,19 +68,19 @@ clean:
 
             self.qip_files += [os.path.join(self.build_root,
                                             'src/qsys/synthesis',
-                                            self.system.name+'.qip')]
+                                            self.system.sanitized_name+'.qip')]
             args = []
             args += ['--project-directory=' + dst_dir]
             args += ['--output-directory=' +
                      os.path.join(self.build_root, 'src/qsys/synthesis')]
             args += ['--file-set=QUARTUS_SYNTH']
             args += ['--report-file=sopcinfo:' +
-                     os.path.join(dst_dir, self.system.name+'.sopcinfo')]
+                     os.path.join(dst_dir, self.system.sanitized_name+'.sopcinfo')]
             args += ['--report-file=html:' +
-                     os.path.join(dst_dir, self.system.name+'.html')]
+                     os.path.join(dst_dir, self.system.sanitized_name+'.html')]
             args += ['--report-file=qip:' + self.qip_files[-1]]
             args += ['--report-file=cmp:' +
-                     os.path.join(dst_dir, self.system.name+'.cmp')]
+                     os.path.join(dst_dir, self.system.sanitized_name+'.cmp')]
             args += ['--report-file=svd']
             args += ['--system-info=DEVICE_FAMILY=' +
                      self.backend.family]
@@ -95,8 +95,8 @@ clean:
         subprocess.call(['sh', os.path.join(self.work_root, 'qsys.sh')]);
 
     def _write_tcl_file(self):
-        tcl_file = open(os.path.join(self.work_root, self.system.name+'.tcl'),'w')
-        tcl_file.write("project_new " + self.system.name + " -overwrite\n")
+        tcl_file = open(os.path.join(self.work_root, self.system.sanitized_name+'.tcl'),'w')
+        tcl_file.write("project_new " + self.system.sanitized_name + " -overwrite\n")
         tcl_file.write("set_global_assignment -name FAMILY " + self.backend.family + '\n')
         tcl_file.write("set_global_assignment -name DEVICE " + self.backend.device + '\n')
         # default to 'orpsoc_top' if top_module entry is missing
@@ -139,7 +139,7 @@ clean:
             tcl_file.write("set_global_assignment -name SEARCH_PATH " + include_dir + '\n')
 
         for f in self.backend.sdc_files:
-            dst_dir = os.path.join(self.src_root, self.system.name)
+            dst_dir = os.path.join(self.src_root, self.system.sanitized_name)
             sdc_file = os.path.relpath(os.path.join(dst_dir, f.name) , self.work_root)
             tcl_file.write("set_global_assignment -name SDC_FILE " + sdc_file + '\n')
 
@@ -158,7 +158,7 @@ clean:
     def _write_makefile(self):
         quartus_options = self.backend.quartus_options
         makefile = open(os.path.join(self.work_root, 'Makefile'),'w')
-        makefile.write("DESIGN_NAME = " + self.system.name + "\n")
+        makefile.write("DESIGN_NAME = " + self.system.sanitized_name + "\n")
         makefile.write("QUARTUS_OPTIONS = " + quartus_options + "\n")
         makefile.write(self.MAKEFILE_TEMPLATE)
         makefile.close()
@@ -174,5 +174,5 @@ clean:
         args = ['--mode=jtag']
         args += remaining
         args += ['-o']
-        args += ['p;' + self.system.name + '.sof']
+        args += ['p;' + self.system.sanitized_name + '.sof']
         utils.Launcher('quartus_pgm', args, cwd=self.work_root).run()

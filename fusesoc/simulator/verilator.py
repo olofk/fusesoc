@@ -52,7 +52,7 @@ class Verilator(Simulator):
 
     def export(self):
         src_dir = self.system.files_root
-        dst_dir = os.path.join(self.src_root, self.system.name)
+        dst_dir = os.path.join(self.src_root, self.system.sanitized_name)
         src_files = [f.name for f in self.src_files]
         src_files += [f.name for f in self.include_files]
         src_files += [self.tb_toplevel]
@@ -108,7 +108,7 @@ class Verilator(Simulator):
         args += [l for l in self.libs]
         args += ['"']
         args += ['-CFLAGS ' + '-I' + i for i in self.include_dirs]
-        args += [os.path.join(self.src_root, self.system.name, self.tb_toplevel)]
+        args += [os.path.join(self.src_root, self.system.sanitized_name, self.tb_toplevel)]
         args += self.verilator_options
 
         cmd = utils.find_verilator()
@@ -140,9 +140,9 @@ class Verilator(Simulator):
             core = self.cm.get_core(core_name)
             if core.verilator:
                  if core.verilator.archive:
-                      self.archives += [core_name+'.a']
+                      self.archives += [core.sanitized_name+'.a']
                  self.libs += core.verilator.libs
-                 self.include_dirs += [os.path.join(self.src_root, core_name, d) for d in core.verilator.include_dirs]
+                 self.include_dirs += [os.path.join(self.src_root, core.sanitized_name, d) for d in core.verilator.include_dirs]
         self.include_dirs += [os.path.dirname(os.path.join(self.sim_root, self.tb_toplevel))]
 
         self.include_dirs += [self.src_root]
