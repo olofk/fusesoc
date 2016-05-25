@@ -2,6 +2,7 @@ import os
 from fusesoc.config import Config
 from fusesoc import utils
 from fusesoc.utils import pr_warn, pr_info, unique_dirs
+from fusesoc.vlnv import Vlnv
 
 class File(object):
     name      = ""
@@ -58,6 +59,13 @@ class FileList(PathList):
             return list()
         else:
             return [File(p) for p in PathList(args[0])]
+
+class VlnvList(StringList):
+    def __new__(clk, *args, **kwargs):
+        if not args:
+            return list()
+        else:
+            return [Vlnv(p) for p in StringList(args[0])]
 
 class EnumList(list):
     def __new__(cls, *args, **kwargs):
@@ -147,7 +155,7 @@ class ScriptsSection(Section):
 class ToolSection(Section):
     def __init__(self):
         super(ToolSection, self).__init__()
-        self._add_member('depend', StringList, "Tool-specific Dependencies")
+        self._add_member('depend', VlnvList, "Tool-specific Dependencies")
     def __str__(self):
         s = ""
         if self.depend:
@@ -165,7 +173,7 @@ class MainSection(Section):
         self._add_member('name'       , str     , "Component name")
         self._add_member('component'  , PathList, "Core IP-Xact component file")
         self._add_member('description', str, "Core description")
-        self._add_member('depend'     , StringList, "Common dependencies")
+        self._add_member('depend'     , VlnvList, "Common dependencies")
         self._add_member('simulators' , SimulatorList, "Supported simulators. Valid values are icarus, modelsim, verilator, isim and xsim. Each simulator have a dedicated section desribed elsewhere in this document")
         self._add_member('patches'    , StringList, "FuseSoC-specific patches")
 
