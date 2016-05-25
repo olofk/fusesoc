@@ -65,10 +65,10 @@ class ProviderURL(object):
 
         if self.filetype == 'tar':
             t = tarfile.open(filename)
-            t.extractall(os.path.join(cache_root, core_name))
+            t.extractall(local_dir)
         elif self.filetype == 'zip':
             with zipfile.ZipFile(filename, "r") as z:
-                z.extractall(os.path.join(cache_root, core_name))
+                z.extractall(local_dir)
         elif self.filetype == 'simple':
             # Splits the string at the last occurrence of sep, and
             # returns a 3-tuple containing the part before the separator,
@@ -76,7 +76,7 @@ class ProviderURL(object):
             # If the separator is not found, return a 3-tuple containing
             # two empty strings, followed by the string itself
             segments = self.url.rpartition('/')
-            self.path = os.path.join(cache_root, core_name)
+            self.path = os.path.join(local_dir)
             os.makedirs(self.path)
             self.path = os.path.join(self.path, segments[2])
             shutil.copy2(filename, self.path)
