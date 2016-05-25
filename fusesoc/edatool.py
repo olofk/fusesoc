@@ -48,7 +48,7 @@ class EdaTool(object):
             os.makedirs(self.work_root)
 
         for name in self.cores:
-            pr_info("Preparing " + name)
+            pr_info("Preparing " + str(name))
             core = self.cm.get_core(name)
             dst_dir = os.path.join(Config().build_root, self.system.name, 'src', name)
             try:

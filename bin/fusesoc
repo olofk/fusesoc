@@ -50,8 +50,9 @@ def abort_handler(signal, frame):
 signal.signal(signal.SIGINT, abort_handler)
 
 def build(args):
-    if args.system in CoreManager().get_systems():
-        core = CoreManager().get_core(args.system)
+    system = args.system
+    if system in CoreManager().get_systems():
+        core = CoreManager().get_core(system)
         try:
             backend = BackendFactory(core.system)
         except DependencyError as e:

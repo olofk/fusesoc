@@ -33,7 +33,6 @@ class Simulator(EdaTool):
     def _get_vpi_modules(self):
         self.vpi_modules = []
         for core_name in self.cores:
-            logger.debug('core_name=' + core_name)
             core = self.cm.get_core(core_name)
 
             if core.vpi:
@@ -52,7 +51,7 @@ class Simulator(EdaTool):
             core = self.cm.get_core(core_name)
             basepath = os.path.relpath(os.path.join(self.src_root, core_name), self.sim_root)
             for fs in core.file_sets:
-                if (set(fs.usage) & set(usage)) and ((core_name == self.system.name) or not fs.private):
+                if (set(fs.usage) & set(usage)) and ((str(core_name) == str(self.system.name)) or not fs.private):
                     for file in fs.file:
                         if file.is_include_file:
                             incdirs.add(os.path.join(basepath, os.path.dirname(file.name)))

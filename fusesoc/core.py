@@ -77,7 +77,7 @@ class Core:
 
             cache_root = os.path.join(Config().cache_root, self.name)
             if config.has_section('plusargs'):
-                utils.pr_warn("plusargs section is deprecated and will not be parsed by FuseSoC. Please migrate to parameters in " + self.name)
+                utils.pr_warn("plusargs section is deprecated and will not be parsed by FuseSoC. Please migrate to parameters in " + str(self.name))
                 self.plusargs = Plusargs(dict(config.items('plusargs')))
             if config.has_section('provider'):
                 items    = dict(config.items('provider'))
@@ -104,7 +104,7 @@ class Core:
             for f in self.main.component:
                 self._parse_component(os.path.join(self.files_root, f))
 
-            system_file = os.path.join(self.core_root, self.name+'.system')
+            system_file = os.path.join(self.core_root, basename.split('.core')[0]+'.system')
             if os.path.exists(system_file):
                 self.system = System(system_file)
         else:
@@ -258,7 +258,7 @@ class Core:
         self.file_sets += _file_sets
     def info(self):
 
-        show_list = lambda l: "\n                        ".join(l)
+        show_list = lambda l: "\n                        ".join([str(x) for x in l])
         show_dict = lambda d: show_list(["%s: %s" % (k, d[k]) for k in d.keys()])
 
         print("CORE INFO")
