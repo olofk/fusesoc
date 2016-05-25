@@ -85,9 +85,18 @@ class EdaTool(object):
                     if not param.paramtype in param_groups:
                         param_groups[param.paramtype] = \
                         parser.add_argument_group(_descr[param.paramtype])
+
+                    default = None
+                    if not param.default == '':
+                        try:
+                            default = [typedict[param.datatype]['type'](param.default)]
+                            print("Converted to " + str(default[0]))
+                        except KeyError as e:
+                            pass
                     param_groups[param.paramtype].add_argument('--'+param_name,
-                                                              help=param.description,
-                                                              **typedict[param.datatype])
+                                                               help=param.description,
+                                                               default=default,
+                                                               **typedict[param.datatype])
                     all_params[param_name.replace('-','_')] = param.paramtype
         p = parser.parse_args(args)
 

@@ -457,6 +457,7 @@ class ParameterSection(Section):
         super(ParameterSection, self).__init__()
 
         self._add_member('datatype'   , str, 'Data type of argument (int, str, bool, file')
+        self._add_member('default'    , str, 'Default value of argument')
         self._add_member('description', str, 'Parameter description')
         self._add_member('paramtype'  , str, 'Type of parameter (plusarg, vlogparam, generic, cmdlinearg')
         self._add_member('scope'      , str, 'Visibility of parameter. Private parameters are only visible when this core is the top-level. Public parameters are visible also when this core is pulled in as a dependency of another core')
