@@ -147,6 +147,10 @@ class ToolSection(Section):
     def __init__(self):
         super(ToolSection, self).__init__()
         self._add_member('depend', StringList, "Tool-specific Dependencies")
+        self._add_member('extra_files'    , FileList, 'Extra files to be exported to the build directory')
+
+        self.export_files = self.extra_files
+
     def __str__(self):
         s = ""
         if self.depend:
@@ -373,7 +377,7 @@ class VerilatorSection(ToolSection):
             if self.src_files:
                 self._object_files = [os.path.splitext(os.path.basename(s.name))[0]+'.o' for s in self.src_files]
                 self.archive = True
-                self.export_files = self.src_files + self.include_files
+                self.export_files += self.src_files + self.include_files
 
 
     def __str__(self):
@@ -409,7 +413,7 @@ class IcestormSection(ToolSection):
 
         if items:
             self.load_dict(items)
-            self.export_files = self.pcf_file
+            self.export_files += self.pcf_file
 
 class IseSection(ToolSection):
 
@@ -428,7 +432,7 @@ class IseSection(ToolSection):
 
         if items:
             self.load_dict(items)
-            self.export_files = self.ucf_files
+            self.export_files += self.ucf_files
 
 class QuartusSection(ToolSection):
 
@@ -448,7 +452,7 @@ class QuartusSection(ToolSection):
 
         if items:
             self.load_dict(items)
-            self.export_files = self.qsys_files + self.sdc_files
+            self.export_files += self.qsys_files + self.sdc_files
 
 class ParameterSection(Section):
     TAG = 'parameter'
