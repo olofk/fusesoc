@@ -125,6 +125,8 @@ clean:
                                  'vhdlSource-93',
                                  'vhdlSource-2008']:
                 _type = 'VHDL_FILE'
+            elif f.file_type in ['QIP']:
+                _type = 'QIP_FILE'
             else:
                 _type = None
                 _s = "{} has unknown file type '{}'"
