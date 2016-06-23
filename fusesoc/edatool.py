@@ -93,10 +93,15 @@ class EdaTool(object):
                             print("Converted to " + str(default[0]))
                         except KeyError as e:
                             pass
-                    param_groups[param.paramtype].add_argument('--'+param_name,
-                                                               help=param.description,
-                                                               default=default,
-                                                               **typedict[param.datatype])
+                    try:
+                        param_groups[param.paramtype].add_argument('--'+param_name,
+                                                                   help=param.description,
+                                                                   default=default,
+                                                                   **typedict[param.datatype])
+                    except KeyError as e:
+                        raise RuntimeError("Invalid data type {} for parameter '{}' in '{}'".format(str(e),
+                                                                                                   param_name,
+                                                                                                   core.name))
                     all_params[param_name.replace('-','_')] = param.paramtype
         p = parser.parse_args(args)
 
