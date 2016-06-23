@@ -127,6 +127,8 @@ clean:
                 _type = 'VHDL_FILE'
             elif f.file_type in ['QIP']:
                 _type = 'QIP_FILE'
+            elif f.file_type in ['user']:
+                _type = None
             else:
                 _type = None
                 _s = "{} has unknown file type '{}'"
