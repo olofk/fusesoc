@@ -81,6 +81,7 @@ class SimulatorList(EnumList):
     def __new__(cls, *args, **kwargs):
         values = ['ghdl', 'icarus', 'modelsim', 'verilator', 'isim', 'xsim']
         return super(SimulatorList, cls).__new__(cls, *args, values=values)
+
 class SourceType(str):
     def __new__(cls, *args, **kwargs):
         if args:
@@ -270,6 +271,7 @@ class ModelsimSection(ToolSection):
 
         self._add_member('vlog_options', StringList, "Additional arguments for vlog")
         self._add_member('vsim_options', StringList, "Additional arguments for vsim")
+        self._add_member('run_default_args', StringList, "Default modelsim options when running the simulation. Defaults to '-quiet -c -do run -all'")
 
         if items:
             self.load_dict(items)

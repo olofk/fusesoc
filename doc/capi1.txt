@@ -107,6 +107,7 @@ modelsim
 |==============================
 |Name | Type | Description
 |depend | Space-separated list | Tool-specific Dependencies
+|run_default_args | Space-separated list | Default modelsim options when running the simulation. Defaults to '-quiet -c -do run -all'
 |vlog_options | Space-separated list | Additional arguments for vlog
 |vsim_options | Space-separated list | Additional arguments for vsim
 |==============================
