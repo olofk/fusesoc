@@ -23,7 +23,6 @@ ghdl
 |Name | Type | Description
 |analyze_options | Space-separated list | Extra GHDL analyzer options
 |depend | Space-separated list | Tool-specific Dependencies
-|extra_files | Space-separated list of files | Extra files to be exported to the build directory
 |run_options | Space-separated list | Extra GHDL run options
 |==============================
 
@@ -36,7 +35,6 @@ icarus
 |==============================
 |Name | Type | Description
 |depend | Space-separated list | Tool-specific Dependencies
-|extra_files | Space-separated list of files | Extra files to be exported to the build directory
 |iverilog_options | Space-separated list | Extra Icarus verilog compile options
 |==============================
 
@@ -50,7 +48,6 @@ icestorm
 |Name | Type | Description
 |arachne_pnr_options | Space-separated list | arachne-pnr options
 |depend | Space-separated list | Tool-specific Dependencies
-|extra_files | Space-separated list of files | Extra files to be exported to the build directory
 |pcf_file | Space-separated list of files | Physical constraint file
 |top_module | String | RTL top-level module
 |==============================
@@ -65,7 +62,6 @@ ise
 |Name | Type | Description
 |depend | Space-separated list | Tool-specific Dependencies
 |device | String | FPGA device identifier
-|extra_files | Space-separated list of files | Extra files to be exported to the build directory
 |family | String | FPGA device family
 |package | String | FPGA device package
 |speed | String | FPGA device speed grade
@@ -83,7 +79,6 @@ isim
 |==============================
 |Name | Type | Description
 |depend | Space-separated list | Tool-specific Dependencies
-|extra_files | Space-separated list of files | Extra files to be exported to the build directory
 |isim_options | Space-separated list | Extra Isim compile options
 |==============================
 
@@ -112,7 +107,6 @@ modelsim
 |==============================
 |Name | Type | Description
 |depend | Space-separated list | Tool-specific Dependencies
-|extra_files | Space-separated list of files | Extra files to be exported to the build directory
 |vlog_options | Space-separated list | Additional arguments for vlog
 |vsim_options | Space-separated list | Additional arguments for vsim
 |==============================
@@ -142,7 +136,6 @@ quartus
 |Name | Type | Description
 |depend | Space-separated list | Tool-specific Dependencies
 |device | String | FPGA device identifier
-|extra_files | Space-separated list of files | Extra files to be exported to the build directory
 |family | String | FPGA device family
 |qsys_files | Space-separated list of files | Qsys IP description files
 |quartus_options | String | Quartus command-line options
@@ -175,7 +168,6 @@ verilator
 |cli_parser | String | Select CLI argument parser. Set to 'fusesoc' to handle parameter sections like other simulators. Set to 'passthrough' to send the arguments directly to the verilated model. Default is 'passthrough'
 |define_files | Space-separated list of paths | Verilog include files containing `define directives to be converted to C #define directives in corresponding .h files
 |depend | Space-separated list | Tool-specific Dependencies
-|extra_files | Space-separated list of files | Extra files to be exported to the build directory
 |include_files | Space-separated list of files | Verilator testbench C include files
 |libs | Space-separated list of paths | External libraries linked with the generated model
 |source_type | String | Testbench source code language (Legal values are systemC, C, CPP. Default is C)
@@ -234,7 +226,6 @@ xsim
 |==============================
 |Name | Type | Description
 |depend | Space-separated list | Tool-specific Dependencies
-|extra_files | Space-separated list of files | Extra files to be exported to the build directory
 |xsim_options | Space-separated list | Extra Xsim compile options
 |==============================
 
