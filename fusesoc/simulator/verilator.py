@@ -109,6 +109,8 @@ class Verilator(Simulator):
         args += ['"']
         args += ['-CFLAGS ' + '-I' + i for i in self.include_dirs]
         args += [os.path.join(self.src_root, self.system.sanitized_name, self.tb_toplevel)]
+        for key, value in self.vlogparam.items():
+            args += ['-G{}={}'.format(key, value)]
         args += self.verilator_options
 
         cmd = utils.find_verilator()
