@@ -123,7 +123,9 @@ def init(args):
                      os.path.join(os.path.expanduser('~'), '.local', 'share')
     default_dir = default_dir=os.path.join(xdg_data_home, REPO_NAME)
     prompt = 'Directory to use for {} [{}] : '
-    cores_root = input(prompt.format(REPO_NAME, default_dir))
+    cores_root = None
+    if not args.yes:
+        cores_root = input(prompt.format(REPO_NAME, default_dir))
     if not cores_root:
         cores_root = default_dir
     if os.path.exists(cores_root):
@@ -307,6 +309,7 @@ def main():
     parser_build.set_defaults(func=build)
 
     parser_init = subparsers.add_parser('init', help='Initialize the FuseSoC core libraries')
+    parser_init.add_argument('-y', '--yes', help='Do not prompt for input, use defaults', action='store_true')
     parser_init.set_defaults(func=init)
 
     parser_pgm = subparsers.add_parser('pgm', help='Program a FPGA with a system configuration')
