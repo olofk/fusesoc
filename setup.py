@@ -11,7 +11,6 @@ setup(
               'fusesoc.ipyxact',
               'fusesoc.simulator',
               'fusesoc.provider'],
-    scripts=["bin/fusesoc"],
     version = "1.4",
     author = "Olof Kindgren",
     author_email = "olof.kindgren@gmail.com",
@@ -25,5 +24,13 @@ setup(
         "Topic :: Utilities",
         "Topic :: Software Development :: Build Tools",
         "License :: OSI Approved :: GNU General Public License v3 (GPLv3)",
+    ],
+    entry_points={
+        'console_scripts': [
+            'fusesoc = fusesoc.main:main'
+        ]
+    },
+    install_requires=[
+          'pyyaml',
     ],
 )
