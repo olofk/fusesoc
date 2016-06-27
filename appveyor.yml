@@ -11,12 +11,12 @@ environment:
 
 install:
     - "SET PATH=%PYTHON_DIR%;%PYTHON_DIR%\\Scripts;%PATH%"
-    - "pip install ."
+    - "pip.exe install ."
 
 build: off
 
 test_script:
-  - "fusesoc init -y"
-  - "fusesoc list-systems"
-  - "fusesoc list-cores"
-  - "fusesoc update"
+  - "fusesoc.exe init -y"
+  - "fusesoc.exe list-systems"
+  - "fusesoc.exe list-cores"
+  - "fusesoc.exe update"
