@@ -11,7 +11,7 @@ environment:
 
 install:
     - "SET PATH=%PYTHON_DIR%;%PYTHON_DIR%\\Scripts;%PATH%"
-    - "pip.exe install ."
+    - "python setup.py install"
 
 build: off
 
