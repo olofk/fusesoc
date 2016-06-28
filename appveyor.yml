@@ -10,12 +10,13 @@ environment:
     - PYTHON: "C:\\Python35-x64"
 
 install:
-    - "%PYTHON_DIR%\\python setup.py install"
+    - "SET PATH=%PYTHON%;%PYTHON%\\Scripts;%PATH%"
+    - "python setup.py install"
 
 build: off
 
 test_script:
-  - "%PYTHON_DIR%\\Scripts\\fusesoc.exe init -y"
-  - "%PYTHON_DIR%\\Scripts\\fusesoc.exe list-systems"
-  - "%PYTHON_DIR%\\Scripts\\fusesoc.exe list-cores"
-  - "%PYTHON_DIR%\\Scripts\\fusesoc.exe update"
+  - "fusesoc init -y"
+  - "fusesoc list-systems"
+  - "fusesoc list-cores"
+  - "fusesoc update"
