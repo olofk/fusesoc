@@ -16,6 +16,7 @@ install:
 build: off
 
 test_script:
+  - "SET PATH=%PYTHON_DIR%;%PYTHON_DIR%\\Scripts;%PATH%"
   - "fusesoc.exe init -y"
   - "fusesoc.exe list-systems"
   - "fusesoc.exe list-cores"
