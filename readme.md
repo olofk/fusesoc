@@ -1,5 +1,6 @@
 [![Travis Build Status](https://travis-ci.org/nturley/fusesoc.svg?branch=ci)](https://travis-ci.org/nturley/fusesoc)
 [![Appveyor Build Status](https://ci.appveyor.com/api/projects/status/github/nturley/fusesoc?branch=ci)](https://ci.appveyor.com/project/nturley/fusesoc)
+[![PyPI version](https://badge.fury.io/py/fusesoc.svg)](https://badge.fury.io/py/fusesoc)
 FuseSoC
 =======
 
