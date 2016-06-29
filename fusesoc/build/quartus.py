@@ -127,6 +127,8 @@ clean:
                 _type = 'VHDL_FILE'
             elif f.file_type in ['QIP']:
                 _type = 'QIP_FILE'
+            elif f.file_type in ['SDC']:
+                _type = 'SDC_FILE'
             elif f.file_type in ['user']:
                 _type = None
             else:
