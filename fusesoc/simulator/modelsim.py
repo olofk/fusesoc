@@ -1,5 +1,4 @@
 import os
-import subprocess
 from .simulator import Simulator
 from fusesoc.config import Config
 from fusesoc.utils import Launcher, pr_warn

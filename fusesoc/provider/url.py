@@ -1,5 +1,4 @@
 from fusesoc.utils import pr_info, pr_warn
-import subprocess
 import os.path
 import sys
 import tarfile

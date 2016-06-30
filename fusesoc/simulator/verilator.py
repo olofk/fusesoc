@@ -1,7 +1,6 @@
 import logging
 import os
 import shutil
-import subprocess
 
 from fusesoc.config import Config
 from fusesoc import utils

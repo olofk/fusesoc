@@ -1,7 +1,7 @@
 import os
 from fusesoc.config import Config
 from fusesoc import utils
-from fusesoc.utils import Launcher, pr_warn, pr_info, unique_dirs
+from fusesoc.utils import pr_warn, pr_info, unique_dirs
 
 class File(object):
     name      = ""
