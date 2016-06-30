@@ -287,7 +287,7 @@ def run(args):
     # Run the function
     args.func(args)
 
-if __name__ == "__main__":
+def main():
     logger.debug("Command line arguments: " + str(sys.argv))
 
     parser = argparse.ArgumentParser()
@@ -353,3 +353,6 @@ if __name__ == "__main__":
         run(parsed_args)
     else:
         parser.print_help()
+
+if __name__ == "__main__":
+    main()
