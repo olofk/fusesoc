@@ -26,4 +26,7 @@ setup(
         "Topic :: Software Development :: Build Tools",
         "License :: OSI Approved :: GNU General Public License v3 (GPLv3)",
     ],
+    install_requires=[
+        'pyyaml',
+    ],
 )
