@@ -38,6 +38,10 @@ If you also have Altera Quartus installed, you can try to build an example syste
 
 `fusesoc --help` will give you more information on commands and switches.
 
+[![Build Status](https://travis-ci.org/olofk/fusesoc.svg?branch=master)](https://travis-ci.org/olofk/fusesoc)
+
+[![Build status](https://ci.appveyor.com/api/projects/status/bg3tutcube9x0fgs?svg=true)](https://ci.appveyor.com/project/olofk/fusesoc)
+
 Further reading
 ---------------
 A few tutorials using FuseSoC are available, but they are unfortunately all written before FuseSoC was renamed from orpsocv3:
