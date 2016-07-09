@@ -77,7 +77,7 @@ def build(args):
 def pgm(args):
     if args.system in CoreManager().get_systems():
         core = CoreManager().get_core(args.system)
-        backend = BackendFactory(core.system)
+        backend = BackendFactory(core)
         try:
             backend.pgm(args.backendargs)
         except RuntimeError as e:
