@@ -256,10 +256,10 @@ def run(args):
         env_cores_root = os.getenv("FUSESOC_CORES").split(":")
     env_cores_root.reverse()
 
-    for cores_root in [config.cores_root,
-                       config.systems_root,
+    for cores_root in [args.cores_root,
                        env_cores_root,
-                       args.cores_root]:
+                       config.cores_root,
+                       config.systems_root]:
         try:
             cm.add_cores_root(cores_root)
         except (RuntimeError, IOError) as e:
