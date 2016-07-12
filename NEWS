@@ -1,3 +1,29 @@
+1.5 2016-07-12 Olof Kindgren <olof.kindgren@gmail.com>
+======================================================
+* Improve plusargs handling
+* Fix core-info for verilator sections
+* Allow multiple top-level modules in Icarus
+* Fix VHDL and SystemVerilog support in ISIM
+* Add support for the GHDL simulator
+* Add support for Vivado Logicore cores
+* Add support for ISE CoreGen cores
+* Support IP-XACT 2009 and 2014 versions
+* Add icestorm backend
+* Allow settings default values for parameters
+* Add support for Altera qip files
+* Add CI testing with Travis and appveyor
+* Experimental Windows support
+* Allow Modelsim to run user TCL files
+* Parallelize verilator jobs to speed up compilation
+* + improved error handling, bug fixes and refactoring
+
+Contributors:
+Andrzej Radecki <ndrwrdck@gmail.com>
+Neil Turley <neilpturley@gmail.com>
+Olof Kindgren <olof.kindgren@gmail.com>
+Philipp Wagner <philipp.wagner@tum.de>
+Stefan Wallentowitz <stefan@wallentowitz.de>
+
 1.4 2016-01-29 Olof Kindgren <olof.kindgren@gmail.com>
 ======================================================
 * Allow setting top-level parameters in backends
