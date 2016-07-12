@@ -249,8 +249,16 @@ def update(args):
 def run(args):
     cm = CoreManager()
     config = Config()
+
+    # Get the environment variable for further cores
+    env_cores_root = []
+    if os.getenv("FUSESOC_CORES"):
+        env_cores_root = os.getenv("FUSESOC_CORES").split(":")
+    env_cores_root.reverse()
+
     for cores_root in [config.cores_root,
                        config.systems_root,
+                       env_cores_root,
                        args.cores_root]:
         try:
             cm.add_cores_root(cores_root)
@@ -281,6 +289,8 @@ def run(args):
 
 def main():
     logger.debug("Command line arguments: " + str(sys.argv))
+    if os.getenv("FUSESOC_CORES"):
+        logger.debug("FUSESOC_CORES: " + str(os.getenv("FUSESOC_CORES").split(':')))
 
     parser = argparse.ArgumentParser()
     subparsers = parser.add_subparsers()
