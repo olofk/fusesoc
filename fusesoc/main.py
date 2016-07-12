@@ -152,6 +152,10 @@ def init(args):
         f.write("cores_root = {}\n".format(cores_root))
     pr_info("FuseSoC is ready to use!")
 
+def list_paths(args):
+    cores_root = CoreManager().get_cores_root()
+    print("\n".join(cores_root))
+
 def list_cores(args):
     cores = CoreManager().get_cores()
     print("\nAvailable cores:\n")
@@ -335,6 +339,9 @@ def main():
     parser_core_info = subparsers.add_parser('core-info', help='Displays details about a core')
     parser_core_info.add_argument('core')
     parser_core_info.set_defaults(func=core_info)
+
+    parser_list_paths = subparsers.add_parser('list-paths', help='Displays the search order for core root paths')
+    parser_list_paths.set_defaults(func=list_paths)
 
     #Simulation subparser
     parser_sim = subparsers.add_parser('sim', help='Setup and run a simulation')
