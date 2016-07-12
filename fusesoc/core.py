@@ -5,7 +5,7 @@ import os
 import shutil
 import subprocess
 
-from fusesoc.ipyxact.ipyxact import Component
+from ipyxact.ipyxact import Component
 from fusesoc import section
 from fusesoc import utils
 from fusesoc.config import Config

@@ -8,7 +8,6 @@ setup(
     name = "fusesoc",
     packages=['fusesoc',
               'fusesoc.build',
-              'fusesoc.ipyxact',
               'fusesoc.simulator',
               'fusesoc.provider'],
     version = "1.5",
@@ -31,6 +30,6 @@ setup(
         ]
     },
     install_requires=[
-          'pyyaml',
+          'ipyxact>=0.2.3',
     ],
 )
