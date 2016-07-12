@@ -2,6 +2,16 @@ import collections
 import logging
 import os
 
+from okonomiyaki.versions import EnpkgVersion
+
+from simplesat.constraints import PrettyPackageStringParser, Requirement
+from simplesat.dependency_solver import DependencySolver
+from simplesat.errors import NoPackageFound, SatisfiabilityError
+from simplesat.package import PackageMetadata
+from simplesat.pool import Pool
+from simplesat.repository import Repository
+from simplesat.request import Request
+
 from fusesoc.config import Config
 from fusesoc.core import Core
 from fusesoc.utils import pr_warn
@@ -17,6 +27,27 @@ class DependencyError(Exception):
 class CoreDB(object):
     def __init__(self):
         self._cores = {}
+
+    #simplesat doesn't allow ':', '-' or leading '_'
+    def _package_name(self, vlnv):
+        _name = "{}_{}_{}".format(vlnv.vendor,
+                                  vlnv.library,
+                                  vlnv.name).lstrip("_")
+        return _name.replace('-','__')
+
+    def _package_version(self, vlnv):
+        return "{}-{}".format(vlnv.version,
+                              vlnv.revision)
+
+    def _parse_depend(self, depends):
+        #FIXME: Handle conflicts
+        deps = []
+        _s = "{} {} {}"
+        for d in depends:
+            deps.append(_s.format(self._package_name(d),
+                                  d.relation,
+                                  self._package_version(d)))
+        return ", ".join(deps)
 
     def add(self, core):
         name = str(core.name)
@@ -34,6 +65,50 @@ class CoreDB(object):
         else:
             found = list(self._cores.values())
         return found
+
+    #FIXME: Fails to request !highest version (wb_sdram_ctrl-0 gets wb_sdram_ctrl-0-r2)
+    def solve(self, top_core, tool):
+        repo = Repository()
+        for core in self._cores.values():
+            package_str = "{} {}-{}".format(self._package_name(core.name),
+                                            core.name.version,
+                                            core.name.revision)
+            _depends = core.depend
+            try:
+                _depends += getattr(core, tool).depend
+            except (AttributeError, KeyError):
+                pass
+
+            if _depends:
+                _s = "; depends ( {} )"
+                package_str += _s.format(self._parse_depend(_depends))
+            parser = PrettyPackageStringParser(EnpkgVersion.from_string)
+
+            package = parser.parse_to_package(package_str)
+            package.core = core
+
+            repo.add_package(package)
+
+        request = Request()
+        _top_dep = "{} {} {}".format(self._package_name(top_core),
+                                     top_core.relation,
+                                     self._package_version(top_core))
+        requirement = Requirement._from_string(_top_dep)
+        request.install(requirement)
+        installed_repository = Repository()
+        pool = Pool([repo])
+        pool.add_repository(installed_repository)
+        solver = DependencySolver(pool, repo, installed_repository)
+
+        try:
+            transaction = solver.solve(request)
+        except SatisfiabilityError as e:
+            msg = "UNSATISFIABLE: {}"
+            raise RuntimeError(msg.format(e.unsat.to_string(pool)))
+        except NoPackageFound as e:
+            raise DependencyError(top_core.name)
+
+        return [op.package.core for op in transaction.operations]
 
 class CoreManager(object):
     _instance = None
@@ -85,47 +160,14 @@ class CoreManager(object):
         return self._cores_root
 
     def get_depends(self, core):
-        _core = self.db.find(core)
-        depends = _core.depend
-        try:
-            depends += getattr(_core, self.tool).depend
-        except (AttributeError, KeyError):
-            pass
-        if depends:
-            _l = []
-            for c in self._get_depends(core):
-                if not str(c) in [str(x) for x in _l]:
-                    _l.append(c)
-            return([self.get_core(core) for core in _l])
-        else:
-            return [self.get_core(core)]
-
-    def _get_depends(self, core):
-        #FIXME: Check for circular dependencies
-        try:
-            cores = []
-            _core = self.db.find(core)
-            depends = _core.depend
-            try:
-                depends += getattr(_core, self.tool).depend
-            except (AttributeError, KeyError):
-                pass
-            for c in depends:
-                cores += self._get_depends(c)
-            cores += [core]
-            return cores
-        except(KeyError):
-            raise DependencyError(core)
+        return self.db.solve(core, self.tool)
 
     def get_cores(self):
         return {str(x.name) : x for x in self.db.find()}
 
     def get_core(self, name):
-        c = None
-        try:
-            c = self.db.find(name)
-        except KeyError:
-            pass
+        c = self.db.solve(name, "")[-1]
+        c.name.relation = "=="
         return c
 
     def get_systems(self):
