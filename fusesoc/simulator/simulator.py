@@ -62,8 +62,8 @@ class Simulator(EdaTool):
 
         return (src_files, incdirs)
 
-    def configure(self, args):
-        if not hasattr(self, 'plusarg'):
+    def configure(self, args, skip_params = False):
+        if not skip_params:
             self.parse_args(args, 'sim', ['plusarg', 'vlogparam'])
         self.work_root = self.sim_root
         super(Simulator, self).configure(args)
