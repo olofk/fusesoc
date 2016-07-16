@@ -66,9 +66,8 @@ class Verilator(Simulator):
                                 os.path.join(dst_dir, f))
 
     def configure(self, args):
-        if not self.fusesoc_cli_parser:
-            self.plusarg = []
-        super(Verilator, self).configure(args)
+        skip = not self.fusesoc_cli_parser
+        super(Verilator, self).configure(args, skip_params = skip)
         self.export()
         self._write_config_files()
         #self.object_files = [os.path.splitext(os.path.basename(s))[0]+'.o' for s in self.src_files]
