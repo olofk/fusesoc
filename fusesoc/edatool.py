@@ -37,6 +37,11 @@ class EdaTool(object):
         self.env = os.environ.copy()
         self.env['BUILD_ROOT'] = os.path.abspath(self.build_root)
 
+        self.plusarg    = {}
+        self.vlogparam  = {}
+        self.generic    = {}
+        self.cmdlinearg = {}
+
     def configure(self, args):
         if os.path.exists(self.work_root):
             for f in os.listdir(self.work_root):
@@ -104,11 +109,6 @@ class EdaTool(object):
                                                                                                    core.name))
                     all_params[param_name.replace('-','_')] = param.paramtype
         p = parser.parse_args(args)
-
-        self.plusarg    = {}
-        self.vlogparam  = {}
-        self.generic    = {}
-        self.cmdlinearg = {}
 
         for key,value in vars(p).items():
             paramtype = all_params[key]
