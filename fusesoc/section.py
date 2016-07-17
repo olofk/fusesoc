@@ -364,14 +364,16 @@ class XsimSection(ToolSection):
     def __init__(self, items=None):
         super(XsimSection, self).__init__()
 
-        self._add_member('xsim_options', StringList, "Extra Xsim compile options")
+        self._add_member('top_module' , str, 'verilog top-level module')
+        self._add_member('part', str, 'FPGA part')
 
         if items:
             self.load_dict(items)
 
     def __str__(self):
         s = super(XsimSection, self).__str__()
-        if self.xsim_options: s += "Xsim compile options : {}\n".format(' '.join(self.xsim_options))
+        if self.top_module: s += "top module : {}\n".format(' '.join(self.top_module))
+        if self.part: s += "part : {}\n".format(' '.join(self.part))
         return s
 
 class VerilatorSection(ToolSection):
@@ -439,6 +441,19 @@ class IcestormSection(ToolSection):
         if items:
             self.load_dict(items)
             self.export_files = self.pcf_file
+
+class VivadoSection(ToolSection):
+
+    TAG = 'vivado'
+
+    def __init__(self, items=None):
+        super(VivadoSection, self).__init__()
+
+        self._add_member('part'       , str, 'FPGA device part')
+        self._add_member('hw_device'  , str, 'FPGA device identifier')
+
+        if items:
+            self.load_dict(items)
 
 class IseSection(ToolSection):
 
