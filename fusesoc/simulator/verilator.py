@@ -80,7 +80,7 @@ class Verilator(Simulator):
         incdirs = set()
         src_files = []
 
-        (src_files, incdirs) = self._get_fileset_files(['synth', 'verilator'])
+        (src_files, incdirs) = self._get_fileset_files(['sim', 'verilator'])
         for include_dir in incdirs:
             f.write("+incdir+" + include_dir + '\n')
         for src_file in src_files:
