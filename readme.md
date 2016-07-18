@@ -42,9 +42,16 @@ If you also have Altera Quartus installed, you can try to build an example syste
 
 [![Build status](https://ci.appveyor.com/api/projects/status/bg3tutcube9x0fgs?svg=true)](https://ci.appveyor.com/project/olofk/fusesoc)
 
+Documentation
+-------------
+
+`cd doc && make` will build HTML documentation from the asciidoc sources
+
 Further reading
 ---------------
 A few tutorials using FuseSoC are available, but they are unfortunately all written before FuseSoC was renamed from orpsocv3:
 
 http://web.archive.org/web/20150208222518/http://elec4fun.fr/2011-03-30-10-16-30/2012-08-22-20-50-31/or1200-barebox-on-de1
 http://www.rs-online.com/designspark/electronics/eng/blog/booting-linux-on-a-de0-nano-with-orpsoc
+
+There is also some FuseSoC-related articles and extended release information on my [blog](https://olofkindgren.blogspot.com/search/label/FuseSoC)
