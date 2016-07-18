@@ -1,4 +1,5 @@
 import logging
+import multiprocessing
 import os
 import shutil
 
@@ -154,8 +155,11 @@ class Verilator(Simulator):
             if core.verilator:
                  self._build(core, self.sim_root, self.src_root)
 
+        # Do parallel builds with <number of cpus> * 2 jobs.
+        make_job_count = multiprocessing.cpu_count() * 2
+
         pr_info("Building verilator executable:")
-        args = ['-f', 'V' + self.top_module + '.mk', 'V' + self.top_module]
+        args = ['-f', 'V' + self.top_module + '.mk', '-j', str(make_job_count), 'V' + self.top_module]
         l = utils.Launcher('make', args,
                        cwd=os.path.join(self.sim_root, 'obj_dir'),
                        stdout = open(os.path.join(self.sim_root,
