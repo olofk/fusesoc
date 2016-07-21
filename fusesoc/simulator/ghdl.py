@@ -47,6 +47,9 @@ class Ghdl(Simulator):
                 Launcher(cmd, args,
                          cwd      = self.sim_root,
                          errormsg = "Failed to analyze {}".format(f.name)).run()
+        Launcher(cmd, ['-e', self.toplevel],
+                 cwd = self.sim_root,
+                 errormsg = "Failed to elaborate {}".format(self.toplevel)).run()
 
     def run(self, args):
         super(Ghdl, self).run(args)
