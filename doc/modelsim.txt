@@ -1,0 +1,45 @@
+ModelSim
+========
+
+The ModelSim backend is used to simulate designs using Mentor Graphics ModelSim simulator. ModelSim is a proprietary simulator that supports Verilog, VHDL and SystemC.
+
+In order to use the ModelSim backend, the environment variable `$MODEL_TECH` must be set to `<modelsim install path>/bin`
+
+The following file types are recognized by the ModelSim backend
+
+- verilogSource
+- verilogSource-95
+- verilogSource-2001
+- verilogSource-2005
+- systemVerilogSource
+- systemVerilogSource-3.0
+- systemVerilogSource-3.1
+- systemVerilogSource-3.1a
+- vhdlSource
+- vhdlSource-87
+- vhdlSource-93
+- vhdlSource-2008
+- tclSource
+- user
+
+Configure
+---------
+During the configure phase, build commands for all VHDL, Verilog and SystemVerilog files are written to a TCL file called `fusesoc_build_rtl.tcl`. The `vlog` command is used to build (system)verilog files, and additional options for this command can be specified with the `vlog_options` parameter in the `[modelsim]` section. If the design also contains any VPI libraries, an additional Makefile is created with instructions for how to rebuild them.
+
+A top-level TCL script called `fusesoc_main.tcl` is created to execute `fusesoc_build_rtl.tcl`, the VPI Makefile and also any additional files with the file type tclSource found in the design
+
+Build
+-----
+During the build phase, the `fusesoc_main.tcl` script is executed.
+
+Run
+---
+During the run phase, `vsim` is called with the following arguments
+
+- The default options `-quiet -c -do "run -all"` These can be overridden by setting the `run_default_args` options in the `[modelsim]` section to something else
+- Any options specified in the `vsim_options` parameter in the `[modelsim]` section
+- All VPI libraries to be loaded
+- The simulator toplevel(s) which is read from the `toplevel` parameter in the `[simulator]` section
+- Any plusargs, top-level verilog parameters or VHDL generics specified on the command line
+
+To rebuild the complete simulation model from within a running ModelSim instance, execute `fusesoc_main.tcl`, or `fusesoc_build_rtl.tcl` to just rebuild the RTL files. Note that these commands only operate on the exported design.

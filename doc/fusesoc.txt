@@ -14,3 +14,7 @@ Currently FuseSoc supports simulations with ModelSim, Icarus Verilog, Verilator,
 link:quickstart.html[Quick start]
 
 link:capi.html[Core API]
+
+Backends
+--------
+link:modelsim.html[ModelSim]
