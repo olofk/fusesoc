@@ -1,0 +1,28 @@
+GHDL
+====
+
+GHDL is an open source VHDL simulator, which fully supports IEEE 1076-1987, IEEE 1076-1993, IEE 1076-2002 and partially the 1076-2008 version of VHDL
+
+The following file types are recognized by the GHDL backend
+
+- vhdlSource
+- vhdlSource-87
+- vhdlSource-93
+- vhdlSource-2008
+
+Configure
+---------
+
+Build
+-----
+
+During the build phase, FuseSoC runs the GHDL analyze command (`ghdl -a`) on each VHDL file in the design. Extra options for the analyze step can be specified with `analyze_options` in the `[ghdl]` section. After all source files have been analyzed, the top level, which is specified with `toplevel` in the `[simulator]` section, is elaborated (`ghdl -e`)
+
+Run
+---
+During the run phase, `ghdl -r` is called with the following arguments
+
+- Any options specified in the `run_options` parameter in the `[ghdl]` section
+- The simulator toplevel(s) which is read from the `toplevel` parameter in the `[simulator]` section
+
+Rebuilding from the exported sources is not yet supported
