@@ -1,0 +1,33 @@
+IceStorm
+========
+
+Project IceStorm aims at reverse engineering and documenting the bitstream format of Lattice iCE40 FPGAs and providing simple tools for analyzing and creating bitstream files. The IceStorm flow (Yosys, Arachne-pnr, and IceStorm) is a fully open source Verilog-to-Bitstream flow for iCE40 FPGAs.
+
+The icestorm backend uses yosys to handle synthesis, arachne-pnr for place & route and icepack for creating the bitstream
+
+The following file types are recognized by the IceStorm backend
+
+- verilogSource
+- verilogSource-95
+- verilogSource-2001
+- verilogSource-2005
+
+Configure
+---------
+
+FuseSoC creates a `<design>.ys` file which contains the commands for synthesising all verilog files, setting top-level parameters provided from the command-line and specifying the design toplevel. The toplevel is read from `top_module` in the `[icestorm]` section.
+
+An generic `Makefile` is generated to invoke all the tools in the implementation flow. The design-specific options are written to `config.mk`, which is sourced by the `Makefile`. The following design-specific options are written to `config.mk`.
+
+- TARGET specifies the design name
+- PCF_FILE specifies the PCF file used by `arachne-pnr` for pin mapping. This is read from the `pcf_file` option in the `[icestorm]` section.
+- ARACHNE_PNR_OPTIONS sets additional options for Arachne-pnr, most notably the target device. These options are read from `arachne_pnr_options` in the `[icestorm]` section.
+
+Build
+-----
+
+During this phase, the `Makefile` is executed to run `yosys`, `arachnne-pnr` and `icepack` in that order.
+
+The generated bitstream is available as `<design>.bin`
+
+To rebuild the exported sources run `make` from `build/<design>/bld-icestorm`

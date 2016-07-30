@@ -17,4 +17,5 @@ link:capi.html[Core API]
 
 Backends
 --------
-link:modelsim.html[ModelSim]
+- link:icestorm.html[IceStorm]
+- link:modelsim.html[ModelSim]
