@@ -51,9 +51,8 @@ def abort_handler(signal, frame):
 signal.signal(signal.SIGINT, abort_handler)
 
 def build(args):
-    system = Vlnv(args.system)
-    if str(system) in CoreManager().get_systems():
-        core = CoreManager().get_core(system)
+    core = CoreManager().get_core(Vlnv(args.system))
+    if core and core.system:
         try:
             backend = BackendFactory(core)
         except DependencyError as e:
@@ -76,8 +75,8 @@ def build(args):
         pr_err("Can't find system '" + args.system + "'")
 
 def pgm(args):
-    if args.system in CoreManager().get_systems():
-        core = CoreManager().get_core(args.system)
+    core = CoreManager().get_core(args.system)
+    if core and core.system:
         backend = BackendFactory(core)
         try:
             backend.pgm(args.backendargs)
@@ -87,27 +86,17 @@ def pgm(args):
         pr_err("Can't find system '" + args.system + "'")
 
 def fetch(args):
-    core = CoreManager().get_core(args.core)
-    if core:
-        cores = CoreManager().get_depends(core.name)
-        try:
-            core.setup()
-        except URLError as e:
-            pr_err("Problem while fetching '" + core.name + "': " + str(e.reason))
-            exit(1)
-        except HTTPError as e:
-            pr_err("Problem while fetching '" + core.name + "': " + str(e.reason))
-            exit(1)
-        for name in cores:
-             pr_info("Fetching " + name)
-             core = CoreManager().get_core(name)
+    if args.core:
+        cores = CoreManager().get_depends(Vlnv(args.core))
+        for core in cores:
+             pr_info("Fetching " + str(core.name))
              try:
                  core.setup()
              except URLError as e:
-                 pr_err("Problem while fetching '" + core.name + "': " + str(e.reason))
+                 pr_err("Problem while fetching '" + str(core.name) + "': " + str(e.reason))
                  exit(1)
              except HTTPError as e:
-                 pr_err("Problem while fetching '" + core.name + "': " + str(e.reason))
+                 pr_err("Problem while fetching '" + str(core.name) + "': " + str(e.reason))
                  exit(1)
     else:
         pr_err("Can't find core '" + args.core + "'")
@@ -185,8 +174,8 @@ def list_systems(args):
         print(system)
 
 def system_info(args):
-    if args.system in CoreManager().get_systems():
-        core = CoreManager().get_core(args.system)
+    core = CoreManager().get_core(Vlnv(args.system))
+    if core and core.system:
         core.info()
         core.system.info()
     else:

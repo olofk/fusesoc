@@ -32,8 +32,7 @@ class Simulator(EdaTool):
 
     def _get_vpi_modules(self):
         self.vpi_modules = []
-        for core_name in self.cores:
-            core = self.cm.get_core(core_name)
+        for core in self.cores:
 
             if core.vpi:
                 vpi_module = {}
@@ -48,11 +47,10 @@ class Simulator(EdaTool):
     def _get_fileset_files(self, usage):
         incdirs = set()
         src_files = []
-        for core_name in self.cores:
-            core = self.cm.get_core(core_name)
+        for core in self.cores:
             basepath = os.path.relpath(os.path.join(self.src_root, core.sanitized_name), self.sim_root)
             for fs in core.file_sets:
-                if (set(fs.usage) & set(usage)) and ((str(core_name) == str(self.system.name)) or not fs.private):
+                if (set(fs.usage) & set(usage)) and ((str(core.name) == str(self.system.name)) or not fs.private):
                     for file in fs.file:
                         if file.is_include_file:
                             incdirs.add(os.path.join(basepath, os.path.dirname(file.name)))
@@ -69,8 +67,7 @@ class Simulator(EdaTool):
         super(Simulator, self).configure(args)
 
     def build(self):
-        for core_name in self.cores:
-            core = self.cm.get_core(core_name)
+        for core in self.cores:
             if core.scripts:
                 run_scripts(core.scripts.pre_build_scripts,
                             core.core_root,
@@ -81,8 +78,7 @@ class Simulator(EdaTool):
     def run(self, args):
         if not hasattr(self, 'plusarg'):
             self.parse_args(args, 'sim', ['plusarg', 'vlogparam'])
-        for core_name in self.cores:
-            core = self.cm.get_core(core_name)
+        for core in self.cores:
             if core.scripts:
                 run_scripts(core.scripts.pre_run_scripts,
                             core.core_root,
@@ -91,8 +87,7 @@ class Simulator(EdaTool):
 
     def done(self, args):
 
-        for core_name in self.cores:
-            core = self.cm.get_core(core_name)
+        for core in self.cores:
             if core.scripts:
                 run_scripts(core.scripts.post_run_scripts,
                             core.core_root,

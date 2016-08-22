@@ -21,11 +21,10 @@ class Backend(EdaTool):
     def _get_fileset_files(self, usage):
         incdirs = set()
         src_files = []
-        for core_name in self.cores:
-            core = self.cm.get_core(core_name)
+        for core in self.cores:
             basepath = os.path.relpath(os.path.join(self.src_root, core.sanitized_name), self.work_root)
             for fs in core.file_sets:
-                if (set(fs.usage) & set(usage)) and ((core_name == self.system.name) or not fs.private):
+                if (set(fs.usage) & set(usage)) and ((core.name == self.system.name) or not fs.private):
                     for file in fs.file:
                         if file.is_include_file:
                             incdirs.add(os.path.join(basepath, os.path.dirname(file.name)))

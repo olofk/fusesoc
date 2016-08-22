@@ -137,8 +137,7 @@ class Verilator(Simulator):
     def build(self):
         super(Verilator, self).build()
         self.archives = []
-        for core_name in self.cores:
-            core = self.cm.get_core(core_name)
+        for core in self.cores:
             if core.verilator:
                  if core.verilator.archive:
                       self.archives += [core.sanitized_name+'.a']
@@ -150,8 +149,7 @@ class Verilator(Simulator):
 
         pr_info("Verilating source")
         self._verilate()
-        for core_name in self.cores:
-            core = self.cm.get_core(core_name)
+        for core in self.cores:
             if core.verilator:
                  self._build(core, self.sim_root, self.src_root)
 

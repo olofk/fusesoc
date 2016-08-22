@@ -52,9 +52,8 @@ class EdaTool(object):
         else:
             os.makedirs(self.work_root)
 
-        for name in self.cores:
-            pr_info("Preparing " + str(name))
-            core = self.cm.get_core(name)
+        for core in self.cores:
+            pr_info("Preparing " + str(core.name))
             dst_dir = os.path.join(Config().build_root, self.system.sanitized_name, 'src', core.sanitized_name)
             try:
                 core.setup()
@@ -80,12 +79,11 @@ class EdaTool(object):
                   'generic'    : 'VHDL generic (Run-time option)',
                   'cmdlinearg' : 'Command-line arguments (Run-time option)'}
         all_params = {}
-        for name in self.cores:
-            core = self.cm.get_core(name)
+        for core in self.cores:
 
             for param_name, param in core.parameter.items():
                 if param.paramtype in paramtypes and \
-                   (name == self.system.name or \
+                   (core.name == self.system.name or \
                    param.scope == 'public'):
                     if not param.paramtype in param_groups:
                         param_groups[param.paramtype] = \

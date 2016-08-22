@@ -96,9 +96,9 @@ class CoreManager(object):
             for c in self._get_depends(core):
                 if not str(c) in [str(x) for x in _l]:
                     _l.append(c)
-            return(_l)
+            return([self.get_core(core) for core in _l])
         else:
-            return [core]
+            return [self.get_core(core)]
 
     def _get_depends(self, core):
         #FIXME: Check for circular dependencies
