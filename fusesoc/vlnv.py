@@ -1,5 +1,5 @@
 class Vlnv(object):
-    def __init__(self, s):
+    def __init__(self, s, default_relation = "=="):
         def _is_rev(s):
             return s.startswith('r') and s[1:].isdigit()
         def _is_version(s):
@@ -74,7 +74,7 @@ class Vlnv(object):
                 raise SyntaxError(_s.format(s, self.relation))
             #No version specifier means any version i.e. >=0
             self.version = "0"
-            self.relation = ">="
+            self.relation = default_relation
 
         #Create sanitized name
         self.sanitized_name = str(self).lstrip(':').replace(":", "_")
