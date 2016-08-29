@@ -1,5 +1,5 @@
 class Vlnv(object):
-    def __init__(self, s, default_relation = "=="):
+    def __init__(self, s, default_relation = ">="):
         def _is_rev(s):
             return s.startswith('r') and s[1:].isdigit()
         def _is_version(s):
