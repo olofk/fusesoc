@@ -75,7 +75,7 @@ def build(args):
         pr_err("Can't find system '" + args.system + "'")
 
 def pgm(args):
-    core = CoreManager().get_core(args.system)
+    core = CoreManager().get_core(Vlnv(args.system))
     if core and core.system:
         backend = BackendFactory(core)
         try:
