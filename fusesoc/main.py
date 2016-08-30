@@ -40,6 +40,21 @@ logger = logging.getLogger(__name__)
 REPO_NAME = 'orpsoc-cores'
 REPO_URI  = 'https://github.com/openrisc/orpsoc-cores'
 
+def _get_core(name, has_system=False):
+    core = None
+    try:
+        core = CoreManager().get_core(Vlnv(name))
+    except RuntimeError as e:
+        pr_err(str(e))
+        exit(1)
+    except DependencyError as e:
+        pr_err("'" + name + "' or any of its dependencies requires '" + e.value + "', but this core was not found")
+        exit(1)
+    if has_system and not core.system:
+        pr_err("Unable to find .system file for '{}'".format(name))
+        exit(1)
+    return core
+
 def abort_handler(signal, frame):
         print('');
         pr_info('****************************')
@@ -51,39 +66,32 @@ def abort_handler(signal, frame):
 signal.signal(signal.SIGINT, abort_handler)
 
 def build(args):
-    core = CoreManager().get_core(Vlnv(args.system))
-    if core and core.system:
-        try:
-            backend = BackendFactory(core)
-        except DependencyError as e:
-            pr_err("'" + args.system + "' or any of its dependencies requires '" + e.value + "', but this core was not found")
-            exit(1)
-        except RuntimeError as e:
-            pr_err("Failed to build '{}': {}".format(args.system, e))
-            exit(1)
-        try:
-            backend.configure(args.backendargs)
-        except RuntimeError as e:
-            pr_err(str(e))
-            exit(1)
-        print('')
-        try:
-            backend.build(args.backendargs)
-        except RuntimeError as e:
-            pr_err("Failed to build FPGA: " + str(e))
-    else:
-        pr_err("Can't find system '" + args.system + "'")
+    core = _get_core(args.system, True)
+
+    try:
+        backend = BackendFactory(core)
+    except RuntimeError as e:
+        pr_err("Failed to build '{}': {}".format(args.system, e))
+        exit(1)
+    try:
+        backend.configure(args.backendargs)
+    except RuntimeError as e:
+        pr_err(str(e))
+        exit(1)
+    print('')
+    try:
+        backend.build(args.backendargs)
+    except RuntimeError as e:
+        pr_err("Failed to build FPGA: " + str(e))
 
 def pgm(args):
-    core = CoreManager().get_core(Vlnv(args.system))
-    if core and core.system:
-        backend = BackendFactory(core)
-        try:
-            backend.pgm(args.backendargs)
-        except RuntimeError as e:
-            pr_err("Failed to program the FPGA: " + str(e))
-    else:
-        pr_err("Can't find system '" + args.system + "'")
+    core = _get_core(args.system, True)
+
+    backend = BackendFactory(core)
+    try:
+        backend.pgm(args.backendargs)
+    except RuntimeError as e:
+        pr_err("Failed to program the FPGA: " + str(e))
 
 def fetch(args):
     if args.core:
@@ -162,11 +170,8 @@ def list_cores(args):
         print(name.ljust(maxlen) + ' : ' + core.cache_status())
 
 def core_info(args):
-    core = CoreManager().get_core(Vlnv(args.core))
-    if core:
-        core.info()
-    else:
-        pr_err("Can't find core '" + args.core + "'")
+    core = _get_core(args.core)
+    core.info()
 
 def list_systems(args):
     print("Available systems:")
@@ -174,18 +179,12 @@ def list_systems(args):
         print(system)
 
 def system_info(args):
-    core = CoreManager().get_core(Vlnv(args.system))
-    if core and core.system:
-        core.info()
-        core.system.info()
-    else:
-        pr_err("Can't find system '" + args.system + "'")
+    core = _get_core(args.system, True)
+    core.info()
+    core.system.info()
 
 def sim(args):
-    core = CoreManager().get_core(Vlnv(args.system))
-    if core == None:
-        pr_err("Can't find core '" + args.system + "'")
-        exit(1)
+    core = _get_core(args.system)
     if args.sim:
         sim_name = args.sim[0]
     elif core.simulators:
