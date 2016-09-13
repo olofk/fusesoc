@@ -70,7 +70,7 @@ class Simulator(EdaTool):
         for core in self.cores:
             if core.scripts:
                 run_scripts(core.scripts.pre_build_scripts,
-                            core.core_root,
+                            core.files_root,
                             self.sim_root,
                             self.env)
         return
