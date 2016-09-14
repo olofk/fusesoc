@@ -161,7 +161,7 @@ class ToolSection(Section):
         if self.depend:
             _s = "{}-specific dependencies : {}\n"
             s += _s.format(self.TAG,
-                     ' '.join([str(x) for x in self.depend]))
+                     ' '.join([x.depstr() for x in self.depend]))
         return(s)
 
 class MainSection(Section):

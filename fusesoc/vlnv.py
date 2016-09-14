@@ -95,3 +95,9 @@ class Vlnv(object):
                                         self.name,
                                         self.version,
                                         revision)
+    def depstr(self):
+        if self.relation == '==':
+            relation = ""
+        else:
+            relation = self.relation
+        return relation+str(self)

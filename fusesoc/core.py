@@ -272,7 +272,7 @@ class Core:
         if self.plusargs: 
             print("\nPlusargs:               " + show_dict(self.plusargs.items))
         if self.depend:
-            print("\nCommon dependencies:    " + show_list(self.depend))
+            print("\nCommon dependencies : " + ' '.join([x.depstr() for x in self.depend]))
         for s in section.SECTION_MAP:
             if s in ['main', 'verilog']:
                 continue
