@@ -151,10 +151,13 @@ class CoreManager(object):
         elif not isinstance(path, list):
             path = [path]
         for p in path:
+            if not p:
+                # skip empty entries
+                continue
             abspath = os.path.abspath(os.path.expanduser(p))
             if not abspath in self._cores_root:
-                self._cores_root += [abspath]
                 self.load_cores(os.path.expanduser(p))
+                self._cores_root += [abspath]
 
     def get_cores_root(self):
         return self._cores_root

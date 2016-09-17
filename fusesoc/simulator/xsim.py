@@ -9,101 +9,150 @@ class Xsim(Simulator):
 
     TOOL_NAME = 'XSIM'
     def __init__(self, system):
-
-        self.cores = []
-        self.xsim_options = []
-
-        if system.xsim is not None:
-            self.xsim_options = system.xsim.xsim_options
         super(Xsim, self).__init__(system)
 
+        self.top_module = None
+        self.part = None
 
+        if system.xsim is not None:
+            self.top_module = system.xsim.top_module
+            self.part = system.xsim.part
+
+        if self.top_module == '':
+            raise OptionSectionMissing('top_module')
 
 
     def configure(self, args):
         super(Xsim, self).configure(args)
+
+        self.simcwd = os.path.join(self.work_root,
+                                   self.system.sanitized_name+'.sim',
+                                   'sim_1', 'behav')
+
         self._write_config_files()
 
+    def _has_dpi(self):
+        return (len(self.dpi_srcs) > 0)
+
     def _write_config_files(self):
-        xsim_file = 'xsim.prj'
-        f1 = open(os.path.join(self.sim_root,xsim_file),'w')
-        self.incdirs = set()
-        src_files = []
+        if self.top_module is None:
+            pr_err("No top_module set for this simulation")
+            exit(1)
+
+        ip = []         # IP descriptions (xci files)
+        constr = []     # Constraints (xdc files)
+        verilog = []    # (System) Verilog files
+        vhdl = []       # VHDL files
 
         (src_files, self.incdirs) = self._get_fileset_files(['sim', 'xsim'])
-        for src_file in src_files:
-            if src_file.file_type in ["verilogSource",
-		                      "verilogSource-95",
-		                      "verilogSource-2001"]:
-                f1.write('verilog work ' + src_file.name + '\n')
-            elif src_file.file_type in ["vhdlSource",
-                                        "vhdlSource-87",
-                                        "vhdlSource-93"]:
-                f1.write('vhdl work ' + src_file.logical_name + " " + src_file.name + '\n')
-            elif src_file.file_type in ['vhdlSource-2008']:
-                f1.write('vhdl2008 ' + src_file.logical_name + " " + src_file.name + '\n')
-            elif src_file.file_type in ["systemVerilogSource",
-                                        "systemVerilogSource-3.0",
-                                        "systemVerilogSource-3.1",
-                                        "systemVerilogSource-3.1a",
-                                        "verilogSource-2005"]:
-                f1.write('sv work ' + src_file.name + '\n')
-            else:
-                _s = "{} has unknown file type '{}'"
-                pr_warn(_s.format(src_file.name,
-                                  src_file.file_type))
-        f1.close()
 
-        tcl_file = 'xsim.tcl'
-        f2 = open(os.path.join(self.sim_root,tcl_file),'w')
-        f2.write('add_wave -radix hex /\n')
-        f2.write('run all\n')
-        f2.close()
+        for s in src_files:
+            if s.file_type == 'xci':
+                ip.append(s.name)
+            elif s.file_type == 'xdc':
+                constr.append(s.name)
+            elif s.file_type.startswith('verilogSource'):
+                verilog.append(s.name)
+            elif s.file_type.startswith('systemVerilogSource'):
+                verilog.append(s.name)
+            elif s.file_type.startswith('vhdlSource'):
+                vhdl.append(s.name)
+            elif s.file_type in ("CPP", "C"):
+                self.dpi_srcs.append(s.name)
+
+        filename = self.system.sanitized_name+".tcl"
+        path = os.path.join(self.work_root, filename)
+        tcl_file = open(path, 'w')
+
+        ipconfig = '\n'.join(['read_ip '+s for s in ip])+"\n"
+        ipconfig += "upgrade_ip [get_ips]\n"
+        ipconfig += "generate_target all [get_ips]\n"
+
+        parameters = ""
+        for key, value in self.vlogparam.items():
+            parameters += "set_property generic {{{key}={value}}} [current_fileset -simset]".format(key=key, value=value)
+
+        part = ""
+        if self.part:
+            part = " -part {} ".format(self.part)
+
+        tcl_file.write(PROJECT_TCL_TEMPLATE.format(
+            design       = self.system.sanitized_name,
+            toplevel     = self.top_module,
+            incdirs      = ' '.join(self.incdirs),
+            parameters   = parameters,
+            part         = part,
+            ip           = ipconfig,
+            src_files    = '\n'.join(['read_verilog '+s for s in verilog]+
+                                     ['read_vhdl '+s for s in vhdl])))
+
+        if self._has_dpi():
+            tcl_file.write("set_property -name {xsim.elaborate.xelab.more_options} "
+                           "-value {-cc gcc -sv_lib dpi } "
+                           "-objects [current_fileset -simset]\n")
+
+        tcl_file.write("launch_simulation -scripts_only")
+
+        tcl_file.close()
+
+        Launcher('vivado', ['-mode', 'batch', '-source',
+                            os.path.join(self.work_root, self.system.sanitized_name+'.tcl')],
+                 cwd = self.work_root,
+                 errormsg = "Failed to build simulation").run()
 
     def build(self):
         super(Xsim, self).build()
 
-        #Check if any VPI modules are present and display warning
-        if len(self.vpi_modules) > 0:
-            modules = [m['name'] for m in self.vpi_modules]
-            pr_err('VPI modules not supported by Xsim: %s' % ', '.join(modules))
+        Launcher('./compile.sh',
+                 cwd = self.simcwd,
+                 errormsg = "Failed to build simulation").run()
 
-        #Build simulation model
-        args = []
-        args += [ self.toplevel]
-        args += ['--prj', 'xsim.prj']      # list of design files
-        args += ['--timescale', '1ps/1ps'] # default timescale to prevent error if unspecified
-        args += ['--snapshot', 'fusesoc']  # name of the design to simulate
-        args += ['--debug', 'typical']     # capture waveforms
+        if self._has_dpi():
+            args = ['-C', 'gcc', '-v' ]
+            args += ['-additional_option', '-std=c++11' ]
+            for l in self.dpi_libs:
+                args += ['--additional_option']
+                args += ['-l'+l]
+            for src in self.dpi_srcs:
+                args.append(os.path.join(self.work_root, src))
 
-        for include_dir in self.incdirs:
-            args += ['-i', include_dir]
+            Launcher('xsc', args, cwd = self.simcwd,
+                     errormsg = "Failed to build DPI").run()
 
-        for key, value in self.vlogparam.items():
-            args += ['--generic_top', '{}={}'.format(key, value)]
-        args += self.xsim_options
-
-        Launcher('xelab', args,
-                 cwd      = self.sim_root,
-                 errormsg = "Failed to compile Xsim simulation model").run()
+        Launcher('./elaborate.sh',
+                 cwd = self.simcwd,
+                 errormsg = "Failed to build simulation").run()
 
     def run(self, args):
         super(Xsim, self).run(args)
 
-        #FIXME: Handle failures. Save stdout/stderr.
-        args = []
-        args += ['--gui']                                 # Interactive
-        args += ['--tclbatch', 'xsim.tcl']                 # Simulation commands
-        args += ['--log', 'xsim.log']                      # Log file
-        args += ['--wdb', 'xsim.wdb']                      # Simulation waveforms database
-        args += ['fusesoc']                                # Snapshot name
-        # Plusargs
-        for key, value in self.plusarg.items():
-            args += ['--testplusarg', '{}={}'.format(key, value)]
-        #FIXME Top-level parameters
+        simtcl = os.path.join(self.simcwd, self.top_module + ".tcl")
+        print simtcl
+        tcl_file = open(simtcl, "w")
 
-        Launcher('xsim', args,
-                 cwd = self.sim_root,
-                 errormsg = "Failed to run Xsim simulation").run()
+        tcl_file.write("run -all")
+
+        tcl_file.close()
+
+        Launcher('./simulate.sh',
+                 cwd = self.simcwd,
+                 errormsg = "Failed to build simulation").run()
 
         super(Xsim, self).done(args)
+
+""" Template for vivado project tcl file """
+PROJECT_TCL_TEMPLATE = """# Auto-generated project tcl file
+
+create_project {design} {part}
+
+set_property "simulator_language" "Mixed" [current_project]
+
+{ip}
+
+{src_files}
+
+{parameters}
+
+set_property include_dirs [list {incdirs}] [current_fileset]
+set_property top {toplevel} [current_fileset -simset]
+"""
