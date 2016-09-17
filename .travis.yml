@@ -3,6 +3,8 @@ python:
   - "2.7"
   - "3.4"
   - "3.5"
+before_install:
+  - "pip install attrs==16.0.0"
 install:
   - "pip install ."
 script:
