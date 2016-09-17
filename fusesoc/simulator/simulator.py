@@ -29,6 +29,7 @@ class Simulator(EdaTool):
             self.toplevel = 'orpsoc_tb'
 
         self._get_vpi_modules()
+        self._setup_dpi()
 
     def _get_vpi_modules(self):
         self.vpi_modules = []
@@ -43,6 +44,18 @@ class Simulator(EdaTool):
                 vpi_module['name']          = core.sanitized_name
                 vpi_module['libs']          = [l for l in core.vpi.libs]
                 self.vpi_modules += [vpi_module]
+
+    def _setup_dpi(self):
+        self.dpi_srcs = []
+        self.dpi_includedirs = []
+        self.dpi_libs = []
+
+        for core in self.cores:
+            if core.dpi:
+                core_root = os.path.join(self.src_root, core.sanitized_name)
+                self.dpi_srcs += [os.path.abspath(os.path.join(core_root, f.name)) for f in core.dpi.src_files]
+                self.dpi_includedirs += [os.path.join(os.path.relpath(core_root, self.sim_root),d) for d in core.dpi.include_dirs]
+                self.dpi_libs += [l for l in core.dpi.libs]
 
     def _get_fileset_files(self, usage):
         incdirs = set()

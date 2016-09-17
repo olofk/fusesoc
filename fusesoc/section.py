@@ -269,6 +269,25 @@ class VpiSection(Section):
 
             self.export_files = self.src_files + self.include_files
 
+class DpiSection(Section):
+
+    TAG = 'dpi'
+
+    def __init__(self, items=None):
+        super(DpiSection, self).__init__()
+
+        self.include_dirs = []
+
+        self._add_member('src_files'    , FileList, "C source files for DPI library")
+        self._add_member('include_files', FileList, "C include files for DPI library")
+        self._add_member('libs'         , StringList, "External libraries linked with the DPI library")
+
+        if items:
+            self.load_dict(items)
+            if self.include_files:
+                self.include_dirs  += unique_dirs(self.include_files)
+
+            self.export_files = self.src_files + self.include_files
 
 class ModelsimSection(ToolSection):
 
