@@ -527,6 +527,7 @@ if __name__ == "__main__":
                  SimulatorList : 'Space-separated list',
                  SourceType    : 'String',
                  StringList    : 'Space-separated list',
+                 VlnvList      : 'Space-separated list of VLNV identifiers',
                  list : 'List'}
     SECTION_TEMPLATE = """
 {}

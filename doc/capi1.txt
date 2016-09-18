@@ -22,7 +22,7 @@ ghdl
 |==============================
 |Name | Type | Description
 |analyze_options | Space-separated list | Extra GHDL analyzer options
-|depend | Space-separated list | Tool-specific Dependencies
+|depend | Space-separated list of VLNV identifiers | Tool-specific Dependencies
 |run_options | Space-separated list | Extra GHDL run options
 |==============================
 
@@ -34,7 +34,7 @@ icarus
 [cols="2,1,5",options="header"]
 |==============================
 |Name | Type | Description
-|depend | Space-separated list | Tool-specific Dependencies
+|depend | Space-separated list of VLNV identifiers | Tool-specific Dependencies
 |iverilog_options | Space-separated list | Extra Icarus verilog compile options
 |==============================
 
@@ -47,7 +47,7 @@ icestorm
 |==============================
 |Name | Type | Description
 |arachne_pnr_options | Space-separated list | arachne-pnr options
-|depend | Space-separated list | Tool-specific Dependencies
+|depend | Space-separated list of VLNV identifiers | Tool-specific Dependencies
 |pcf_file | Space-separated list of files | Physical constraint file
 |top_module | String | RTL top-level module
 |==============================
@@ -60,7 +60,7 @@ ise
 [cols="2,1,5",options="header"]
 |==============================
 |Name | Type | Description
-|depend | Space-separated list | Tool-specific Dependencies
+|depend | Space-separated list of VLNV identifiers | Tool-specific Dependencies
 |device | String | FPGA device identifier
 |family | String | FPGA device family
 |package | String | FPGA device package
@@ -78,7 +78,7 @@ isim
 [cols="2,1,5",options="header"]
 |==============================
 |Name | Type | Description
-|depend | Space-separated list | Tool-specific Dependencies
+|depend | Space-separated list of VLNV identifiers | Tool-specific Dependencies
 |isim_options | Space-separated list | Extra Isim compile options
 |==============================
 
@@ -91,7 +91,7 @@ main
 |==============================
 |Name | Type | Description
 |component | Space-separated list of paths | Core IP-Xact component file
-|depend | Space-separated list | Common dependencies
+|depend | Space-separated list of VLNV identifiers | Common dependencies
 |description | String | Core description
 |name | String | Component name
 |patches | Space-separated list | FuseSoC-specific patches
@@ -106,7 +106,7 @@ modelsim
 [cols="2,1,5",options="header"]
 |==============================
 |Name | Type | Description
-|depend | Space-separated list | Tool-specific Dependencies
+|depend | Space-separated list of VLNV identifiers | Tool-specific Dependencies
 |run_default_args | Space-separated list | Default modelsim options when running the simulation. Defaults to '-quiet -c -do run -all'
 |vlog_options | Space-separated list | Additional arguments for vlog
 |vsim_options | Space-separated list | Additional arguments for vsim
@@ -135,7 +135,7 @@ quartus
 [cols="2,1,5",options="header"]
 |==============================
 |Name | Type | Description
-|depend | Space-separated list | Tool-specific Dependencies
+|depend | Space-separated list of VLNV identifiers | Tool-specific Dependencies
 |device | String | FPGA device identifier
 |family | String | FPGA device family
 |qsys_files | Space-separated list of files | Qsys IP description files
@@ -168,7 +168,7 @@ verilator
 |Name | Type | Description
 |cli_parser | String | Select CLI argument parser. Set to 'fusesoc' to handle parameter sections like other simulators. Set to 'passthrough' to send the arguments directly to the verilated model. Default is 'passthrough'
 |define_files | Space-separated list of paths | Verilog include files containing `define directives to be converted to C #define directives in corresponding .h files
-|depend | Space-separated list | Tool-specific Dependencies
+|depend | Space-separated list of VLNV identifiers | Tool-specific Dependencies
 |include_files | Space-separated list of files | Verilator testbench C include files
 |libs | Space-separated list of paths | External libraries linked with the generated model
 |source_type | String | Testbench source code language (Legal values are systemC, C, CPP. Default is C)
@@ -226,7 +226,7 @@ xsim
 [cols="2,1,5",options="header"]
 |==============================
 |Name | Type | Description
-|depend | Space-separated list | Tool-specific Dependencies
+|depend | Space-separated list of VLNV identifiers | Tool-specific Dependencies
 |xsim_options | Space-separated list | Extra Xsim compile options
 |==============================
 
