@@ -13,7 +13,7 @@ A simple ini file describes mainly which files the IP core contains, which other
 
 A collection of cores together with a top-level is called a system, and systems can be simulated or passed through the FPGA vendor tools to build a loadable FPGA image.
 
-Currently FuseSoc supports simulations with ModelSim, Icarus Verilog, Verilator, Isim and Xsim. It also supports building FPGA images with Xilinx ISE and Altera Quartus
+Currently FuseSoc supports simulations with GHDL, ModelSim, Icarus Verilog, Verilator, Isim and Xsim. It also supports building FPGA images with project IceStorm, Xilinx ISE and Altera Quartus
 
 Cores
 -----
