@@ -37,10 +37,11 @@ class EdaTool(object):
         self.env = os.environ.copy()
         self.env['BUILD_ROOT'] = os.path.abspath(self.build_root)
 
-        self.plusarg    = {}
-        self.vlogparam  = {}
-        self.generic    = {}
-        self.cmdlinearg = {}
+        self.plusarg     = {}
+        self.vlogparam   = {}
+        self.vlogdefine  = {}
+        self.generic     = {}
+        self.cmdlinearg  = {}
 
     def configure(self, args):
         if os.path.exists(self.work_root):
@@ -76,6 +77,7 @@ class EdaTool(object):
         param_groups = {}
         _descr = {'plusarg'    : 'Verilog plusargs (Run-time option)',
                   'vlogparam'  : 'Verilog parameters (Compile-time option)',
+                  'vlogdefine' : 'Verilog defines (Compile-time global symbol)',
                   'generic'    : 'VHDL generic (Run-time option)',
                   'cmdlinearg' : 'Command-line arguments (Run-time option)'}
         all_params = {}
