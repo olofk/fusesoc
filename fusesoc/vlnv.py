@@ -44,7 +44,7 @@ class Vlnv(object):
                 if len(sl) > 1 and _is_version(sl[-1]):
                     self.version = sl.pop()
                 else:
-                    self.version = "0"
+                    self.version = ""
 
                 self.name    = '-'.join(sl)
 
@@ -68,6 +68,8 @@ class Vlnv(object):
                 # Version specified without relational operator
                 # Assume user wants the exact version
                 self.relation = "=="
+            if not self.version:
+                self.version = "0"
         else:
             if self.relation:
                 _s = "{}: '{}' operator requires a version "
