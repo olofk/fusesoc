@@ -74,9 +74,10 @@ class Vivado(Backend):
 
         tcl_file = open(os.path.join(self.work_root, self.system.sanitized_name+".tcl"), 'w')
 
-        ipconfig = '\n'.join(['read_ip '+s for s in ip])+"\n"
-        ipconfig += "upgrade_ip [get_ips]\n"
-        ipconfig += "generate_target all [get_ips]\n"
+        if len(ip)>0:
+            ipconfig = '\n'.join(['read_ip '+s for s in ip])+"\n"
+            ipconfig += "upgrade_ip [get_ips]\n"
+            ipconfig += "generate_target all [get_ips]\n"
 
         extras = ''
         if hasvhdl2008:
