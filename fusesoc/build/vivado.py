@@ -53,10 +53,12 @@ class Vivado(Backend):
 
         ip = []         # IP descriptions (xci files)
         constr = []     # Constraints (xdc files)
-        verilog = []    # (System) Verilog files
+        verilog = []    # Verilog files
+        sverilog = []   # System Verilog files
         vhdl = []       # VHDL files
+        vhdl2008 = []   # VHDL files
 
-        hasvhdl2008 = False
+        ipconfig = ""
 
         for s in src:
             if s.file_type == 'xci':
@@ -66,21 +68,21 @@ class Vivado(Backend):
             elif s.file_type.startswith('verilogSource'):
                 verilog.append(s.name)
             elif s.file_type.startswith('systemVerilogSource'):
-                verilog.append(s.name)
+                sverilog.append(s.name)
+            elif s.file_type.startswith('vhdlSource-2008'):
+                vhdl2008.append(s.name)
             elif s.file_type.startswith('vhdlSource'):
                 vhdl.append(s.name)
-                if s.file_type == 'vhdlSource-2008':
-                    hasvhdl2008 = True
 
         tcl_file = open(os.path.join(self.work_root, self.system.sanitized_name+".tcl"), 'w')
 
         if len(ip)>0:
-            ipconfig = '\n'.join(['read_ip '+s for s in ip])+"\n"
+            ipconfig += '\n'.join(['read_ip '+s for s in ip])+"\n"
             ipconfig += "upgrade_ip [get_ips]\n"
             ipconfig += "generate_target all [get_ips]\n"
 
         extras = ''
-        if hasvhdl2008:
+        if len(vhdl2008)>0:
             extras += "set_param project.enableVHDL2008 1\n"
 
         parameters = ""
@@ -100,7 +102,9 @@ class Vivado(Backend):
             parameters   = parameters,
             extras       = extras,
             src_files    = '\n'.join(['read_verilog '+s for s in verilog]+
-                                     ['read_vhdl '+s for s in vhdl]),
+                                     ['read_verilog -sv '+s for s in sverilog]+
+                                     ['read_vhdl '+s for s in vhdl]+
+                                     ['read_vhdl -vhdl2008 '+s for s in vhdl2008]),
             xdc_files    = '\n'.join(['read_xdc '+s for s in constr])))
 
         tcl_file.close()
