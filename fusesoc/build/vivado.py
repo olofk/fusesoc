@@ -57,6 +57,7 @@ class Vivado(Backend):
         sverilog = []   # System Verilog files
         vhdl = []       # VHDL files
         vhdl2008 = []   # VHDL files
+        tcl = []        # TCL files to include
 
         ipconfig = ""
 
@@ -73,6 +74,8 @@ class Vivado(Backend):
                 vhdl2008.append(s.name)
             elif s.file_type.startswith('vhdlSource'):
                 vhdl.append(s.name)
+            elif s.file_type.startswith('tclSource'):
+                tcl.append(s.name)
 
         tcl_file = open(os.path.join(self.work_root, self.system.sanitized_name+".tcl"), 'w')
 
@@ -101,6 +104,7 @@ class Vivado(Backend):
             ip           = ipconfig,
             parameters   = parameters,
             extras       = extras,
+            tcl          = '\n'.join(['source '+s for s in tcl]),
             src_files    = '\n'.join(['read_verilog '+s for s in verilog]+
                                      ['read_verilog -sv '+s for s in sverilog]+
                                      ['read_vhdl '+s for s in vhdl]+
@@ -153,6 +157,8 @@ PROJECT_TCL_TEMPLATE = """# Auto-generated project tcl file
 create_project -part {part} {design}
 
 set_property "simulator_language" "Mixed" [current_project]
+
+{tcl}
 
 {ip}
 
