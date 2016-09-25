@@ -95,6 +95,9 @@ class Vivado(Backend):
         if len(self.vlogdefine.items()) > 0:
             parameters += "set_property verilog_define \"{}\" [get_filesets sources_1]".format(" ".join(k+"="+v for k,v in self.vlogdefine.items()))
 
+        if self.backend.top_module:
+            extras += "set_property top "+self.backend.top_module+" [current_fileset]"
+
         # Write the formatted string to the tcl file
         tcl_file.write(PROJECT_TCL_TEMPLATE.format(
             design       = self.system.sanitized_name,

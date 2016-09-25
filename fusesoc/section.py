@@ -430,6 +430,7 @@ class VivadoSection(ToolSection):
 
         self._add_member('part'       , str, 'FPGA device part')
         self._add_member('hw_device'  , str, 'FPGA device identifier')
+        self._add_member('top_module' , str, 'RTL top-level module')
 
         if items:
             self.load_dict(items)
