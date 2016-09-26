@@ -51,13 +51,13 @@ class Vivado(Backend):
         # Get the synthesis files and files specific to vivado
         (src, incdirs) = self._get_fileset_files(['vivado', 'synth'])
 
-        ip = []         # IP descriptions (xci files)
-        constr = []     # Constraints (xdc files)
-        verilog = []    # Verilog files
-        sverilog = []   # System Verilog files
-        vhdl = []       # VHDL files
-        vhdl2008 = []   # VHDL files
-        tcl = []        # TCL files to include
+        ip = []             # IP descriptions (xci files)
+        constr = []         # Constraints (xdc files)
+        verilog = []        # Verilog files
+        sverilog = []       # System Verilog files
+        vhdl = []           # VHDL files
+        hasVhdl2008 = False # Has VHDL 2008 files
+        tcl = []            # TCL files to include
 
         ipconfig = ""
 
@@ -70,10 +70,14 @@ class Vivado(Backend):
                 verilog.append(s.name)
             elif s.file_type.startswith('systemVerilogSource'):
                 sverilog.append(s.name)
-            elif s.file_type.startswith('vhdlSource-2008'):
-                vhdl2008.append(s.name)
             elif s.file_type.startswith('vhdlSource'):
-                vhdl.append(s.name)
+                params = ""
+                if s.file_type == "vhdlSource-2008":
+                    params += "-vhdl2008 "
+                    hasVhdl2008 = True
+                if s.logical_name:
+                    params += "-library {} ".format(s.logical_name)
+                vhdl.append(params+s.name)
             elif s.file_type.startswith('tclSource'):
                 tcl.append(s.name)
 
@@ -85,7 +89,7 @@ class Vivado(Backend):
             ipconfig += "generate_target all [get_ips]\n"
 
         extras = ''
-        if len(vhdl2008)>0:
+        if hasVhdl2008:
             extras += "set_param project.enableVHDL2008 1\n"
 
         parameters = ""
@@ -110,8 +114,7 @@ class Vivado(Backend):
             tcl          = '\n'.join(['source '+s for s in tcl]),
             src_files    = '\n'.join(['read_verilog '+s for s in verilog]+
                                      ['read_verilog -sv '+s for s in sverilog]+
-                                     ['read_vhdl '+s for s in vhdl]+
-                                     ['read_vhdl -vhdl2008 '+s for s in vhdl2008]),
+                                     ['read_vhdl '+s for s in vhdl]),
             xdc_files    = '\n'.join(['read_xdc '+s for s in constr])))
 
         tcl_file.close()
