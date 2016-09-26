@@ -133,7 +133,11 @@ def init(args):
     else:
         pr_info("Initializing orpsoc-cores")
         args = ['clone', REPO_URI, cores_root]
-        Launcher('git', args).run()
+        try:
+            Launcher('git', args).run()
+        except RuntimeError as e:
+            pr_err("Init failed: " + str(e))
+            exit(1)
 
     xdg_config_home = os.environ.get('XDG_CONFIG_HOME') or \
                       os.path.join(os.path.expanduser('~'), '.config')
