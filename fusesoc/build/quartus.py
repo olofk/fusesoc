@@ -139,22 +139,22 @@ clean:
             if _type:
                 _s = "set_global_assignment -name {} {}\n"
                 tcl_file.write(_s.format(_type,
-                                         f.name))
+                                         f.name.replace('\\','/')))
 
         for include_dir in incdirs:
-            tcl_file.write("set_global_assignment -name SEARCH_PATH " + include_dir + '\n')
+            tcl_file.write("set_global_assignment -name SEARCH_PATH " + include_dir.replace('\\','/') + '\n')
 
         for f in self.backend.sdc_files:
             dst_dir = os.path.join(self.src_root, self.system.sanitized_name)
             sdc_file = os.path.relpath(os.path.join(dst_dir, f.name) , self.work_root)
-            tcl_file.write("set_global_assignment -name SDC_FILE " + sdc_file + '\n')
+            tcl_file.write("set_global_assignment -name SDC_FILE " + sdc_file.replace('\\','/') + '\n')
 
         # NOTE: The relative path _have_ to be used here, if the absolute path
         # is used, quartus_asm will fail with an error message that
         # sdram_io.pre.h can't be read or written.
         for f in self.qip_files:
             tcl_file.write("set_global_assignment -name QIP_FILE " +
-                           os.path.relpath(f, self.work_root) + '\n')
+                           os.path.relpath(f, self.work_root).replace('\\','/') + '\n')
 
         tcl_files = self.backend.tcl_files
         for f in tcl_files:
