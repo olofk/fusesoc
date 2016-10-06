@@ -129,6 +129,9 @@ clean:
                 _type = 'QIP_FILE'
             elif f.file_type in ['SDC']:
                 _type = 'SDC_FILE'
+            elif f.file_type in ['tclSource']:
+                tcl_file.write("source {}\n".format(f.name.replace('\\','/')))
+                _type = None
             elif f.file_type in ['user']:
                 _type = None
             else:
