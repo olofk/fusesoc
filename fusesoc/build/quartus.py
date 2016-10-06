@@ -64,7 +64,7 @@ clean:
                      self.backend.device]
             args += ['--component-file=' + dst_file]
 
-            qsys_script.write('ip-generate ' + ' '.join(args) + '\n');
+            qsys_script.write('ip-generate ' + ' '.join(args) + '\n')
 
             self.qip_files += [os.path.join(self.build_root,
                                             'src/qsys/synthesis',
@@ -89,10 +89,10 @@ clean:
             args += ['--component-file=' + dst_file]
             args += ['--language=VERILOG']
 
-            qsys_script.write('ip-generate ' + ' '.join(args) + '\n');
+            qsys_script.write('ip-generate ' + ' '.join(args) + '\n')
 
         qsys_script.close()
-        subprocess.call(['sh', os.path.join(self.work_root, 'qsys.sh')]);
+        subprocess.call(['sh', os.path.join(self.work_root, 'qsys.sh')])
 
     def _write_tcl_file(self):
         tcl_file = open(os.path.join(self.work_root, self.system.sanitized_name+'.tcl'),'w')
