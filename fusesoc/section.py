@@ -5,6 +5,26 @@ from fusesoc.utils import pr_warn, pr_info, unique_dirs
 from fusesoc.vlnv import Vlnv
 
 class File(object):
+    FILE_TYPES = [
+        'QIP',
+        'SDC',
+        'tclSource',
+        'user',
+        'verilogSource',
+        'verilogSource-95',
+        'verilogSource-2001',
+        'verilogSource-2005',
+        'systemVerilogSource',
+        'systemVerilogSource-3.0',
+        'systemVerilogSource-3.1',
+        'systemVerilogSource-3.1a',
+        'vhdlSource',
+        'vhdlSource-87',
+        'vhdlSource-93',
+        'vhdlSource-2008',
+        'xci',
+        'xdc',
+        ]
     name      = ""
     file_type = ""
     is_include_file = False
@@ -21,6 +41,9 @@ class File(object):
                     self.is_include_file = True
                 elif '=' in _arg:
                     _tmp = [x.strip() for x in _arg.split('=')]
+                    if _tmp[0] == 'file_type' and _tmp[1] not in self.FILE_TYPES:
+                        _s = "Unknown file type '{}'. Allowed file types are {}"
+                        raise SyntaxError(_s.format(_tmp[1], ', '.join(self.FILE_TYPES)))
                     if _tmp[0] in ['file_type', 'logical_name']:
                         setattr(self, _tmp[0], _tmp[1])
                 else:
