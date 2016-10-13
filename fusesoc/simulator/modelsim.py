@@ -72,6 +72,9 @@ class Modelsim(Simulator):
 		               "verilogSource-2005"]:
                 cmd = 'vlog'
                 args = self.vlog_options[:]
+                for k, v in self.vlogdefine.items():
+                    args += ['+define+{}={}'.format(k,v)]
+
                 args += vlog_include_dirs
             elif f.file_type in ["systemVerilogSource",
 			         "systemVerilogSource-3.0",
