@@ -57,7 +57,7 @@ class Modelsim(Simulator):
         tcl_build_rtl  = open(os.path.join(self.sim_root, "fusesoc_build_rtl.tcl"), 'w')
 
         (src_files, incdirs) = self._get_fileset_files(['sim', 'modelsim'])
-        vlog_include_dirs = ['+incdir+'+d for d in incdirs]
+        vlog_include_dirs = ['+incdir+'+d.replace('\\','/') for d in incdirs]
 
         libs = []
         for f in src_files:
@@ -107,7 +107,7 @@ class Modelsim(Simulator):
                 if not Config().verbose:
                     args += ['-quiet']
                 args += ['-work', f.logical_name]
-                args += [f.name]
+                args += [f.name.replace('\\','/')]
                 tcl_build_rtl.write("{} {}\n".format(cmd, ' '.join(args)))
 
     def _write_vpi_makefile(self):
