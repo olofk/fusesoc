@@ -27,13 +27,6 @@ class Vivado(Backend):
     """ Define the toolname. It is used by FuseSoC to select the backend"""
     TOOL_NAME = 'vivado'
 
-    """ The constructor of the backend"""
-    def __init__(self, system):
-        # Do the general backend initialization
-        super(Vivado, self).__init__(system)
-        # Set work root. That is the name of the output path for build files
-        self.work_root = os.path.join(self.build_root, 'bld-{}'.format(self.TOOL_NAME))
-
     """ Configuration is the first phase of the build
 
     In the vivado backend the project TCL is written and all files are copied

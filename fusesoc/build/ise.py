@@ -38,10 +38,6 @@ quit
 
     TOOL_NAME = 'ise'
 
-    def __init__(self, system):
-        super(Ise, self).__init__(system)
-        self.work_root = os.path.join(self.build_root, 'bld-'+self.TOOL_NAME)
-
     def configure(self, args):
         super(Ise, self).configure(args)
         self._write_tcl_file()

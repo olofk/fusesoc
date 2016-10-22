@@ -30,9 +30,6 @@ clean:
 """
 
     TOOL_NAME = 'quartus'
-    def __init__(self, system):
-        super(Quartus, self).__init__(system)
-        self.work_root = os.path.join(self.build_root, 'bld-'+self.TOOL_NAME)
 
     def configure(self, args):
         super(Quartus, self).configure(args)

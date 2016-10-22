@@ -10,6 +10,8 @@ logger = logging.getLogger(__name__)
 
 class Backend(EdaTool):
 
+    TOOL_TYPE = 'bld'
+
     def __init__(self, system):
         super(Backend, self).__init__(system)
 

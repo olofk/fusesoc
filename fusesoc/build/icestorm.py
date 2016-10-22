@@ -29,10 +29,6 @@ ARACHNE_PNR_OPTIONS := {arachne_pnr_options}
 
     TOOL_NAME = 'icestorm'
 
-    def __init__(self, system):
-        super(Icestorm, self).__init__(system)
-        self.work_root = os.path.join(self.build_root, 'bld-'+self.TOOL_NAME)
-
     def configure(self, args):
         super(Icestorm, self).configure(args)
         self._write_config_files()

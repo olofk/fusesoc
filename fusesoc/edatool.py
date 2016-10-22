@@ -31,6 +31,7 @@ class EdaTool(object):
         self.build_root = os.path.join(config.build_root, self.system.sanitized_name)
         self.src_root = os.path.join(self.build_root, 'src')
 
+        self.work_root = os.path.join(self.build_root, self.TOOL_TYPE+'-'+self.TOOL_NAME)
         self.cm = CoreManager()
         self.cores = self.cm.get_depends(self.system.name)
 
