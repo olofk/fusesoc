@@ -45,7 +45,7 @@ If you also have Altera Quartus installed, you can try to build an example syste
 Documentation
 -------------
 
-`cd doc && make` will build HTML documentation from the asciidoc sources
+Documentation can be viewed online through github [here](doc/fusesoc.adoc). To manually create HTML documentation from the asciidoc sources, run `cd doc && make` from the repo root
 
 Further reading
 ---------------
