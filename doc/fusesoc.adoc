@@ -25,10 +25,53 @@ FPGA implementation flows are used to build binary FPGA configuration files (bit
 
 - link:icestorm{outfilesuffix}[IceStorm]
 
-Simulation
-~~~~~~~~~~
+Running simulations
+~~~~~~~~~~~~~~~~~~~
 
 Simulation flows are used to simulate HDL designs and are generally independent of the intended target device. Exceptions to this are when vendor-specific modules are instantiated in the source code, which might require vendor-specific libraries that are only available for some simulators.
+
+To run a simulation with FuseSoC, the `sim` subcommand is used followed by general simulator options, the core to simulate and core-specific options.
+
+
+`fusesoc sim <core> --help` lists all core-specific options
+
+Example:
+
+`fusesoc sim --sim=modelsim de0_nano --vcd --timeout=100000 --bootrom_file=spi_uimage_loader.vh`
+
+The above command would build a simulation model and run a simulation of the de0_nano core using the core's default testbench and explicitly using modelsim. If no simulator is selected, FuseSoC will use the default simulator which is selected by the core. A different testbench can be selected by setting the --testbench option. Use `fusesoc sim --help` to list all general simulator options
+
+The parameters vcd, timeout and bootrom_file would be passed to the simulator. While all three parameters look the same on the CLI (expect for vcd, which has no value associated with it), they are handled differently inside of FuseSoC.
+
+`vcd` and `timeout` would be passed as plusargs to the simulator at run-time, while `bootrom_file` would be passed as a top-level parameter during compile-time.
+
+The cores themselves are responsible for describing in the .core file which externally accessible parameters they support. This is what the corresponding sections in the .core file look like
+
+----
+[parameter timeout]
+datatype    = int
+description = Abort test case after n cycles
+paramtype   = plusarg
+scope       = public
+
+[parameter vcd]
+datatype    = bool
+description = Enable VCD logging
+paramtype   = plusarg
+scope       = public
+
+[parameter bootrom_file]
+datatype    = file
+description = Initial boot ROM contents (in Verilog hex format)
+paramtype   = vlogparam
+scope       = private
+----
+
+An observation to make here is that only the last parameter is actually defined in de0_nano.core. The first two parameters are specified in the .core file for vlog_tb_utils, which is a dependency of de0_nano. By setting their `scope=public`, these parameters become available for other cores which depend on them.
+
+
+Backend-specific information
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 - link:ghdl{outfilesuffix}[GHDL]
 - link:modelsim{outfilesuffix}[ModelSim]
