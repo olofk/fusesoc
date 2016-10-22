@@ -18,10 +18,8 @@ class Simulator(EdaTool):
     def __init__(self, system):
         super(Simulator, self).__init__(system)
 
-        self.sim_root = self.work_root
-
         self.env['CORE_ROOT'] = os.path.abspath(self.system.core_root)
-        self.env['SIM_ROOT'] = os.path.abspath(self.sim_root)
+        self.env['SIM_ROOT'] = os.path.abspath(self.work_root)
         self.env['SIMULATOR'] = self.TOOL_NAME
 
         logger.debug( "depend -->  " +str (self.cores))
@@ -39,7 +37,7 @@ class Simulator(EdaTool):
             if core.vpi:
                 vpi_module = {}
                 core_root = os.path.join(self.src_root, core.sanitized_name)
-                vpi_module['root']          = os.path.relpath(core_root, self.sim_root)
+                vpi_module['root']          = os.path.relpath(core_root, self.work_root)
                 vpi_module['include_dirs']  = [os.path.join(vpi_module['root'], d) for d in core.vpi.include_dirs]
                 vpi_module['src_files']     = [os.path.abspath(os.path.join(core_root, f.name)) for f in core.vpi.src_files]
                 vpi_module['name']          = core.sanitized_name
@@ -50,7 +48,7 @@ class Simulator(EdaTool):
         incdirs = set()
         src_files = []
         for core in self.cores:
-            basepath = os.path.relpath(os.path.join(self.src_root, core.sanitized_name), self.sim_root)
+            basepath = os.path.relpath(os.path.join(self.src_root, core.sanitized_name), self.work_root)
             for fs in core.file_sets:
                 if (set(fs.usage) & set(usage)) and ((str(core.name) == str(self.system.name)) or not fs.private):
                     for file in fs.file:
@@ -72,7 +70,7 @@ class Simulator(EdaTool):
             if core.scripts:
                 run_scripts(core.scripts.pre_build_scripts,
                             core.files_root,
-                            self.sim_root,
+                            self.work_root,
                             self.env)
         return
 
@@ -83,7 +81,7 @@ class Simulator(EdaTool):
             if core.scripts:
                 run_scripts(core.scripts.pre_run_scripts,
                             core.core_root,
-                            self.sim_root,
+                            self.work_root,
                             self.env)
 
     def done(self, args):
@@ -92,5 +90,5 @@ class Simulator(EdaTool):
             if core.scripts:
                 run_scripts(core.scripts.post_run_scripts,
                             core.core_root,
-                            self.sim_root,
+                            self.work_root,
                             self.env)

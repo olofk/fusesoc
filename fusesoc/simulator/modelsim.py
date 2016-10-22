@@ -54,7 +54,7 @@ class Modelsim(Simulator):
             raise RuntimeError("Environment variable MODEL_TECH was not found. It should be set to <modelsim install path>/bin")
 
     def _write_build_rtl_tcl_file(self, tcl_main):
-        tcl_build_rtl  = open(os.path.join(self.sim_root, "fusesoc_build_rtl.tcl"), 'w')
+        tcl_build_rtl  = open(os.path.join(self.work_root, "fusesoc_build_rtl.tcl"), 'w')
 
         (src_files, incdirs) = self._get_fileset_files(['sim', 'modelsim'])
         vlog_include_dirs = ['+incdir+'+d.replace('\\','/') for d in incdirs]
@@ -114,7 +114,7 @@ class Modelsim(Simulator):
                 tcl_build_rtl.write("{} {}\n".format(cmd, ' '.join(args)))
 
     def _write_vpi_makefile(self):
-        vpi_make = open(os.path.join(self.sim_root, "Makefile"), 'w')
+        vpi_make = open(os.path.join(self.work_root, "Makefile"), 'w')
         _vpi_inc = self.model_tech+'/../include'
         _modules = [m['name'] for m in self.vpi_modules]
         _clean_targets = ' '.join(["clean_"+m for m in _modules])
@@ -140,7 +140,7 @@ class Modelsim(Simulator):
 
     def configure(self, args):
         super(Modelsim, self).configure(args)
-        tcl_main = open(os.path.join(self.sim_root, "fusesoc_main.tcl"), 'w')
+        tcl_main = open(os.path.join(self.work_root, "fusesoc_main.tcl"), 'w')
         tcl_main.write("do fusesoc_build_rtl.tcl\n")
 
         self._write_build_rtl_tcl_file(tcl_main)
@@ -153,8 +153,8 @@ class Modelsim(Simulator):
         super(Modelsim, self).build()
         args = ['-c', '-do', 'do fusesoc_main.tcl; exit']
         Launcher(self.model_tech+'/vsim', args,
-                 cwd      = self.sim_root,
-                 errormsg = "Failed to build simulation model. Log is available in '{}'".format(os.path.join(self.sim_root, 'transcript'))).run()
+                 cwd      = self.work_root,
+                 errormsg = "Failed to build simulation model. Log is available in '{}'".format(os.path.join(self.work_root, 'transcript'))).run()
 
     def run(self, args):
         super(Modelsim, self).run(args)
@@ -177,7 +177,7 @@ class Modelsim(Simulator):
             args += ['-g{}={}'.format(key, value)]
 
         Launcher(self.model_tech+'/vsim', args,
-                 cwd      = self.sim_root,
-                 errormsg = "Simulation failed. Simulation log is available in '{}'".format(os.path.join(self.sim_root, 'transcript'))).run()
+                 cwd      = self.work_root,
+                 errormsg = "Simulation failed. Simulation log is available in '{}'".format(os.path.join(self.work_root, 'transcript'))).run()
 
         super(Modelsim, self).done(args)

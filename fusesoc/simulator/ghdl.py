@@ -45,10 +45,10 @@ class Ghdl(Simulator):
                 args += ['--work='+f.logical_name]
                 args += [f.name]
                 Launcher(cmd, args,
-                         cwd      = self.sim_root,
+                         cwd      = self.work_root,
                          errormsg = "Failed to analyze {}".format(f.name)).run()
         Launcher(cmd, ['-e', self.toplevel],
-                 cwd = self.sim_root,
+                 cwd = self.work_root,
                  errormsg = "Failed to elaborate {}".format(self.toplevel)).run()
 
     def run(self, args):
@@ -59,7 +59,7 @@ class Ghdl(Simulator):
         args += self.run_options
         args += [self.toplevel]
         Launcher(cmd, args,
-                 cwd      = self.sim_root,
+                 cwd      = self.work_root,
                  errormsg = "Simulation failed").run()
 
         super(Ghdl, self).done(args)

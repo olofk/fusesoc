@@ -26,7 +26,7 @@ class Xsim(Simulator):
 
     def _write_config_files(self):
         xsim_file = 'xsim.prj'
-        f1 = open(os.path.join(self.sim_root,xsim_file),'w')
+        f1 = open(os.path.join(self.work_root,xsim_file),'w')
         self.incdirs = set()
         src_files = []
 
@@ -55,7 +55,7 @@ class Xsim(Simulator):
         f1.close()
 
         tcl_file = 'xsim.tcl'
-        f2 = open(os.path.join(self.sim_root,tcl_file),'w')
+        f2 = open(os.path.join(self.work_root,tcl_file),'w')
         f2.write('add_wave -radix hex /\n')
         f2.write('run all\n')
         f2.close()
@@ -84,7 +84,7 @@ class Xsim(Simulator):
         args += self.xsim_options
 
         Launcher('xelab', args,
-                 cwd      = self.sim_root,
+                 cwd      = self.work_root,
                  errormsg = "Failed to compile Xsim simulation model").run()
 
     def run(self, args):
@@ -103,7 +103,7 @@ class Xsim(Simulator):
         #FIXME Top-level parameters
 
         Launcher('xsim', args,
-                 cwd = self.sim_root,
+                 cwd = self.work_root,
                  errormsg = "Failed to run Xsim simulation").run()
 
         super(Xsim, self).done(args)

@@ -24,7 +24,7 @@ class SimulatorIcarus(Simulator):
     def _write_config_files(self):
         icarus_file = 'icarus.scr'
 
-        f = open(os.path.join(self.sim_root,icarus_file),'w')
+        f = open(os.path.join(self.work_root,icarus_file),'w')
 
         incdirs = set()
         src_files = []
@@ -61,8 +61,8 @@ class SimulatorIcarus(Simulator):
             args += vpi_module['src_files']
 
             Launcher('iverilog-vpi', args,
-                     stderr   = open(os.path.join(self.sim_root,vpi_module['name']+'.log'),'w'),
-                     cwd      = os.path.join(self.sim_root),
+                     stderr   = open(os.path.join(self.work_root,vpi_module['name']+'.log'),'w'),
+                     cwd      = os.path.join(self.work_root),
                      errormsg = "Failed to compile VPI library " + vpi_module['name']).run()
                                       
         #Build simulation model
@@ -79,7 +79,7 @@ class SimulatorIcarus(Simulator):
         args += self.iverilog_options
 
         Launcher('iverilog', args,
-                 cwd      = self.sim_root,
+                 cwd      = self.work_root,
                  errormsg = "Failed to compile Icarus Simulation model").run()
         
     def run(self, args):
@@ -99,7 +99,7 @@ class SimulatorIcarus(Simulator):
             args += ['+{}={}'.format(key, value)]
         #FIXME Top-level parameters
         Launcher('vvp', args,
-                 cwd = self.sim_root,
+                 cwd = self.work_root,
                  errormsg = "Failed to run Icarus Simulation").run()
 
         super(SimulatorIcarus, self).done(args)
