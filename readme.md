@@ -22,9 +22,15 @@ FuseSoC does not contain any RTL (Register-Transfer Level) code or core descript
 Quick start
 -----------
 
-Install from PyPi:
+Installing latest stable version:
 
     sudo pip install fusesoc
+
+Installing latest development version from git:
+
+    git clone https://github.com/olofk/fusesoc
+    cd fusesoc
+    sudo pip install -e .
 
 FuseSoC should now be installed. Next step is to download the standard IP core library (orpsoc-cores). Create a new directory that will be used as a workspace directory for building and simulating cores. Enter the newly created directory and run
 
