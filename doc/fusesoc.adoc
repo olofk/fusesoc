@@ -1,6 +1,6 @@
 FuseSoC
 =======
-
+ifdef::env-github,env-browser[:outfilesuffix: .adoc]
 FuseSoC is a package manager and a set of build tools for HDL code.
 
 Its main purpose is to increase reuse of IP cores and be an aid for creating, building and simulating SoC solutions.
@@ -11,9 +11,9 @@ A collection of cores together with a top-level is called a system, and systems 
 
 Currently FuseSoc supports simulations with ModelSim, Icarus Verilog, Verilator, GHDL, Isim and Xsim. It also supports building FPGA images with Project Icestorm, Xilinx ISE and Altera Quartus.
 
-link:quickstart.html[Quick start]
+link:quickstart{outfilesuffix}[Quick start]
 
-link:capi.html[Core API]
+link:capi{outfilesuffix}[Core API]
 
 Backends
 --------
@@ -23,12 +23,12 @@ FPGA implementation
 
 FPGA implementation flows are used to build binary FPGA configuration files (bitstreams) to be downloaded to an FPGA target. The FPGA implementation flows are uusually tied to a single FPGA vendor's devices
 
-- link:icestorm.html[IceStorm]
+- link:icestorm{outfilesuffix}[IceStorm]
 
 Simulation
 ~~~~~~~~~~
 
 Simulation flows are used to simulate HDL designs and are generally independent of the intended target device. Exceptions to this are when vendor-specific modules are instantiated in the source code, which might require vendor-specific libraries that are only available for some simulators.
 
-- link:ghdl.html[GHDL]
-- link:modelsim.html[ModelSim]
+- link:ghdl{outfilesuffix}[GHDL]
+- link:modelsim{outfilesuffix}[ModelSim]

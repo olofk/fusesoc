@@ -1,14 +1,14 @@
-OBJECTS := $(filter-out capi1.html,$(patsubst %.txt,%.html,$(wildcard *.txt)))
+OBJECTS := $(filter-out capi1.html,$(patsubst %.adoc,%.html,$(wildcard *.adoc)))
 
 all: $(OBJECTS)
 
-capi.html: capi1.txt
+capi.html: capi1.adoc
 
-capi1.txt: ../fusesoc/section.py
+capi1.adoc: ../fusesoc/section.py
 	PYTHONPATH=.. python $< > $@
 
-%.html: %.txt
+%.html: %.adoc
 	asciidoc $<
 
 clean:
-	rm -f $(OBJECTS) capi1.txt
+	rm -f $(OBJECTS) capi1.adoc

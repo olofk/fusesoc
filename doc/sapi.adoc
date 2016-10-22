@@ -4,6 +4,7 @@ System Description files
 :Email: <olof@opencores.org>
 :Date: 2013-06-04
 :Revision: 1.0 (draft)
+ifdef::env-github,env-browser[:outfilesuffix: .adoc]
 
 sapi (System API) is the format for system description files. Current version is version 1.0. A sapi 1.0 file is identified by the string "SAPI=1" in the beginning of a file. The rest of the file is a standard http://en.wikipedia.org/wiki/INI_file[INI file] that is compatible with Python's http://docs.python.org/2/library/configparser.html[configparser] module
 
@@ -22,7 +23,7 @@ systems/ordb2a/ordb2a.system
 File contents
 -------------
 
-SAPI 1.0 files are a superset of the CAPI files with additional sections and options needed for the system level. Only sections and options specific to the SAPI files are documented here. Refer to the link:capi.html[CAPI documentation] for the common sections and options
+SAPI 1.0 files are a superset of the CAPI files with additional sections and options needed for the system level. Only sections and options specific to the SAPI files are documented here. Refer to the link:capi{outfilesuffix}[CAPI documentation] for the common sections and options
 
 main
 ~~~~

@@ -207,6 +207,20 @@ vhdl
 
 
 
+vivado
+------
+
+[cols="2,1,5",options="header"]
+|==============================
+|Name | Type | Description
+|depend | Space-separated list of VLNV identifiers | Tool-specific Dependencies
+|hw_device | String | FPGA device identifier
+|part | String | FPGA device part
+|top_module | String | RTL top-level module
+|==============================
+
+
+
 vpi
 ---
 

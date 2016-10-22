@@ -34,7 +34,7 @@ CAPI 1.0 files are divided into sections, with each section containing related c
 
 Only sections defined in this document are recognized by FuseSoC. All other sections are ignored. The same applies for the options inside each section. CAPI 1.0 defines the following sections and values. 
 
-include::capi1.txt[Core API]
+include::capi1.adoc[Core API]
 
 scripts
 -------
