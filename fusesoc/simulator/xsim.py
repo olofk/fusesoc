@@ -7,7 +7,7 @@ logger = logging.getLogger(__name__)
 
 class Xsim(Simulator):
 
-    TOOL_NAME = 'XSIM'
+    TOOL_NAME = 'xsim'
     def __init__(self, system):
 
         self.cores = []

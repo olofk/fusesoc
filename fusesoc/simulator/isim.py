@@ -7,7 +7,7 @@ logger = logging.getLogger(__name__)
 
 class Isim(Simulator):
 
-    TOOL_NAME = 'ISIM'
+    TOOL_NAME = 'isim'
     def __init__(self, system):
 
         self.cores = []

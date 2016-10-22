@@ -13,10 +13,12 @@ class FileAction(argparse.Action):
 
 class Simulator(EdaTool):
 
+    TOOL_TYPE = 'sim'
+
     def __init__(self, system):
         super(Simulator, self).__init__(system)
 
-        self.sim_root = os.path.join(self.build_root, 'sim-'+self.TOOL_NAME.lower())
+        self.sim_root = self.work_root
 
         self.env['CORE_ROOT'] = os.path.abspath(self.system.core_root)
         self.env['SIM_ROOT'] = os.path.abspath(self.sim_root)
@@ -63,7 +65,6 @@ class Simulator(EdaTool):
     def configure(self, args, skip_params = False):
         if not skip_params:
             self.parse_args(args, 'sim', ['plusarg', 'vlogdefine', 'vlogparam'])
-        self.work_root = self.sim_root
         super(Simulator, self).configure(args)
 
     def build(self):

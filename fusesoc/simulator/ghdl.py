@@ -3,7 +3,7 @@ from fusesoc.utils import Launcher, pr_warn
 
 class Ghdl(Simulator):
 
-    TOOL_NAME = 'GHDL'
+    TOOL_NAME = 'ghdl'
     def __init__(self, system):
 
         self.analyze_options = []

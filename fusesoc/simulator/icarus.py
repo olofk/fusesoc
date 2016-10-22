@@ -7,7 +7,7 @@ logger = logging.getLogger(__name__)
 
 class SimulatorIcarus(Simulator):
 
-    TOOL_NAME = 'ICARUS'
+    TOOL_NAME = 'icarus'
     def __init__(self, system):
 
         self.cores = []

@@ -36,7 +36,7 @@ clean_{name}:
 
 class Modelsim(Simulator):
 
-    TOOL_NAME = 'MODELSIM'
+    TOOL_NAME = 'modelsim'
     def __init__(self, system):
 
         self.vlog_options = []
