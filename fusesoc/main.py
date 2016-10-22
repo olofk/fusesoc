@@ -80,7 +80,8 @@ def build(args):
         exit(1)
     print('')
     try:
-        backend.build(args.backendargs)
+        if not args.setup:
+            backend.build(args.backendargs)
     except RuntimeError as e:
         pr_err("Failed to build FPGA: " + str(e))
 
@@ -312,6 +313,7 @@ def main():
 
     #General options
     parser_build = subparsers.add_parser('build', help='Build an FPGA load module')
+    parser_build.add_argument('--setup', action='store_true', help='Only create the project files without running the EDA tool')
     parser_build.add_argument('system')
     parser_build.add_argument('backendargs', nargs=argparse.REMAINDER)
     parser_build.set_defaults(func=build)
