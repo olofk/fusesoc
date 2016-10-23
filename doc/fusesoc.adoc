@@ -11,8 +11,6 @@ A collection of cores together with a top-level is called a system, and systems 
 
 Currently FuseSoc supports simulations with ModelSim, Icarus Verilog, Verilator, GHDL, Isim and Xsim. It also supports building FPGA images with Project Icestorm, Xilinx ISE and Altera Quartus.
 
-link:quickstart{outfilesuffix}[Quick start]
-
 link:capi{outfilesuffix}[Core API]
 
 Backends
