@@ -44,22 +44,6 @@ class Simulator(EdaTool):
                 vpi_module['libs']          = [l for l in core.vpi.libs]
                 self.vpi_modules += [vpi_module]
 
-    def _get_fileset_files(self, usage):
-        incdirs = set()
-        src_files = []
-        for core in self.cores:
-            basepath = os.path.relpath(os.path.join(self.src_root, core.sanitized_name), self.work_root)
-            for fs in core.file_sets:
-                if (set(fs.usage) & set(usage)) and ((str(core.name) == str(self.system.name)) or not fs.private):
-                    for file in fs.file:
-                        if file.is_include_file:
-                            incdirs.add(os.path.join(basepath, os.path.dirname(file.name)))
-                        else:
-                            file.name = os.path.join(basepath, file.name)
-                            src_files.append(file)
-
-        return (src_files, incdirs)
-
     def configure(self, args, skip_params = False):
         if not skip_params:
             self.parse_args(args, 'sim', ['plusarg', 'vlogdefine', 'vlogparam'])

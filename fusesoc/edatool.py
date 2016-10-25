@@ -123,3 +123,19 @@ class EdaTool(object):
                 else:
                     _value = str(value[0])
                 getattr(self, paramtype)[key] = _value
+
+    def _get_fileset_files(self, usage):
+        incdirs = set()
+        src_files = []
+        for core in self.cores:
+            basepath = os.path.relpath(os.path.join(self.src_root, core.sanitized_name), self.work_root)
+            for fs in core.file_sets:
+                if (set(fs.usage) & set(usage)) and ((core.name == self.system.name) or not fs.private):
+                    for file in fs.file:
+                        if file.is_include_file:
+                            incdirs.add(os.path.join(basepath, os.path.dirname(file.name)))
+                        else:
+                            file.name = os.path.join(basepath, file.name)
+                            src_files.append(file)
+        return (src_files, incdirs)
+
