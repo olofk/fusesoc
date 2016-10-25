@@ -17,7 +17,7 @@ setup(
     license = "GPLv3",
     keywords = ["VHDL", "verilog", "hdl", "rtl", "synthesis", "FPGA", "simulation", "Xilinx", "Altera"],
     url = "https://github.com/olofk/fusesoc",
-    long_description=read('readme.rst'),
+    long_description=read('README.rst'),
     classifiers=[
         "Development Status :: 3 - Alpha",
         "Topic :: Utilities",
