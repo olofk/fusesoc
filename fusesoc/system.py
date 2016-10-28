@@ -10,7 +10,6 @@ class System:
     def __init__(self, system_file):
         self.backend_name = None
 
-        self.system_root = os.path.dirname(system_file)
         self.config = FusesocConfigParser(system_file)
 
 

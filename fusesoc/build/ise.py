@@ -74,7 +74,7 @@ quit
             s = 'project set "Generics, Parameters" "{}" -process "Synthesize - XST"\n'
             tcl_file.write(s.format('|'.join([k+'='+str(v) for k,v in self.vlogparam.items()])))
         for f in self.backend.tcl_files:
-            tcl_file.write(open(os.path.join(self.system_root, f.name)).read())
+            tcl_file.write(open(os.path.join(self.system.files_root, f.name)).read())
 
         tcl_file.write(self.TCL_FUNCTIONS)
         tcl_file.close()

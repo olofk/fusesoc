@@ -158,7 +158,7 @@ clean:
 
         tcl_files = self.backend.tcl_files
         for f in tcl_files:
-            tcl_file.write(open(os.path.join(self.system_root, f.name)).read())
+            tcl_file.write(open(os.path.join(self.system.files_root, f.name)).read())
         tcl_file.close()
 
     def _write_makefile(self):

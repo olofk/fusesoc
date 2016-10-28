@@ -16,8 +16,7 @@ class Backend(EdaTool):
         super(Backend, self).__init__(system)
 
         self.backend = self.system.system.backend
-        self.system_root = system.files_root
-        self.env['SYSTEM_ROOT'] = os.path.abspath(self.system_root)
+        self.env['SYSTEM_ROOT'] = os.path.abspath(self.system.files_root)
         self.env['BACKEND'] = self.TOOL_NAME
 
     def configure(self, args):
@@ -26,7 +25,7 @@ class Backend(EdaTool):
         self._export_backend_files()
 
     def _export_backend_files(self):
-        src_dir = self.system_root
+        src_dir = self.system.files_root
         dst_dir = os.path.join(self.src_root, self.system.sanitized_name)
 
         export_files = self.backend.export()
@@ -45,7 +44,7 @@ class Backend(EdaTool):
 
     def build(self, args):
         for script in self.system.system.pre_build_scripts:
-            script = os.path.abspath(os.path.join(self.system_root, script))
+            script = os.path.abspath(os.path.join(self.system.files_root, script))
             pr_info("Running " + script);
             try:
                 Launcher(script, cwd = os.path.abspath(self.build_root), env = self.env, shell=True).run()
@@ -54,7 +53,7 @@ class Backend(EdaTool):
 
     def done(self):
         for script in self.system.system.post_build_scripts:
-            script = os.path.abspath(os.path.join(self.system_root, script))
+            script = os.path.abspath(os.path.join(self.system.files_root, script))
             pr_info("Running " + script);
             try:
                 Launcher(script, cwd = os.path.abspath(self.build_root), env = self.env, shell=True).run()
