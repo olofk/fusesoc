@@ -73,3 +73,7 @@ Backend-specific information
 
 - link:ghdl{outfilesuffix}[GHDL]
 - link:modelsim{outfilesuffix}[ModelSim]
+
+Migration guide
+^^^^^^^^^^^^^^^
+As new features are added to FuseSoC, some older features become obsolete. Read the link:migrations{outfilesuffix}[migration guide] to learn how to keep the .core files up-to-date with the latest best practices
