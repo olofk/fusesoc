@@ -30,6 +30,7 @@ setup(
         ]
     },
     install_requires=[
+          'attrs==16.0.0', #Workaround for broken pip dep handler
           'ipyxact>=0.2.3',
           'simplesat>=0.4.0',
     ],
