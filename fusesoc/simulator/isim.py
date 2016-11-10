@@ -1,7 +1,7 @@
 import os
 from fusesoc.simulator.simulator import Simulator
 import logging
-from fusesoc.utils import Launcher, pr_err
+from fusesoc.utils import Launcher, pr_err, pr_warn
 
 logger = logging.getLogger(__name__)
 
