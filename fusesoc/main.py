@@ -28,7 +28,6 @@ from fusesoc.coremanager import CoreManager, DependencyError
 from fusesoc.simulator import SimulatorFactory
 from fusesoc.simulator.verilator import Source
 from fusesoc.vlnv import Vlnv
-from fusesoc.system import System
 from fusesoc.core import Core, OptionSectionMissing
 from fusesoc.utils import pr_err, pr_info, pr_warn, Launcher
 
@@ -50,7 +49,7 @@ def _get_core(name, has_system=False):
     except DependencyError as e:
         pr_err("'" + name + "' or any of its dependencies requires '" + e.value + "', but this core was not found")
         exit(1)
-    if has_system and not core.system:
+    if has_system and not core.backend:
         pr_err("Unable to find .system file for '{}'".format(name))
         exit(1)
     return core

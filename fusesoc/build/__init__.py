@@ -4,7 +4,7 @@ from fusesoc.build.icestorm import Icestorm
 from fusesoc.build.vivado import Vivado
 
 def BackendFactory(system):
-    backend = system.system.backend_name
+    backend = system.main.backend
     if backend == 'quartus':
         return Quartus(system)
     elif backend == 'ise':

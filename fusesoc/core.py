@@ -12,7 +12,6 @@ from fusesoc.config import Config
 from fusesoc.fusesocconfigparser import FusesocConfigParser
 from fusesoc.plusargs import Plusargs
 from fusesoc.vlnv import Vlnv
-from fusesoc.system import System
 
 logger = logging.getLogger(__name__)
 
@@ -37,7 +36,7 @@ class Core:
 
         self.plusargs = None
         self.provider = None
-        self.system   = None
+        self.backend  = None
 
         for s in section.SECTION_MAP:
             assert(not hasattr(self, s))
@@ -52,6 +51,11 @@ class Core:
         self.export_files = []
 
         config = FusesocConfigParser(core_file)
+
+        #Add .system options to .core file
+        system_file = os.path.join(self.core_root, basename.split('.core')[0]+'.system')
+        if os.path.exists(system_file):
+            self._merge_system_file(system_file, config)
 
         #FIXME : Make simulators part of the core object
         self.simulator        = config.get_section('simulator')
@@ -105,9 +109,8 @@ class Core:
         for f in self.main.component:
             self._parse_component(os.path.join(self.files_root, f))
 
-        system_file = os.path.join(self.core_root, basename.split('.core')[0]+'.system')
-        if os.path.exists(system_file):
-            self.system = System(system_file)
+        if self.main.backend:
+            self.backend = getattr(self, self.main.backend)
 
     def cache_status(self):
         if self.provider:
@@ -174,6 +177,38 @@ class Core:
                     print("Error: Failed to call external command 'patch'")
                     return False
         return True
+
+    def _merge_system_file(self, system_file, config):
+        def _replace(sec, src=None, dst=None):
+            if not system.has_section(sec):
+                return
+
+            if not config.has_section(sec):
+                config.add_section(sec)
+
+            if src:
+                if system.has_option(sec, src):
+                    items = [src]
+                else:
+                    items = []
+            else:
+                items = system.options(sec)
+
+            for item in items:
+                if dst:
+                    _dst = dst
+                else:
+                    _dst = item
+                if not config.has_option(sec, _dst):
+                    config.set(sec, _dst, system.get(sec, item))
+
+        system = FusesocConfigParser(system_file)
+        for section in ['icestorm', 'ise', 'quartus', 'vivado']:
+            _replace(section)
+
+        _replace('main', 'backend')
+        _replace('scripts', 'pre_build_scripts' , 'pre_synth_scripts')
+        _replace('scripts', 'post_build_scripts', 'post_impl_scripts')
 
     def _collect_filesets(self):
 

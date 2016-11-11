@@ -90,6 +90,7 @@ main
 [cols="2,1,5",options="header"]
 |==============================
 |Name | Type | Description
+|backend | String | Backend for FPGA implementation
 |component | Space-separated list of paths | Core IP-Xact component file
 |depend | Space-separated list of VLNV identifiers | Common dependencies
 |description | String | Core description
@@ -153,9 +154,11 @@ scripts
 [cols="2,1,5",options="header"]
 |==============================
 |Name | Type | Description
+|post_impl_scripts | Space-separated list | Scripts to run after backend implementation
 |post_run_scripts | Space-separated list | Scripts to run after simulations
 |pre_build_scripts | Space-separated list | Scripts to run before building
 |pre_run_scripts | Space-separated list | Scripts to run before running simulations
+|pre_synth_scripts | Space-separated list | Scripts to run before backend synthesis
 |==============================
 
 

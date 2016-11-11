@@ -15,7 +15,7 @@ class Backend(EdaTool):
     def __init__(self, system):
         super(Backend, self).__init__(system)
 
-        self.backend = self.system.system.backend
+        self.backend = self.system.backend
         self.env['SYSTEM_ROOT'] = os.path.abspath(self.system.files_root)
         self.env['BACKEND'] = self.TOOL_NAME
 
@@ -43,7 +43,9 @@ class Backend(EdaTool):
                 pr_warn("File " + os.path.join(src_dir, f.name) + " doesn't exist")
 
     def build(self, args):
-        for script in self.system.system.pre_build_scripts:
+        if not self.system.scripts:
+            return
+        for script in self.system.scripts.pre_synth_scripts:
             script = os.path.abspath(os.path.join(self.system.files_root, script))
             pr_info("Running " + script);
             try:
@@ -52,7 +54,9 @@ class Backend(EdaTool):
                 print("Error: script " + script + " failed")
 
     def done(self):
-        for script in self.system.system.post_build_scripts:
+        if not self.system.scripts:
+            return
+        for script in self.system.scripts.post_impl_scripts:
             script = os.path.abspath(os.path.join(self.system.files_root, script))
             pr_info("Running " + script);
             try:

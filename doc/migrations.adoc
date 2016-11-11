@@ -1,3 +1,30 @@
+Migrating from .system files
+----------------------------
+
+Why
+~~~
+
+The synthesis backends required a separate .system file in addition to the .core file. There is however very little information in the .system file, it was never properly documented and some information is duplicated from the .core file. For these reasons a decision was made to drop the .system file and move the relevant information to the .core file instead.
+
+When
+~~~~
+`.system` files are no longer needed as of FuseSoC 1.6
+
+The `.system` file will still be supported for some time to allow users to perform the migration, but any equivalent options in the `.core` file will override the ones in `.system`
+
+How
+~~~
+
+Perform the following steps to migrate from .system files
+
+1. Move the `backend` parameter from the `main` section in the `.system` file to the `main` section in the `.core` file
+
+2. Move the backend section (i.e. `icestorm`, `ise`, `quartus` or `vivado`) to the `.core` file
+
+3. Move `pre_build_scripts` from the `scripts` section in the `.system` file to `pre_synth_scripts` in the `scripts` section in the `.core` file.
+
+4. Move `post_build_scripts` from the `scripts` section in the `.system` file to `post_impl_scripts` in the `scripts` section in the `.core` file.
+
 Migrating from plusargs
 -----------------------
 

@@ -168,6 +168,9 @@ class ScriptsSection(Section):
     TAG = 'scripts'
     def __init__(self, items=None):
         super(ScriptsSection, self).__init__()
+        self._add_member('pre_synth_scripts', StringList, 'Scripts to run before backend synthesis')
+        self._add_member('post_impl_scripts', StringList, 'Scripts to run after backend implementation')
+        self._add_member('pre_run_scripts'  , StringList, 'Scripts to run before running simulations')
         self._add_member('pre_build_scripts', StringList, 'Scripts to run before building')
         self._add_member('pre_run_scripts'  , StringList, 'Scripts to run before running simulations')
         self._add_member('post_run_scripts' , StringList, 'Scripts to run after simulations')
@@ -194,6 +197,7 @@ class MainSection(Section):
         super(MainSection, self).__init__()
 
         self._add_member('name'       , str     , "Component name")
+        self._add_member('backend'    , str     , "Backend for FPGA implementation")
         self._add_member('component'  , PathList, "Core IP-Xact component file")
         self._add_member('description', str, "Core description")
         self._add_member('depend'     , VlnvList, "Common dependencies")
