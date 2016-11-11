@@ -1,18 +1,47 @@
 FuseSoC
 =======
 
+.. image:: https://travis-ci.org/olofk/fusesoc.svg?branch=master
+    :target: https://travis-ci.org/olofk/fusesoc
+
+.. image:: https://ci.appveyor.com/api/projects/status/bg3tutcube9x0fgs?svg=true
+    :target: https://ci.appveyor.com/project/olofk/fusesoc
+
 Introduction
 ------------
 FuseSoC is a package manager and a set of build tools for HDL (Hardware Description Language) code.
 
 Its main purpose is to increase reuse of IP (Intellectual Property) cores and be an aid for creating, building and simulating SoC solutions.
 
-The package manager part can be seen as an apt, portage, yum, dnf, pacman for FPGA (Field-Programmable Gate Array)/ASIC (Application-Specific Integrated Circuit) IP cores.
-A simple ini file describes mainly which files the IP core contains, which other IP cores it depends on and where FuseSoC shall fetch the code.
+**FuseSoC makes it easier to**
 
-A collection of cores together with a top-level is called a system, and systems can be simulated or passed through the FPGA vendor tools to build a loadable FPGA image.
+- reuse existing cores
 
-Currently FuseSoc supports simulations with GHDL, ModelSim, Icarus Verilog, Verilator, Isim and Xsim. It also supports building FPGA images with project IceStorm, Xilinx ISE and Altera Quartus
+- create compile-time or run-time configurations
+
+- run regression tests against multiple simulators
+
+- Port designs to new targets
+
+- let other projects use your code
+
+- set up continuous integration 
+
+**FuseSoC is non-intrusive** Most existing designs doesn't need any changes to work with FuseSoC. Any FuseSoC-specific patches can be applied on the fly during implementation or simulation
+
+**FuseSoC is modular** It can be used as an end-to-end flow, to create initial project files for an EDA tool or integrate with your custom workflow
+
+**FuseSoC is extendable** Latest release support simulating with GHDL, Icarus Verilog, Isim, ModelSim, Verilator and Xsim. It also supports building FPGA images with Altera Quartus, project IceStorm, Xilinx ISE and Xilinx Vivado. Support for a new EDA tool requires ~100 new lines of code and new tools are added continuously
+
+**FuseSoC is standard-compliant** Much effort has gone into leveraging existing standards such as IP-XACT and vendor-specific core formats where applicable.
+
+**FuseSoC is resourceful** The standard core library currently consisting of over 100 cores including CPUs, peripheral controllers, interconnects, complete SoCs and utility libraries. Other core libraries exist as well and can be added to complement the standard library
+
+**FuseSoC is free software** It puts however no restrictions on the cores and can be used to manage your company's internal proprietary core collections as well as public open source projects
+
+**FuseSoC is battle-proven** It has been used to successfully build or simulate projects such as Nyuzi, Pulpino, VScale, various OpenRISC SoCs, picorv32, osvvm and more.
+
+Read more in the online_ documentation, or get straight into business with the quick start below
 
 Quick start
 -----------
@@ -45,11 +74,8 @@ If you also have Altera Quartus installed, you can try to build an example syste
 
 ``fusesoc --help`` will give you more information on commands and switches.
 
-.. image:: https://travis-ci.org/olofk/fusesoc.svg?branch=master
-    :target: https://travis-ci.org/olofk/fusesoc
+Did it work? Great! Check out the online_ documentation to learn more about creating your own core files and using existing ones. If it didn't work, please file a `bug report`_
 
-.. image:: https://ci.appveyor.com/api/projects/status/bg3tutcube9x0fgs?svg=true
-    :target: https://ci.appveyor.com/project/olofk/fusesoc
 
 Documentation
 -------------
@@ -69,3 +95,4 @@ There is also some FuseSoC-related articles and extended release information on 
 .. _blog: https://olofkindgren.blogspot.com/search/label/FuseSoC
 .. _online: doc/fusesoc.adoc
 .. _orpsoc-cores: https://github.com/openrisc/orpsoc-cores
+.. _`bug report`: https://github.com/olofk/fusesoc/issues
