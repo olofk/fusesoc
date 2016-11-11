@@ -30,9 +30,8 @@ class OptionSectionMissing(Exception):
         return repr(self.value)
 
 class Core:
-    def __init__(self, core_file=None, name=None, core_root=None):
-        if core_file:
-            basename = os.path.basename(core_file)
+    def __init__(self, core_file):
+        basename = os.path.basename(core_file)
         self.depend = []
         self.simulators = []
 
@@ -51,69 +50,64 @@ class Core:
         self.files_root = self.core_root
 
         self.export_files = []
-        if core_file:
 
-            config = FusesocConfigParser(core_file)
+        config = FusesocConfigParser(core_file)
 
-            #FIXME : Make simulators part of the core object
-            self.simulator        = config.get_section('simulator')
+        #FIXME : Make simulators part of the core object
+        self.simulator        = config.get_section('simulator')
 
-            for s in section.load_all(config, core_file):
-                if type(s) == tuple:
-                    _l = getattr(self, s[0].TAG)
-                    _l[s[1]] = s[0]
-                    setattr(self, s[0].TAG, _l)
-                else:
-                    setattr(self, s.TAG, s)
-
-            if self.main.name:
-                self.name = Vlnv(self.main.name)
+        for s in section.load_all(config, core_file):
+            if type(s) == tuple:
+                _l = getattr(self, s[0].TAG)
+                _l[s[1]] = s[0]
+                setattr(self, s[0].TAG, _l)
             else:
-                self.name = Vlnv(basename.split('.core')[0])
+                setattr(self, s.TAG, s)
 
-            self.sanitized_name = self.name.sanitized_name
-
-            self.depend     = self.main.depend
-            self.simulators = self.main.simulators
-
-            self._collect_filesets()
-
-            cache_root = os.path.join(Config().cache_root, self.sanitized_name)
-            if config.has_section('plusargs'):
-                utils.pr_warn("plusargs section is deprecated and will not be parsed by FuseSoC. Please migrate to parameters in " + str(self.name))
-                self.plusargs = Plusargs(dict(config.items('plusargs')))
-            if config.has_section('provider'):
-                items    = dict(config.items('provider'))
-
-                provider_name = items.get('name')
-                if provider_name is None:
-                    raise RuntimeError('Missing "name" in section [provider]')
-                try:
-                    provider_module = importlib.import_module(
-                            'fusesoc.provider.%s' % provider_name)
-                    self.provider = provider_module.PROVIDER_CLASS(self.name,
-                        items, self.core_root, cache_root)
-                except ImportError:
-                    raise
-            if self.provider:
-                self.files_root = self.provider.files_root
-
-            # We need the component file here, but it might not be
-            # available until the core is fetched. Try to fetch first if any
-            # of the component files are missing
-            if False in [os.path.exists(f) for f in self.main.component]:
-                self.setup()
-
-            for f in self.main.component:
-                self._parse_component(os.path.join(self.files_root, f))
-
-            system_file = os.path.join(self.core_root, basename.split('.core')[0]+'.system')
-            if os.path.exists(system_file):
-                self.system = System(system_file)
+        if self.main.name:
+            self.name = Vlnv(self.main.name)
         else:
-            self.name = name
-            self.provider = None
+            self.name = Vlnv(basename.split('.core')[0])
 
+        self.sanitized_name = self.name.sanitized_name
+
+        self.depend     = self.main.depend
+        self.simulators = self.main.simulators
+
+        self._collect_filesets()
+
+        cache_root = os.path.join(Config().cache_root, self.sanitized_name)
+        if config.has_section('plusargs'):
+            utils.pr_warn("plusargs section is deprecated and will not be parsed by FuseSoC. Please migrate to parameters in " + str(self.name))
+            self.plusargs = Plusargs(dict(config.items('plusargs')))
+        if config.has_section('provider'):
+            items    = dict(config.items('provider'))
+
+            provider_name = items.get('name')
+            if provider_name is None:
+                raise RuntimeError('Missing "name" in section [provider]')
+            try:
+                provider_module = importlib.import_module(
+                        'fusesoc.provider.%s' % provider_name)
+                self.provider = provider_module.PROVIDER_CLASS(self.name,
+                    items, self.core_root, cache_root)
+            except ImportError:
+                raise
+        if self.provider:
+            self.files_root = self.provider.files_root
+
+        # We need the component file here, but it might not be
+        # available until the core is fetched. Try to fetch first if any
+        # of the component files are missing
+        if False in [os.path.exists(f) for f in self.main.component]:
+            self.setup()
+
+        for f in self.main.component:
+            self._parse_component(os.path.join(self.files_root, f))
+
+        system_file = os.path.join(self.core_root, basename.split('.core')[0]+'.system')
+        if os.path.exists(system_file):
+            self.system = System(system_file)
 
     def cache_status(self):
         if self.provider:
