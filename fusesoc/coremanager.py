@@ -174,4 +174,4 @@ class CoreManager(object):
         return c
 
     def get_systems(self):
-        return {str(x.name) : x for x in self.db.find() if x.system}
+        return {str(x.name) : x for x in self.db.find() if x.backend}
