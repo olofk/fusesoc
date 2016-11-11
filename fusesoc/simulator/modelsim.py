@@ -167,7 +167,7 @@ class Modelsim(Simulator):
         args = self.run_default_args
         args += self.vsim_options
         args += vpi_options
-        args += [self.toplevel]
+        args += self.toplevel.split()
 
         # Plusargs
         for key, value in self.plusarg.items():
