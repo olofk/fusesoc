@@ -5,7 +5,7 @@ from fusesoc.utils import Launcher, pr_warn
 
 logger = logging.getLogger(__name__)
 
-class SimulatorIcarus(Simulator):
+class Icarus(Simulator):
 
     TOOL_NAME = 'icarus'
     def __init__(self, system):
@@ -15,10 +15,10 @@ class SimulatorIcarus(Simulator):
 
         if system.icarus is not None:
             self.iverilog_options = system.icarus.iverilog_options
-        super(SimulatorIcarus, self).__init__(system)
+        super(Icarus, self).__init__(system)
 
     def configure(self, args):
-        super(SimulatorIcarus, self).configure(args)
+        super(Icarus, self).configure(args)
         self._write_config_files()
 
     def _write_config_files(self):
@@ -50,7 +50,7 @@ class SimulatorIcarus(Simulator):
         f.close()
 
     def build(self):
-        super(SimulatorIcarus, self).build()
+        super(Icarus, self).build()
         
         #Build VPI modules
         for vpi_module in self.vpi_modules:
@@ -83,7 +83,7 @@ class SimulatorIcarus(Simulator):
                  errormsg = "Failed to compile Icarus Simulation model").run()
         
     def run(self, args):
-        super(SimulatorIcarus, self).run(args)
+        super(Icarus, self).run(args)
 
         #FIXME: Handle failures. Save stdout/stderr.
         args = []
@@ -102,4 +102,4 @@ class SimulatorIcarus(Simulator):
                  cwd = self.work_root,
                  errormsg = "Failed to run Icarus Simulation").run()
 
-        super(SimulatorIcarus, self).done(args)
+        super(Icarus, self).done(args)
