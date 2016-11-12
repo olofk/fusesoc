@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 import argparse
+import importlib
 import os
 import platform
 import subprocess
@@ -25,7 +26,6 @@ else:
 from fusesoc.build import BackendFactory
 from fusesoc.config import Config
 from fusesoc.coremanager import CoreManager, DependencyError
-from fusesoc.simulator import SimulatorFactory
 from fusesoc.simulator.verilator import Source
 from fusesoc.vlnv import Vlnv
 from fusesoc.core import Core, OptionSectionMissing
@@ -203,9 +203,14 @@ def sim(args):
         exit(1)
     try:
         CoreManager().tool = sim_name
-        sim = SimulatorFactory(sim_name, core)
+        sim_module = importlib.import_module(
+                        'fusesoc.simulator.%s' % sim_name)
+        sim = getattr(sim_module, sim_name.capitalize())(core)
     except DependencyError as e:
         pr_err("'" + args.system + "' or any of its dependencies requires '" + e.value + "', but this core was not found")
+        exit(1)
+    except ImportError:
+        pr_err("Unknown simulator '{}'".format(sim_name))
         exit(1)
     except OptionSectionMissing as e:
         pr_err("'" + args.system + "' miss a mandatory parameter for " + sim_name + " simulation (" + e.value + ")")
