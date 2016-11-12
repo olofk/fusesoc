@@ -23,7 +23,6 @@ if os.path.exists(os.path.join(fusesocdir, "fusesoc")):
 else:
     sys.path[0:0] = ['@pythondir@']
 
-from fusesoc.build import BackendFactory
 from fusesoc.config import Config
 from fusesoc.coremanager import CoreManager, DependencyError
 from fusesoc.simulator.verilator import Source
@@ -54,6 +53,10 @@ def _get_core(name, has_system=False):
         exit(1)
     return core
 
+def _import(package, name):
+    module = importlib.import_module('fusesoc.{}.{}'.format(package, name))
+    return getattr(module, name.capitalize())
+
 def abort_handler(signal, frame):
         print('');
         pr_info('****************************')
@@ -68,7 +71,10 @@ def build(args):
     core = _get_core(args.system, True)
 
     try:
-        backend = BackendFactory(core)
+        backend =_import('build', core.main.backend)(core)
+    except ImportError:
+        pr_err('Backend "{}" not found'.format(core.main.backend))
+        exit(1)
     except RuntimeError as e:
         pr_err("Failed to build '{}': {}".format(args.system, e))
         exit(1)
@@ -87,9 +93,11 @@ def build(args):
 def pgm(args):
     core = _get_core(args.system, True)
 
-    backend = BackendFactory(core)
     try:
+        backend =_import('build', core.main.backend)(core)
         backend.pgm(args.backendargs)
+    except ImportError:
+        pr_err('Backend "{}" not found'.format(core.main.backend))
     except RuntimeError as e:
         pr_err("Failed to program the FPGA: " + str(e))
 
@@ -203,9 +211,7 @@ def sim(args):
         exit(1)
     try:
         CoreManager().tool = sim_name
-        sim_module = importlib.import_module(
-                        'fusesoc.simulator.%s' % sim_name)
-        sim = getattr(sim_module, sim_name.capitalize())(core)
+        sim = _import('simulator', sim_name)(core)
     except DependencyError as e:
         pr_err("'" + args.system + "' or any of its dependencies requires '" + e.value + "', but this core was not found")
         exit(1)
