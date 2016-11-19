@@ -1,0 +1,64 @@
+Creating core files
+===================
+
+The basics
+----------
+
+In order to create our first core, we will start with some example verilog code. link:example/spi_slave.v[This] is a simple SPI slave to GPIO bridge that will be used in the first examples.
+
+Create the following directory structure, and put `spi_slave.v` in `rtl/verilog`
+
+* spi_slave
+** rtl
+*** verilog
+**** spi_slave.v
+
+.File and directory names
+***********************
+File and directory names for the source code are not important in FuseSoC. The structure described above is just a convention that is quite commonly used
+***********************
+
+These are all the preparations we need to create our first FuseSoC .core.
+
+In the `spi_slave` directory, create a file called `spi_slave.core`. On the first line of the file enter `CAPI=1`. This will let FuseSoC know that this is a .core file which is using version 1 of the core API (which is currently the only version), which gives information on how to parse the rest of the file. CAPI1 files are standard link:https://en.wikipedia.org/wiki/INI_file[INI files], which are parsed by Python's link:https://docs.python.org/3/library/configparser.html[configparser]
+
+On the next line, enter `[main]`. This starts the main configuration section. Add a single option to the `main` section by writing `name = ::spi_slave:0` on a new line.
+
+.Core name
+**********
+Technically, the name option can be left out in this case, see link:corenamingrules{outfilesuffix}[core naming rules] for more information
+**********
+
+Create a new fileset section by writing `[fileset rtl]` on a new line. The name of the fileset (i.e. `rtl`) is not important, but should preferrably describe what kind of files that goes into each fileset. List the source files on a new line by writing `files = rtl/verilog/spi_slave.v`. File paths are relative to the core root, which in this case is where the `.core` file resides. Also describe the file type of the files in the fileset by adding a new line with `file_type = verilogSource`
+
+The complete .core file should now look like this
+
+    CAPI=1
+    [main]
+    
+    name = ::spi_slave:0
+    
+    [fileset rtl]
+    files = rtl/verilog/spi_slave.v
+    file_type=verilogSource
+
+You can now use FuseSoC to get information about your core, and confirm that it has been picked up correctly. Run `fusesoc --cores-root=<core path> core-info spi_slave`, where `<core path>` is the path to the `spi_slave` directory.
+
+FuseSoC should return something like this
+
+    CORE INFO
+    Name:                   ::spi_slave:0
+    Core root:              /home/olof/code/staging/spi_slave
+    == fileset ==
+    rtl
+    File sets:
+    
+     Name  : rtl
+     Scope : public
+     Usage : sim/synth
+     Files :
+      rtl/verilog/spi_slave.v verilogSource False
+
+Please verify that `Core root` points to the correct directory, in case there is some other core with the same name that is being picked up by the FuseSoC configuration files.
+
+Congratulations, you have now finished writing your first .core file, and anyone who wants to use your code can now add a dependency on your core in their .core file. We will now investigate how dependencies work in FuseSoC and making our core a bit more useful by making the spi_slave core depend on some other cores, and by adding a testbench.

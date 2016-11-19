@@ -13,6 +13,11 @@ Currently FuseSoc supports simulations with ModelSim, Icarus Verilog, Verilator,
 
 link:capi{outfilesuffix}[Core API]
 
+Working with .core files
+------------------------
+
+link:createcore{outfilesuffix}[This guide] describes how to create your own .core files
+
 Backends
 --------
 
