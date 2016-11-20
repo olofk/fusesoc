@@ -44,7 +44,8 @@ quit
 
     def _write_tcl_file(self):
         (src_files, incdirs) = self._get_fileset_files(['synth', 'ise'])
-        ucf_files = [os.path.join(self.src_root, self.system.sanitized_name, f.name) for f in self.backend.ucf_files]
+        _ucf_path = os.path.relpath(os.path.join(self.src_root, self.system.sanitized_name), self.work_root)
+        ucf_files = [os.path.join(_ucf_path, f.name) for f in self.backend.ucf_files]
         tcl_file = open(os.path.join(self.work_root, self.system.sanitized_name+'.tcl'),'w')
         source_files = ""
         _libraries = []
