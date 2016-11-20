@@ -113,6 +113,28 @@ class Modelsim(Simulator):
                 args += [f.name.replace('\\','/')]
                 tcl_build_rtl.write("{} {}\n".format(cmd, ' '.join(args)))
 
+    def _write_run_tcl_file(self):
+        tcl_run = open(os.path.join(self.work_root, "fusesoc_run.tcl"), 'w')
+
+        #FIXME: Handle failures. Save stdout/stderr
+        vpi_options = []
+        for vpi_module in self.vpi_modules:
+            vpi_options += ['-pli', vpi_module['name']]
+
+        args = ['vsim']
+        args += self.vsim_options
+        args += vpi_options
+        args += self.toplevel.split()
+
+        # Plusargs
+        for key, value in self.plusarg.items():
+            args += ['+{}={}'.format(key, value)]
+        #Top-level parameters
+        for key, value in self.vlogparam.items():
+            args += ['-g{}={}'.format(key, value)]
+        tcl_run.write(' '.join(args)+'\n')
+        tcl_run.close()
+
     def _write_vpi_makefile(self):
         vpi_make = open(os.path.join(self.work_root, "Makefile"), 'w')
         _vpi_inc = self.model_tech+'/../include'
@@ -148,6 +170,8 @@ class Modelsim(Simulator):
             self._write_vpi_makefile()
             tcl_main.write("make\n")
         tcl_main.close()
+        self._write_run_tcl_file()
+
 
     def build(self):
         super(Modelsim, self).build()
@@ -159,23 +183,7 @@ class Modelsim(Simulator):
     def run(self, args):
         super(Modelsim, self).run(args)
 
-        #FIXME: Handle failures. Save stdout/stderr
-        vpi_options = []
-        for vpi_module in self.vpi_modules:
-            vpi_options += ['-pli', vpi_module['name']]
-
-        args = self.run_default_args
-        args += self.vsim_options
-        args += vpi_options
-        args += self.toplevel.split()
-
-        # Plusargs
-        for key, value in self.plusarg.items():
-            args += ['+{}={}'.format(key, value)]
-        #Top-level parameters
-        for key, value in self.vlogparam.items():
-            args += ['-g{}={}'.format(key, value)]
-
+        args = ['-c', '-quiet', '-do', 'fusesoc_run.tcl', '-do', 'run -all']
         Launcher(self.model_tech+'/vsim', args,
                  cwd      = self.work_root,
                  errormsg = "Simulation failed. Simulation log is available in '{}'".format(os.path.join(self.work_root, 'transcript'))).run()
