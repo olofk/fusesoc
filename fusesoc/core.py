@@ -3,7 +3,6 @@ import importlib
 import logging
 import os
 import shutil
-import subprocess
 
 from ipyxact.ipyxact import Component
 from fusesoc import section
@@ -170,9 +169,9 @@ class Core:
                 logger.debug("  applying patch file: " + patch_file + "\n" +
                              "                   to: " + os.path.join(dst_dir))
                 try:
-                    subprocess.call(['patch','-p1', '-s',
-                                     '-d', os.path.join(dst_dir),
-                                     '-i', patch_file])
+                    utils.Launcher('git', ['apply', '--unsafe-paths',
+                                     '--directory', os.path.join(dst_dir),
+                                     patch_file]).run()
                 except OSError:
                     print("Error: Failed to call external command 'patch'")
                     return False
