@@ -234,6 +234,8 @@ def sim(args):
             pr_err("Failed to configure the system")
             pr_err(str(e))
             exit(1)
+        if args.setup:
+            exit(0)
         try:
             sim.build()
         except Source as e:
@@ -362,6 +364,7 @@ def main():
     #Simulation subparser
     parser_sim = subparsers.add_parser('sim', help='Setup and run a simulation')
     parser_sim.add_argument('--sim', nargs=1, help='Override the simulator settings from the system file')
+    parser_sim.add_argument('--setup', action='store_true', help='Only create the project files without running the EDA tool')
     parser_sim.add_argument('--build-only', action='store_true', help='Build the simulation binary without running the simulator')
     parser_sim.add_argument('--force', action='store_true', help='Force rebuilding simulation model when directory exists')
     parser_sim.add_argument('--keep', action='store_true', help='Prevent rebuilding simulation model if it exists')
