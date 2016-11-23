@@ -4,8 +4,8 @@ FuseSoC
 .. image:: https://travis-ci.org/olofk/fusesoc.svg?branch=master
     :target: https://travis-ci.org/olofk/fusesoc
 
-.. image:: https://ci.appveyor.com/api/projects/status/bg3tutcube9x0fgs?svg=true
-    :target: https://ci.appveyor.com/project/olofk/fusesoc
+.. image:: https://ci.appveyor.com/api/projects/status/bg3tutcube9x0fgs/branch/master?svg=true
+    :target: https://ci.appveyor.com/project/olofk/fusesoc/branch/master
 
 Introduction
 ------------
