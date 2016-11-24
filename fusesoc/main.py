@@ -35,8 +35,12 @@ import logging
 logging.basicConfig(filename='fusesoc.log', filemode='w', level=logging.DEBUG)
 logger = logging.getLogger(__name__)
 
-REPO_NAME = 'orpsoc-cores'
-REPO_URI  = 'https://github.com/openrisc/orpsoc-cores'
+REPOS = [('orpsoc-cores',
+          'https://github.com/openrisc/orpsoc-cores',
+          "old base library"),
+         ('fusesoc-cores',
+          'https://github.com/fusesoc/fusesoc-cores',
+          "new base library")]
 
 def _get_core(name, has_system=False):
     core = None
@@ -126,26 +130,30 @@ def init(args):
         pass
 
     xdg_data_home = os.environ.get('XDG_DATA_HOME') or \
-                     os.path.join(os.path.expanduser('~'), '.local', 'share')
-    default_dir = default_dir=os.path.join(xdg_data_home, REPO_NAME)
-    prompt = 'Directory to use for {} [{}] : '
-    if args.y:
-        cores_root = None
-    else:
-        cores_root = input(prompt.format(REPO_NAME, default_dir))
-    if not cores_root:
-        cores_root = default_dir
-    if os.path.exists(cores_root):
-        pr_warn("'{}' already exists".format(cores_root))
-        #TODO: Check if it's a valid orspoc-cores repo
-    else:
-        pr_info("Initializing orpsoc-cores")
-        args = ['clone', REPO_URI, cores_root]
-        try:
-            Launcher('git', args).run()
-        except RuntimeError as e:
-            pr_err("Init failed: " + str(e))
-            exit(1)
+                    os.path.join(os.path.expanduser('~'),
+                                 '.local', 'share', 'fusesoc')
+    _repo_paths = []
+    for repo in REPOS:
+        default_dir = os.path.join(xdg_data_home, repo[0])
+        prompt = 'Directory to use for {} ({}) [{}] : '
+        if args.y:
+            cores_root = None
+        else:
+            cores_root = input(prompt.format(repo[0], repo[2], default_dir))
+        if not cores_root:
+            cores_root = default_dir
+        if os.path.exists(cores_root):
+            pr_warn("'{}' already exists".format(cores_root))
+            #TODO: Prompt for overwrite
+        else:
+            _repo_paths.append(cores_root)
+            pr_info("Initializing {}".format(repo[0]))
+            git_args = ['clone', repo[1], cores_root]
+            try:
+                Launcher('git', git_args).run()
+            except RuntimeError as e:
+                pr_err("Init failed: " + str(e))
+                exit(1)
 
     xdg_config_home = os.environ.get('XDG_CONFIG_HOME') or \
                       os.path.join(os.path.expanduser('~'), '.config')
@@ -161,7 +169,7 @@ def init(args):
             os.makedirs(os.path.dirname(config_file))
         f = open(config_file,'w')
         f.write("[main]\n")
-        f.write("cores_root = {}\n".format(cores_root))
+        f.write("cores_root = {}\n".format(' '.join(_repo_paths)))
     pr_info("FuseSoC is ready to use!")
 
 def list_paths(args):
@@ -260,7 +268,7 @@ def update(args):
             repo_root = ""
             try:
                 repo_root = subprocess.check_output(['git'] + args).decode("utf-8")
-                if repo_root.strip() == REPO_URI:
+                if repo_root.strip() in [repo[1] for repo in REPOS]:
                     pr_info("Updating '{}'".format(root))
                     args = ['-C', root, 'pull']
                     Launcher('git', args).run()
