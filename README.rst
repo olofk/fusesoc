@@ -60,7 +60,9 @@ Install latest development version from git:
    cd fusesoc
    sudo pip install -e .
 
-FuseSoC should now be installed. Next step is to download the standard IP core library (orpsoc-cores_), which contains over 100 Open Source IP cores.
+FuseSoC should now be installed. Next step is to download the standard IP core libraries, which contain over 100 Open Source IP cores.
+
+*FuseSoC is currently in a transition phase and will prompt for the old standard library (* orpsoc-cores_ *) in addition to the new one (* fusesoc-cores_ *)*
 
 ::
    
@@ -95,4 +97,5 @@ There is also some FuseSoC-related articles and extended release information on 
 .. _blog: https://olofkindgren.blogspot.com/search/label/FuseSoC
 .. _online: doc/fusesoc.adoc
 .. _orpsoc-cores: https://github.com/openrisc/orpsoc-cores
+.. _fusesoc-cores: https://github.com/fusesoc/fusesoc-cores
 .. _`bug report`: https://github.com/olofk/fusesoc/issues
