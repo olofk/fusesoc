@@ -78,6 +78,7 @@ Backend-specific information
 
 - link:ghdl{outfilesuffix}[GHDL]
 - link:modelsim{outfilesuffix}[ModelSim]
+- link:rivierapro{outfilesuffix}[Riviera Pro]
 
 Migration guide
 ^^^^^^^^^^^^^^^

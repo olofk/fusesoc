@@ -311,6 +311,19 @@ class ModelsimSection(ToolSection):
         if items:
             self.load_dict(items)
 
+class RivieraproSection(ToolSection):
+
+    TAG = 'rivierapro'
+
+    def __init__(self, items=None):
+        super(RivieraproSection, self).__init__()
+
+        self._add_member('vlog_options', StringList, "Additional arguments for vlog")
+        self._add_member('vsim_options', StringList, "Additional arguments for vsim")
+
+        if items:
+            self.load_dict(items)
+
 class GhdlSection(ToolSection):
     TAG = 'ghdl'
 

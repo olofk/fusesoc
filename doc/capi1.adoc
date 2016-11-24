@@ -148,6 +148,19 @@ quartus
 
 
 
+rivierapro
+----------
+
+[cols="2,1,5",options="header"]
+|==============================
+|Name | Type | Description
+|depend | Space-separated list of VLNV identifiers | Tool-specific Dependencies
+|vlog_options | Space-separated list | Additional arguments for vlog
+|vsim_options | Space-separated list | Additional arguments for vsim
+|==============================
+
+
+
 scripts
 -------
 
