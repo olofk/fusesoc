@@ -1,0 +1,41 @@
+Riviera Pro
+===========
+
+The Riviera Pro backend is used to simulate designs using the Aldec Riviera Pro simulator. Riviera Pro is a proprietary simulator that supports Verilog, VHDL and SystemC.
+
+In order to use the Riviera Pro backend, the environment variable `$ALDEC_PATH` must be set to the Riviera Pro install path
+
+The following file types are recognized by the Riviera Pro backend
+
+- verilogSource
+- verilogSource-95
+- verilogSource-2001
+- verilogSource-2005
+- systemVerilogSource
+- systemVerilogSource-3.0
+- systemVerilogSource-3.1
+- systemVerilogSource-3.1a
+- vhdlSource
+- vhdlSource-87
+- vhdlSource-93
+- vhdlSource-2008
+- tclSource
+- user
+
+Configure
+---------
+During the configure phase, build commands for all VHDL, Verilog and SystemVerilog files are written to a TCL file called `fusesoc_build_rtl.tcl`. The `vlog` command is used to build (system)verilog files, and additional options for this command can be specified with the `vlog_options` parameter in the `[rivierapro]` section. If the design also contains any VPI libraries, an additional tcl script called `fusesoc_buld_vpi.tcl` is created with instructions for how to rebuild them.
+
+A top-level TCL script called `fusesoc_main.tcl` is created to execute `fusesoc_build_rtl.tcl`, `fusesoc_build_vpi.tcl` and also any additional files with the file type tclSource found in the design
+
+During the configure phase, FuseSoC also prepares scripts to run the simulation in GUI mode or batch mode. The script `fusesoc_launch.tcl` contains the command to launch a simulation together with all the extra parameters that were specified on the command line. This can be used for launching Riviera Pro in GUI mode, e.g. `vsim -do fusesoc_launch.tcl`. Another script called `fusesoc_run.tcl` is also created to run the simulation in batch mode, e.g. by calling `vsim -do fusesoc_run.tcl`
+
+Build
+-----
+During the build phase, the `fusesoc_main.tcl` script is executed.
+
+Run
+---
+During the run phase, the `fusesoc_run.tcl` script is executed
+
+To rebuild the complete simulation model from within a running Riviera Pro instance, execute `fusesoc_main.tcl`, or `fusesoc_build_rtl.tcl` to just rebuild the RTL files. Note that these commands only operate on the exported design.
