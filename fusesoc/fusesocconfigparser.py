@@ -35,13 +35,6 @@ class FusesocConfigParser(configparser.SafeConfigParser):
         except configparser.DuplicateSectionError as e:
             raise SyntaxError(e.message)
 
-    def get_list(self, section, item):
-        if self.has_option(section, item):
-            return self.get(section, item).split()
-        else:
-            return []
-        
-
     def get_section(self, section):
         if self.has_section(section):
             return dict(self.items(section))
