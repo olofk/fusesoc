@@ -70,7 +70,7 @@ Congratulations, you have now finished writing your first .core file, and anyone
 
 .Core API
 *********
-For all options that are introduced in this tutorial, you can see the link:capi{outfilesuffix}[core API] definitions to learn more about them and other options available for core files
+For all options that are introduced in this tutorial, you can see the link:capi1{outfilesuffix}[core API] definitions to learn more about them and other options available for core files
 *********
 
 Adding simulation support
