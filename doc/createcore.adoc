@@ -1,5 +1,6 @@
 Creating core files
 ===================
+ifdef::env-github,env-browser[:outfilesuffix: .adoc]
 
 The basics
 ----------
