@@ -61,7 +61,7 @@ class Vlnv(object):
             self.name    = vlnv_parts[2]
             self.version = vlnv_parts[3]
         else:
-            raise Exception
+            raise SyntaxError("Illegal core name '{}'".format(s)) 
 
         if self.version or (self.revision > 0):
             if not self.relation:
