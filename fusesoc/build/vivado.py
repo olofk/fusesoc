@@ -99,7 +99,7 @@ class Vivado(Backend):
         # Write the formatted string to the tcl file
         tcl_file.write(PROJECT_TCL_TEMPLATE.format(
             design       = self.system.sanitized_name,
-            part         = self.system.system.backend.part,
+            part         = self.system.backend.part,
             bitstream    = os.path.join(self.work_root, self.system.sanitized_name+'.bit'),
             incdirs      = ' '.join(incdirs),
             ip           = ipconfig,
