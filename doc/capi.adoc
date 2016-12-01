@@ -5,48 +5,7 @@ Core Description files
 :Date: 2015-06-04
 :Revision: 1.0
 
-capi (Core API) is the format for core description files. Current version is version 1.0. A capi 1.0 file is identified by the string "CAPI=1" in the beginning of a file. The rest of the file is a standard http://en.wikipedia.org/wiki/INI_file[INI file] that is compatible with Python's http://docs.python.org/2/library/configparser.html[configparser] module
-
-File location
--------------
-
-FuseSoC searches recursively for files with a _.core_ suffix in all directories listed either in the _cores_root_ option in _fusesoc.conf_ or specified with the _--cores-root_ parameter when FuseSoC is launched.
-
-Once a _.core_ file is encountered in a directory and successfully parsed, FuseSoC will not search its subdirectories. Several _.core_ files can reside in the same directory and they will all be parsed. The name of the _.core_file_, without the _.core_ suffix will be used to uniquely identify the name of the core. There are no formal requirements on the naming of the _.core_ file, but best practice is to use _<name>-<version>.core_ ,e.g. _mor1kx-3.2.core_ for mor1kx version 3.2.
-
-If several cores with the same name are encountered the latter name will be used. The directories specified in _fusesoc.conf_ will be scanned in the order they appear in the file, and directories specified with the command-line argument _--cores-root_ will be scanned after that. This means that you can temporarily override your default core libraries by adding a new _--cores-root_ argument, or more permanently override cores by adding them to the end of the _cores_root_ option in _fusesoc.conf_
-
-.Locations of core description files. 
-========
-. library/mor1kx/mor1kx-3.2.core
-. library/mor1kx/mor1kx.core
-. cores/uart16550/uart16550.core
-. de0_nano/de0_nano.core
-. de0_nano/uart/spi/simple_spi.core +
-_1 and 2 reside in the same directory and are both parsed. 5 is not parsed since it resides in a subdirectory of 4_
-========
-
-
-File contents
--------------
-
-CAPI 1.0 files are divided into sections, with each section containing related configuration options. See http://en.wikipedia.org/wiki/INI_file[INI file] for more general information about ini files.
-
-Only sections defined in this document are recognized by FuseSoC. All other sections are ignored. The same applies for the options inside each section. CAPI 1.0 defines the following sections and values. 
-
 include::capi1.adoc[Core API]
-
-scripts
--------
-External scripts that are executed during the simulation process.
-
-[cols="2,1,5",options="header"]
-|==============================
-|Name | Type | Description
-|pre_run_scripts | Space-separated list | Shell scripts that are executed before the simulation
-|post_run_scripts | Space-separated list | Shell scripts that are executed after the simulation
-|==============================
-
 
 provider
 --------
@@ -90,43 +49,6 @@ name = url
 * *filetype :* File type (zip, tar, simple).
 
 * *corename :* Name of the directory where the archive is unpacked (or the simple file is copied). If not provided, the name of the cache/build directory is the same as the core.
-
-plusargs
---------
-
-Plusargs are additional options that are sent to the verilog simulator at runtime. Cores that use plusargs internally (with $test$plusargs or $value$plusargs) can expose them to FuseSoc by adding an entry in the plusargs section.
-
-The format of a plusarg is
-<option_name> = <type> <Description>
-
-When a system is simulated in FuseSoC, the options specified after the system name are interpreted as plusargs and are compared to the plusargs registered in the system cores. To set a plusargs value, the following command-line syntax is used:
-
-For boolean parameters:
-
-+fusesoc sim <system_name> --<option_name>+
-
-For other types of parameters:
-
-+fusesoc sim <system_name> --<option_name>=<value>+
-
-The <type> field has the following meaning:
-
-* *bool :* Boolean value. Set to true if the option is specified, otherwise false.
-* *int :* Integer value. If the value is not an integer, FuseSoC exits with errors.
-* *str :* A string value.
-* *file :* The value string is interpreted as a relative path from the current working directory and is converted by FuseSoC into an absolute path.
-
-.Defining plusargs
---------
-timeout = int Abort simulation after the specified tim
-jtag-vpi-enable = bool Enable the JTAG VPI debug system
-testcase = file VMEM file containg a or1k testcase
---------
-
-.Using plusargs
---------
-fusesoc sim ordb2a --timeout=100000 --testcase=tests/or1200-basic.vmem --vcd
---------
 
 Known issues
 ------------
