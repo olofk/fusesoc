@@ -10,7 +10,6 @@ class Icarus(Simulator):
     TOOL_NAME = 'icarus'
     def __init__(self, system):
 
-        self.cores = []
         self.iverilog_options = []
 
         if system.icarus is not None:

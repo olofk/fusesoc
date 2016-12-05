@@ -10,7 +10,6 @@ class Xsim(Simulator):
     TOOL_NAME = 'xsim'
     def __init__(self, system):
 
-        self.cores = []
         self.xsim_options = []
 
         if system.xsim is not None:

@@ -10,7 +10,6 @@ class Isim(Simulator):
     TOOL_NAME = 'isim'
     def __init__(self, system):
 
-        self.cores = []
         self.isim_options = []
 
         if system.isim is not None:
