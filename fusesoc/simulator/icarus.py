@@ -8,13 +8,6 @@ logger = logging.getLogger(__name__)
 class Icarus(Simulator):
 
     TOOL_NAME = 'icarus'
-    def __init__(self, system):
-
-        self.iverilog_options = []
-
-        if system.icarus is not None:
-            self.iverilog_options = system.icarus.iverilog_options
-        super(Icarus, self).__init__(system)
 
     def configure(self, args):
         super(Icarus, self).configure(args)
@@ -75,7 +68,8 @@ class Icarus(Simulator):
 
         for key, value in self.vlogparam.items():
             args += ['-P{}.{}={}'.format(self.toplevel, key, value)]
-        args += self.iverilog_options
+        if self.system.icarus is not None:
+            args += self.system.icarus.iverilog_options
 
         Launcher('iverilog', args,
                  cwd      = self.work_root,

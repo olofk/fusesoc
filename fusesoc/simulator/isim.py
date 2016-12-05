@@ -8,16 +8,6 @@ logger = logging.getLogger(__name__)
 class Isim(Simulator):
 
     TOOL_NAME = 'isim'
-    def __init__(self, system):
-
-        self.isim_options = []
-
-        if system.isim is not None:
-            self.isim_options = system.isim.isim_options
-        super(Isim, self).__init__(system)
-
-
-
 
     def configure(self, args):
         super(Isim, self).configure(args)
@@ -78,7 +68,8 @@ class Isim(Simulator):
 
         for key, value in self.vlogparam.items():
             args += ['--generic_top', '{}={}'.format(key, value)]
-        args += self.isim_options
+        if self.system.isim is not None:
+            args += self.system.isim.isim_options
 
         Launcher('fuse', args,
                  cwd      = self.work_root,

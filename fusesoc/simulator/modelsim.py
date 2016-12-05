@@ -39,12 +39,6 @@ class Modelsim(Simulator):
     TOOL_NAME = 'modelsim'
     def __init__(self, system):
 
-        self.vlog_options = []
-        self.vsim_options = []
-
-        if system.modelsim is not None:
-            self.vlog_options = system.modelsim.vlog_options
-            self.vsim_options = system.modelsim.vsim_options
         super(Modelsim, self).__init__(system)
         self.model_tech = os.getenv('MODEL_TECH')
         if not self.model_tech:
@@ -66,7 +60,11 @@ class Modelsim(Simulator):
             if f.file_type.startswith("verilogSource") or \
                f.file_type.startswith("systemVerilogSource"):
                 cmd = 'vlog'
-                args = self.vlog_options[:]
+                args = []
+
+                if self.system.modelsim is not None:
+                    args += self.system.modelsim.vlog_options
+
                 for k, v in self.vlogdefine.items():
                     args += ['+define+{}={}'.format(k,v)]
 
@@ -109,7 +107,8 @@ class Modelsim(Simulator):
             vpi_options += ['-pli', vpi_module['name']]
 
         args = ['vsim']
-        args += self.vsim_options
+        if self.system.modelsim is not None:
+            args += self.system.modelsim.vsim_options
         args += vpi_options
         args += self.toplevel.split()
 

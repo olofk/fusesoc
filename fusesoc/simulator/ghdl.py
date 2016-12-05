@@ -4,14 +4,6 @@ from fusesoc.utils import Launcher, pr_warn
 class Ghdl(Simulator):
 
     TOOL_NAME = 'ghdl'
-    def __init__(self, system):
-
-        self.analyze_options = []
-        self.run_options     = []
-        if system.ghdl is not None:
-            self.analyze_options = system.ghdl.analyze_options
-            self.run_options     = system.ghdl.run_options
-        super(Ghdl, self).__init__(system)
 
     def configure(self, args):
         super(Ghdl, self).configure(args)
@@ -24,7 +16,8 @@ class Ghdl(Simulator):
         cmd = 'ghdl'
         for f in src_files:
             args = ['-a']
-            args += self.analyze_options[:]
+            if self.system.ghdl is not None:
+                args += self.system.ghdl.analyze_options[:]
             _supported = True
             if not f.logical_name:
                 f.logical_name = 'work'
@@ -56,7 +49,8 @@ class Ghdl(Simulator):
 
         cmd = 'ghdl'
         args = ['-r']
-        args += self.run_options
+        if self.system.ghdl is not None:
+            args += self.system.ghdl.run_options
         args += [self.toplevel]
         Launcher(cmd, args,
                  cwd      = self.work_root,

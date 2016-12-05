@@ -8,16 +8,6 @@ logger = logging.getLogger(__name__)
 class Xsim(Simulator):
 
     TOOL_NAME = 'xsim'
-    def __init__(self, system):
-
-        self.xsim_options = []
-
-        if system.xsim is not None:
-            self.xsim_options = system.xsim.xsim_options
-        super(Xsim, self).__init__(system)
-
-
-
 
     def configure(self, args):
         super(Xsim, self).configure(args)
@@ -80,7 +70,9 @@ class Xsim(Simulator):
 
         for key, value in self.vlogparam.items():
             args += ['--generic_top', '{}={}'.format(key, value)]
-        args += self.xsim_options
+
+        if self.system.xsim is not None:
+            args += self.system.xsim.xsim_options
 
         Launcher('xelab', args,
                  cwd      = self.work_root,

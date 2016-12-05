@@ -12,12 +12,6 @@ class Rivierapro(Simulator):
     TOOL_NAME = 'rivierapro'
     def __init__(self, system):
 
-        self.vlog_options = []
-        self.vsim_options = []
-
-        if system.rivierapro is not None:
-            self.vlog_options = system.rivierapro.vlog_options
-            self.vsim_options = system.rivierapro.vsim_options
         super(Rivierapro, self).__init__(system)
         self.aldec_path = os.getenv('ALDEC_PATH')
         if not self.aldec_path:
@@ -40,7 +34,10 @@ class Rivierapro(Simulator):
                f.file_type.startswith("systemVerilogSource"):
 
                 cmd = 'vlog'
-                args = self.vlog_options[:]
+                args = []
+
+                if self.system.rivierapro is not None:
+                    args += self.system.rivierapro.vlog_options
 
                 if f.file_type.startswith("verilogSource"):
                     if f.file_type.endswith("95"):
@@ -92,7 +89,8 @@ class Rivierapro(Simulator):
             vpi_options += ['-pli', vpi_module['name']]
 
         args = ['vsim']
-        args += self.vsim_options
+        if self.system.rivierapro is not None:
+            args += self.system.rivierapro.vsim_options
         args += vpi_options
         args += self.toplevel.split()
 
