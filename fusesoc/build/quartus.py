@@ -29,8 +29,6 @@ clean:
 	rm -rf *.* db incremental_db
 """
 
-    TOOL_NAME = 'quartus'
-
     def configure(self, args):
         super(Quartus, self).configure(args)
         self._run_qsys()

@@ -27,8 +27,6 @@ PCF_FILE := {pcf_file}
 ARACHNE_PNR_OPTIONS := {arachne_pnr_options}
 """
 
-    TOOL_NAME = 'icestorm'
-
     def configure(self, args):
         super(Icestorm, self).configure(args)
         self._write_config_files()

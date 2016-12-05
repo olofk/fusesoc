@@ -7,8 +7,6 @@ logger = logging.getLogger(__name__)
 
 class Xsim(Simulator):
 
-    TOOL_NAME = 'xsim'
-
     def configure(self, args):
         super(Xsim, self).configure(args)
         self._write_config_files()

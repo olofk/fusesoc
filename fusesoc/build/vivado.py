@@ -24,9 +24,6 @@ A core (usually the system core) can add the following files:
       as file_type=data
 """
 class Vivado(Backend):
-    """ Define the toolname. It is used by FuseSoC to select the backend"""
-    TOOL_NAME = 'vivado'
-
     """ Configuration is the first phase of the build
 
     In the vivado backend the project TCL is written and all files are copied

@@ -7,8 +7,6 @@ logger = logging.getLogger(__name__)
 
 class Isim(Simulator):
 
-    TOOL_NAME = 'isim'
-
     def configure(self, args):
         super(Isim, self).configure(args)
         self._write_config_files()

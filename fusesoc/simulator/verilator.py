@@ -20,7 +20,6 @@ class Source(Exception):
 
 class Verilator(Simulator):
 
-    TOOL_NAME = 'verilator'
     def __init__(self, system):
         super(Verilator, self).__init__(system)
 

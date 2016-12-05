@@ -9,7 +9,6 @@ exit
 """
 class Rivierapro(Simulator):
 
-    TOOL_NAME = 'rivierapro'
     def __init__(self, system):
 
         super(Rivierapro, self).__init__(system)

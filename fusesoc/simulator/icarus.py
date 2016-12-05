@@ -7,8 +7,6 @@ logger = logging.getLogger(__name__)
 
 class Icarus(Simulator):
 
-    TOOL_NAME = 'icarus'
-
     def configure(self, args):
         super(Icarus, self).configure(args)
         self._write_config_files()

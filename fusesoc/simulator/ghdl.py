@@ -3,8 +3,6 @@ from fusesoc.utils import Launcher, pr_warn
 
 class Ghdl(Simulator):
 
-    TOOL_NAME = 'ghdl'
-
     def configure(self, args):
         super(Ghdl, self).configure(args)
 

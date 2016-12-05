@@ -28,6 +28,7 @@ class EdaTool(object):
     def __init__(self, system):
         config = Config()
         self.system = system
+        self.TOOL_NAME = self.__class__.__name__.lower()
         self.build_root = os.path.join(config.build_root, self.system.sanitized_name)
         self.src_root = os.path.join(self.build_root, 'src')
 

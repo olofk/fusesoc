@@ -36,7 +36,6 @@ clean_{name}:
 
 class Modelsim(Simulator):
 
-    TOOL_NAME = 'modelsim'
     def __init__(self, system):
 
         super(Modelsim, self).__init__(system)

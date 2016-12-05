@@ -35,9 +35,6 @@ saveCDF -file {cdf_file}
 quit
 """
 
-
-    TOOL_NAME = 'ise'
-
     def configure(self, args):
         super(Ise, self).configure(args)
         self._write_tcl_file()
