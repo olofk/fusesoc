@@ -28,18 +28,14 @@ During the configure phase, build commands for all VHDL, Verilog and SystemVeril
 
 A top-level TCL script called `fusesoc_main.tcl` is created to execute `fusesoc_build_rtl.tcl`, the VPI Makefile and also any additional files with the file type tclSource found in the design
 
+During the configure phase, FuseSoC also prepares scripts to run the simulation in GUI mode or batch mode. The script `fusesoc_run.tcl` contains the command to launch a simulation together with all the extra parameters that were specified on the command line. This can be used for launching ModelSim in GUI mode or batch mode, e.g. by calling `vsim -do fusesoc_run.tcl`
+
 Build
 -----
 During the build phase, the `fusesoc_main.tcl` script is executed.
 
 Run
 ---
-During the run phase, `vsim` is called with the following arguments
-
-- The default options `-quiet -c -do "run -all"` These can be overridden by setting the `run_default_args` options in the `[modelsim]` section to something else
-- Any options specified in the `vsim_options` parameter in the `[modelsim]` section
-- All VPI libraries to be loaded
-- The simulator toplevel(s) which is read from the `toplevel` parameter in the `[simulator]` section
-- Any plusargs, top-level verilog parameters or VHDL generics specified on the command line
+During the run phase, `vsim -c -do fusesoc_run.tcl -do "run -all"` is called to run the simulation in batch mode
 
 To rebuild the complete simulation model from within a running ModelSim instance, execute `fusesoc_main.tcl`, or `fusesoc_build_rtl.tcl` to just rebuild the RTL files. Note that these commands only operate on the exported design.

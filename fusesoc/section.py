@@ -306,7 +306,6 @@ class ModelsimSection(ToolSection):
 
         self._add_member('vlog_options', StringList, "Additional arguments for vlog")
         self._add_member('vsim_options', StringList, "Additional arguments for vsim")
-        self._add_member('run_default_args', StringList, "Default modelsim options when running the simulation. Defaults to '-quiet -c -do run -all'")
 
         if items:
             self.load_dict(items)
