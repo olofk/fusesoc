@@ -63,36 +63,26 @@ class Modelsim(Simulator):
             if not f.logical_name in libs:
                 tcl_build_rtl.write("vlib {}\n".format(f.logical_name))
                 libs.append(f.logical_name)
-            if f.file_type in ["verilogSource",
-		               "verilogSource-95",
-		               "verilogSource-2001",
-		               "verilogSource-2005"]:
+            if f.file_type.startswith("verilogSource") or \
+               f.file_type.startswith("systemVerilogSource"):
                 cmd = 'vlog'
                 args = self.vlog_options[:]
                 for k, v in self.vlogdefine.items():
                     args += ['+define+{}={}'.format(k,v)]
 
+                if f.file_type.startswith("systemVerilogSource"):
+                    args += ['-sv']
                 args += vlog_include_dirs
-            elif f.file_type in ["systemVerilogSource",
-			         "systemVerilogSource-3.0",
-			         "systemVerilogSource-3.1",
-			         "systemVerilogSource-3.1a"]:
-                cmd = 'vlog'
-                args = self.vlog_options[:]
-                args += ['-sv']
-                args += vlog_include_dirs
-            elif f.file_type == 'vhdlSource':
+            elif f.file_type.startswith("vhdlSource"):
                 cmd = 'vcom'
-                args = []
-            elif f.file_type == 'vhdlSource-87':
-                cmd = 'vcom'
-                args = ['-87']
-            elif f.file_type == 'vhdlSource-93':
-                cmd = 'vcom'
-                args = ['-93']
-            elif f.file_type == 'vhdlSource-2008':
-                cmd = 'vcom'
-                args = ['-2008']
+                if f.file_type.endswith("-87"):
+                    args = ['-87']
+                if f.file_type.endswith("-93"):
+                    args = ['-93']
+                if f.file_type.endswith("-2008"):
+                    args = ['-2008']
+                else:
+                    args = []
             elif f.file_type == 'tclSource':
                 cmd = None
                 tcl_main.write("do {}\n".format(f.name))
