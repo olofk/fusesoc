@@ -266,7 +266,6 @@ class Verilator(Simulator):
         super(Verilator, self).run(args)
         self.env = os.environ.copy()
         self.env['CORE_ROOT'] = os.path.abspath(self.system.core_root)
-        self.env['BUILD_ROOT'] = os.path.abspath(self.build_root)
         self.env['SIM_ROOT'] = os.path.abspath(self.work_root)
         if self.fusesoc_cli_parser:
             _args = []
