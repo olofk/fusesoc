@@ -7,15 +7,6 @@ import subprocess
 import sys
 import signal
 
-if sys.version_info[0] >= 3:
-    import urllib.request as urllib
-    from urllib.error import URLError
-    from urllib.error import HTTPError
-else:
-    import urllib
-    from urllib2 import URLError
-    from urllib2 import HTTPError
-
 #Check if this is run from a local installation
 fusesocdir = os.path.abspath(os.path.join(os.path.dirname(os.path.realpath(__file__)), ".."))
 if os.path.exists(os.path.join(fusesocdir, "fusesoc")):
@@ -27,7 +18,7 @@ from fusesoc.config import Config
 from fusesoc.coremanager import CoreManager, DependencyError
 from fusesoc.simulator.verilator import Source
 from fusesoc.vlnv import Vlnv
-from fusesoc.core import Core, OptionSectionMissing
+from fusesoc.core import OptionSectionMissing
 from fusesoc.utils import pr_err, pr_info, pr_warn, Launcher
 
 import logging
@@ -106,20 +97,13 @@ def pgm(args):
         pr_err("Failed to program the FPGA: " + str(e))
 
 def fetch(args):
-    if args.core:
-        cores = CoreManager().get_depends(Vlnv(args.core))
-        for core in cores:
-             pr_info("Fetching " + str(core.name))
-             try:
-                 core.setup()
-             except URLError as e:
-                 pr_err("Problem while fetching '" + str(core.name) + "': " + str(e.reason))
-                 exit(1)
-             except HTTPError as e:
-                 pr_err("Problem while fetching '" + str(core.name) + "': " + str(e.reason))
-                 exit(1)
-    else:
-        pr_err("Can't find core '" + args.core + "'")
+    core = _get_core(args.core)
+
+    try:
+        core.setup()
+    except RuntimeError as e:
+        pr_err("Failed to fetch '{}': {}".format(core.name, str(e)))
+        exit(1)
 
 def init(args):
     # Fix Python 2.x.
