@@ -50,7 +50,7 @@ clean:
             args = []
             args += ['--project-directory=' + dst_dir]
             args += ['--output-directory=' +
-                     os.path.join(self.build_root, 'src/qsys')]
+                     os.path.join(self.src_root, 'qsys')]
             args += ['--report-file=bsf:' +
                      os.path.join(dst_dir, self.system.sanitized_name+'.bsf')]
             args += ['--system-info=DEVICE_FAMILY=' +
@@ -61,13 +61,13 @@ clean:
 
             qsys_script.write('ip-generate ' + ' '.join(args) + '\n')
 
-            self.qip_files += [os.path.join(self.build_root,
-                                            'src/qsys/synthesis',
+            self.qip_files += [os.path.join(self.src_root,
+                                            'qsys/synthesis',
                                             self.system.sanitized_name+'.qip')]
             args = []
             args += ['--project-directory=' + dst_dir]
             args += ['--output-directory=' +
-                     os.path.join(self.build_root, 'src/qsys/synthesis')]
+                     os.path.join(self.src_root, 'qsys/synthesis')]
             args += ['--file-set=QUARTUS_SYNTH']
             args += ['--report-file=sopcinfo:' +
                      os.path.join(dst_dir, self.system.sanitized_name+'.sopcinfo')]

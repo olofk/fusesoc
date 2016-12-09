@@ -26,18 +26,19 @@ class FileAction(argparse.Action):
 class EdaTool(object):
 
     def __init__(self, system):
-        config = Config()
         self.system = system
         self.TOOL_NAME = self.__class__.__name__.lower()
-        self.build_root = os.path.join(config.build_root, self.system.sanitized_name)
-        self.src_root = os.path.join(self.build_root, 'src')
+        build_root = os.path.join(Config().build_root, self.system.sanitized_name)
 
-        self.work_root = os.path.join(self.build_root, self.TOOL_TYPE+'-'+self.TOOL_NAME)
+        self.src_root  = os.path.join(build_root, 'src')
+        self.work_root = os.path.join(build_root, self.TOOL_TYPE+'-'+self.TOOL_NAME)
         self.cm = CoreManager()
         self.cores = self.cm.get_depends(self.system.name)
 
         self.env = os.environ.copy()
-        self.env['BUILD_ROOT'] = os.path.abspath(self.build_root)
+
+        #FIXME: This env var should be deprecated and replaced with WORK_ROOT/CORE_ROOT instead
+        self.env['BUILD_ROOT'] = os.path.abspath(build_root)
 
         self.plusarg     = {}
         self.vlogparam   = {}
@@ -57,7 +58,7 @@ class EdaTool(object):
 
         for core in self.cores:
             pr_info("Preparing " + str(core.name))
-            dst_dir = os.path.join(Config().build_root, self.system.sanitized_name, 'src', core.sanitized_name)
+            dst_dir = os.path.join(self.src_root, core.sanitized_name)
             try:
                 core.setup()
             except URLError as e:

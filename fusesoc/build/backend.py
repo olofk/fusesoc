@@ -49,7 +49,7 @@ class Backend(EdaTool):
             script = os.path.abspath(os.path.join(self.system.files_root, script))
             pr_info("Running " + script);
             try:
-                Launcher(script, cwd = os.path.abspath(self.build_root), env = self.env, shell=True).run()
+                Launcher(script, cwd = os.path.abspath(self.work_root), env = self.env, shell=True).run()
             except RuntimeError:
                 print("Error: script " + script + " failed")
 
@@ -60,6 +60,6 @@ class Backend(EdaTool):
             script = os.path.abspath(os.path.join(self.system.files_root, script))
             pr_info("Running " + script);
             try:
-                Launcher(script, cwd = os.path.abspath(self.build_root), env = self.env, shell=True).run()
+                Launcher(script, cwd = os.path.abspath(self.work_root), env = self.env, shell=True).run()
             except RuntimeError:
                 print("Error: script " + script + " failed")
