@@ -55,10 +55,10 @@ class ProviderURL(object):
         pr_info("Checking out " + self.url + " to " + local_dir)
         try:
             (filename, headers) = urllib.urlretrieve(self.url)
-        except URLError:
-            raise
+        except URLError as e:
+            raise RuntimeError("Failed to download '{}'. '{}'".format(url, e.reason))
         except HTTPError:
-            raise
+            raise RuntimeError("Failed to download '{}'. '{}'".format(url, e.reason))
 
         (cache_root, core) = os.path.split(local_dir)
 
