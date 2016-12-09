@@ -18,7 +18,6 @@ class Simulator(EdaTool):
     def __init__(self, system):
         super(Simulator, self).__init__(system)
 
-        self.env['CORE_ROOT'] = os.path.abspath(self.system.core_root)
         self.env['SIM_ROOT'] = os.path.abspath(self.work_root)
         self.env['SIMULATOR'] = self.TOOL_NAME
 
