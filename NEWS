@@ -1,3 +1,32 @@
+1.6 2016-07-12 Olof Kindgren <olof.kindgren@gmail.com>
+======================================================
+* Use git-apply to avoid calling external patch command
+* Use VLNV identifiers for cores
+* Improved dependency handling using simplesat solver
+* Allow loading core libraries from env var FUSESOC_CORES
+* Add list-paths command
+* Allow setting vlog `define from command-line
+* Add Vivado backend
+* Improve windows compatibility for modelsim and quartus
+* Allow loading tclSource files in quartus
+* Require valid file types for filesets
+* Improve formatting of documentation for github
+* Improved documentation
+* Add option to setup EDA project without running build
+* Add support for multiple top-level testbenches
+* Make .system files optional
+* Dropped support for Python 3.2 and 3.3
+* Improved flow for Modelsim simulations
+* Add Riviera Pro simulator support
+* Add new standard core library to eventually replace orpsoc-cores
+* Added tutorial for creating cores
+* + improved error handling, bug fixes and refactoring
+
+Contributors:
+Olof Kindgren <olof.kindgren@gmail.com>
+Philipp Wagner <philipp.wagner@tum.de>
+Stefan Wallentowitz <stefan@wallentowitz.de>
+
 1.5 2016-07-12 Olof Kindgren <olof.kindgren@gmail.com>
 ======================================================
 * Improve plusargs handling
