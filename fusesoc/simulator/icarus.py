@@ -65,6 +65,10 @@ class Icarus(Simulator):
             args += ['-D{}={}'.format(key, value)]
 
         for key, value in self.vlogparam.items():
+            #Workaround since Icarus treats all unqouted strings containing 'e' as floats
+            if value == "true":
+                value = "\"true\""
+            print("'{}' '{}'".format(key, value))
             args += ['-P{}.{}={}'.format(self.toplevel, key, value)]
         if self.system.icarus is not None:
             args += self.system.icarus.iverilog_options
