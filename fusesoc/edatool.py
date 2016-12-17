@@ -98,7 +98,6 @@ class EdaTool(object):
                     if not param.default == '':
                         try:
                             default = [typedict[param.datatype]['type'](param.default)]
-                            print("Converted to " + str(default[0]))
                         except KeyError as e:
                             pass
                     try:
