@@ -18,9 +18,6 @@ class Simulator(EdaTool):
     def __init__(self, system):
         super(Simulator, self).__init__(system)
 
-        self.env['SIM_ROOT'] = os.path.abspath(self.work_root)
-        self.env['SIMULATOR'] = self.TOOL_NAME
-
         logger.debug( "depend -->  " +str (self.cores))
         if 'toplevel' in self.system.simulator:
             self.toplevel = self.system.simulator['toplevel']

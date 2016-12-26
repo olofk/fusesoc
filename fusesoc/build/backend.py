@@ -17,7 +17,6 @@ class Backend(EdaTool):
 
         self.backend = self.system.backend
         self.env['SYSTEM_ROOT'] = os.path.abspath(self.system.files_root)
-        self.env['BACKEND'] = self.TOOL_NAME
 
     def configure(self, args):
         self.parse_args(args, 'build', ['vlogparam', 'vlogdefine'])

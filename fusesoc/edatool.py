@@ -37,8 +37,11 @@ class EdaTool(object):
 
         self.env = os.environ.copy()
 
-        #FIXME: This env var should be deprecated and replaced with WORK_ROOT/CORE_ROOT instead
+        #FIXME: Remove BUILD_ROOT once cores have had some time
+        # to migrate to SRC_ROOT/WORK_ROOT
         self.env['BUILD_ROOT'] = os.path.abspath(build_root)
+        self.env['SRC_ROOT']  = os.path.abspath(self.src_root)
+        self.env['WORK_ROOT'] = os.path.abspath(self.work_root)
 
         self.plusarg     = {}
         self.vlogparam   = {}

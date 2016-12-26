@@ -264,9 +264,7 @@ class Verilator(Simulator):
         if not self.fusesoc_cli_parser:
             self.plusarg = []
         super(Verilator, self).run(args)
-        self.env = os.environ.copy()
-        self.env['CORE_ROOT'] = os.path.abspath(self.system.core_root)
-        self.env['SIM_ROOT'] = os.path.abspath(self.work_root)
+
         if self.fusesoc_cli_parser:
             _args = []
             for key, value in self.plusarg.items():
