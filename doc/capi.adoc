@@ -14,7 +14,7 @@ The provider section gives information on where to find the source code for the 
 [cols="2,1,5",options="header"]
 |==============================
 |Name | Type | Description
-|name | String | The name option selects which provider backend to use. All other provider options are specific to the selected provider. Currently supported backends are github, opencores, submodule and url.
+|name | String | The name option selects which provider backend to use. All other provider options are specific to the selected provider. Currently supported backends are github, git, opencores, submodule and url.
 |==============================
 
 Provider-specific options
@@ -25,6 +25,14 @@ name = github
 * *user :* Name of the github user or organisation.
 
 * *repo :* Name of the GIT repository.
+
+* *version :* Name of the GIT ref (i.e. commit SHA, branch or tag) to use
+
+* *cachable :* If the cachable option is set to false, FuseSoc will unconditionally refetch the core even if it is found in the cache
+
+name = git
+~~~~~~~~~~
+* *repo :* URL of the GIT repository.
 
 * *version :* Name of the GIT ref (i.e. commit SHA, branch or tag) to use
 
