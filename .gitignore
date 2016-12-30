@@ -16,3 +16,4 @@ missing
 py-compile
 .*.swp
 !doc/Makefile
+doc/*.html
