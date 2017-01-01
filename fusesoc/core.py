@@ -77,6 +77,9 @@ class Core:
         self.depend     = self.main.depend
         self.simulators = self.main.simulators
 
+        if self.main.backend:
+            self.backend = getattr(self, self.main.backend)
+
         self._collect_filesets()
 
         cache_root = os.path.join(Config().cache_root, self.sanitized_name)
@@ -107,9 +110,6 @@ class Core:
 
         for f in self.main.component:
             self._parse_component(os.path.join(self.files_root, f))
-
-        if self.main.backend:
-            self.backend = getattr(self, self.main.backend)
 
     def cache_status(self):
         if self.provider:
@@ -301,16 +301,18 @@ class Core:
             print("\nPlusargs:               " + show_dict(self.plusargs.items))
         if self.depend:
             print("\nCommon dependencies : " + ' '.join([x.depstr() for x in self.depend]))
+
         for s in section.SECTION_MAP:
             if s in ['main', 'verilog']:
                 continue
             obj = getattr(self, s)
             if obj:
-                print("== " + s + " ==")
                 if(type(obj) == OrderedDict):
                     for k, v in obj.items():
-                        print(str(k))
+                        print("== " + s + " " + k + " ==")
+                        print(v)
                 else:
+                    print("== " + s + " ==")
                     print(obj)
         print("File sets:")
         for s in self.file_sets:
@@ -327,4 +329,7 @@ class Core:
                 for f in s.file:
                     print("  {} {} {}".format(f.name.ljust(_longest_name),
                                               f.file_type.ljust(_longest_type),
-                                              f.is_include_file))
+                                              "(include file)" if f.is_include_file else ""))
+        if self.main.backend:
+            print("\n== Backend " + self.main.backend + " ==")
+            print(self.backend)

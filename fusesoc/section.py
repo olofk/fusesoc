@@ -513,6 +513,12 @@ class QuartusSection(ToolSection):
             self.load_dict(items)
             self.export_files = self.qsys_files + self.sdc_files
 
+    def __str__(self):
+        s = ''
+        for x in ['family', 'device', 'top_module']:
+            s += "{} : {}\n".format(self._members[x]['desc'], getattr(self, x))
+        return s
+
 class ParameterSection(Section):
     TAG = 'parameter'
     named = True
@@ -527,6 +533,13 @@ class ParameterSection(Section):
 
         if items:
             self.load_dict(items)
+    def __str__(self):
+        return """Data type      : {}
+Default value  : {}
+Description    : {}
+Parameter type : {}
+Scope          : {}
+""".format(self.datatype, self.default, self.description, self.paramtype, self.scope)
 
 def load_section(config, section_name, file_name='<unknown>'):
     tmp = section_name.split(' ')
