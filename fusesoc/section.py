@@ -511,7 +511,7 @@ class QuartusSection(ToolSection):
 
         if items:
             self.load_dict(items)
-            self.export_files = self.qsys_files + self.sdc_files
+            self.export_files = self.qsys_files + self.sdc_files + self.tcl_files
 
     def __str__(self):
         s = ''

@@ -252,6 +252,27 @@ class Core:
                                           file    = _files,
                                           usage   = ['sim'],
                                           private = True))
+
+        _bname = self.main.backend
+        _b = self.backend
+        def _append_files(section, file_type):
+            _files = []
+            for f in section:
+                f.file_type = file_type
+                _files.append(f)
+            return _files
+        if _b and _bname in ['quartus']:
+            _files = []
+            if _bname == 'quartus':
+                _files += _append_files(_b.sdc_files, 'SDC')
+                _files += _append_files(_b.tcl_files, 'tclSource')
+
+            if _files:
+                self.file_sets.append(FileSet(name = "backend_files",
+                                              file = _files,
+                                              usage = [_bname],
+                                              private = True))
+
         for k, v in self.fileset.items():
             self.file_sets.append(FileSet(name = k,
                                           file = v.files,
