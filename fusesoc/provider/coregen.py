@@ -28,7 +28,7 @@ class Coregen(object):
         for f in src_files:
             f_src = os.path.join(self.core_root, f)
             f_dst = os.path.join(self.files_root, f)
-            if(os.path.exists(f_src)):
+            if os.path.exists(f_src):
                 shutil.copyfile(f_src, f_dst)
             else:
                 pr_err('Cannot find file %s' % f_src)
