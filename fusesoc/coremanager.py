@@ -66,7 +66,6 @@ class CoreDB(object):
             found = list(self._cores.values())
         return found
 
-    #FIXME: Fails to request !highest version (wb_sdram_ctrl-0 gets wb_sdram_ctrl-0-r2)
     def solve(self, top_core, tool):
         repo = Repository()
         for core in self._cores.values():
