@@ -1,0 +1,14 @@
+SAPI=1
+[main]
+name = sockit
+description = "Arrow/Terasic SoCKit board"
+
+backend = quartus
+
+[quartus]
+family = "Cyclone V"
+device = 5CSXFC6D6F31C8ES
+sdc_files = data/sockit.sdc
+tcl_files = data/pinmap.tcl
+qsys_files = data/sockit.qsys
+quartus_options = --64bit

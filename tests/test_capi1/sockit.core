@@ -1,0 +1,30 @@
+CAPI=1
+[main]
+name = sockit
+description = "Arrow/Terasic SoCKit board"
+
+depend =
+ jtag_tap
+ wb_intercon
+ adv_debug_sys
+ mor1kx
+ uart16550-1.5
+ gpio
+ paramtest
+ vga_lcd
+
+simulators =
+ icarus
+
+[verilog]
+src_files =
+ rtl/verilog/clkgen.v
+ rtl/verilog/orpsoc_top.v
+ rtl/verilog/rom.v
+ rtl/verilog/wb_intercon.v
+
+include_files =
+ rtl/verilog/include/orpsoc-defines.v
+ rtl/verilog/include/timescale.v
+ rtl/verilog/include/uart_defines.v
+ rtl/verilog/wb_intercon.vh

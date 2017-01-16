@@ -1,0 +1,51 @@
+CAPI=1
+[main]
+name = sockit
+description = "Arrow/Terasic SoCKit board"
+backend = quartus
+depend =
+ jtag_tap
+ wb_intercon
+ adv_debug_sys
+ mor1kx
+ uart16550-1.5
+ gpio
+ paramtest
+ vga_lcd
+
+simulators =
+ icarus
+
+[verilog]
+src_files =
+ rtl/verilog/clkgen.v
+ rtl/verilog/orpsoc_top.v
+ rtl/verilog/rom.v
+ rtl/verilog/wb_intercon.v
+
+include_files =
+ rtl/verilog/include/orpsoc-defines.v
+ rtl/verilog/include/timescale.v
+ rtl/verilog/include/uart_defines.v
+ rtl/verilog/wb_intercon.vh
+
+[fileset file_types]
+files =
+ vhdl_file.vhd[file_type=vhdlSource]
+ sv_file.sv[file_type=systemVerilogSource]
+ qip_file.qip[file_type=QIP]
+ user_file[file_type=user]
+ other_file[file_type=xdc]
+
+[fileset qsys]
+files = data/sockit.qsys
+file_type = QSYS
+usage = quartus
+
+[quartus]
+family = "Cyclone V"
+device = 5CSXFC6D6F31C8ES
+sdc_files = data/sockit.sdc
+tcl_files = data/pinmap.tcl
+qsys_files = data/sockit.qsys
+quartus_options = --64bit

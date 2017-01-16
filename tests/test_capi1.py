@@ -52,6 +52,33 @@ def test_ise():
 
     assert core.ise.warnings == []
 
+def test_quartus():
+    filename = os.path.join(os.path.dirname(__file__),
+                            __name__,
+                            "sockit.core")
+    core = Core(filename)
+
+    #Check filesets
+    assert len(core.file_sets) == 4
+    assert core.file_sets[0].name == 'verilog_src_files'
+    assert core.file_sets[1].name == 'verilog_tb_src_files'
+    assert core.file_sets[2].name == 'verilog_tb_private_src_files'
+
+    #Check that backend files are converted to fileset properly
+    assert len(core.file_sets[3].file) == 3
+    compare_fileset(core.file_sets[3], 'backend_files', ['data/sockit.qsys', 'data/sockit.sdc', 'data/pinmap.tcl'])
+    assert core.file_sets[3].file[0].file_type == 'QSYS'
+    assert core.file_sets[3].file[1].file_type == 'SDC'
+    assert core.file_sets[3].file[2].file_type == 'tclSource'
+
+    #Check backend section
+    assert core.quartus.quartus_options == '--64bit'
+    assert core.quartus.family == '"Cyclone V"'
+    assert core.quartus.device == '5CSXFC6D6F31C8ES'
+    assert core.quartus.top_module == ''
+
+    assert core.quartus.warnings == []
+
 def test_simulator():
     #Explicit toplevel
     filename = os.path.join(os.path.dirname(__file__),
