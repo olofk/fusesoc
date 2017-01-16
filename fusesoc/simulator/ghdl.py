@@ -17,8 +17,6 @@ class Ghdl(Simulator):
             if self.system.ghdl is not None:
                 args += self.system.ghdl.analyze_options[:]
             _supported = True
-            if not f.logical_name:
-                f.logical_name = 'work'
             if f.file_type == "vhdlSource":
                 pass
             elif f.file_type == "vhdlSource-87":
@@ -33,7 +31,8 @@ class Ghdl(Simulator):
                                   f.file_type))
                 _supported = False
             if _supported:
-                args += ['--work='+f.logical_name]
+                if f.logical_name:
+                    args += ['--work='+f.logical_name]
                 args += [f.name]
                 Launcher(cmd, args,
                          cwd      = self.work_root,
