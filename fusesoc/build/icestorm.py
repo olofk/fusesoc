@@ -36,19 +36,6 @@ ARACHNE_PNR_OPTIONS := {arachne_pnr_options}
         with open(os.path.join(self.work_root, 'Makefile'), 'w') as makefile:
             makefile.write(self.MAKEFILE_TEMPLATE)
 
-
-        # Write config.mk
-        _pcf_file = os.path.relpath(os.path.join(self.src_root,
-                                                 self.system.sanitized_name,
-                                                 self.backend.pcf_file[0].name),
-                                    self.work_root)
-
-        with open(os.path.join(self.work_root, 'config.mk'), 'w') as config_mk:
-            config_mk.write(self.CONFIG_MK_TEMPLATE.format(
-                target              =  self.system.sanitized_name,
-                pcf_file            = _pcf_file,
-                arachne_pnr_options = ' '.join(self.backend.arachne_pnr_options)))
-
         # Write yosys script file
         (src_files, incdirs) = self._get_fileset_files(['synth', 'icestorm'])
         with open(os.path.join(self.work_root, self.system.sanitized_name+'.ys'), 'w') as yosys_file:
@@ -57,10 +44,12 @@ ARACHNE_PNR_OPTIONS := {arachne_pnr_options}
             if incdirs:
                 yosys_file.write("verilog_defaults -add {}\n".format(' '.join(['-I'+d for d in incdirs])))
 
+            pcf_files = []
             for f in src_files:
                 if f.file_type in ['verilogSource']:
-                    yosys_file.write("read_verilog {}\n".format(
-                                                                   f.name))
+                    yosys_file.write("read_verilog {}\n".format(f.name))
+                elif f.file_type == 'PCF':
+                    pcf_files.append(f.name)
             for key, value in self.vlogparam.items():
                 _s = "chparam -set {} {} $abstract\{}\n"
                 yosys_file.write(_s.format(key,
@@ -75,6 +64,16 @@ ARACHNE_PNR_OPTIONS := {arachne_pnr_options}
                 yosys_file.write(" -top " + self.backend.top_module)
             yosys_file.write("\n")
 
+        if not pcf_files:
+            raise RuntimeError("Icestorm backend requires a PCF file")
+        elif len(pcf_files) > 1:
+            raise RuntimeError("Icestorm backend supports only one PCF file. Found {}".format(', '.join(pcf_files)))
+        # Write config.mk
+        with open(os.path.join(self.work_root, 'config.mk'), 'w') as config_mk:
+            config_mk.write(self.CONFIG_MK_TEMPLATE.format(
+                target              =  self.system.sanitized_name,
+                pcf_file            = pcf_files[0],
+                arachne_pnr_options = ' '.join(self.backend.arachne_pnr_options)))
 
     def build(self, args):
         super(Icestorm, self).build(args)
