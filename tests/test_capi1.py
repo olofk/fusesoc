@@ -33,16 +33,17 @@ def test_ise():
     core = Core(filename)
 
     #Check filesets
-    assert len(core.file_sets) == 3
+    assert len(core.file_sets) == 4
     assert core.file_sets[0].name == 'verilog_src_files'
     assert core.file_sets[1].name == 'verilog_tb_src_files'
     assert core.file_sets[2].name == 'verilog_tb_private_src_files'
 
+    #Check that backend files are converted to fileset properly
+    compare_fileset(core.file_sets[3], 'backend_files', ['data/atlys.ucf'])
+    assert core.file_sets[3].file[0].file_type == 'UCF'
+
     #Check backend section
-    assert len(core.ise.export_files) == 1
-    assert core.ise.export_files[0].name == 'data/atlys.ucf'
-    assert len(core.ise.ucf_files) == 1
-    assert core.ise.ucf_files[0].name == 'data/atlys.ucf'
+    assert core.ise.export_files == []
     assert core.ise.family == 'spartan6'
     assert core.ise.device == 'xc6slx45'
     assert core.ise.package == 'csg324'

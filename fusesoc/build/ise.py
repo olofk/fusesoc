@@ -58,25 +58,26 @@ quit
         if incdirs:
             tcl_file.write('project set "Verilog Include Directories" "{}" -process "Synthesize - XST"\n'.format('|'.join(incdirs)))
 
-        _ucf_path = os.path.relpath(os.path.join(self.src_root, self.system.sanitized_name), self.work_root)
-        ucf_files = [os.path.join(_ucf_path, f.name) for f in self.backend.ucf_files]
-
         _libraries = []
         for f in src_files:
-            if f.logical_name:
-                if not f.logical_name in _libraries:
-                    tcl_file.write('lib_vhdl new {}\n'.format(f.logical_name))
-                    _libraries.append(f.logical_name)
-                _s = 'xfile add {} -lib_vhdl {}\n'
-                tcl_file.write(_s.format(f.name,
-                                         f.logical_name))
-            else:
+            if f.file_type == 'tclSource':
+                tcl_file.write('source {}\n'.format(f.name))
+            elif f.file_type.startswith('verilogSource'):
                 tcl_file.write('xfile add {}\n'.format(f.name))
-        for f in ucf_files:
-            tcl_file.write('xfile add {}\n'.format(f))
-
-        for f in self.backend.tcl_files:
-            tcl_file.write(open(os.path.join(self.system.files_root, f.name)).read())
+            elif f.file_type == 'UCF':
+                tcl_file.write('xfile add {}\n'.format(f.name))
+            elif f.file_type.startswith('vhdlSource'):
+                if f.logical_name:
+                    if not f.logical_name in _libraries:
+                        tcl_file.write('lib_vhdl new {}\n'.format(f.logical_name))
+                        _libraries.append(f.logical_name)
+                    _s = 'xfile add {} -lib_vhdl {}\n'
+                    tcl_file.write(_s.format(f.name,
+                                             f.logical_name))
+                else:
+                    tcl_file.write('xfile add {}\n'.format(f.name))
+            elif f.file_type == 'user':
+                pass
 
         tcl_file.write('project set top "{}"\n'.format(self.backend.top_module))
         tcl_file.write(self.TCL_FUNCTIONS)

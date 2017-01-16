@@ -262,11 +262,15 @@ class Core:
                 f.file_type = file_type
                 _files.append(f)
             return _files
-        if _b and _bname in ['icestorm', 'quartus']:
+        if _b and _bname in ['icestorm', 'ise', 'quartus']:
             _files = []
             if _bname == 'icestorm':
                 _files += _append_files(_b.pcf_file, 'PCF')
                 del(_b.pcf_file)
+            elif _bname == 'ise':
+                _files += _append_files(_b.tcl_files, 'tclSource')
+                _files += _append_files(_b.ucf_files, 'UCF')
+                del(_b.ucf_files)
             elif _bname == 'quartus':
                 _files += _append_files(_b.sdc_files, 'SDC')
                 _files += _append_files(_b.tcl_files, 'tclSource')
