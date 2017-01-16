@@ -458,7 +458,6 @@ class IcestormSection(ToolSection):
 
         if items:
             self.load_dict(items)
-            self.export_files = self.pcf_file
 
 class VivadoSection(ToolSection):
 
@@ -491,7 +490,6 @@ class IseSection(ToolSection):
 
         if items:
             self.load_dict(items)
-            self.export_files = self.ucf_files
 
 class QuartusSection(ToolSection):
 
@@ -511,7 +509,6 @@ class QuartusSection(ToolSection):
 
         if items:
             self.load_dict(items)
-            self.export_files = self.qsys_files + self.sdc_files + self.tcl_files
 
     def __str__(self):
         s = ''

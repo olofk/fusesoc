@@ -274,7 +274,6 @@ class Core:
             elif _bname == 'quartus':
                 _files += _append_files(_b.sdc_files, 'SDC')
                 _files += _append_files(_b.tcl_files, 'tclSource')
-            _b.export_files = []
             if _files:
                 self.file_sets.append(FileSet(name = "backend_files",
                                               file = _files,
