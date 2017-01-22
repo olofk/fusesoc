@@ -47,6 +47,10 @@ class Launcher:
     def __str__(self):
         return ' '.join([self.cmd] + self.args)
 
+def cygpath(win_path):
+    path = subprocess.check_output(["cygpath", "-u", win_path])
+    return path.decode('ascii').strip()
+
 #Copied from http://twistedmatrix.com/trac/browser/tags/releases/twisted-8.2.0/twisted/python/procutils.py
 
 #Permission is hereby granted, free of charge, to any person obtaining
