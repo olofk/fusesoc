@@ -17,7 +17,6 @@ else:
 from fusesoc.config import Config
 from fusesoc.coremanager import CoreManager, DependencyError
 from fusesoc.vlnv import Vlnv
-from fusesoc.core import OptionSectionMissing
 from fusesoc.utils import pr_err, pr_info, pr_warn, Launcher
 
 import logging
@@ -208,9 +207,6 @@ def sim(args):
         exit(1)
     except ImportError:
         pr_err("Unknown simulator '{}'".format(sim_name))
-        exit(1)
-    except OptionSectionMissing as e:
-        pr_err("'" + args.system + "' miss a mandatory parameter for " + sim_name + " simulation (" + e.value + ")")
         exit(1)
     except RuntimeError as e:
         pr_err(str(e))

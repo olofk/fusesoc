@@ -21,12 +21,6 @@ class FileSet(object):
         self.usage   = usage
         self.private = private
 
-class OptionSectionMissing(Exception):
-    def __init__(self, value):
-        self.value = value
-    def __str__(self):
-        return repr(self.value)
-
 class Core:
     def __init__(self, core_file):
         basename = os.path.basename(core_file)

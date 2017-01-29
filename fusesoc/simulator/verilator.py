@@ -6,7 +6,6 @@ import shutil
 from fusesoc.config import Config
 from fusesoc import utils
 from fusesoc.utils import pr_info
-from fusesoc.core import OptionSectionMissing
 from .simulator import Simulator
 
 logger = logging.getLogger(__name__)
@@ -37,10 +36,9 @@ class Verilator(Simulator):
              self.fusesoc_cli_parser = system.verilator.cli_parser and (system.verilator.cli_parser == 'fusesoc')
 
         if self.top_module == '':
-            raise OptionSectionMissing('top_module')
+            raise RuntimeError("'" + system.name.name + "' miss a mandatory parameter 'top_module'")
         if self.tb_toplevel == '':
-            raise OptionSectionMissing('tb_toplevel')
-
+            raise RuntimeError("'" + system.name.name + "' miss a mandatory parameter 'tb_toplevel'")
 
     def export(self):
         src_dir = self.system.files_root
