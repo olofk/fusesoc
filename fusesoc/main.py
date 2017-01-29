@@ -16,7 +16,6 @@ else:
 
 from fusesoc.config import Config
 from fusesoc.coremanager import CoreManager, DependencyError
-from fusesoc.simulator.verilator import Source
 from fusesoc.vlnv import Vlnv
 from fusesoc.core import OptionSectionMissing
 from fusesoc.utils import pr_err, pr_info, pr_warn, Launcher
@@ -230,9 +229,6 @@ def sim(args):
             exit(0)
         try:
             sim.build()
-        except Source as e:
-            pr_err("'" + e.value + "' source type is not valid. Choose 'C' or 'systemC'")
-            exit(1)
         except RuntimeError as e:
             pr_err("Failed to build simulation model")
             pr_err(str(e))

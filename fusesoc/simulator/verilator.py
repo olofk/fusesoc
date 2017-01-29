@@ -11,13 +11,6 @@ from .simulator import Simulator
 
 logger = logging.getLogger(__name__)
 
-class Source(Exception):
-    def __init__(self, value):
-        self.value = value
-    def __str__(self):
-        return repr(self.value)
-
-
 class Verilator(Simulator):
 
     def __init__(self, system):
@@ -176,7 +169,7 @@ class Verilator(Simulator):
         elif source_type == 'systemC':
             self.build_SysC(core, work_root, src_root)
         else:
-            raise Source(core.verilator.source_type)
+            raise RuntimeError("'" + source_type + "' source type is not valid. Choose 'C' or 'systemC'")
 
         if core.verilator._object_files:
             args = []
