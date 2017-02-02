@@ -247,6 +247,13 @@ class Core:
                                           usage   = ['sim'],
                                           private = True))
 
+
+        for k, v in self.fileset.items():
+            self.file_sets.append(FileSet(name = k,
+                                          file = v.files,
+                                          usage = v.usage,
+                                          private = (v.scope == 'private')))
+
         _bname = self.main.backend
         _b = self.backend
         def _append_files(section, file_type):
@@ -266,12 +273,6 @@ class Core:
                                               file = _files,
                                               usage = [_bname],
                                               private = True))
-
-        for k, v in self.fileset.items():
-            self.file_sets.append(FileSet(name = k,
-                                          file = v.files,
-                                          usage = v.usage,
-                                          private = (v.scope == 'private')))
 
     def _parse_component(self, component_file):
         component = Component()
