@@ -1,0 +1,28 @@
+CAPI=1
+[main]
+
+simulators = icarus
+
+[fileset rtl_files]
+files =
+ c3demo.v
+ ledpanel.v
+ picorv32.v
+file_type = verilogSource
+
+[fileset tb_files]
+files =
+ firmware.hex[is_include_file]
+ $YOSYS_DAT_DIR/ice40/cells_sim.v
+ testbench.v
+file_type = verilogSource
+usage = sim
+
+[simulator]
+toplevel = testbench
+
+[parameter firmware_file]
+datatype = file
+description = "Firmware"
+paramtype = vlogparam
+scope = private

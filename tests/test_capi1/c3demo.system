@@ -1,0 +1,9 @@
+SAPI=1
+[main]
+
+backend = icestorm
+
+[icestorm]
+arachne_pnr_options = -s 1 -d 8k
+pcf_file = c3demo.pcf
+top_module = c3demo
