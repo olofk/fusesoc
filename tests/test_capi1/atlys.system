@@ -1,0 +1,14 @@
+SAPI=1
+[main]
+name = atlys
+description = "OR1K system for the Digilent Atlys development board"
+
+backend = ise
+
+[ise]
+ucf_files = data/atlys.ucf
+family = spartan6
+device = xc6slx45
+package = csg324
+speed = -2
+top_module = orpsoc_top

@@ -27,3 +27,27 @@ def test_icestorm():
     assert core.icestorm.top_module == 'c3demo'
     assert core.icestorm.warnings == []
     
+def test_ise():
+    filename = os.path.join(os.path.dirname(__file__),
+                            __name__,
+                            "atlys.core")
+    core = Core(filename)
+
+    #Check filesets
+    assert len(core.file_sets) == 3
+    assert core.file_sets[0].name == 'verilog_src_files'
+    assert core.file_sets[1].name == 'verilog_tb_src_files'
+    assert core.file_sets[2].name == 'verilog_tb_private_src_files'
+
+    #Check backend section
+    assert len(core.ise.export_files) == 1
+    assert core.ise.export_files[0].name == 'data/atlys.ucf'
+    assert len(core.ise.ucf_files) == 1
+    assert core.ise.ucf_files[0].name == 'data/atlys.ucf'
+    assert core.ise.family == 'spartan6'
+    assert core.ise.device == 'xc6slx45'
+    assert core.ise.package == 'csg324'
+    assert core.ise.speed == '-2'
+    assert core.ise.top_module == 'orpsoc_top'
+
+    assert core.ise.warnings == []

@@ -1,0 +1,50 @@
+CAPI=1
+[main]
+depend =
+ ac97
+ adv_debug_sys
+ diila
+ ethmac
+ gpio
+ jtag_tap
+ mor1kx-3.1
+ or1200-r2
+ ps2
+ simple_spi
+ uart16550-1.5
+ vga_lcd
+ wb_intercon-1.0
+
+[verilog]
+src_files =
+ rtl/verilog/orpsoc_top.v
+ rtl/verilog/clkgen.v
+ rtl/verilog/rom.v
+ rtl/verilog/wb_intercon.v
+ rtl/verilog/xilinx_ddr2/ddr2_mig.v
+ rtl/verilog/xilinx_ddr2/infrastructure.v
+ rtl/verilog/xilinx_ddr2/iodrp_controller.v
+ rtl/verilog/xilinx_ddr2/iodrp_mcb_controller.v
+ rtl/verilog/xilinx_ddr2/mcb_raw_wrapper.v
+ rtl/verilog/xilinx_ddr2/mcb_soft_calibration_top.v
+ rtl/verilog/xilinx_ddr2/mcb_soft_calibration.v
+ rtl/verilog/xilinx_ddr2/mcb_ui_top.v
+ rtl/verilog/xilinx_ddr2/memc_wrapper.v
+ rtl/verilog/xilinx_ddr2/xilinx_ddr2_if.v
+ rtl/verilog/xilinx_ddr2/xilinx_ddr2.v
+ rtl/verilog/dvi_gen/convert_30to15_fifo.v
+ rtl/verilog/dvi_gen/dcmspi.v
+ rtl/verilog/dvi_gen/DRAM16XN.v
+ rtl/verilog/dvi_gen/dvi_encoder.v
+ rtl/verilog/dvi_gen/dvi_gen_top.v
+ rtl/verilog/dvi_gen/encode.v
+ rtl/verilog/dvi_gen/serdes_n_to_1.v
+ rtl/verilog/dvi_gen/synchro.v
+
+include_files =
+ rtl/verilog/include/or1200_defines.v
+ rtl/verilog/include/orpsoc-defines.v
+ rtl/verilog/include/timescale.v
+ rtl/verilog/include/uart_defines.v
+ rtl/verilog/wb_intercon.vh
+ rtl/verilog/include/xilinx_ddr2_params.v
