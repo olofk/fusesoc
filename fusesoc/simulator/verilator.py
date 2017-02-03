@@ -146,6 +146,9 @@ class Verilator(Simulator):
         # Do parallel builds with <number of cpus> * 2 jobs.
         make_job_count = multiprocessing.cpu_count() * 2
 
+        # Do parallel builds with <number of cpus> * 2 jobs.
+        make_job_count = multiprocessing.cpu_count() * 2
+
         pr_info("Building verilator executable:")
         args = ['-f', 'V' + self.top_module + '.mk', '-j', str(make_job_count), 'V' + self.top_module]
         l = utils.Launcher('make', args,
