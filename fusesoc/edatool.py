@@ -25,8 +25,9 @@ class FileAction(argparse.Action):
 
 class EdaTool(object):
 
-    def __init__(self, system):
+    def __init__(self, system, export):
         self.system = system
+        self.export = export
         self.TOOL_NAME = self.__class__.__name__.lower()
         build_root = os.path.join(Config().build_root, self.system.sanitized_name)
 
@@ -68,7 +69,9 @@ class EdaTool(object):
                 raise RuntimeError("Problem while fetching '" + core.name + "': " + str(e.reason))
             except HTTPError as e:
                 raise RuntimeError("Problem while fetching '" + core.name + "': " + str(e.reason))
-            core.export(dst_dir)
+
+            if self.export:
+                core.export(dst_dir)
 
     def parse_args(self, args, prog, paramtypes):
         typedict = {'bool' : {'action' : 'store_true'},
@@ -132,7 +135,11 @@ class EdaTool(object):
         incdirs = set()
         src_files = []
         for core in self.cores:
-            basepath = os.path.relpath(os.path.join(self.src_root, core.sanitized_name), self.work_root)
+            if self.export:
+                files_root = os.path.join(self.src_root, core.sanitized_name)
+            else:
+                files_root = core.files_root
+            basepath = os.path.relpath(files_root, self.work_root)
             for fs in core.file_sets:
                 if (set(fs.usage) & set(usage)) and ((core.name == self.system.name) or not fs.private):
                     for file in fs.file:

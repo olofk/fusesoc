@@ -15,8 +15,8 @@ class Simulator(EdaTool):
 
     TOOL_TYPE = 'sim'
 
-    def __init__(self, system):
-        super(Simulator, self).__init__(system)
+    def __init__(self, system, export):
+        super(Simulator, self).__init__(system, export)
 
         logger.debug( "depend -->  " +str (self.cores))
         if 'toplevel' in self.system.simulator:
@@ -32,7 +32,10 @@ class Simulator(EdaTool):
 
             if core.vpi:
                 vpi_module = {}
-                core_root = os.path.join(self.src_root, core.sanitized_name)
+                if self.export:
+                    core_root = os.path.join(self.src_root, core.sanitized_name)
+                else:
+                    core_root = core.files_root
                 vpi_module['root']          = os.path.relpath(core_root, self.work_root)
                 vpi_module['include_dirs']  = [os.path.join(vpi_module['root'], d) for d in core.vpi.include_dirs]
                 vpi_module['src_files']     = [os.path.relpath(os.path.join(core_root, f.name), self.work_root) for f in core.vpi.src_files]

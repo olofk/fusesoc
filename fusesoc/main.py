@@ -64,7 +64,7 @@ def build(args):
     core = _get_core(args.system, True)
 
     try:
-        backend =_import('build', core.main.backend)(core)
+        backend =_import('build', core.main.backend)(core, export=True)
     except ImportError:
         pr_err('Backend "{}" not found'.format(core.main.backend))
         exit(1)
@@ -201,7 +201,7 @@ def sim(args):
         exit(1)
     try:
         CoreManager().tool = sim_name
-        sim = _import('simulator', sim_name)(core)
+        sim = _import('simulator', sim_name)(core, export=True)
     except DependencyError as e:
         pr_err("'" + args.system + "' or any of its dependencies requires '" + e.value + "', but this core was not found")
         exit(1)

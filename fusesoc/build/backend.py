@@ -12,8 +12,8 @@ class Backend(EdaTool):
 
     TOOL_TYPE = 'bld'
 
-    def __init__(self, system):
-        super(Backend, self).__init__(system)
+    def __init__(self, system, export):
+        super(Backend, self).__init__(system, export)
 
         self.backend = self.system.backend
         self.env['SYSTEM_ROOT'] = os.path.abspath(self.system.files_root)

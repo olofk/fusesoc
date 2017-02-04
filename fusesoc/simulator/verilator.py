@@ -12,8 +12,8 @@ logger = logging.getLogger(__name__)
 
 class Verilator(Simulator):
 
-    def __init__(self, system):
-        super(Verilator, self).__init__(system)
+    def __init__(self, system, export):
+        super(Verilator, self).__init__(system, export)
 
         self.verilator_options = []
         self.src_files = []
