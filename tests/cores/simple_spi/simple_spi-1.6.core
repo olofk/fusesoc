@@ -1,0 +1,14 @@
+CAPI=1
+[main]
+description = "OpenCores SPI Core"
+
+[verilog]
+src_files =
+ rtl/verilog/fifo4.v
+ rtl/verilog/simple_spi_top.v
+
+[provider]
+name = github
+user = olofk
+repo = simple_spi
+version = v1.6

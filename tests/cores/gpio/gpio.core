@@ -1,0 +1,6 @@
+CAPI=1
+[main]
+description = Simple 8-bit gpio core
+
+[verilog]
+src_files = gpio.v

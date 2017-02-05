@@ -1,0 +1,19 @@
+CAPI=1
+[main]
+
+[fileset src_files]
+files = 
+ rtl/vhdl/suv/libstorage_pkg.vhd
+ rtl/vhdl/suv/dpram_generic.vhd
+ rtl/vhdl/suv/fifo_fwft_adapter.vhd
+ rtl/vhdl/suv/fifo_generic.vhd
+ rtl/vhdl/suv/fifo_fwft_generic.vhd
+file_type = vhdlSource-2008
+logical_name=libstorage_1
+usage = sim synth
+
+[provider]
+name = github
+user = olofk
+repo = libstorage
+version = master

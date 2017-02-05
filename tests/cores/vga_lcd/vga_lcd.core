@@ -1,0 +1,30 @@
+CAPI=1
+[main]
+description = "VGA/LCD Controller core"
+
+[verilog]
+src_files =
+ rtl/verilog/generic_dpram.v
+ rtl/verilog/generic_spram.v
+ rtl/verilog/timescale.v
+ rtl/verilog/vga_clkgen.v
+ rtl/verilog/vga_colproc.v
+ rtl/verilog/vga_csm_pb.v
+ rtl/verilog/vga_cur_cregs.v
+ rtl/verilog/vga_curproc.v
+ rtl/verilog/vga_enh_top.v
+ rtl/verilog/vga_fifo_dc.v
+ rtl/verilog/vga_fifo.v
+ rtl/verilog/vga_pgen.v
+ rtl/verilog/vga_tgen.v
+ rtl/verilog/vga_vtim.v
+ rtl/verilog/vga_wb_master.v
+ rtl/verilog/vga_wb_slave.v
+include_files =
+ rtl/verilog/vga_defines.v
+
+[provider]
+name = github
+user = olofk
+repo = vga_lcd
+version = 4c0f93996e5bdba8f20edd6c83f527882a890284

@@ -1,0 +1,28 @@
+CAPI=1
+[main]
+
+[verilog]
+
+src_files =
+ Hardware/adv_dbg_if/rtl/verilog/adbg_wb_biu.v
+ Hardware/adv_dbg_if/rtl/verilog/adbg_or1k_status_reg.v
+ Hardware/adv_dbg_if/rtl/verilog/adbg_jsp_biu.v
+ Hardware/adv_dbg_if/rtl/verilog/adbg_or1k_module.v
+ Hardware/adv_dbg_if/rtl/verilog/syncflop.v
+ Hardware/adv_dbg_if/rtl/verilog/adbg_crc32.v
+ Hardware/adv_dbg_if/rtl/verilog/adbg_jsp_module.v
+ Hardware/adv_dbg_if/rtl/verilog/adbg_top.v
+ Hardware/adv_dbg_if/rtl/verilog/bytefifo.v
+ Hardware/adv_dbg_if/rtl/verilog/adbg_or1k_biu.v
+ Hardware/adv_dbg_if/rtl/verilog/adbg_or1k_defines.v
+ Hardware/adv_dbg_if/rtl/verilog/syncreg.v
+ Hardware/adv_dbg_if/rtl/verilog/adbg_wb_module.v
+include_files = 
+ Hardware/adv_dbg_if/rtl/verilog/adbg_defines.v
+ Hardware/adv_dbg_if/rtl/verilog/adbg_wb_defines.v
+ 
+[provider]
+name = github
+user = olofk
+repo = adv_debug_sys
+version = 9a2a713b9bd11f536fa8fe3de8367674e9106dd2

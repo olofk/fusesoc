@@ -1,0 +1,60 @@
+CAPI=1
+[main]
+description = Ethernet MAC 10/100 Mbps
+simulators = icarus modelsim
+[verilog]
+src_files =
+ rtl/verilog/eth_clockgen.v
+ rtl/verilog/eth_cop.v
+ rtl/verilog/eth_crc.v
+ rtl/verilog/eth_fifo.v
+ rtl/verilog/eth_maccontrol.v
+ rtl/verilog/eth_macstatus.v
+ rtl/verilog/eth_miim.v
+ rtl/verilog/eth_outputcontrol.v
+ rtl/verilog/eth_random.v
+ rtl/verilog/eth_receivecontrol.v
+ rtl/verilog/eth_register.v
+ rtl/verilog/eth_registers.v
+ rtl/verilog/eth_rxaddrcheck.v
+ rtl/verilog/eth_rxcounters.v
+ rtl/verilog/eth_rxethmac.v
+ rtl/verilog/eth_rxstatem.v
+ rtl/verilog/eth_shiftreg.v
+ rtl/verilog/eth_spram_256x32.v
+ rtl/verilog/eth_top.v
+ rtl/verilog/eth_transmitcontrol.v
+ rtl/verilog/eth_txcounters.v
+ rtl/verilog/eth_txethmac.v
+ rtl/verilog/eth_txstatem.v
+ rtl/verilog/eth_wishbone.v
+ rtl/verilog/ethmac.v
+ rtl/verilog/ethmac_defines.v
+ rtl/verilog/xilinx_dist_ram_16x32.v
+
+include_files =  rtl/verilog/timescale.v
+
+tb_include_files = bench/verilog/tb_eth_defines.v
+
+tb_private_src_files =
+ bench/verilog/eth_host.v
+ bench/verilog/eth_memory.v
+ bench/verilog/eth_phy.v
+ bench/verilog/eth_phy_defines.v
+ bench/verilog/tb_cop.v
+ bench/verilog/tb_ethernet.v
+ bench/verilog/tb_ethernet_with_cop.v
+ bench/verilog/wb_bus_mon.v
+ bench/verilog/wb_master32.v
+ bench/verilog/wb_master_behavioral.v
+ bench/verilog/wb_model_defines.v
+ bench/verilog/wb_slave_behavioral.v
+
+[simulator]
+toplevel = tb_ethernet
+
+[provider]
+name = opencores
+repo_name = ethmac
+repo_root = trunk
+revision = 368

@@ -1,0 +1,13 @@
+CAPI=1
+[main]
+description = Device Independent Integrated Logic Analyzer
+
+[verilog]
+src_files =
+ rtl/verilog/diila.v
+
+[provider]
+name = github
+user = skristiansson
+repo = diila
+branch = master

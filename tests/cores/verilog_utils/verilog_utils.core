@@ -1,0 +1,6 @@
+CAPI=1
+[main]
+description = "Verilog utility functions"
+
+[verilog]
+include_files = verilog_utils.vh

@@ -1,0 +1,8 @@
+CAPI=1
+[main]
+description = PS/2 core with wishbone interface
+
+[verilog]
+src_files =
+ verilog/ps2.v
+ verilog/ps2_wb.v

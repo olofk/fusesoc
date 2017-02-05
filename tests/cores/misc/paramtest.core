@@ -1,0 +1,38 @@
+CAPI=1
+[main]
+
+[parameter vlogparam_bool]
+datatype  = bool
+description = boolean verilog parameter
+paramtype = vlogparam
+scope = public
+
+[parameter vlogparam_int]
+datatype  = int
+description = integer verilog parameter
+paramtype = vlogparam
+scope = public
+
+[parameter vlogparam_str]
+datatype  = str
+description = string verilog parameter
+paramtype = vlogparam
+scope = public
+
+[parameter vlogdefine_bool]
+datatype  = bool
+description = boolean verilog define
+paramtype = vlogdefine
+scope = public
+
+[parameter vlogdefine_int]
+datatype  = int
+description = integer verilog define
+paramtype = vlogdefine
+scope = public
+
+[parameter vlogdefine_str]
+datatype  = str
+description = string verilog define
+paramtype = vlogdefine
+scope = public

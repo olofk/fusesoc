@@ -1,0 +1,12 @@
+CAPI=1
+[main]
+description = JTAG Tap
+
+[verilog]
+src_files = tap/rtl/verilog/tap_top.v
+
+[provider]
+name = github
+user = olofk
+repo = jtag
+version = v1.13

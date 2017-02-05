@@ -1,0 +1,8 @@
+CAPI=1
+[main]
+description = Common utility functions and parameters for the Wishbone bus
+
+[verilog]
+include_files =
+ wb_common_params.v
+ wb_common.v

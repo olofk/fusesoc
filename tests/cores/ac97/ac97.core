@@ -1,0 +1,30 @@
+CAPI=1
+[main]
+description = "OpenCores AC97 Controller core"
+
+[verilog]
+src_files =
+ ac97_cra.v
+ ac97_dma_if.v
+ ac97_dma_req.v
+ ac97_fifo_ctrl.v
+ ac97_in_fifo.v
+ ac97_int.v
+ ac97_out_fifo.v
+ ac97_prc.v
+ ac97_rf.v
+ ac97_rst.v
+ ac97_sin.v
+ ac97_soc.v
+ ac97_sout.v
+ ac97_top.v
+ ac97_wb_if.v
+
+include_files =
+ ac97_defines.v
+
+[provider]
+name = opencores
+repo_name = ac97
+repo_root = trunk/rtl/verilog
+revision = 21

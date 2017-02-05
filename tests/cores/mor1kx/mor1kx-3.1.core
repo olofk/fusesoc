@@ -1,0 +1,67 @@
+CAPI=1
+[main]
+description = "mor1kx CPU"
+
+[verilog]
+src_files =
+ rtl/verilog/mor1kx_branch_prediction.v
+ rtl/verilog/mor1kx_bus_if_avalon.v
+ rtl/verilog/mor1kx_bus_if_wb32.v
+ rtl/verilog/mor1kx_cache_lru.v
+ rtl/verilog/mor1kx_cfgrs.v
+ rtl/verilog/mor1kx_cpu_cappuccino.v
+ rtl/verilog/mor1kx_cpu_espresso.v
+ rtl/verilog/mor1kx_cpu_prontoespresso.v
+ rtl/verilog/mor1kx_cpu.v
+ rtl/verilog/mor1kx_ctrl_cappuccino.v
+ rtl/verilog/mor1kx_ctrl_espresso.v
+ rtl/verilog/mor1kx_ctrl_prontoespresso.v
+ rtl/verilog/mor1kx_dcache.v
+ rtl/verilog/mor1kx_decode_execute_cappuccino.v
+ rtl/verilog/mor1kx_decode.v
+ rtl/verilog/mor1kx_dmmu.v
+ rtl/verilog/mor1kx_execute_alu.v
+ rtl/verilog/mor1kx_execute_ctrl_cappuccino.v
+ rtl/verilog/mor1kx_fetch_cappuccino.v
+ rtl/verilog/mor1kx_fetch_espresso.v
+ rtl/verilog/mor1kx_fetch_prontoespresso.v
+ rtl/verilog/mor1kx_fetch_tcm_prontoespresso.v
+ rtl/verilog/mor1kx_icache.v
+ rtl/verilog/mor1kx_immu.v
+ rtl/verilog/mor1kx_lsu_cappuccino.v
+ rtl/verilog/mor1kx_lsu_espresso.v
+ rtl/verilog/mor1kx_pic.v
+ rtl/verilog/mor1kx_rf_cappuccino.v
+ rtl/verilog/mor1kx_rf_espresso.v
+ rtl/verilog/mor1kx_simple_dpram_sclk.v
+ rtl/verilog/mor1kx_store_buffer.v
+ rtl/verilog/mor1kx_ticktimer.v
+ rtl/verilog/mor1kx_true_dpram_sclk.v
+ rtl/verilog/mor1kx.v
+ rtl/verilog/mor1kx_wb_mux_cappuccino.v
+ rtl/verilog/mor1kx_wb_mux_espresso.v
+
+include_files =
+ rtl/verilog/mor1kx-defines.v
+ rtl/verilog/mor1kx-sprs.v
+ rtl/verilog/mor1kx_utils.vh
+
+tb_src_files = bench/verilog/mor1kx_monitor.v
+
+[parameter trace_enable]
+datatype    = bool
+description = Enable mor1kx instruction trace
+paramtype   = plusarg
+scope       = public
+
+[parameter trace_to_screen]
+datatype    = bool
+description = Output mor1kx instruction trace to screen
+paramtype   = plusarg
+scope       = public
+
+[provider]
+name = github
+user = openrisc
+repo = mor1kx
+version = v3.1

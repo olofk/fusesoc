@@ -1,0 +1,22 @@
+CAPI=1
+[main]
+description = UART 16550 transceiver
+
+[verilog]
+src_files =
+ rtl/verilog/raminfr.v
+ rtl/verilog/uart_debug_if.v
+ rtl/verilog/uart_receiver.v
+ rtl/verilog/uart_regs.v
+ rtl/verilog/uart_rfifo.v
+ rtl/verilog/uart_sync_flops.v
+ rtl/verilog/uart_tfifo.v
+ rtl/verilog/uart_top.v
+ rtl/verilog/uart_transmitter.v
+ rtl/verilog/uart_wb.v
+
+[provider]
+name = github
+user = olofk
+repo = uart16550
+version = rel_5

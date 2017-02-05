@@ -1,0 +1,13 @@
+CAPI=1
+[main]
+description = "Verilog arbiter"
+
+[verilog]
+src_files = src/arbiter.v
+tb_private_src_files = src/arbiter_tb.v
+
+[provider]
+name = github
+user = bmartini
+repo = verilog-arbiter
+version = b79f89e17f0be3b70a513c1a0b456f734a79273a
