@@ -1,4 +1,5 @@
 import argparse
+from collections import OrderedDict
 import os
 import shutil
 import sys
@@ -44,11 +45,11 @@ class EdaTool(object):
         self.env['SRC_ROOT']  = os.path.abspath(self.src_root)
         self.env['WORK_ROOT'] = os.path.abspath(self.work_root)
 
-        self.plusarg     = {}
-        self.vlogparam   = {}
-        self.vlogdefine  = {}
-        self.generic     = {}
-        self.cmdlinearg  = {}
+        self.plusarg     = OrderedDict()
+        self.vlogparam   = OrderedDict()
+        self.vlogdefine  = OrderedDict()
+        self.generic     = OrderedDict()
+        self.cmdlinearg  = OrderedDict()
 
     def configure(self, args):
         if os.path.exists(self.work_root):
@@ -118,7 +119,7 @@ class EdaTool(object):
                     all_params[param_name.replace('-','_')] = param.paramtype
         p = parser.parse_args(args)
 
-        for key,value in vars(p).items():
+        for key,value in sorted(vars(p).items()):
             paramtype = all_params[key]
             if value == True:
                 getattr(self, paramtype)[key] = "true"
