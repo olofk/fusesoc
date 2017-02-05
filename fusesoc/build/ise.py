@@ -12,9 +12,6 @@ project set device {device}
 project set package {package}
 project set speed {speed}
 project set "Generate Detailed MAP Report" true
-project set "Verilog Include Directories" "{verilog_include_dirs}" -process "Synthesize - XST"
-{source_files}
-project set top "{top_module}"
 """
 
     TCL_FUNCTIONS = """
@@ -39,40 +36,49 @@ quit
         self._write_tcl_file()
 
     def _write_tcl_file(self):
-        (src_files, incdirs) = self._get_fileset_files(['synth', 'ise'])
-        _ucf_path = os.path.relpath(os.path.join(self.src_root, self.system.sanitized_name), self.work_root)
-        ucf_files = [os.path.join(_ucf_path, f.name) for f in self.backend.ucf_files]
         tcl_file = open(os.path.join(self.work_root, self.system.sanitized_name+'.tcl'),'w')
-        source_files = ""
-        _libraries = []
-        for f in src_files:
-            if f.logical_name:
-                if not f.logical_name in _libraries:
-                    source_files += 'lib_vhdl new {}\n'.format(f.logical_name)
-                    _libraries.append(f.logical_name)
-                _s = 'xfile add {} -lib_vhdl {}\n'
-                source_files += _s.format(f.name,
-                                          f.logical_name)
-            else:
-                source_files +='xfile add {}\n'.format(f.name)
-        for f in ucf_files:
-            source_files += 'xfile add '+f
+
         tcl_file.write(self.TCL_FILE_TEMPLATE.format(
             design               = self.system.sanitized_name,
             family               = self.backend.family,
             device               = self.backend.device,
             package              = self.backend.package,
-            speed                = self.backend.speed,
-            top_module           = self.backend.top_module,
-            verilog_include_dirs = '|'.join(incdirs),
-            source_files = source_files))
+            speed                = self.backend.speed))
+
+        if self.vlogdefine:
+            s = 'project set "Verilog Macros" "{}" -process "Synthesize - XST"\n'
+            tcl_file.write(s.format('|'.join([k+'='+str(v) for k,v in self.vlogdefine.items()])))
 
         if self.vlogparam:
             s = 'project set "Generics, Parameters" "{}" -process "Synthesize - XST"\n'
             tcl_file.write(s.format('|'.join([k+'='+str(v) for k,v in self.vlogparam.items()])))
+
+        (src_files, incdirs) = self._get_fileset_files(['synth', 'ise'])
+
+        if incdirs:
+            tcl_file.write('project set "Verilog Include Directories" "{}" -process "Synthesize - XST"\n'.format('|'.join(incdirs)))
+
+        _ucf_path = os.path.relpath(os.path.join(self.src_root, self.system.sanitized_name), self.work_root)
+        ucf_files = [os.path.join(_ucf_path, f.name) for f in self.backend.ucf_files]
+
+        _libraries = []
+        for f in src_files:
+            if f.logical_name:
+                if not f.logical_name in _libraries:
+                    tcl_file.write('lib_vhdl new {}\n'.format(f.logical_name))
+                    _libraries.append(f.logical_name)
+                _s = 'xfile add {} -lib_vhdl {}\n'
+                tcl_file.write(_s.format(f.name,
+                                         f.logical_name))
+            else:
+                tcl_file.write('xfile add {}\n'.format(f.name))
+        for f in ucf_files:
+            tcl_file.write('xfile add {}\n'.format(f))
+
         for f in self.backend.tcl_files:
             tcl_file.write(open(os.path.join(self.system.files_root, f.name)).read())
 
+        tcl_file.write('project set top "{}"\n'.format(self.backend.top_module))
         tcl_file.write(self.TCL_FUNCTIONS)
         tcl_file.close()
 

@@ -5,6 +5,8 @@ project set device xc6slx45
 project set package csg324
 project set speed -2
 project set "Generate Detailed MAP Report" true
+project set "Verilog Macros" "vlogdefine_bool=true|vlogdefine_int=42|vlogdefine_str=hello" -process "Synthesize - XST"
+project set "Generics, Parameters" "vlogparam_bool=true|vlogparam_int=42|vlogparam_str="hello"" -process "Synthesize - XST"
 project set "Verilog Include Directories" "../../../../../.cache/fusesoc/ac97_0/|../../../../../.cache/fusesoc/adv_debug_sys_0/Hardware/adv_dbg_if/rtl/verilog|../../../../../.cache/fusesoc/ethmac_0/rtl/verilog|../../../../../.cache/fusesoc/mor1kx_3.1/rtl/verilog|../../../tests/cores/verilog_utils/|../../../../../.cache/fusesoc/vga_lcd_0/rtl/verilog|../../../tests/cores/wb_common/|../../../tests/cores/atlys/rtl/verilog/include|../../../tests/cores/atlys/rtl/verilog" -process "Synthesize - XST"
 xfile add ../../../../../.cache/fusesoc/ac97_0/ac97_cra.v
 xfile add ../../../../../.cache/fusesoc/ac97_0/ac97_dma_if.v
@@ -166,6 +168,5 @@ xfile add ../../../tests/cores/atlys/rtl/verilog/dvi_gen/serdes_n_to_1.v
 xfile add ../../../tests/cores/atlys/rtl/verilog/dvi_gen/synchro.v
 xfile add ../src/atlys_0/data/atlys.ucf
 project set top "orpsoc_top"
-project set "Generics, Parameters" "vlogparam_bool=true|vlogparam_int=42|vlogparam_str="hello"" -process "Synthesize - XST"
 
 process run "Generate Programming File"
