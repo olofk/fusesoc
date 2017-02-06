@@ -10,3 +10,4 @@ script:
   - "fusesoc list-systems"
   - "fusesoc list-cores"
   - "fusesoc update"
+  - "py.test"
