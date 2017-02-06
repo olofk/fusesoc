@@ -20,9 +20,3 @@ src_files =
 include_files = 
  Hardware/adv_dbg_if/rtl/verilog/adbg_defines.v
  Hardware/adv_dbg_if/rtl/verilog/adbg_wb_defines.v
- 
-[provider]
-name = github
-user = olofk
-repo = adv_debug_sys
-version = 9a2a713b9bd11f536fa8fe3de8367674e9106dd2

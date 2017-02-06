@@ -2,20 +2,9 @@ CAPI=1
 [main]
 backend = ise
 depend =
- ac97
  adv_debug_sys
- diila
- ethmac
- gpio
- jtag_tap
  libstorage
- mor1kx-3.1
  paramtest
- ps2
- simple_spi
- uart16550-1.5
- vga_lcd
- wb_intercon-1.0
 
 [verilog]
 src_files =
