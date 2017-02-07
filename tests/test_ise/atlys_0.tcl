@@ -51,6 +51,7 @@ xfile add ../../../cores/atlys/rtl/verilog/dvi_gen/encode.v
 xfile add ../../../cores/atlys/rtl/verilog/dvi_gen/serdes_n_to_1.v
 xfile add ../../../cores/atlys/rtl/verilog/dvi_gen/synchro.v
 xfile add ../src/atlys_0/data/atlys.ucf
+puts "Hi, I'm a backend TCL file"
 project set top "orpsoc_top"
 
 process run "Generate Programming File"

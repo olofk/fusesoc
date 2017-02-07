@@ -46,4 +46,5 @@ family = spartan6
 device = xc6slx45
 package = csg324
 speed = -2
+tcl_files = data/dummy_backend_tcl_file.tcl
 top_module = orpsoc_top
