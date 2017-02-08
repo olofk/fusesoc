@@ -270,12 +270,13 @@ class Core:
             elif _bname == 'quartus':
                 _files += _append_files(_b.sdc_files, 'SDC')
                 _files += _append_files(_b.tcl_files, 'tclSource')
-
+            _b.export_files = []
             if _files:
                 self.file_sets.append(FileSet(name = "backend_files",
                                               file = _files,
                                               usage = [_bname],
                                               private = True))
+                self.export_files += [f.name for f in _files]
 
     def _parse_component(self, component_file):
         component = Component()

@@ -21,8 +21,7 @@ def test_icestorm():
     compare_fileset(core.file_sets[2], 'backend_files', ['c3demo.pcf'])
     assert core.file_sets[2].file[0].file_type == 'PCF'
 
-    assert len(core.icestorm.export_files) == 1
-    assert core.icestorm.export_files[0].name == 'c3demo.pcf'
+    assert core.icestorm.export_files == []
     assert core.icestorm.arachne_pnr_options == ['-s', '1', '-d', '8k']
     assert core.icestorm.top_module == 'c3demo'
     assert core.icestorm.warnings == []
