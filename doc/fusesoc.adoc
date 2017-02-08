@@ -63,6 +63,20 @@ _1 and 2 reside in the same directory and are both parsed. 5 is not parsed since
 
 If several cores with the same VLNV identifier are encountered the latter will replace the former. This can be used to override cores in a library with an alternative core in another library by specifying them in a library that will be parsed later, either temporarily by adding `--cores-root` to the command-line, or permanently by adding the other library at the end of the `cores_root` parameter in the configuration file.
 
+Making changes to cores in a library
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+A common situation is that a user wants to use their own copy of a core, instead of the one provided by a library, for example to fix a bug or add new functionality. The following steps can be used to achieve this:
+
+.Replace a core in a library with a user-specified version
+==========
+1. Create a new directory to keep the user-copies of the cores (this directory will be referred to as `$corelib` from now on)
+2. Download the core source (the repository or URL can be found in the `[provider]` section of the original core)
+3. *If the downloaded core already contains a .core file, this step is ignored* Copy the original .core file to the root of the downloaded core. Edit the file and remove the `[provider]` section. (This will stop FuseSoC from downloading the core and use files from the directory containing the .core file instead)
+4. Add `$corelib` to the end of your library search path, either by editing `fusesoc.conf` or by adding `--cores-root=$corelib` to the command-line arguments
+5. Verify that the new core is found by running fusesoc core-info $core. Check the output to see that "Core root: " is set to the directory where the core was downloaded
+==========
+
 Backends
 --------
 
