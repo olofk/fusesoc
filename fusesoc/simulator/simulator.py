@@ -19,10 +19,6 @@ class Simulator(EdaTool):
         super(Simulator, self).__init__(system, export)
 
         logger.debug( "depend -->  " +str (self.cores))
-        if 'toplevel' in self.system.simulator:
-            self.toplevel = self.system.simulator['toplevel']
-        else:
-            self.toplevel = 'orpsoc_tb'
 
         self._get_vpi_modules()
 

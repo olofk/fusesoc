@@ -52,6 +52,8 @@ class Core:
 
         #FIXME : Make simulators part of the core object
         self.simulator        = config.get_section('simulator')
+        if not 'toplevel' in self.simulator:
+            self.simulator['toplevel'] = 'orpsoc_tb'
 
         for s in section.load_all(config, core_file):
             if type(s) == tuple:

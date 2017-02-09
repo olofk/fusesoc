@@ -51,3 +51,18 @@ def test_ise():
     assert core.ise.top_module == 'orpsoc_top'
 
     assert core.ise.warnings == []
+
+def test_simulator():
+    #Explicit toplevel
+    filename = os.path.join(os.path.dirname(__file__),
+                            __name__,
+                            "c3demo.core")
+    core = Core(filename)
+    assert core.simulator['toplevel'] == 'testbench'
+
+    #Implicit toplevel
+    filename = os.path.join(os.path.dirname(__file__),
+                            __name__,
+                            "atlys.core")
+    core = Core(filename)
+    assert core.simulator['toplevel'] == 'orpsoc_tb'
