@@ -40,7 +40,7 @@ class Verilator(Simulator):
         if self.tb_toplevel == '':
             raise RuntimeError("'" + system.name.name + "' miss a mandatory parameter 'tb_toplevel'")
 
-    def export(self):
+    def _export(self):
         src_dir = self.system.files_root
         dst_dir = os.path.join(self.src_root, self.system.sanitized_name)
         src_files = [f.name for f in self.src_files]
@@ -59,7 +59,7 @@ class Verilator(Simulator):
     def configure(self, args):
         skip = not self.fusesoc_cli_parser
         super(Verilator, self).configure(args, skip_params = skip)
-        self.export()
+        self._export()
         self._write_config_files()
         #self.object_files = [os.path.splitext(os.path.basename(s))[0]+'.o' for s in self.src_files]
 
