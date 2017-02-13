@@ -507,6 +507,7 @@ class QuartusSection(ToolSection):
         self._add_member('device'         , str, 'FPGA device identifier')
         self._add_member('top_module'     , str, 'RTL top-level module')
 
+        self.top_module = 'orpsoc_top'
         if items:
             self.load_dict(items)
 

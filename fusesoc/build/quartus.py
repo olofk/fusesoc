@@ -65,11 +65,7 @@ qsys:"""
             tcl_file.write("project_new " + self.system.sanitized_name + " -overwrite\n")
             tcl_file.write("set_global_assignment -name FAMILY " + self.backend.family + '\n')
             tcl_file.write("set_global_assignment -name DEVICE " + self.backend.device + '\n')
-            # default to 'orpsoc_top' if top_module entry is missing
-            top_module = 'orpsoc_top'
-            if self.backend.top_module:
-                top_module = self.backend.top_module
-            tcl_file.write("set_global_assignment -name TOP_LEVEL_ENTITY " + top_module + '\n')
+            tcl_file.write("set_global_assignment -name TOP_LEVEL_ENTITY " + self.backend.top_module + '\n')
 
             for key, value in self.vlogparam.items():
                 tcl_file.write("set_parameter -name {} {}\n".format(key, value))

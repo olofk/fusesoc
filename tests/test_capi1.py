@@ -75,7 +75,7 @@ def test_quartus():
     assert core.quartus.quartus_options == '--64bit'
     assert core.quartus.family == '"Cyclone V"'
     assert core.quartus.device == '5CSXFC6D6F31C8ES'
-    assert core.quartus.top_module == ''
+    assert core.quartus.top_module == 'orpsoc_top'
 
     assert core.quartus.warnings == []
 
