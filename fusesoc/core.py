@@ -265,6 +265,28 @@ class Core:
                                               usage = [_bname],
                                               private = True))
                 self.export_files += [f.name for f in _files]
+        if self.verilator:
+            if self.verilator.source_type == 'CPP':
+                _file_type = 'cppSource'
+            elif self.verilator.source_type == 'systemC':
+                _file_type = 'systemCSource'
+            elif self.verilator.source_type in ['', 'C']:
+                _file_type = 'cSource'
+            else:
+                raise RuntimeError("Invalid verilator file type '{}'".format(self.verilator.source_type))
+            _files  = _append_files(self.verilator.src_files, _file_type)
+            _files += _append_files(self.verilator.include_files, _file_type, True)
+            self.file_sets.append(FileSet(name = "verilator_src_files",
+                                          file = _files,
+                                          usage = ['verilator']))
+            self.export_files += [f.name for f in _files]
+
+            _files  = _append_files(self.verilator.tb_toplevel, _file_type)
+            self.file_sets.append(FileSet(name = "verilator_tb_toplevel",
+                                          file = _files,
+                                          usage = ['verilator'],
+                                          private = True))
+            self.export_files += [f.name for f in _files]
 
     def _parse_component(self, component_file):
         component = Component()

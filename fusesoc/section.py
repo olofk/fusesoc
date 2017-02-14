@@ -402,8 +402,6 @@ class VerilatorSection(ToolSection):
         super(VerilatorSection, self).__init__()
 
         self.include_dirs = []
-        self.archive = False
-        self._object_files = []
 
         self._add_member('verilator_options', StringList, "Verilator build options")
         self._add_member('src_files'        , FileList  , "Verilator testbench C/cpp/sysC source files")
@@ -411,7 +409,7 @@ class VerilatorSection(ToolSection):
         self._add_member('define_files'     , PathList  , "Verilog include files containing `define directives to be converted to C #define directives in corresponding .h files")
         self._add_member('libs'             , PathList  , "External libraries linked with the generated model")
 
-        self._add_member('tb_toplevel', str, 'Testbench top-level C/C++/SC file')
+        self._add_member('tb_toplevel', FileList, 'Testbench top-level C/C++/SC file')
         self._add_member('source_type', str, 'Testbench source code language (Legal values are systemC, C, CPP. Default is C)')
         self._add_member('top_module' , str, 'verilog top-level module')
         self._add_member('cli_parser' , str, "Select CLI argument parser. Set to 'fusesoc' to handle parameter sections like other simulators. Set to 'passthrough' to send the arguments directly to the verilated model. Default is 'passthrough'")
@@ -419,11 +417,6 @@ class VerilatorSection(ToolSection):
         if items:
             self.load_dict(items)
             self.include_dirs  = unique_dirs(self.include_files)
-            if self.src_files:
-                self._object_files = [os.path.splitext(os.path.basename(s.name))[0]+'.o' for s in self.src_files]
-                self.archive = True
-                self.export_files = self.src_files + self.include_files
-
 
     def __str__(self):
         s = super(VerilatorSection, self).__str__()

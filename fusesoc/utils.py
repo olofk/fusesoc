@@ -80,51 +80,6 @@ def find_verilator():
 
     return os.path.join(verilator_root,'bin','verilator')
 
-def get_verilator_root():
-    verilator_root = os.getenv('VERILATOR_ROOT')
-    if verilator_root is not None:
-        return verilator_root;
-
-    # VERILATOR_ROOT not set, run 'verilator -V' and 'grep' the hardcoded
-    # value out of the output.
-    verilator = find_verilator()
-    if verilator is None:
-        return None
-    output = subprocess.check_output(verilator + ' -V',
-                                     shell=True).decode().splitlines()
-    pattern = re.compile("VERILATOR_ROOT")
-    for l in output:
-        if pattern.search(l):
-            return l.split('=')[1].strip()
-
-    return None
-
-def check_systemc_env():
-    systemc_include = os.getenv('SYSTEMC_INCLUDE')
-    systemc_libdir = os.getenv('SYSTEMC_LIBDIR')
-    if systemc_include is not None and systemc_libdir is not None:
-        return True
-
-    # SYSTEMC_INCLUDE and/or  SYSTEMC_LIBDIR not set, run 'verilator -V'
-    # and 'grep' the hardcoded value out of the output.
-    verilator = find_verilator()
-    if verilator is None:
-        return False
-    output = subprocess.check_output(verilator + ' -V',
-                                     shell=True).decode().splitlines()
-
-    pattern = re.compile("SYSTEMC_LIBDIR")
-    for l in output:
-        if pattern.search(l):
-            systemc_libdir = l.split('=')[1].strip()
-
-    pattern = re.compile("SYSTEMC_INCLUDE")
-    for l in output:
-        if pattern.search(l):
-            systemc_include = l.split('=')[1].strip()
-
-    return os.path.isdir(systemc_libdir) is True and os.path.isdir(systemc_include) is True
-
 #Copied from http://twistedmatrix.com/trac/browser/tags/releases/twisted-8.2.0/twisted/python/procutils.py
 
 #Permission is hereby granted, free of charge, to any person obtaining

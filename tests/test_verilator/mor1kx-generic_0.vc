@@ -1,0 +1,82 @@
+--Mdir .
+--cc
+-LDFLAGS -lelf
++incdir+../../../cores/adv_debug_sys/Hardware/adv_dbg_if/rtl/verilog
+-CFLAGS -I../../../cores/adv_debug_sys/Hardware/adv_dbg_if/rtl/verilog
++incdir+../../../cores/elf-loader/
+-CFLAGS -I../../../cores/elf-loader/
++incdir+../../../cache/mor1kx_3.1/rtl/verilog
+-CFLAGS -I../../../cache/mor1kx_3.1/rtl/verilog
++incdir+../../../cores/verilog_utils/
+-CFLAGS -I../../../cores/verilog_utils/
++incdir+../../../cores/wb_common/
+-CFLAGS -I../../../cores/wb_common/
++incdir+../../../cores/verilator_tb_utils/
+-CFLAGS -I../../../cores/verilator_tb_utils/
++incdir+../../../cores/mor1kx-generic/rtl/verilog
+-CFLAGS -I../../../cores/mor1kx-generic/rtl/verilog
++incdir+../../../cores/mor1kx-generic/bench/verilog/include
+-CFLAGS -I../../../cores/mor1kx-generic/bench/verilog/include
+../../../cores/adv_debug_sys/../../../cores/adv_debug_sys/../../../cores/adv_debug_sys/Hardware/adv_dbg_if/rtl/verilog/adbg_wb_biu.v
+../../../cores/adv_debug_sys/../../../cores/adv_debug_sys/../../../cores/adv_debug_sys/Hardware/adv_dbg_if/rtl/verilog/adbg_or1k_status_reg.v
+../../../cores/adv_debug_sys/../../../cores/adv_debug_sys/../../../cores/adv_debug_sys/Hardware/adv_dbg_if/rtl/verilog/adbg_jsp_biu.v
+../../../cores/adv_debug_sys/../../../cores/adv_debug_sys/../../../cores/adv_debug_sys/Hardware/adv_dbg_if/rtl/verilog/adbg_or1k_module.v
+../../../cores/adv_debug_sys/../../../cores/adv_debug_sys/../../../cores/adv_debug_sys/Hardware/adv_dbg_if/rtl/verilog/syncflop.v
+../../../cores/adv_debug_sys/../../../cores/adv_debug_sys/../../../cores/adv_debug_sys/Hardware/adv_dbg_if/rtl/verilog/adbg_crc32.v
+../../../cores/adv_debug_sys/../../../cores/adv_debug_sys/../../../cores/adv_debug_sys/Hardware/adv_dbg_if/rtl/verilog/adbg_jsp_module.v
+../../../cores/adv_debug_sys/../../../cores/adv_debug_sys/../../../cores/adv_debug_sys/Hardware/adv_dbg_if/rtl/verilog/adbg_top.v
+../../../cores/adv_debug_sys/../../../cores/adv_debug_sys/../../../cores/adv_debug_sys/Hardware/adv_dbg_if/rtl/verilog/bytefifo.v
+../../../cores/adv_debug_sys/../../../cores/adv_debug_sys/../../../cores/adv_debug_sys/Hardware/adv_dbg_if/rtl/verilog/adbg_or1k_biu.v
+../../../cores/adv_debug_sys/../../../cores/adv_debug_sys/../../../cores/adv_debug_sys/Hardware/adv_dbg_if/rtl/verilog/adbg_or1k_defines.v
+../../../cores/adv_debug_sys/../../../cores/adv_debug_sys/../../../cores/adv_debug_sys/Hardware/adv_dbg_if/rtl/verilog/syncreg.v
+../../../cores/adv_debug_sys/../../../cores/adv_debug_sys/../../../cores/adv_debug_sys/Hardware/adv_dbg_if/rtl/verilog/adbg_wb_module.v
+../../../cache/jtag_tap_1.13/../../../cache/jtag_tap_1.13/tap/rtl/verilog/tap_top.v
+../../../cache/mor1kx_3.1/../../../cache/mor1kx_3.1/rtl/verilog/mor1kx_branch_prediction.v
+../../../cache/mor1kx_3.1/../../../cache/mor1kx_3.1/rtl/verilog/mor1kx_bus_if_avalon.v
+../../../cache/mor1kx_3.1/../../../cache/mor1kx_3.1/rtl/verilog/mor1kx_bus_if_wb32.v
+../../../cache/mor1kx_3.1/../../../cache/mor1kx_3.1/rtl/verilog/mor1kx_cache_lru.v
+../../../cache/mor1kx_3.1/../../../cache/mor1kx_3.1/rtl/verilog/mor1kx_cfgrs.v
+../../../cache/mor1kx_3.1/../../../cache/mor1kx_3.1/rtl/verilog/mor1kx_cpu_cappuccino.v
+../../../cache/mor1kx_3.1/../../../cache/mor1kx_3.1/rtl/verilog/mor1kx_cpu_espresso.v
+../../../cache/mor1kx_3.1/../../../cache/mor1kx_3.1/rtl/verilog/mor1kx_cpu_prontoespresso.v
+../../../cache/mor1kx_3.1/../../../cache/mor1kx_3.1/rtl/verilog/mor1kx_cpu.v
+../../../cache/mor1kx_3.1/../../../cache/mor1kx_3.1/rtl/verilog/mor1kx_ctrl_cappuccino.v
+../../../cache/mor1kx_3.1/../../../cache/mor1kx_3.1/rtl/verilog/mor1kx_ctrl_espresso.v
+../../../cache/mor1kx_3.1/../../../cache/mor1kx_3.1/rtl/verilog/mor1kx_ctrl_prontoespresso.v
+../../../cache/mor1kx_3.1/../../../cache/mor1kx_3.1/rtl/verilog/mor1kx_dcache.v
+../../../cache/mor1kx_3.1/../../../cache/mor1kx_3.1/rtl/verilog/mor1kx_decode_execute_cappuccino.v
+../../../cache/mor1kx_3.1/../../../cache/mor1kx_3.1/rtl/verilog/mor1kx_decode.v
+../../../cache/mor1kx_3.1/../../../cache/mor1kx_3.1/rtl/verilog/mor1kx_dmmu.v
+../../../cache/mor1kx_3.1/../../../cache/mor1kx_3.1/rtl/verilog/mor1kx_execute_alu.v
+../../../cache/mor1kx_3.1/../../../cache/mor1kx_3.1/rtl/verilog/mor1kx_execute_ctrl_cappuccino.v
+../../../cache/mor1kx_3.1/../../../cache/mor1kx_3.1/rtl/verilog/mor1kx_fetch_cappuccino.v
+../../../cache/mor1kx_3.1/../../../cache/mor1kx_3.1/rtl/verilog/mor1kx_fetch_espresso.v
+../../../cache/mor1kx_3.1/../../../cache/mor1kx_3.1/rtl/verilog/mor1kx_fetch_prontoespresso.v
+../../../cache/mor1kx_3.1/../../../cache/mor1kx_3.1/rtl/verilog/mor1kx_fetch_tcm_prontoespresso.v
+../../../cache/mor1kx_3.1/../../../cache/mor1kx_3.1/rtl/verilog/mor1kx_icache.v
+../../../cache/mor1kx_3.1/../../../cache/mor1kx_3.1/rtl/verilog/mor1kx_immu.v
+../../../cache/mor1kx_3.1/../../../cache/mor1kx_3.1/rtl/verilog/mor1kx_lsu_cappuccino.v
+../../../cache/mor1kx_3.1/../../../cache/mor1kx_3.1/rtl/verilog/mor1kx_lsu_espresso.v
+../../../cache/mor1kx_3.1/../../../cache/mor1kx_3.1/rtl/verilog/mor1kx_pic.v
+../../../cache/mor1kx_3.1/../../../cache/mor1kx_3.1/rtl/verilog/mor1kx_rf_cappuccino.v
+../../../cache/mor1kx_3.1/../../../cache/mor1kx_3.1/rtl/verilog/mor1kx_rf_espresso.v
+../../../cache/mor1kx_3.1/../../../cache/mor1kx_3.1/rtl/verilog/mor1kx_simple_dpram_sclk.v
+../../../cache/mor1kx_3.1/../../../cache/mor1kx_3.1/rtl/verilog/mor1kx_store_buffer.v
+../../../cache/mor1kx_3.1/../../../cache/mor1kx_3.1/rtl/verilog/mor1kx_ticktimer.v
+../../../cache/mor1kx_3.1/../../../cache/mor1kx_3.1/rtl/verilog/mor1kx_true_dpram_sclk.v
+../../../cache/mor1kx_3.1/../../../cache/mor1kx_3.1/rtl/verilog/mor1kx.v
+../../../cache/mor1kx_3.1/../../../cache/mor1kx_3.1/rtl/verilog/mor1kx_wb_mux_cappuccino.v
+../../../cache/mor1kx_3.1/../../../cache/mor1kx_3.1/rtl/verilog/mor1kx_wb_mux_espresso.v
+../../../cache/verilog-arbiter_0-r1/../../../cache/verilog-arbiter_0-r1/src/arbiter.v
+../../../cache/wb_intercon_1.0/../../../cache/wb_intercon_1.0/rtl/verilog/wb_arbiter.v
+../../../cache/wb_intercon_1.0/../../../cache/wb_intercon_1.0/rtl/verilog/wb_data_resize.v
+../../../cache/wb_intercon_1.0/../../../cache/wb_intercon_1.0/rtl/verilog/wb_upsizer.v
+../../../cache/wb_intercon_1.0/../../../cache/wb_intercon_1.0/rtl/verilog/wb_mux.v
+../../../cores/mor1kx-generic/rtl/verilog/orpsoc_top.v
+../../../cores/mor1kx-generic/rtl/verilog/wb_intercon.v
+--top-module orpsoc_top
+--exe
+../../../cores/elf-loader/elf-loader.c
+../../../cores/verilator_tb_utils/verilator_tb_utils.cpp
+../../../cores/verilator_tb_utils/jtagServer.cpp
+../../../cores/mor1kx-generic/bench/verilator/tb.cpp

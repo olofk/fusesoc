@@ -1,0 +1,9 @@
+CAPI=1
+[main]
+description = "Verilator test bench utility class"
+depend = elf-loader
+
+[verilator]
+source_type = CPP
+src_files = verilator_tb_utils.cpp jtagServer.cpp
+include_files = verilator_tb_utils.h jtagServer.h
