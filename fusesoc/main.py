@@ -87,7 +87,7 @@ def pgm(args):
     core = _get_core(args.system, True)
 
     try:
-        backend =_import('build', core.main.backend)(core)
+        backend =_import('build', core.main.backend)(core, export=True)
         backend.pgm(args.backendargs)
     except ImportError:
         pr_err('Backend "{}" not found'.format(core.main.backend))
