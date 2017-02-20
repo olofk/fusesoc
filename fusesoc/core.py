@@ -206,44 +206,31 @@ class Core:
         _replace('scripts', 'post_build_scripts', 'post_impl_scripts')
 
     def _collect_filesets(self):
+        def _append_files(section, file_type, is_include_file=False):
+            _files = []
+            for f in section:
+                if not f.file_type:
+                    f.file_type = file_type
+                f.is_include_file = is_include_file
+                _files.append(f)
+            return _files
 
         self.file_sets = []
 
-        if self.verilog:
-            _files = []
-            for f in self.verilog.include_files:
-                if not f.file_type:
-                    f.file_type = self.verilog.file_type
-                f.is_include_file = True
-                _files.append(f)
-            for f in self.verilog.src_files:
-                if not f.file_type:
-                    f.file_type = self.verilog.file_type
-                _files.append(f)
-
+        _v = self.verilog
+        if _v:
+            _files  = _append_files(_v.include_files, _v.file_type, True)
+            _files += _append_files(_v.src_files, _v.file_type)
             self.file_sets.append(FileSet(name  = "verilog_src_files",
                                           file  = _files,
                                           usage = ['sim', 'synth']))
 
-            _files = []
-            for f in self.verilog.tb_include_files:
-                if not f.file_type:
-                    f.file_type = self.verilog.file_type
-                    f.is_include_file = True
-                _files.append(f)
-            for f in self.verilog.tb_src_files:
-                if not f.file_type:
-                    f.file_type = self.verilog.file_type
-                _files.append(f)
+            _files  = _append_files(_v.tb_include_files, _v.file_type, True)
+            _files += _append_files(_v.tb_src_files, _v.file_type)
             self.file_sets.append(FileSet(name  = "verilog_tb_src_files",
                                           file  = _files,
                                           usage = ['sim']))
-
-            _files = []
-            for f in self.verilog.tb_private_src_files:
-                if not f.file_type:
-                    f.file_type = self.verilog.file_type
-                _files.append(f)
+            _files  = _append_files(_v.tb_private_src_files, _v.file_type)
             self.file_sets.append(FileSet(name    = "verilog_tb_private_src_files",
                                           file    = _files,
                                           usage   = ['sim'],
@@ -258,12 +245,6 @@ class Core:
 
         _bname = self.main.backend
         _b = self.backend
-        def _append_files(section, file_type):
-            _files = []
-            for f in section:
-                f.file_type = file_type
-                _files.append(f)
-            return _files
         if _b and _bname in ['icestorm', 'ise', 'quartus']:
             _files = []
             if _bname == 'icestorm':
