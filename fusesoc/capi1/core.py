@@ -5,11 +5,11 @@ import os
 import shutil
 
 from ipyxact.ipyxact import Component
-from fusesoc import section
 from fusesoc import utils
-from fusesoc.fusesocconfigparser import FusesocConfigParser
-from fusesoc.plusargs import Plusargs
 from fusesoc.vlnv import Vlnv
+from fusesoc.capi1 import section
+from fusesoc.capi1.fusesocconfigparser import FusesocConfigParser
+from fusesoc.capi1.plusargs import Plusargs
 
 logger = logging.getLogger(__name__)
 
