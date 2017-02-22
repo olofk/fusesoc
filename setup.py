@@ -8,6 +8,7 @@ setup(
     name = "fusesoc",
     packages=['fusesoc',
               'fusesoc.capi1',
+              'fusesoc.capi2',
               'fusesoc.edatools',
               'fusesoc.provider'],
     use_scm_version = {
@@ -37,6 +38,7 @@ setup(
     ],
     install_requires=[
         'ipyxact>=0.2.3',
+        'pyparsing',
         'pytest>=3.3.0',
         'pyyaml',
         'simplesat>=0.8.0',
