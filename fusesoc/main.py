@@ -6,6 +6,7 @@ import platform
 import subprocess
 import sys
 import signal
+import re
 
 #Check if this is run from a local installation
 fusesocdir = os.path.abspath(os.path.join(os.path.dirname(os.path.realpath(__file__)), ".."))
@@ -253,6 +254,20 @@ def update(args):
             except subprocess.CalledProcessError:
                 pass
 
+def exec_script(args):
+    filename = args.script[0]
+    pr_info( "Running fusesoc script: " + filename)
+    with open(filename) as f:
+        lines = f.read().splitlines()
+    f.close()
+    lines = filter(lambda x: not re.match(r'^\s*#', x), lines) # remove comments
+    lines = filter(lambda x: not re.match(r'^\s*$', x), lines) # empty line
+    for cmd in lines:
+        pr_info( "Running command: " +  cmd)
+        if os.system(' '.join([sys.argv[0], cmd])): # bail out when command fails
+            pr_err("Failed to run command: " + cmd);
+            exit(1)
+
 def run(args):
     cm = CoreManager()
     config = Config()
@@ -362,6 +377,10 @@ def main():
 
     parser_update = subparsers.add_parser('update', help='Update the FuseSoC core libraries')
     parser_update.set_defaults(func=update)
+
+    parser_exec_script = subparsers.add_parser('exec-script', help='Run fusesoc script')
+    parser_exec_script.add_argument('--script', nargs=1, help='Path to fusesoc script')
+    parser_exec_script.set_defaults(func=exec_script)
 
     parsed_args = parser.parse_args()
     if hasattr(parsed_args, 'func'):
