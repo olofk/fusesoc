@@ -255,7 +255,7 @@ def update(args):
                 pass
 
 def exec_script(args):
-    filename = args.script[0]
+    filename = args.script
     pr_info( "Running fusesoc script: " + filename)
     with open(filename) as f:
         lines = f.read().splitlines()
@@ -379,7 +379,7 @@ def main():
     parser_update.set_defaults(func=update)
 
     parser_exec_script = subparsers.add_parser('exec-script', help='Run fusesoc script')
-    parser_exec_script.add_argument('--script', nargs=1, help='Path to fusesoc script')
+    parser_exec_script.add_argument('script')
     parser_exec_script.set_defaults(func=exec_script)
 
     parsed_args = parser.parse_args()
