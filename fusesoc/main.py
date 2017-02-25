@@ -213,6 +213,8 @@ def sim(args):
         exit(1)
     if (args.testbench):
         sim.toplevel = args.testbench[0]
+    else:
+        sim.toplevel = sim.system.simulator['toplevel']
     if not args.keep or not os.path.exists(sim.work_root):
         try:
             sim.configure(args.plusargs)

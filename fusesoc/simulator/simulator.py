@@ -40,7 +40,6 @@ class Simulator(EdaTool):
                 self.vpi_modules += [vpi_module]
 
     def configure(self, args, skip_params = False):
-        self.toplevel = self.system.simulator['toplevel']
         if not skip_params:
             self.parse_args(args, 'sim', ['plusarg', 'vlogdefine', 'vlogparam'])
         super(Simulator, self).configure(args)
