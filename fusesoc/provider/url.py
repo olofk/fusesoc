@@ -1,12 +1,9 @@
-from fusesoc.utils import pr_info, pr_warn
+from fusesoc.utils import pr_info
 import os.path
 import sys
 import tarfile
 import zipfile
 import shutil
-import logging
-
-logger = logging.getLogger(__name__)
 
 if sys.version_info[0] >= 3:
     import urllib.request as urllib
@@ -21,37 +18,19 @@ class ProviderURL(object):
     def __init__(self, core_name, config, core_root, cache_root):
         self.url      = config.get('url')
         self.filetype = config.get('filetype')
-        if 'corename' in config:
-            self.version = config.get('corename')
-        else:
-            self.version = core_name
         self.files_root = cache_root
 
     def fetch(self):
         status = self.status()
         if status == 'empty':
-            try:
-                self._checkout(self.files_root, self.version)
-                return True
-            except RuntimeError:
-                raise
-        elif status == 'modified':
-            self.clean_cache()
-            try:
-                self._checkout(self.files_root, self.version)
-                return True
-            except RuntimeError:
-                raise
-        elif status == 'outofdate':
-            self._update()
+            self._checkout(self.files_root)
             return True
         elif status == 'downloaded':
             return False
         else:
-            pr_warn("Provider status is: '" + status + "'. This shouldn't happen")
-            return False
+            raise RuntimeError("Provider status is: '" + status + "'. This shouldn't happen")
 
-    def _checkout(self, local_dir, core_name):
+    def _checkout(self, local_dir):
         pr_info("Checking out " + self.url + " to " + local_dir)
         try:
             (filename, headers) = urllib.urlretrieve(self.url)
@@ -81,7 +60,6 @@ class ProviderURL(object):
             shutil.copy2(filename, self.path)
         else:
             raise RuntimeError("Unknown file type '" + self.filetype + "' in [provider] section")
-
 
     def status(self):
         if not os.path.isdir(self.files_root):
