@@ -3,7 +3,7 @@ import os
 import shutil
 
 class Logicore(object):
-    def __init__(self, core_name, config, core_root, cache_root):
+    def __init__(self, config, core_root, cache_root):
         self.core_root    = core_root
         self.files_root   = cache_root
         self.script_file  = config.get('script_file')

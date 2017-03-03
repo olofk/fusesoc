@@ -8,7 +8,7 @@ logger = logging.getLogger(__name__)
 REPO_PATH = 'http://opencores.org/ocsvn/{}/{}/{}'
 
 class ProviderOpenCores(object):
-    def __init__(self, core_name, config, core_root, cache_root):
+    def __init__(self, config, core_root, cache_root):
         self.repo_name = config.get('repo_name')
         self.repo_path = REPO_PATH.format(self.repo_name,
                                           self.repo_name,

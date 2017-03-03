@@ -14,7 +14,7 @@ else:
 URL = 'https://github.com/{user}/{repo}/archive/{version}.tar.gz'
 
 class GitHub(object):
-    def __init__(self, core_name, config, core_root, cache_root):
+    def __init__(self, config, core_root, cache_root):
         self.user   = config.get('user')
         self.repo   = config.get('repo')
         self.branch = config.get('branch')

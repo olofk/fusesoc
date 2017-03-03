@@ -15,7 +15,7 @@ else:
     from urllib2 import HTTPError
 
 class ProviderURL(object):
-    def __init__(self, core_name, config, core_root, cache_root):
+    def __init__(self, config, core_root, cache_root):
         self.url      = config.get('url')
         self.filetype = config.get('filetype')
         self.files_root = cache_root

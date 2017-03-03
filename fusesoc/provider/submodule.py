@@ -2,7 +2,7 @@ import subprocess
 import os
 
 class Submodule(object):
-    def __init__(self, core_name, config, core_root, cache_root):
+    def __init__(self, config, core_root, cache_root):
         self.repo = config.get('repo')
         self.core_root = core_root
         self.submodule_path = os.path.join(self.core_root, self.repo)

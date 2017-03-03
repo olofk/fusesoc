@@ -91,7 +91,7 @@ class Core:
             try:
                 provider_module = importlib.import_module(
                         'fusesoc.provider.%s' % provider_name)
-                self.provider = provider_module.PROVIDER_CLASS(self.name,
+                self.provider = provider_module.PROVIDER_CLASS(
                     items, self.core_root, cache_root)
             except ImportError:
                 raise
