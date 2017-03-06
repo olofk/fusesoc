@@ -45,12 +45,10 @@ class Verilator(Simulator):
 
         self.top_module = self.system.verilator.top_module
 
-        self.fusesoc_cli_parser = self.system.verilator.cli_parser and (self.system.verilator.cli_parser == 'fusesoc')
-
         if self.top_module == '':
             raise RuntimeError("'" + system.name.name + "' miss a mandatory parameter 'top_module'")
 
-        skip = not self.fusesoc_cli_parser
+        skip = not (self.system.verilator.cli_parser == 'fusesoc')
         super(Verilator, self).configure(args, skip_params = skip)
         self._write_config_files()
 
@@ -122,18 +120,19 @@ class Verilator(Simulator):
                            stdout = open(_s.format('out'),'w')).run()
 
     def run(self, args):
-        if not self.fusesoc_cli_parser:
+        fusesoc_cli_parser = (self.system.verilator.cli_parser == 'fusesoc')
+        if fusesoc_cli_parser:
             self.plusarg = []
         super(Verilator, self).run(args)
 
-        if self.fusesoc_cli_parser:
+        if fusesoc_cli_parser:
             _args = []
             for key, value in self.plusarg.items():
                 _args += ['+{}={}'.format(key, value)]
         else:
             _args = args
         pr_info("Running simulation")
-        utils.Launcher('./V' + self.top_module,
+        utils.Launcher('./V' + self.system.verilator.top_module,
                        _args,
                        cwd=self.work_root,
                        env = self.env).run()
