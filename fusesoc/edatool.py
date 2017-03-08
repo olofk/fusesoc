@@ -1,5 +1,6 @@
 import argparse
 from collections import OrderedDict
+import copy
 import os
 import shutil
 import sys
@@ -149,7 +150,8 @@ class EdaTool(object):
                             if not _incdir in incdirs:
                                 incdirs.append(_incdir)
                         else:
-                            file.name = os.path.join(basepath, file.name)
-                            src_files.append(file)
+                            new_file = copy.deepcopy(file)
+                            new_file.name = os.path.join(basepath, file.name)
+                            src_files.append(new_file)
         return (src_files, incdirs)
 
