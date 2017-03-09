@@ -36,3 +36,21 @@ datatype  = str
 description = string verilog define
 paramtype = vlogdefine
 scope = public
+
+[parameter plusarg_bool]
+datatype  = bool
+description = boolean verilog plusarg
+paramtype = plusarg
+scope = public
+
+[parameter plusarg_int]
+datatype  = int
+description = integer verilog plusarg
+paramtype = plusarg
+scope = public
+
+[parameter plusarg_str]
+datatype  = str
+description = string verilog plusarg
+paramtype = plusarg
+scope = public

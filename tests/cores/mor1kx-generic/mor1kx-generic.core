@@ -5,6 +5,7 @@ depend =
  adv_debug_sys
  jtag_tap-1.13
  mor1kx
+ paramtest
  wb_intercon-1.0
 
 simulators = icarus modelsim
@@ -20,14 +21,14 @@ include_files =
  bench/verilog/include/test-defines.v
 
 [icarus]
-depend = elf-loader jtag_vpi-r2 vlog_tb_utils-1.0
+depend = elf-loader
 iverilog_options = -DSIM
 
 [modelsim]
-depend = elf-loader jtag_vpi-r2 vlog_tb_utils-1.0
+depend = elf-loader
 
 [rivierapro]
-depend = elf-loader jtag_vpi-r2 vlog_tb_utils-1.0
+depend = elf-loader
 
 [verilator]
 depend = verilator_tb_utils
