@@ -51,6 +51,7 @@ class EdaTool(object):
         self.vlogdefine  = OrderedDict()
         self.generic     = OrderedDict()
         self.cmdlinearg  = OrderedDict()
+        self.parsed_args = False
 
     def configure(self, args):
         if os.path.exists(self.work_root):
@@ -76,6 +77,8 @@ class EdaTool(object):
                 core.export(dst_dir)
 
     def parse_args(self, args, prog, paramtypes):
+        if self.parsed_args:
+            return
         typedict = {'bool' : {'action' : 'store_true'},
                     'file' : {'type' : str , 'nargs' : 1, 'action' : FileAction},
                     'int'  : {'type' : int , 'nargs' : 1},
@@ -132,6 +135,7 @@ class EdaTool(object):
                 else:
                     _value = str(value[0])
                 getattr(self, paramtype)[key] = _value
+        self.parsed_args = True
 
     def _get_fileset_files(self, usage):
         incdirs = []
