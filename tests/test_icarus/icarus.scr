@@ -66,3 +66,4 @@
 ../../../cores/mor1kx-generic/rtl/verilog/orpsoc_top.v
 ../../../cores/mor1kx-generic/rtl/verilog/wb_intercon.v
 ../../../cores/mor1kx-generic/bench/verilog/orpsoc_tb.v
+../../../cores/mor1kx-generic/sv_file.sv

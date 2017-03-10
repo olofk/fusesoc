@@ -20,6 +20,14 @@ include_files =
  rtl/verilog/wb_intercon.vh
  bench/verilog/include/test-defines.v
 
+[fileset file_types]
+files =
+ vhdl_file.vhd[file_type=vhdlSource]
+ sv_file.sv[file_type=systemVerilogSource]
+ user_file[file_type=user]
+ other_file[file_type=xdc]
+usage = icarus
+
 [icarus]
 depend = elf-loader
 iverilog_options = -DSIM
