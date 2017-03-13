@@ -97,7 +97,7 @@ class CoreDB(object):
         installed_repository = Repository()
         pool = Pool([repo])
         pool.add_repository(installed_repository)
-        solver = DependencySolver(pool, repo, installed_repository)
+        solver = DependencySolver(pool, [repo], installed_repository)
 
         try:
             transaction = solver.solve(request)
