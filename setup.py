@@ -31,6 +31,6 @@ setup(
     },
     install_requires=[
           'ipyxact>=0.2.3',
-          'simplesat',
+          'simplesat>=0.8.0',
     ],
 )
