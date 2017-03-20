@@ -129,6 +129,8 @@ class Verilator(Simulator):
             _args = []
             for key, value in self.plusarg.items():
                 _args += ['+{}={}'.format(key, value)]
+            for key, value in self.cmdlinearg.items():
+                _args += ['--{}={}'.format(key, value)]
         else:
             _args = args
         pr_info("Running simulation")

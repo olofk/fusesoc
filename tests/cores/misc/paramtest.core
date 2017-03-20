@@ -54,3 +54,21 @@ datatype  = str
 description = string verilog plusarg
 paramtype = plusarg
 scope = public
+
+[parameter cmdlinearg_bool]
+datatype  = bool
+description = boolean verilog cmdlinearg
+paramtype = cmdlinearg
+scope = public
+
+[parameter cmdlinearg_int]
+datatype  = int
+description = integer verilog cmdlinearg
+paramtype = cmdlinearg
+scope = public
+
+[parameter cmdlinearg_str]
+datatype  = str
+description = string verilog cmdlinearg
+paramtype = cmdlinearg
+scope = public
