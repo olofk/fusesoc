@@ -22,6 +22,7 @@ def test_verilator_configure():
     tests_dir = os.path.dirname(__file__)
     params = '--vlogparam_bool --vlogparam_int=42 --vlogparam_str=hello'
     params += ' --vlogdefine_bool --vlogdefine_int=42 --vlogdefine_str=hello'
+    params += ' --cmdlinearg_bool --cmdlinearg_int=42 --cmdlinearg_str=hello'
 
     Config().build_root = os.path.join(tests_dir, 'build')
     Config().cache_root = os.path.join(tests_dir, 'cache')
@@ -47,6 +48,7 @@ def test_verilator_run():
     tests_dir = os.path.dirname(__file__)
     params = '--vlogparam_bool --vlogparam_int=42 --vlogparam_str=hello'
     params += ' --vlogdefine_bool --vlogdefine_int=42 --vlogdefine_str=hello'
+    params += ' --cmdlinearg_bool --cmdlinearg_int=42 --cmdlinearg_str=hello'
 
     Config().build_root = os.path.join(tests_dir, 'build')
     Config().cache_root = os.path.join(tests_dir, 'cache')
