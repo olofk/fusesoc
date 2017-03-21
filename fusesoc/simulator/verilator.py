@@ -85,6 +85,8 @@ class Verilator(Simulator):
             f.write('--exe\n')
             f.write('\n'.join(opt_c_files))
             f.write('\n')
+            f.write(''.join(['-G{}={}\n'.format(key, value) for key, value in self.vlogparam.items()]))
+            f.write(''.join(['-D{}={}\n'.format(key, value) for key, value in self.vlogdefine.items()]))
 
         with open(os.path.join(self.work_root, 'Makefile'), 'w') as makefile:
             makefile.write(MAKEFILE_TEMPLATE)
@@ -121,8 +123,7 @@ class Verilator(Simulator):
 
     def run(self, args):
         fusesoc_cli_parser = (self.system.verilator.cli_parser == 'fusesoc')
-        if fusesoc_cli_parser:
-            self.plusarg = []
+
         super(Verilator, self).run(args)
 
         if fusesoc_cli_parser:
