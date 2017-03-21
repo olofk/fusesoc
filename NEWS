@@ -1,4 +1,20 @@
-1.6 2016-07-12 Olof Kindgren <olof.kindgren@gmail.com>
+1.6.1 2017-03-21 Olof Kindgren <olof.kindgren@gmail.com>
+======================================================
+* Add cmdlineargs support for verilator
+* Update dependencies to fix problems with pip
+* Support setting verilog verilog defines in ISE from cli
+* Add unit tests
+* Fix mixing of VHDL2008 and other versions in ghdl
+* Support specifying all backend files as filesets
+* Remove unused environment variables
+* + improved error handling, bug fixes and refactoring
+
+Contributors:
+Olof Kindgren <olof.kindgren@gmail.com>
+Staf Verhaegen <staf@stafverhaegen.be>
+Stefan Wallentowitz <stefan@wallentowitz.de>
+
+1.6 2016-12-11 Olof Kindgren <olof.kindgren@gmail.com>
 ======================================================
 * Use git-apply to avoid calling external patch command
 * Use VLNV identifiers for cores
@@ -23,6 +39,7 @@
 * + improved error handling, bug fixes and refactoring
 
 Contributors:
+Antony Pavlov <antonynpavlov@gmail.com>
 Olof Kindgren <olof.kindgren@gmail.com>
 Philipp Wagner <philipp.wagner@tum.de>
 Stefan Wallentowitz <stefan@wallentowitz.de>
