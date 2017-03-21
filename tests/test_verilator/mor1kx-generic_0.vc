@@ -80,3 +80,9 @@
 ../../../cores/verilator_tb_utils/verilator_tb_utils.cpp
 ../../../cores/verilator_tb_utils/jtagServer.cpp
 ../../../cores/mor1kx-generic/bench/verilator/tb.cpp
+-Gvlogparam_bool=true
+-Gvlogparam_int=42
+-Gvlogparam_str="hello"
+-Dvlogdefine_bool=true
+-Dvlogdefine_int=42
+-Dvlogdefine_str=hello
