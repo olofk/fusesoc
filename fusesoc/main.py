@@ -313,45 +313,52 @@ def main():
     parser.add_argument('--monochrome', help='Don\'t use color for messages', action='store_true')
     parser.add_argument('--verbose', help='More info messages', action='store_true')
 
-    #General options
+    # build subparser
     parser_build = subparsers.add_parser('build', help='Build an FPGA load module')
     parser_build.add_argument('--setup', action='store_true', help='Only create the project files without running the EDA tool')
     parser_build.add_argument('system')
     parser_build.add_argument('backendargs', nargs=argparse.REMAINDER)
     parser_build.set_defaults(func=build)
 
+    # init subparser
     parser_init = subparsers.add_parser('init', help='Initialize the FuseSoC core libraries')
     parser_init.add_argument('-y', action='store_true', help='Skip user input and use default settings')
     parser_init.set_defaults(func=init)
 
-    parser_pgm = subparsers.add_parser('pgm', help='Program a FPGA with a system configuration')
+    # pgm subparser
+    parser_pgm = subparsers.add_parser('pgm', help='Program an FPGA with a system configuration')
     parser_pgm.add_argument('system')
     parser_pgm.add_argument('backendargs', nargs=argparse.REMAINDER)
     parser_pgm.set_defaults(func=pgm)
 
+    # fetch subparser
     parser_fetch = subparsers.add_parser('fetch', help='Fetch a remote core and its dependencies to local cache')
     parser_fetch.add_argument('core')
     parser_fetch.set_defaults(func=fetch)
 
+    # list-systems subparser
     parser_list_systems = subparsers.add_parser('list-systems', help='List available systems')
     parser_list_systems.set_defaults(func=list_systems)
 
+    # system-info subparser
     parser_system_info = subparsers.add_parser('system-info', help='Displays details about a system')
     parser_system_info.add_argument('system')
     parser_system_info.set_defaults(func=system_info)
 
+    # list-cores subparser
     parser_list_cores = subparsers.add_parser('list-cores', help='List available cores')
-    #parser_list_cores.
     parser_list_cores.set_defaults(func=list_cores)
 
-    parser_core_info = subparsers.add_parser('core-info', help='Displays details about a core')
+    # core-info subparser
+    parser_core_info = subparsers.add_parser('core-info', help='Display details about a core')
     parser_core_info.add_argument('core')
     parser_core_info.set_defaults(func=core_info)
 
-    parser_list_paths = subparsers.add_parser('list-paths', help='Displays the search order for core root paths')
+    # list-paths subparser
+    parser_list_paths = subparsers.add_parser('list-paths', help='Display the search order for core root paths')
     parser_list_paths.set_defaults(func=list_paths)
 
-    #Simulation subparser
+    # sim subparser
     parser_sim = subparsers.add_parser('sim', help='Setup and run a simulation')
     parser_sim.add_argument('--sim', nargs=1, help='Override the simulator settings from the system file')
     parser_sim.add_argument('--setup', action='store_true', help='Only create the project files without running the EDA tool')
@@ -360,10 +367,11 @@ def main():
     parser_sim.add_argument('--keep', action='store_true', help='Prevent rebuilding simulation model if it exists')
     parser_sim.add_argument('--dry-run', action='store_true')
     parser_sim.add_argument('--testbench', nargs=1, help='Override default testbench')
-    parser_sim.add_argument('system',help='Select a system to simulate') #, choices = Config().get_systems())
+    parser_sim.add_argument('system', help='Select a system to simulate') #, choices = Config().get_systems())
     parser_sim.add_argument('plusargs', nargs=argparse.REMAINDER)
     parser_sim.set_defaults(func=sim)
 
+    # update subparser
     parser_update = subparsers.add_parser('update', help='Update the FuseSoC core libraries')
     parser_update.set_defaults(func=update)
 
