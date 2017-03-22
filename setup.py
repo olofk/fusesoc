@@ -10,7 +10,10 @@ setup(
               'fusesoc.build',
               'fusesoc.simulator',
               'fusesoc.provider'],
-    version = "1.6.1",
+    use_scm_version = {
+        "relative_to": __file__,
+        "write_to": "fusesoc/version.py",
+    },
     author = "Olof Kindgren",
     author_email = "olof.kindgren@gmail.com",
     description = ("FuseSoC is a package manager and a set of build tools for HDL (Hardware Description Language) code."),
@@ -29,8 +32,11 @@ setup(
             'fusesoc = fusesoc.main:main'
         ]
     },
+    setup_requires=[
+        'setuptools_scm',
+    ],
     install_requires=[
-          'ipyxact>=0.2.3',
-          'simplesat>=0.8.0',
+        'ipyxact>=0.2.3',
+        'simplesat>=0.8.0',
     ],
 )

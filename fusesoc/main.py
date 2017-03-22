@@ -6,6 +6,7 @@ import platform
 import subprocess
 import sys
 import signal
+from fusesoc import __version__
 
 #Check if this is run from a local installation
 fusesocdir = os.path.abspath(os.path.join(os.path.dirname(os.path.realpath(__file__)), ".."))
@@ -305,6 +306,9 @@ def main():
 
     parser = argparse.ArgumentParser()
     subparsers = parser.add_subparsers()
+
+    # Global actions
+    parser.add_argument('--version', help='Display the FuseSoC version', action='version', version=__version__)
 
     # Global options
     parser.add_argument('--cores-root', help='Add additional directories containing cores', action='append')
