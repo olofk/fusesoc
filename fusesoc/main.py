@@ -82,6 +82,7 @@ def build(args):
             backend.build(args.backendargs)
     except RuntimeError as e:
         pr_err("Failed to build FPGA: " + str(e))
+        exit(1)
 
 def pgm(args):
     core = _get_core(args.system, True)
@@ -91,8 +92,10 @@ def pgm(args):
         backend.pgm(args.backendargs)
     except ImportError:
         pr_err('Backend "{}" not found'.format(core.main.backend))
+        exit(1)
     except RuntimeError as e:
         pr_err("Failed to program the FPGA: " + str(e))
+        exit(1)
 
 def fetch(args):
     core = _get_core(args.core)
@@ -237,6 +240,7 @@ def sim(args):
         except RuntimeError as e:
             pr_err("Failed to run the simulation")
             pr_err(str(e))
+            exit(1)
 
 def update(args):
     for root in CoreManager().get_cores_root():
