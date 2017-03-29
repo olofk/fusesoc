@@ -1,8 +1,10 @@
 import os
-from fusesoc.config import Config
+import logging
 from fusesoc import utils
-from fusesoc.utils import pr_warn, pr_info, unique_dirs
+from fusesoc.utils import unique_dirs
 from fusesoc.vlnv import Vlnv
+
+logger = logging.getLogger(__name__)
 
 class File(object):
     FILE_TYPES = [
@@ -147,7 +149,7 @@ class Section(object):
                     setattr(self, item, _type(items.get(item)))
                 except ValueError as e:
                     _s = "Invalid value '{}'. Allowed values are '{}'"
-                    pr_warn(_s.format(', '.join(e.args[1]),
+                    logger.warning(_s.format(', '.join(e.args[1]),
                                       ', '.join(e.args[2])))
                     setattr(self, item, _type(e.args[0]))
             else:
@@ -543,14 +545,14 @@ def load_section(config, section_name, file_name='<unknown>'):
     if cls is None:
         #Note: The following sections are not in section.py yet
         if not section_name in ['plusargs', 'simulator', 'provider']:
-            pr_warn("Unknown section '{}' in '{}'".format(section_name, file_name))
+            logger.warning("Unknown section '{}' in '{}'".format(section_name, file_name))
         return None
 
     items = config.get_section(section_name)
     section = cls(items)
     if section.warnings:
         for warning in section.warnings:
-            pr_warn('Warning: %s in %s' % (warning, file_name))
+            logger.warning('Warning: %s in %s' % (warning, file_name))
     if _name:
         return (section, _name)
     else:

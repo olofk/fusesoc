@@ -1,6 +1,9 @@
-from fusesoc.utils import pr_info, pr_err, Launcher
+from fusesoc.utils import Launcher
 import os
 import shutil
+import logging
+
+logger = logging.getLogger(__name__)
 
 class Coregen(object):
     def __init__(self, config, core_root, cache_root):
@@ -18,7 +21,7 @@ class Coregen(object):
         return False
 
     def _checkout(self):
-        pr_info("Using Coregen to generate project " + self.project_file)
+        logger.info("Using Coregen to generate project " + self.project_file)
         if not os.path.isdir(self.files_root):
             os.mkdir(self.files_root)
         src_files = [self.script_file, self.project_file]
@@ -34,7 +37,7 @@ class Coregen(object):
                     os.makedirs(d_dst)
                 shutil.copyfile(f_src, f_dst)
             else:
-                pr_err('Cannot find file %s' % f_src)
+                logger.error('Cannot find file %s' % f_src)
         args = ['-r',
                 '-b', self.script_file,
                 '-p', self.project_file]

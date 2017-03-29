@@ -1,5 +1,8 @@
+import logging
 from .simulator import Simulator
-from fusesoc.utils import Launcher, pr_warn
+from fusesoc.utils import Launcher
+
+logger = logging.getLogger(__name__)
 
 class Ghdl(Simulator):
 
@@ -26,8 +29,8 @@ class Ghdl(Simulator):
         stdarg = []
         if has08:
             if has87 or has93:
-                pr_warn("ghdl can't mix vhdlSource-2008 with other standard version\n"+
-                        "Trying with treating all as vhdlSource-2008"
+                logger.warning("ghdl can't mix vhdlSource-2008 with other standard version\n"+
+                               "Trying with treating all as vhdlSource-2008"
                 )
             stdarg = ['--std=08']
         elif has87 and has93:
@@ -51,8 +54,7 @@ class Ghdl(Simulator):
                          errormsg = "Failed to analyze {}".format(f.name)).run()
             else:
                 _s = "{} has unknown file type '{}'"
-                pr_warn(_s.format(f.name,
-                                  f.file_type))
+                logger.warning(_s.format(f.name, f.file_type))
         Launcher(cmd, ['-e']+stdarg+[self.toplevel],
                  cwd = self.work_root,
                  errormsg = "Failed to elaborate {}".format(self.toplevel)).run()
