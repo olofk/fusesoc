@@ -169,11 +169,11 @@ COLOR_MAP = {
 class ColoredFormatter(logging.Formatter):
 
     def __init__(self, msg, monochrome):
-        super().__init__(msg)
+        super(ColoredFormatter, self).__init__(msg)
         self.monochrome = monochrome
 
     def format(self, record):
-        uncolored = super().format(record)
+        uncolored = super(ColoredFormatter, self).format(record)
         levelname = record.levelname
         if not self.monochrome and (levelname in COLOR_MAP):
             color_seq = COLOR_SEQ % (30 + COLOR_MAP[levelname])
