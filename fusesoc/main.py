@@ -18,11 +18,10 @@ else:
 from fusesoc.config import Config
 from fusesoc.coremanager import CoreManager, DependencyError
 from fusesoc.vlnv import Vlnv
-from fusesoc.utils import pr_err, pr_info, pr_warn, Launcher
+from fusesoc.utils import Launcher, setup_logging
 
 import logging
 
-logging.basicConfig(filename='fusesoc.log', filemode='w', level=logging.DEBUG)
 logger = logging.getLogger(__name__)
 
 REPOS = [('orpsoc-cores',
@@ -37,13 +36,13 @@ def _get_core(name, has_system=False):
     try:
         core = CoreManager().get_core(Vlnv(name))
     except RuntimeError as e:
-        pr_err(str(e))
+        logger.error(str(e))
         exit(1)
     except DependencyError as e:
-        pr_err("'" + name + "' or any of its dependencies requires '" + e.value + "', but this core was not found")
+        logger.error("'" + name + "' or any of its dependencies requires '" + e.value + "', but this core was not found")
         exit(1)
     if has_system and not core.backend:
-        pr_err("Unable to find .system file for '{}'".format(name))
+        logger.error("Unable to find .system file for '{}'".format(name))
         exit(1)
     return core
 
@@ -53,9 +52,9 @@ def _import(package, name):
 
 def abort_handler(signal, frame):
         print('');
-        pr_info('****************************')
-        pr_info('****   FuseSoC aborted  ****')
-        pr_info('****************************')
+        logger.info('****************************')
+        logger.info('****   FuseSoC aborted  ****')
+        logger.info('****************************')
         print('');
         sys.exit(0)
 
@@ -67,22 +66,22 @@ def build(args):
     try:
         backend =_import('build', core.main.backend)(core, export=True)
     except ImportError:
-        pr_err('Backend "{}" not found'.format(core.main.backend))
+        logger.error('Backend "{}" not found'.format(core.main.backend))
         exit(1)
     except RuntimeError as e:
-        pr_err("Failed to build '{}': {}".format(args.system, e))
+        logger.error("Failed to build '{}': {}".format(args.system, e))
         exit(1)
     try:
         backend.configure(args.backendargs)
     except RuntimeError as e:
-        pr_err(str(e))
+        logger.error(str(e))
         exit(1)
     print('')
     try:
         if not args.setup:
             backend.build(args.backendargs)
     except RuntimeError as e:
-        pr_err("Failed to build FPGA: " + str(e))
+        logger.error("Failed to build FPGA: " + str(e))
         exit(1)
 
 def pgm(args):
@@ -92,10 +91,10 @@ def pgm(args):
         backend =_import('build', core.main.backend)(core, export=True)
         backend.pgm(args.backendargs)
     except ImportError:
-        pr_err('Backend "{}" not found'.format(core.main.backend))
+        logger.error('Backend "{}" not found'.format(core.main.backend))
         exit(1)
     except RuntimeError as e:
-        pr_err("Failed to program the FPGA: " + str(e))
+        logger.error("Failed to program the FPGA: " + str(e))
         exit(1)
 
 def fetch(args):
@@ -104,7 +103,7 @@ def fetch(args):
     try:
         core.setup()
     except RuntimeError as e:
-        pr_err("Failed to fetch '{}': {}".format(core.name, str(e)))
+        logger.error("Failed to fetch '{}': {}".format(core.name, str(e)))
         exit(1)
 
 def init(args):
@@ -129,16 +128,16 @@ def init(args):
         if not cores_root:
             cores_root = default_dir
         if os.path.exists(cores_root):
-            pr_warn("'{}' already exists".format(cores_root))
+            logger.warning("'{}' already exists".format(cores_root))
             #TODO: Prompt for overwrite
         else:
             _repo_paths.append(cores_root)
-            pr_info("Initializing {}".format(repo[0]))
+            logger.info("Initializing {}".format(repo[0]))
             git_args = ['clone', repo[1], cores_root]
             try:
                 Launcher('git', git_args).run()
             except RuntimeError as e:
-                pr_err("Init failed: " + str(e))
+                logger.error("Init failed: " + str(e))
                 exit(1)
 
     xdg_config_home = os.environ.get('XDG_CONFIG_HOME') or \
@@ -147,16 +146,16 @@ def init(args):
 
 
     if os.path.exists(config_file):
-        pr_warn("'{}' already exists".format(config_file))
+        logger.warning("'{}' already exists".format(config_file))
         #TODO. Prepend cores_root to file if it doesn't exist
     else:
-        pr_info("Writing configuration file to '{}'".format(config_file))
+        logger.info("Writing configuration file to '{}'".format(config_file))
         if not os.path.exists(os.path.dirname(config_file)):
             os.makedirs(os.path.dirname(config_file))
         f = open(config_file,'w')
         f.write("[main]\n")
         f.write("cores_root = {}\n".format(' '.join(_repo_paths)))
-    pr_info("FuseSoC is ready to use!")
+    logger.info("FuseSoC is ready to use!")
 
 def list_paths(args):
     cores_root = CoreManager().get_cores_root()
@@ -168,9 +167,9 @@ def list_cores(args):
     if not cores:
         cores_root = CoreManager().get_cores_root()
         if cores_root:
-            pr_err("No cores found in "+':'.join(cores_root))
+            logger.error("No cores found in "+':'.join(cores_root))
         else:
-            pr_err("cores_root is not defined")
+            logger.error("cores_root is not defined")
         exit(1)
     maxlen = max(map(len,cores.keys()))
     print('Core'.ljust(maxlen) + '   Cache status')
@@ -200,20 +199,20 @@ def sim(args):
     elif core.simulators:
         sim_name = core.simulators[0]
     else:
-        pr_err("No simulator was found in '"+ args.system + "' core description")
+        logger.error("No simulator was found in '"+ args.system + "' core description")
         logger.error("No simulator was found in '"+ args.system + "' core description")
         exit(1)
     try:
         CoreManager().tool = sim_name
         sim = _import('simulator', sim_name)(core, export=True)
     except DependencyError as e:
-        pr_err("'" + args.system + "' or any of its dependencies requires '" + e.value + "', but this core was not found")
+        logger.error("'" + args.system + "' or any of its dependencies requires '" + e.value + "', but this core was not found")
         exit(1)
     except ImportError:
-        pr_err("Unknown simulator '{}'".format(sim_name))
+        logger.error("Unknown simulator '{}'".format(sim_name))
         exit(1)
     except RuntimeError as e:
-        pr_err(str(e))
+        logger.error(str(e))
         exit(1)
     if (args.testbench):
         sim.toplevel = args.testbench[0]
@@ -224,23 +223,23 @@ def sim(args):
             sim.configure(args.plusargs)
             print('')
         except RuntimeError as e:
-            pr_err("Failed to configure the system")
-            pr_err(str(e))
+            logger.error("Failed to configure the system")
+            logger.error(str(e))
             exit(1)
         if args.setup:
             exit(0)
         try:
             sim.build()
         except RuntimeError as e:
-            pr_err("Failed to build simulation model")
-            pr_err(str(e))
+            logger.error("Failed to build simulation model")
+            logger.error(str(e))
             exit(1)
     if not args.build_only:
         try:
             sim.run(args.plusargs)
         except RuntimeError as e:
-            pr_err("Failed to run the simulation")
-            pr_err(str(e))
+            logger.error("Failed to run the simulation")
+            logger.error(str(e))
             exit(1)
 
 def update(args):
@@ -252,7 +251,7 @@ def update(args):
             try:
                 repo_root = subprocess.check_output(['git'] + args).decode("utf-8")
                 if repo_root.strip() in [repo[1] for repo in REPOS]:
-                    pr_info("Updating '{}'".format(root))
+                    logger.info("Updating '{}'".format(root))
                     args = ['-C', root, 'pull']
                     Launcher('git', args).run()
             except subprocess.CalledProcessError:
@@ -275,7 +274,7 @@ def run(args):
         try:
             cm.add_cores_root(cores_root)
         except (RuntimeError, IOError) as e:
-            pr_warn("Failed to register cores root '{}'".format(str(e)))
+            logger.warning("Failed to register cores root '{}'".format(str(e)))
     # Process global options
     if vars(args)['32']:
         config.archbits = 32
@@ -300,6 +299,7 @@ def run(args):
     args.func(args)
 
 def main():
+    setup_logging(level=logging.INFO, monchrome=False)
     logger.debug("Command line arguments: " + str(sys.argv))
     if os.getenv("FUSESOC_CORES"):
         logger.debug("FUSESOC_CORES: " + str(os.getenv("FUSESOC_CORES").split(':')))

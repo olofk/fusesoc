@@ -4,6 +4,7 @@ import copy
 import os
 import shutil
 import sys
+import logging
 
 if sys.version_info[0] >= 3:
     import urllib.request as urllib
@@ -16,7 +17,8 @@ else:
 
 from fusesoc.config import Config
 from fusesoc.coremanager import CoreManager
-from fusesoc.utils import pr_info
+
+logger = logging.getLogger(__name__)
 
 class FileAction(argparse.Action):
     def __call__(self, parser, namespace, values, option_string=None):
@@ -64,7 +66,7 @@ class EdaTool(object):
             os.makedirs(self.work_root)
 
         for core in self.cores:
-            pr_info("Preparing " + str(core.name))
+            logger.info("Preparing " + str(core.name))
             dst_dir = os.path.join(self.src_root, core.sanitized_name)
             try:
                 core.setup()

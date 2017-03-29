@@ -1,9 +1,8 @@
 import logging
 import os.path
-import shutil
 
 from fusesoc.edatool import EdaTool
-from fusesoc.utils import Launcher, pr_info, pr_warn
+from fusesoc.utils import Launcher
 
 
 logger = logging.getLogger(__name__)
@@ -27,7 +26,7 @@ class Backend(EdaTool):
             return
         for script in self.system.scripts.pre_synth_scripts:
             script = os.path.abspath(os.path.join(self.system.files_root, script))
-            pr_info("Running " + script);
+            logger.info("Running " + script);
             try:
                 Launcher(script, cwd = os.path.abspath(self.work_root), env = self.env, shell=True).run()
             except RuntimeError:
@@ -38,7 +37,7 @@ class Backend(EdaTool):
             return
         for script in self.system.scripts.post_impl_scripts:
             script = os.path.abspath(os.path.join(self.system.files_root, script))
-            pr_info("Running " + script);
+            logger.info("Running " + script);
             try:
                 Launcher(script, cwd = os.path.abspath(self.work_root), env = self.env, shell=True).run()
             except RuntimeError:

@@ -1,7 +1,7 @@
 import os
 from fusesoc.simulator.simulator import Simulator
 import logging
-from fusesoc.utils import Launcher, pr_warn
+from fusesoc.utils import Launcher
 
 logger = logging.getLogger(__name__)
 
@@ -34,8 +34,7 @@ class Icarus(Simulator):
                 f.write(src_file.name+'\n')
             else:
                 _s = "{} has unknown file type '{}'"
-                pr_warn(_s.format(src_file.name,
-                                  src_file.file_type))
+                logger.warning(_s.format(src_file.name, src_file.file_type))
 
         f.close()
 
