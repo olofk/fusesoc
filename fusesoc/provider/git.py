@@ -1,6 +1,9 @@
-from fusesoc.utils import pr_info, pr_warn, Launcher
+import logging
+from fusesoc.utils import Launcher
 import os.path
 import shutil
+
+logger = logging.getLogger(__name__)
 
 class Git(object):
     def __init__(self, config, core_root, cache_root):
@@ -35,14 +38,14 @@ class Git(object):
         elif status == 'downloaded':
             pass
         else:
-            pr_warn("Provider status is: '" + status + "'. This shouldn't happen")
+            logger.warning("Provider status is: '" + status + "'. This shouldn't happen")
             return False
             #TODO: throw an exception here
 
     def _checkout(self, local_dir):
 
         #TODO : Sanitize URL
-        pr_info("Checking out " + self.repo + " to " + local_dir)
+        logger.info("Checking out " + self.repo + " to " + local_dir)
         args = ['clone', '-q', self.repo, local_dir]
         Launcher('git', args).run()
         if self.version:

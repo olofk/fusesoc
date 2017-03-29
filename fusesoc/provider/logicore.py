@@ -1,6 +1,9 @@
-from fusesoc.utils import pr_info, pr_err, Launcher
+from fusesoc.utils import Launcher
 import os
 import shutil
+import logging
+
+logger = logging.getLogger(__name__)
 
 class Logicore(object):
     def __init__(self, config, core_root, cache_root):
@@ -18,7 +21,7 @@ class Logicore(object):
         return False
 
     def _checkout(self):
-        pr_info("Using Xilinx Vivado to generate LogiCORE(tm) project " + self.project_file)
+        logger.info("Using Xilinx Vivado to generate LogiCORE(tm) project " + self.project_file)
         if not os.path.isdir(self.files_root):
             os.mkdir(self.files_root)
         src_files = [self.script_file, self.project_file]
@@ -31,7 +34,7 @@ class Logicore(object):
             if(os.path.exists(f_src)):
                 shutil.copyfile(f_src, f_dst)
             else:
-                pr_err('Cannot find file %s' % f_src)
+                logger.error('Cannot find file %s' % f_src)
         args = ['-mode', 'batch',
                 '-source', self.script_file]
         Launcher('vivado', args, cwd=self.files_root).run()

@@ -1,8 +1,10 @@
-from fusesoc.utils import pr_info, pr_warn
 import os.path
 import shutil
 import sys
 import tarfile
+import logging
+
+logger = logging.getLogger(__name__)
 
 if sys.version_info[0] >= 3:
     import urllib.request as urllib
@@ -49,7 +51,7 @@ class GitHub(object):
         elif status == 'downloaded':
             pass
         else:
-            pr_warn("Provider status is: '" + status + "'. This shouldn't happen")
+            logger.warning("Provider status is: '" + status + "'. This shouldn't happen")
             return False
             #TODO: throw an exception here
 
@@ -58,7 +60,7 @@ class GitHub(object):
         url = URL.format(user=self.user,
                          repo=self.repo,
                          version=self.version)
-        pr_info("Downloading {}/{} from github".format(self.user,
+        logger.info("Downloading {}/{} from github".format(self.user,
                                                        self.repo))
         try:
             (filename, headers) = urllib.urlretrieve(url)

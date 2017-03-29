@@ -1,9 +1,11 @@
-from fusesoc.utils import pr_info
+import logging
 import os.path
 import sys
 import tarfile
 import zipfile
 import shutil
+
+logger = logging.getLogger(__name__)
 
 if sys.version_info[0] >= 3:
     import urllib.request as urllib
@@ -31,7 +33,7 @@ class ProviderURL(object):
             raise RuntimeError("Provider status is: '" + status + "'. This shouldn't happen")
 
     def _checkout(self, local_dir):
-        pr_info("Checking out " + self.url + " to " + local_dir)
+        logger.info("Checking out " + self.url + " to " + local_dir)
         try:
             (filename, headers) = urllib.urlretrieve(self.url)
         except URLError as e:

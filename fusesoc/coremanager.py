@@ -14,7 +14,6 @@ from simplesat.request import Request
 
 from fusesoc.config import Config
 from fusesoc.core import Core
-from fusesoc.utils import pr_warn
 
 logger = logging.getLogger(__name__)
 
@@ -127,10 +126,9 @@ class CoreManager(object):
                 self.db.add(core)
             except SyntaxError as e:
                 w = "Failed to parse " + file + ": " + e.msg
-                pr_warn(w)
                 logger.warning(w)
             except ImportError as e:
-                pr_warn('Failed to register "{}" due to unknown provider: {}'.format(file, str(e)))
+                logger.warning('Failed to register "{}" due to unknown provider: {}'.format(file, str(e)))
         
     def load_cores(self, path):
         if path:
