@@ -1,7 +1,7 @@
 import os
 from fusesoc.simulator.simulator import Simulator
 import logging
-from fusesoc.utils import Launcher, pr_err, pr_warn
+from fusesoc.utils import Launcher
 
 logger = logging.getLogger(__name__)
 
@@ -33,8 +33,8 @@ class Isim(Simulator):
                 f1.write('sv work ' + src_file.name + '\n')
             else:
                 _s = "{} has unknown file type '{}'"
-                pr_warn(_s.format(src_file.name,
-                                  src_file.file_type))
+                logger.warning(_s.format(src_file.name,
+                               src_file.file_type))
         f1.close()
 
         tcl_file = 'isim.tcl'
@@ -49,7 +49,7 @@ class Isim(Simulator):
         #Check if any VPI modules are present and display warning
         if len(self.vpi_modules) > 0:
             modules = [m['name'] for m in self.vpi_modules]
-            pr_err('VPI modules not supported by Isim: %s' % ', '.join(modules))
+            logger.error('VPI modules not supported by Isim: %s' % ', '.join(modules))
 
         #Build simulation model
         args = []
