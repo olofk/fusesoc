@@ -53,7 +53,7 @@ class Isim(Simulator):
 
         #Build simulation model
         args = []
-        args += [ self.toplevel]
+        args += self.toplevel.split()
         args += ['-prj', 'isim.prj']
         args += ['-o', 'fusesoc.elf']
 
