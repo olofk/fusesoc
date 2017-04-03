@@ -5,6 +5,9 @@ set_global_assignment -name TOP_LEVEL_ENTITY orpsoc_top
 set_parameter -name vlogparam_bool true
 set_parameter -name vlogparam_int 42
 set_parameter -name vlogparam_str "hello"
+set_global_assignment -name VERILOG_MACRO "vlogdefine_bool=true"
+set_global_assignment -name VERILOG_MACRO "vlogdefine_int=42"
+set_global_assignment -name VERILOG_MACRO "vlogdefine_str=hello"
 set_global_assignment -name VERILOG_FILE ../../../cores/adv_debug_sys/Hardware/adv_dbg_if/rtl/verilog/adbg_wb_biu.v
 set_global_assignment -name VERILOG_FILE ../../../cores/adv_debug_sys/Hardware/adv_dbg_if/rtl/verilog/adbg_or1k_status_reg.v
 set_global_assignment -name VERILOG_FILE ../../../cores/adv_debug_sys/Hardware/adv_dbg_if/rtl/verilog/adbg_jsp_biu.v
