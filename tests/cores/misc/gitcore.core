@@ -1,0 +1,7 @@
+CAPI=1
+[main]
+description = Test core for git provider
+
+[provider]
+name = git
+repo = https://github.com/fusesoc/wb_common

@@ -1,0 +1,11 @@
+CAPI=1
+[main]
+description = "Simple UART from the Milkymist project"
+
+[verilog]
+src_files = uart_transceiver.v
+
+[provider]
+name=url
+url=https://github.com/m-labs/milkymist/raw/master/cores/uart/rtl/uart_transceiver.v
+filetype = simple

@@ -1,0 +1,56 @@
+import os
+import pytest
+import shutil
+
+@pytest.fixture
+def get_core(core):
+    from fusesoc.config import Config
+    from fusesoc.core import Core
+    from fusesoc.coremanager import CoreManager
+    from fusesoc.main import _get_core, _import
+
+    tests_dir = os.path.dirname(__file__)
+
+    Config().build_root = os.path.join(tests_dir, 'build')
+    Config().cache_root = os.path.join(tests_dir, 'cache')
+    cores_root = os.path.join(tests_dir, 'cores')
+
+    CoreManager().add_cores_root(cores_root)
+    return _get_core(core)
+    
+def test_git_provider():
+    core = get_core("gitcore")
+    
+    if core.cache_status() is "downloaded":
+        shutil.rmtree(core.files_root)
+    core.setup()
+
+    for f in ['LICENSE',
+	      'README.md',
+	      'wb_common.core',
+	      'wb_common.v',
+	      'wb_common_params.v']:
+        assert(os.path.isfile(os.path.join(core.files_root, f)))
+
+def test_github_provider():
+    core = get_core("vlog_tb_utils")
+    
+    if core.cache_status() is "downloaded":
+        shutil.rmtree(core.files_root)
+    core.setup()
+    
+    for f in ['LICENSE',
+              'vlog_functions.v',
+              'vlog_tap_generator.v',
+              'vlog_tb_utils.core',
+              'vlog_tb_utils.v']:
+        assert(os.path.isfile(os.path.join(core.files_root, f)))
+        
+def test_url_provider():
+    core = get_core("mmuart")
+
+    if core.cache_status() is "downloaded":
+        shutil.rmtree(core.files_root)
+    core.setup()
+
+    assert(os.path.isfile(os.path.join(core.files_root, 'uart_transceiver.v')))
