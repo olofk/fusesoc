@@ -17,6 +17,24 @@ def get_core(core):
 
     CoreManager().add_cores_root(cores_root)
     return _get_core(core)
+
+def test_coregen_provider():
+    core = get_core("coregencore")
+
+    if core.cache_status() is "downloaded":
+        shutil.rmtree(core.files_root)
+    tests_dir = os.path.dirname(__file__)
+    os.environ['PATH'] = os.path.join(tests_dir, 'mock_commands')+':'+os.environ['PATH']
+    core.setup()
+
+    for f in ['dummy.cgp',
+	      'dummy.xco',
+	      os.path.join('subdir', 'dummy.extra')]:
+        print(f)
+        assert(os.path.isfile(os.path.join(core.files_root, f)))
+
+    with open(os.path.join(core.files_root, 'run.cmd')) as f:
+        assert(f.read() == '-r -b dummy.xco -p dummy.cgp\n')
     
 def test_git_provider():
     core = get_core("gitcore")

@@ -1,0 +1,9 @@
+CAPI=1
+[main]
+description = Test core for coregen provider
+
+[provider]
+name = coregen
+script_file  = dummy.xco 
+project_file = dummy.cgp
+extra_files  = subdir/dummy.extra
