@@ -1,0 +1,11 @@
+CAPI=1
+[main]
+description = Test core for opencores provider
+
+[provider]
+name = opencores
+repo_name = jtag
+repo_root = trunk/tap/rtl/verilog
+revision = 24
+
+

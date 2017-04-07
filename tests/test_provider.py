@@ -64,6 +64,16 @@ def test_github_provider():
               'vlog_tb_utils.v']:
         assert(os.path.isfile(os.path.join(core.files_root, f)))
         
+def test_opencores_provider():
+    core = get_core("opencorescore")
+
+    if core.cache_status() is "downloaded":
+        shutil.rmtree(core.files_root)
+    core.setup()
+
+    assert(os.path.isfile(os.path.join(core.files_root, 'tap_defines.v')))
+    assert(os.path.isfile(os.path.join(core.files_root, 'tap_top.v')))
+
 def test_url_provider():
     core = get_core("mmuart")
 
