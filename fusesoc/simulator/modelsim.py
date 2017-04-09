@@ -124,7 +124,7 @@ class Modelsim(Simulator):
 
     def _write_vpi_makefile(self):
         vpi_make = open(os.path.join(self.work_root, "Makefile"), 'w')
-        _vpi_inc = self.model_tech+'/../include'
+        _vpi_inc = '$(MODEL_TECH)/../include'
         _modules = [m['name'] for m in self.vpi_modules]
         _clean_targets = ' '.join(["clean_"+m for m in _modules])
         _s = VPI_MAKE_HEADER.format(inc=_vpi_inc,
