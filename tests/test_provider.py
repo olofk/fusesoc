@@ -2,21 +2,7 @@ import os
 import pytest
 import shutil
 
-@pytest.fixture
-def get_core(core):
-    from fusesoc.config import Config
-    from fusesoc.core import Core
-    from fusesoc.coremanager import CoreManager
-    from fusesoc.main import _get_core, _import
-
-    tests_dir = os.path.dirname(__file__)
-
-    Config().build_root = os.path.join(tests_dir, 'build')
-    Config().cache_root = os.path.join(tests_dir, 'cache')
-    cores_root = os.path.join(tests_dir, 'cores')
-
-    CoreManager().add_cores_root(cores_root)
-    return _get_core(core)
+from test_common import get_core
 
 def test_coregen_provider():
     core = get_core("coregencore")
