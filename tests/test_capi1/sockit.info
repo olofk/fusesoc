@@ -1,0 +1,68 @@
+CORE INFO
+Name                 : ::sockit:0
+Core root            : /home/olof/.local/share/orpsoc-cores/systems/sockit
+Supported simulators : icarus
+Common dependencies  : >=::jtag_tap:0 >=::wb_intercon:0 >=::adv_debug_sys:0 >=::mor1kx:0 ::uart16550:1.5 >=::gpio:0 >=::paramtest:0 >=::vga_lcd:0
+
+== quartus ==
+FPGA device family : "Cyclone V"
+FPGA device identifier : 5CSXFC6D6F31C8ES
+RTL top-level module : orpsoc_top
+
+File sets:
+Name  : verilog_src_files
+ Scope : public
+ Usage : sim/synth
+ Files :
+  rtl/verilog/include/orpsoc-defines.v verilogSource (include file)
+  rtl/verilog/include/timescale.v      verilogSource (include file)
+  rtl/verilog/include/uart_defines.v   verilogSource (include file)
+  rtl/verilog/wb_intercon.vh           verilogSource (include file)
+  rtl/verilog/clkgen.v                 verilogSource 
+  rtl/verilog/orpsoc_top.v             verilogSource 
+  rtl/verilog/rom.v                    verilogSource 
+  rtl/verilog/wb_intercon.v            verilogSource 
+
+Name  : verilog_tb_src_files
+ Scope : public
+ Usage : sim
+ Files :
+ <No files>
+
+Name  : verilog_tb_private_src_files
+ Scope : private
+ Usage : sim
+ Files :
+ <No files>
+
+Name  : file_types
+ Scope : public
+ Usage : sim/synth
+ Files :
+  vhdl_file.vhd vhdlSource          
+  sv_file.sv    systemVerilogSource 
+  qip_file.qip  QIP                 
+  user_file     user                
+  other_file    xdc                 
+
+Name  : qsys
+ Scope : public
+ Usage : quartus
+ Files :
+  data/sockit.qsys QSYS 
+
+Name  : backend_files
+ Scope : private
+ Usage : quartus
+ Files :
+  data/sockit.qsys QSYS      
+  data/sockit.sdc  SDC       
+  data/pinmap.tcl  tclSource 
+
+
+== Backend quartus ==
+FPGA device family : "Cyclone V"
+FPGA device identifier : 5CSXFC6D6F31C8ES
+RTL top-level module : orpsoc_top
+
+

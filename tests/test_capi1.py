@@ -1,12 +1,36 @@
+import difflib
 import os
 import pytest
 
 from fusesoc.core import Core
 
+from test_common import get_core
 def compare_fileset(fileset, name, files):
     assert name == fileset.name
     for i in range(len(files)):
         assert files[i] == fileset.file[i].name
+
+def compare_file(ref_dir, work_root, name):
+    import difflib
+    import os
+    reference_file = os.path.join(ref_dir, name)
+    generated_file = os.path.join(work_root, name)
+
+    assert os.path.exists(generated_file)
+
+    with open(reference_file) as f1, open(generated_file) as f2:
+        diff = ''.join(difflib.unified_diff(f1.readlines(), f2.readlines()))
+        return diff
+
+def test_core_info():
+    tests_dir = os.path.dirname(__file__)
+
+    core = get_core("sockit")
+    gen_info = [x+'\n' for x in core.info().split('\n') if not 'Core root' in x]
+
+    with open(os.path.join(tests_dir, __name__, "sockit.info")) as f:
+        ref_info = [x for x in f.readlines() if not 'Core root' in x]
+    assert '' == ''.join(difflib.unified_diff(ref_info, gen_info))
 
 def test_icestorm():
     filename = os.path.join(os.path.dirname(__file__),

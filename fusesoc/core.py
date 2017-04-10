@@ -21,6 +21,25 @@ class FileSet(object):
         self.usage   = usage
         self.private = private
 
+    def __str__(self):
+        s = """Name  : {}
+ Scope : {}
+ Usage : {}
+ Files :\n""".format(self.name,
+                     "private" if self.private else "public",
+                     '/'.join(self.usage))
+        if not self.file:
+            s += " <No files>\n"
+        else:
+            _longest_name = max([len(x.name) for x in self.file])
+            _longest_type = max([len(x.file_type) for x in self.file])
+            for f in self.file:
+                _s = "  {} {} {}\n"
+                s += _s.format(f.name.ljust(_longest_name),
+                               f.file_type.ljust(_longest_type),
+                               "(include file)" if f.is_include_file else "")
+        return s
+
 class Core:
     def __init__(self, core_file):
         basename = os.path.basename(core_file)
@@ -315,48 +334,31 @@ class Core:
                                           usage = ['sim', 'synth']))
         self.file_sets += _file_sets
     def info(self):
+        HEADER = """CORE INFO
+Name                 : {}
+Core root            : {}
+Supported simulators : {}
+Common dependencies  : {}\n\n"""
 
-        show_list = lambda l: "\n                        ".join([str(x) for x in l])
-        show_dict = lambda d: show_list(["%s: %s" % (k, d[k]) for k in d.keys()])
-
-        print("CORE INFO")
-        print("Name:                   " + str(self.name))
-        print("Core root:              " + self.core_root)
-        if self.simulators:
-            print("Supported simulators:   " + show_list(self.simulators))
-        if self.plusargs: 
-            print("\nPlusargs:               " + show_dict(self.plusargs.items))
-        if self.depend:
-            print("\nCommon dependencies : " + ' '.join([x.depstr() for x in self.depend]))
-
-        for s in section.SECTION_MAP:
-            if s in ['main', 'verilog']:
+        s = HEADER.format(str(self.name),
+                          self.core_root,
+                          ' '.join(self.simulators),
+                          ' '.join([x.depstr() for x in self.depend]))
+        for sec in section.SECTION_MAP:
+            if sec in ['main', 'verilog', 'fileset']:
                 continue
-            obj = getattr(self, s)
+            obj = getattr(self, sec)
             if obj:
                 if(type(obj) == OrderedDict):
                     for k, v in obj.items():
-                        print("== " + s + " " + k + " ==")
-                        print(v)
+                        s += "== {} {} ==\n{}\n".format(sec,k, v)
                 else:
-                    print("== " + s + " ==")
-                    print(obj)
-        print("File sets:")
-        for s in self.file_sets:
-            print("""
- Name  : {}
- Scope : {}
- Usage : {}
- Files :""".format(s.name, "private" if s.private else "public", '/'.join(s.usage)))
-            if not s.file:
-                print(" <No files>")
-            else:
-                _longest_name = max([len(x.name) for x in s.file])
-                _longest_type = max([len(x.file_type) for x in s.file])
-                for f in s.file:
-                    print("  {} {} {}".format(f.name.ljust(_longest_name),
-                                              f.file_type.ljust(_longest_type),
-                                              "(include file)" if f.is_include_file else ""))
+                    s += "== {} ==\n{}\n".format(sec, obj)
+        s += "File sets:\n"
+        for fs in self.file_sets:
+            s += str(fs) + '\n'
+
         if self.main.backend:
-            print("\n== Backend " + self.main.backend + " ==")
-            print(self.backend)
+            s += "\n== Backend {} ==\n{}\n".format(self.main.backend,
+                                                   self.backend)
+        return s

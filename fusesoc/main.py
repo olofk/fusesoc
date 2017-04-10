@@ -180,7 +180,7 @@ def list_cores(args):
 
 def core_info(args):
     core = _get_core(args.core)
-    core.info()
+    print(core.info())
 
 def list_systems(args):
     print("Available systems:")
