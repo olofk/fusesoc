@@ -187,11 +187,6 @@ def list_systems(args):
     for system in CoreManager().get_systems():
         print(system)
 
-def system_info(args):
-    core = _get_core(args.system, True)
-    core.info()
-    core.system.info()
-
 def sim(args):
     core = _get_core(args.system)
     if args.sim:
@@ -343,11 +338,6 @@ def main():
     # list-systems subparser
     parser_list_systems = subparsers.add_parser('list-systems', help='List available systems')
     parser_list_systems.set_defaults(func=list_systems)
-
-    # system-info subparser
-    parser_system_info = subparsers.add_parser('system-info', help='Displays details about a system')
-    parser_system_info.add_argument('system')
-    parser_system_info.set_defaults(func=system_info)
 
     # list-cores subparser
     parser_list_cores = subparsers.add_parser('list-cores', help='List available cores')
