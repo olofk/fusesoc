@@ -1,48 +1,36 @@
-from fusesoc.utils import Launcher
+import logging
 import os
 import shutil
-import logging
+from fusesoc.provider.provider import Provider
+from fusesoc.utils import Launcher
 
 logger = logging.getLogger(__name__)
 
-class Logicore(object):
-    def __init__(self, config, core_root, cache_root):
-        self.core_root    = core_root
-        self.files_root   = cache_root
-        self.script_file  = config.get('script_file')
-        self.project_file = config.get('project_file')
-        self.extra_files  = config.get('extra_files')
+class Logicore(Provider):
 
-    def fetch(self):
-        status = self.status()
-        if status != 'downloaded':
-            self._checkout()
-            return True
-        return False
-
-    def _checkout(self):
-        logger.info("Using Xilinx Vivado to generate LogiCORE(tm) project " + self.project_file)
-        if not os.path.isdir(self.files_root):
-            os.mkdir(self.files_root)
-        src_files = [self.script_file, self.project_file]
-        if self.extra_files:
-            src_files += self.extra_files.split()
+    def _checkout(self, local_dir):
+        script_file  = self.config.get('script_file')
+        project_file = self.config.get('project_file')
+        extra_files  = self.config.get('extra_files')
+        logger.info("Using Xilinx Vivado to generate LogiCORE(tm) project " + project_file)
+        if not os.path.isdir(local_dir):
+            os.mkdir(local_dir)
+        src_files = [script_file, project_file]
+        if extra_files:
+            src_files += extra_files.split()
 
         for f in src_files:
             f_src = os.path.join(self.core_root, f)
-            f_dst = os.path.join(self.files_root, f)
-            if(os.path.exists(f_src)):
+            f_dst = os.path.join(local_dir, f)
+            if os.path.exists(f_src):
+                d_dst = os.path.dirname(f_dst)
+                if not os.path.exists(d_dst):
+                    os.makedirs(d_dst)
                 shutil.copyfile(f_src, f_dst)
             else:
                 logger.error('Cannot find file %s' % f_src)
         args = ['-mode', 'batch',
-                '-source', self.script_file]
-        Launcher('vivado', args, cwd=self.files_root).run()
-
-    def status(self):
-        if not os.path.isdir(self.files_root):
-            return 'empty'
-        else:
-            return 'downloaded'
+                '-source', script_file]
+        Launcher('vivado', args, cwd=local_dir).run()
 
 PROVIDER_CLASS = Logicore

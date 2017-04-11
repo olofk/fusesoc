@@ -49,7 +49,24 @@ def test_github_provider():
               'vlog_tb_utils.core',
               'vlog_tb_utils.v']:
         assert(os.path.isfile(os.path.join(core.files_root, f)))
-        
+
+def test_logicore_provider():
+    core = get_core("logicorecore")
+
+    if core.cache_status() is "downloaded":
+        shutil.rmtree(core.files_root)
+    tests_dir = os.path.dirname(__file__)
+    os.environ['PATH'] = os.path.join(tests_dir, 'mock_commands')+':'+os.environ['PATH']
+    core.setup()
+
+    for f in ['dummy.tcl',
+	      'dummy.xci',
+	      os.path.join('subdir', 'dummy.extra')]:
+        assert(os.path.isfile(os.path.join(core.files_root, f)))
+
+    with open(os.path.join(core.files_root, 'run.cmd')) as f:
+        assert(f.read() == '-mode batch -source dummy.tcl\n')
+
 def test_opencores_provider():
     core = get_core("opencorescore")
 

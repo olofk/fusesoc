@@ -1,0 +1,9 @@
+CAPI=1
+[main]
+description = Test core for logicore provider
+
+[provider]
+name = logicore
+script_file  = dummy.tcl
+project_file = dummy.xci
+extra_files  = subdir/dummy.extra
