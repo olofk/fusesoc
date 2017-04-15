@@ -129,6 +129,14 @@ class Core:
         else:
             return 'local'
 
+    def get_depends(self, flags={}):
+        _depends = self.depend
+        try:
+            _depends += getattr(self, flags['tool']).depend
+        except (AttributeError, KeyError):
+            pass
+        return _depends
+
     def setup(self):
         if self.provider:
             if self.provider.fetch():

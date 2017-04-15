@@ -65,18 +65,13 @@ class CoreDB(object):
             found = list(self._cores.values())
         return found
 
-    def solve(self, top_core, tool):
+    def solve(self, top_core, flags):
         repo = Repository()
         for core in self._cores.values():
             package_str = "{} {}-{}".format(self._package_name(core.name),
                                             core.name.version,
                                             core.name.revision)
-            _depends = core.depend
-            try:
-                _depends += getattr(core, tool).depend
-            except (AttributeError, KeyError):
-                pass
-
+            _depends = core.get_depends(flags)
             if _depends:
                 _s = "; depends ( {} )"
                 package_str += _s.format(self._parse_depend(_depends))
@@ -160,7 +155,7 @@ class CoreManager(object):
         return self._cores_root
 
     def get_depends(self, core):
-        return self.db.solve(core, self.tool)
+        return self.db.solve(core, {'tool' : self.tool})
 
     def get_cores(self):
         return {str(x.name) : x for x in self.db.find()}
