@@ -60,21 +60,35 @@ class CoreDB(object):
 
     def find(self, vlnv=None):
         if vlnv:
-            found = self._cores[str(vlnv)]
+            found = self._solve(vlnv, only_matching_vlnv=True)[-1]
         else:
             found = list(self._cores.values())
         return found
 
     def solve(self, top_core, flags):
+        return self._solve(top_core, flags)
+
+    def _solve(self, top_core, flags={}, only_matching_vlnv=False):
+        def eq_vln(this, that):
+            return \
+                this.vendor  == that.vendor and \
+                this.library == that.library and \
+                this.name    == that.name
+
         repo = Repository()
         for core in self._cores.values():
+            if only_matching_vlnv:
+                if not eq_vln(core.name, top_core):
+                    continue
+
             package_str = "{} {}-{}".format(self._package_name(core.name),
                                             core.name.version,
                                             core.name.revision)
-            _depends = core.get_depends(flags)
-            if _depends:
-                _s = "; depends ( {} )"
-                package_str += _s.format(self._parse_depend(_depends))
+            if not only_matching_vlnv:
+                _depends = core.get_depends(flags)
+                if _depends:
+                    _s = "; depends ( {} )"
+                    package_str += _s.format(self._parse_depend(_depends))
             parser = PrettyPackageStringParser(EnpkgVersion.from_string)
 
             package = parser.parse_to_package(package_str)
@@ -155,13 +169,14 @@ class CoreManager(object):
         return self._cores_root
 
     def get_depends(self, core):
-        return self.db.solve(core, {'tool' : self.tool})
+        resolved_core = self.db.find(core)
+        return self.db.solve(resolved_core.name, {'tool' : self.tool})
 
     def get_cores(self):
         return {str(x.name) : x for x in self.db.find()}
 
     def get_core(self, name):
-        c = self.db.solve(name, "")[-1]
+        c = self.db.find(name)
         c.name.relation = "=="
         return c
 
