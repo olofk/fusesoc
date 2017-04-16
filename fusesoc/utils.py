@@ -6,8 +6,6 @@ from fusesoc.config import Config
 if sys.version[0] == '2':
     FileNotFoundError = OSError
 
-from fusesoc.config import Config
-
 logger = logging.getLogger(__name__)
 
 class Launcher:

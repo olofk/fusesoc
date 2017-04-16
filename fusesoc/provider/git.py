@@ -1,5 +1,4 @@
 import logging
-import os.path
 import shutil
 from fusesoc.provider.provider import Provider
 from fusesoc.utils import Launcher

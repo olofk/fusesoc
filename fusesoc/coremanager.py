@@ -1,4 +1,3 @@
-import collections
 import logging
 import os
 
@@ -7,12 +6,10 @@ from okonomiyaki.versions import EnpkgVersion
 from simplesat.constraints import PrettyPackageStringParser, Requirement
 from simplesat.dependency_solver import DependencySolver
 from simplesat.errors import NoPackageFound, SatisfiabilityError
-from simplesat.package import PackageMetadata
 from simplesat.pool import Pool
 from simplesat.repository import Repository
 from simplesat.request import Request
 
-from fusesoc.config import Config
 from fusesoc.core import Core
 
 logger = logging.getLogger(__name__)

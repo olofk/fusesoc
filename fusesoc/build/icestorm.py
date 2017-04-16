@@ -1,5 +1,4 @@
 import os.path
-import shutil
 from fusesoc import utils
 
 from fusesoc.build.backend import Backend

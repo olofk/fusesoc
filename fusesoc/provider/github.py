@@ -1,6 +1,5 @@
 import logging
 import os.path
-import shutil
 import sys
 import tarfile
 from fusesoc.provider.provider import Provider

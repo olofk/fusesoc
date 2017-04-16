@@ -1,6 +1,5 @@
 import os
 import logging
-from fusesoc import utils
 from fusesoc.utils import unique_dirs
 from fusesoc.vlnv import Vlnv
 
@@ -244,9 +243,9 @@ class VerilogSection(Section):
             if not self.file_type:
                 self.file_type = "verilogSource"
             if self.include_files:
-                self.include_dirs  += utils.unique_dirs(self.include_files)
+                self.include_dirs  += unique_dirs(self.include_files)
             if self.tb_include_files:
-                self.tb_include_dirs  += utils.unique_dirs(self.tb_include_files)
+                self.tb_include_dirs  += unique_dirs(self.tb_include_files)
 
             self.export_files = self.src_files + self.include_files + self.tb_src_files + self.tb_include_files + self.tb_private_src_files
 
