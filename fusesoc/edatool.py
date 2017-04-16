@@ -33,12 +33,15 @@ class EdaTool(object):
         self.system = system
         self.export = export
         self.TOOL_NAME = self.__class__.__name__.lower()
+        self.flags = {'tool'   : self.TOOL_NAME,
+                      'flow'   : self.TOOL_TYPE}
         build_root = os.path.join(Config().build_root, self.system.sanitized_name)
 
         self.src_root  = os.path.join(build_root, 'src')
         self.work_root = os.path.join(build_root, self.TOOL_TYPE+'-'+self.TOOL_NAME)
         self.cm = CoreManager()
-        self.cores = self.cm.get_depends(self.system.name)
+        self.cores = self.cm.get_depends(self.system.name,
+                                         self.flags)
 
         self.env = os.environ.copy()
 

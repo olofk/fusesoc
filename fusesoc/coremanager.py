@@ -120,7 +120,7 @@ class CoreDB(object):
 class CoreManager(object):
     _instance = None
     _cores_root = []
-    tool = ''
+
     db = CoreDB()
 
     def __new__(cls, *args, **kwargs):
@@ -168,9 +168,9 @@ class CoreManager(object):
     def get_cores_root(self):
         return self._cores_root
 
-    def get_depends(self, core):
+    def get_depends(self, core, flags):
         resolved_core = self.db.find(core)
-        return self.db.solve(resolved_core.name, {'tool' : self.tool})
+        return self.db.solve(resolved_core.name, flags)
 
     def get_cores(self):
         return {str(x.name) : x for x in self.db.find()}

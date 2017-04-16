@@ -198,7 +198,6 @@ def sim(args):
         logger.error("No simulator was found in '"+ args.system + "' core description")
         exit(1)
     try:
-        CoreManager().tool = sim_name
         sim = _import('simulator', sim_name)(core, export=True)
     except DependencyError as e:
         logger.error("'" + args.system + "' or any of its dependencies requires '" + e.value + "', but this core was not found")
