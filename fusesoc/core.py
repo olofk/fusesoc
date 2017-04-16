@@ -129,6 +129,14 @@ class Core:
         else:
             return 'local'
 
+    def get_default_sim(self, flags):
+        if flags['tool']:
+            return flags['tool']
+        elif len(self.simulators) > 0:
+            return self.simulators[0]
+        else:
+            return None
+
     def get_depends(self, flags={}):
         _depends = self.depend
         try:

@@ -189,12 +189,10 @@ def list_systems(args):
 
 def sim(args):
     core = _get_core(args.system)
-    if args.sim:
-        sim_name = args.sim[0]
-    elif core.simulators:
-        sim_name = core.simulators[0]
-    else:
-        logger.error("No simulator was found in '"+ args.system + "' core description")
+    sim_name = core.get_default_sim({'tool' : args.sim})
+
+    if not sim_name:
+        logger.error("No simulator was supplied on command line or found in '"+ args.system + "' core description")
         exit(1)
     try:
         sim = _import('simulator', sim_name)(core, export=True)
@@ -354,7 +352,7 @@ def main():
 
     # sim subparser
     parser_sim = subparsers.add_parser('sim', help='Setup and run a simulation')
-    parser_sim.add_argument('--sim', nargs=1, help='Override the simulator settings from the system file')
+    parser_sim.add_argument('--sim', help='Override the simulator settings from the system file')
     parser_sim.add_argument('--setup', action='store_true', help='Only create the project files without running the EDA tool')
     parser_sim.add_argument('--build-only', action='store_true', help='Build the simulation binary without running the simulator')
     parser_sim.add_argument('--force', action='store_true', help='Force rebuilding simulation model when directory exists')

@@ -32,6 +32,15 @@ def test_core_info():
         ref_info = [x for x in f.readlines() if not 'Core root' in x]
     assert '' == ''.join(difflib.unified_diff(ref_info, gen_info))
 
+def test_get_default_sim():
+    tests_dir = os.path.dirname(__file__)
+    core = get_core("atlys")
+    assert None     == core.get_default_sim({'tool' : None})
+    assert 'icarus' == core.get_default_sim({'tool' : 'icarus'})
+    core = get_core("sockit")
+    assert 'icarus' == core.get_default_sim({'tool' : None})
+    assert 'icarus' == core.get_default_sim({'tool' : 'icarus'})
+
 def test_icestorm():
     filename = os.path.join(os.path.dirname(__file__),
                             __name__,
