@@ -195,7 +195,6 @@ def sim(args):
         sim_name = core.simulators[0]
     else:
         logger.error("No simulator was found in '"+ args.system + "' core description")
-        logger.error("No simulator was found in '"+ args.system + "' core description")
         exit(1)
     try:
         sim = _import('simulator', sim_name)(core, export=True)
