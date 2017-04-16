@@ -15,8 +15,6 @@ class Config(object):
     _init_done = False
 
     archbits = 0
-    monochrome=False
-    verbose=False
     def __new__(cls, *args, **kwargs):
         if not cls._instance:
             cls._instance = super(Config, cls).__new__(cls, *args, **kwargs)

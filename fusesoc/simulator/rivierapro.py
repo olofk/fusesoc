@@ -1,7 +1,6 @@
 import os
 import logging
 from .simulator import Simulator
-from fusesoc.config import Config
 from fusesoc.utils import Launcher
 
 logger = logging.getLogger(__name__)
@@ -75,8 +74,7 @@ class Rivierapro(Simulator):
                 logger.warning(_s.format(f.name, f.file_type))
                 cmd = None
             if cmd:
-                if not Config().verbose:
-                    args += ['-quiet']
+                args += ['-quiet']
                 args += ['-work', f.logical_name]
                 args += [f.name.replace('\\','/')]
                 tcl_build_rtl.write("{} {}\n".format(cmd, ' '.join(args)))

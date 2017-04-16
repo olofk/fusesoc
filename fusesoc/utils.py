@@ -20,12 +20,8 @@ class Launcher:
         self.env      = env
 
     def run(self):
-        if Config().verbose:
-            logger.info(self.cwd)
-            logger.info('    ' + str(self))
-        else:
-            logger.debug(self.cwd)
-            logger.debug('    ' + str(self))
+        logger.debug(self.cwd)
+        logger.debug('    ' + str(self))
         try:
             subprocess.check_call([self.cmd] + self.args,
                                   cwd = self.cwd,
@@ -41,9 +37,8 @@ class Launcher:
                 output = "stderr"
             else:
                 output = self.stderr.name
-                if Config().verbose:
-                    with open(self.stderr.name, 'r') as f:
-                        logger.error(f.read())
+                with open(self.stderr.name, 'r') as f:
+                    logger.error(f.read())
 
             if self.errormsg is None:
                 self.errormsg = '"' + str(self) + '" exited with an error code.\nERROR: See ' + output + ' for details.'

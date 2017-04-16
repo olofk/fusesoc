@@ -251,6 +251,22 @@ def update(args):
                 pass
 
 def run(args):
+    level = logging.DEBUG if args.verbose else logging.INFO
+
+    setup_logging(level=level, monchrome=args.monochrome)
+    logger.debug("Command line arguments: " + str(sys.argv))
+    if os.getenv("FUSESOC_CORES"):
+        logger.debug("FUSESOC_CORES: " + str(os.getenv("FUSESOC_CORES").split(':')))
+    if args.verbose:
+        logger.debug("Verbose output")
+    else:
+        logger.debug("Concise output")
+
+    if args.monochrome:
+        logger.debug("Monochrome output")
+    else:
+        logger.debug("Colorful output")
+
     cm = CoreManager()
     config = Config()
 
@@ -278,24 +294,10 @@ def run(args):
     else:
         config.archbits = 64 if platform.architecture()[0] == '64bit' else 32
         logger.debug("Autodetected " + str(config.archbits) + "-bit mode")
-    config.monochrome = vars(args)['monochrome']
-    if config.monochrome:
-        logger.debug("Monochrome output")
-    else:
-        logger.debug("Colorful output")
-    config.verbose = vars(args)['verbose']
-    if config.verbose:
-        logger.debug("Verbose output")
-    else:
-        logger.debug("Concise output")
     # Run the function
     args.func(args)
 
 def main():
-    setup_logging(level=logging.INFO, monchrome=False)
-    logger.debug("Command line arguments: " + str(sys.argv))
-    if os.getenv("FUSESOC_CORES"):
-        logger.debug("FUSESOC_CORES: " + str(os.getenv("FUSESOC_CORES").split(':')))
 
     parser = argparse.ArgumentParser()
     subparsers = parser.add_subparsers()
