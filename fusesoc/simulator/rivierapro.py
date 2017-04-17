@@ -122,7 +122,7 @@ class Rivierapro(Simulator):
                                                       _libs,
                                                       _options,
                                                       _srcs)
-                                                    
+
             tcl_build_vpi.write(_s)
         tcl_build_vpi.close()
 

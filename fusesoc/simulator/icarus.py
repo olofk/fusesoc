@@ -40,7 +40,7 @@ class Icarus(Simulator):
 
     def build(self):
         super(Icarus, self).build()
-        
+
         #Build VPI modules
         for vpi_module in self.vpi_modules:
             args = []
@@ -53,7 +53,7 @@ class Icarus(Simulator):
                      stderr   = open(os.path.join(self.work_root,vpi_module['name']+'.log'),'w'),
                      cwd      = os.path.join(self.work_root),
                      errormsg = "Failed to compile VPI library " + vpi_module['name']).run()
-                                      
+
         #Build simulation model
         args = []
         args += ['-s'+s for s in self.toplevel.split(' ')]
@@ -75,7 +75,7 @@ class Icarus(Simulator):
         Launcher('iverilog', args,
                  cwd      = self.work_root,
                  errormsg = "Failed to compile Icarus Simulation model").run()
-        
+
     def run(self, args):
         super(Icarus, self).run(args)
 

@@ -15,7 +15,7 @@ class FusesocConfigParser(configparser.SafeConfigParser):
             raise Exception("Could not find " + config_file)
         f = open(config_file)
         id_string = f.readline().split('=')
-        
+
         if id_string[0].strip().upper() in ['CAPI', 'SAPI']:
             self.type = id_string[0]
         else:

@@ -135,7 +135,7 @@ class CoreManager(object):
                 logger.warning(w)
             except ImportError as e:
                 logger.warning('Failed to register "{}" due to unknown provider: {}'.format(file, str(e)))
-        
+
     def load_cores(self, path):
         if path:
             logger.debug("Checking for cores in " + path)

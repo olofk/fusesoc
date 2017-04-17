@@ -163,4 +163,3 @@ class EdaTool(object):
                             new_file.name = os.path.join(basepath, file.name)
                             src_files.append(new_file)
         return (src_files, incdirs)
-
