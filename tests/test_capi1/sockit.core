@@ -28,3 +28,6 @@ include_files =
  rtl/verilog/include/timescale.v
  rtl/verilog/include/uart_defines.v
  rtl/verilog/wb_intercon.vh
+
+[simulator]
+toplevel = dummy_tb

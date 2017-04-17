@@ -41,6 +41,22 @@ def test_get_default_sim():
     assert 'icarus' == core.get_default_sim({'tool' : None})
     assert 'icarus' == core.get_default_sim({'tool' : 'icarus'})
 
+def test_get_toplevel():
+    filename = os.path.join(os.path.dirname(__file__),
+                            __name__,
+                            "atlys.core")
+    core = Core(filename)
+    assert 'orpsoc_tb' == core.get_toplevel()
+    assert 'orpsoc_tb' == core.get_toplevel({'testbench' : None})
+    assert 'tb'        == core.get_toplevel({'testbench' : 'tb'})
+    filename = os.path.join(os.path.dirname(__file__),
+                            __name__,
+                            "sockit.core")
+    core = Core(filename)
+    assert 'dummy_tb'  == core.get_toplevel()
+    assert 'dummy_tb'  == core.get_toplevel({'testbench' : None})
+    assert 'tb' == core.get_toplevel({'testbench' : 'tb'})
+
 def test_icestorm():
     filename = os.path.join(os.path.dirname(__file__),
                             __name__,

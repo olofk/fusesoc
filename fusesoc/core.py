@@ -145,6 +145,12 @@ class Core:
             pass
         return _depends
 
+    def get_toplevel(self, flags={}):
+        if 'testbench' in flags and flags['testbench']:
+            return flags['testbench']
+        else:
+            return self.simulator['toplevel']
+
     def setup(self):
         if self.provider:
             if self.provider.fetch():
