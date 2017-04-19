@@ -38,9 +38,9 @@ clean_{name}:
 
 class Modelsim(Simulator):
 
-    def __init__(self, system, export):
+    def __init__(self, system, export, toplevel):
 
-        super(Modelsim, self).__init__(system, export)
+        super(Modelsim, self).__init__(system, export, toplevel)
         self.model_tech = os.getenv('MODEL_TECH')
         if not self.model_tech:
             raise RuntimeError("Environment variable MODEL_TECH was not found. It should be set to <modelsim install path>/bin")

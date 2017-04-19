@@ -194,8 +194,11 @@ def sim(args):
     if not sim_name:
         logger.error("No simulator was supplied on command line or found in '"+ args.system + "' core description")
         exit(1)
+    toplevel = core.get_toplevel({'flow'      : 'sim',
+                                  'testbench' : args.testbench})
+    logger.debug("Simulator toplevel is '{}'".format(toplevel))
     try:
-        sim = _import('simulator', sim_name)(core, export=True)
+        sim = _import('simulator', sim_name)(core, export=True, toplevel=toplevel)
     except DependencyError as e:
         logger.error("'" + args.system + "' or any of its dependencies requires '" + e.value + "', but this core was not found")
         exit(1)
@@ -205,8 +208,6 @@ def sim(args):
     except RuntimeError as e:
         logger.error(str(e))
         exit(1)
-    sim.toplevel = core.get_toplevel({'testbench' : args.testbench})
-    logger.debug("Simulator toplevel is '{}'".format(sim.toplevel))
     if not args.keep or not os.path.exists(sim.work_root):
         try:
             sim.configure(args.plusargs)
