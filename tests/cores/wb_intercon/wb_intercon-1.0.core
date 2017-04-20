@@ -19,6 +19,14 @@ tb_private_src_files =
  bench/wb_upsizer_tb.v
  bench/wb_intercon_tb.v
 
+[fileset quartus_only]
+files = dummy.v
+usage = quartus
+
+[fileset icarus_only]
+files = dummy_icarus.v
+usage = icarus
+
 [simulator]
 toplevel = wb_intercon_tb
 

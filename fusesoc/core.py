@@ -145,6 +145,20 @@ class Core:
             pass
         return _depends
 
+    def get_files(self, flags={}):
+        files = []
+        if flags['tool'] in ['ghdl', 'icarus', 'isim', 'modelsim', 'rivierapro', 'xsim']:
+            flow = 'sim'
+        elif flags['tool'] in ['icestorm', 'ise', 'quartus', 'verilator', 'vivado']:
+            flow = 'synth'
+
+        usage = set([flow, flags['tool']])
+
+        for fs in self.file_sets:
+            if (not fs.private or flags['is_toplevel']) and (usage & set(fs.usage)):
+                files += fs.file
+        return files
+
     def get_toplevel(self, flags={}):
         if 'testbench' in flags and flags['testbench']:
             return flags['testbench']
@@ -156,22 +170,12 @@ class Core:
             if self.provider.fetch():
                 self.patch(self.files_root)
 
-    def export(self, dst_dir):
+    def export(self, dst_dir, flags={}):
         if os.path.exists(dst_dir):
             shutil.rmtree(dst_dir)
 
-        #FIXME: Separate tb_files to an own directory tree (src/tb/core_name ?)
-        src_files = self.export_files
 
-        for s in section.SECTION_MAP:
-            obj = getattr(self, s)
-            if obj:
-                if not (type(obj) == OrderedDict):
-                    src_files += [f.name for f in obj.export()]
-                else:
-                    for item in obj.values():
-                        src_files += [f.name for f in item.export()]
-
+        src_files = [f.name for f in self.get_files(flags)]
         dirs = list(set(map(os.path.dirname,src_files)))
         for d in dirs:
             if not os.path.exists(os.path.join(dst_dir, d)):

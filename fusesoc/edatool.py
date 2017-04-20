@@ -70,6 +70,7 @@ class EdaTool(object):
         else:
             os.makedirs(self.work_root)
 
+        _flags = self.flags.copy()
         for core in self.cores:
             logger.info("Preparing " + str(core.name))
             dst_dir = os.path.join(self.src_root, core.sanitized_name)
@@ -81,7 +82,8 @@ class EdaTool(object):
                 raise RuntimeError("Problem while fetching '" + core.name + "': " + str(e.reason))
 
             if self.export:
-                core.export(dst_dir)
+                _flags['is_toplevel'] = (core.name == self.system.name)
+                core.export(dst_dir, _flags)
 
     def parse_args(self, args, prog, paramtypes):
         if self.parsed_args:
@@ -147,21 +149,22 @@ class EdaTool(object):
     def _get_fileset_files(self, usage):
         incdirs = []
         src_files = []
+        _flags = self.flags.copy()
         for core in self.cores:
             if self.export:
                 files_root = os.path.join(self.src_root, core.sanitized_name)
             else:
                 files_root = core.files_root
             basepath = os.path.relpath(files_root, self.work_root)
-            for fs in core.file_sets:
-                if (set(fs.usage) & set(usage)) and ((core.name == self.system.name) or not fs.private):
-                    for file in fs.file:
-                        if file.is_include_file:
-                            _incdir = os.path.join(basepath, os.path.dirname(file.name))
-                            if not _incdir in incdirs:
-                                incdirs.append(_incdir)
-                        else:
-                            new_file = copy.deepcopy(file)
-                            new_file.name = os.path.join(basepath, file.name)
-                            src_files.append(new_file)
+            _flags['is_toplevel'] = (core.name == self.system.name)
+            for file in core.get_files(_flags):
+                if file.is_include_file:
+                    _incdir = os.path.join(basepath, os.path.dirname(file.name))
+                    if not _incdir in incdirs:
+                        incdirs.append(_incdir)
+                else:
+                    new_file = copy.deepcopy(file)
+                    new_file.name = os.path.join(basepath, file.name)
+                    src_files.append(new_file)
+
         return (src_files, incdirs)

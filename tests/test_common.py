@@ -25,14 +25,14 @@ def get_core(core):
     CoreManager().add_cores_root(cores_root)
     return _get_core(core)
 
-def get_sim(sim, core):
+def get_sim(sim, core, export=False):
     from fusesoc.coremanager import CoreManager
     from fusesoc.main import _import
 
     CoreManager().tool = sim
     toplevel = core.get_toplevel({})
     return _import('simulator', sim)(core,
-                                     export=False,
+                                     export=export,
                                      toplevel=toplevel)
 
 cmdlineargs = ' --cmdlinearg_bool --cmdlinearg_int=42 --cmdlinearg_str=hello'.split()
