@@ -159,6 +159,14 @@ class Core:
                 files += fs.file
         return files
 
+    def get_parameters(self, flags={}):
+        parameters = []
+        for k, v in self.parameter.items():
+            if (v.scope == 'public') or flags['is_toplevel']:
+                v.name = k
+                parameters.append(v)
+        return parameters
+
     def get_toplevel(self, flags={}):
         if 'testbench' in flags and flags['testbench']:
             return flags['testbench']

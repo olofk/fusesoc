@@ -104,12 +104,11 @@ class EdaTool(object):
                   'generic'    : 'VHDL generic (Run-time option)',
                   'cmdlinearg' : 'Command-line arguments (Run-time option)'}
         all_params = {}
+        _flags = self.flags.copy()
         for core in self.cores:
-
-            for param_name, param in core.parameter.items():
-                if param.paramtype in paramtypes and \
-                   (core.name == self.system.name or \
-                   param.scope == 'public'):
+            _flags['is_toplevel'] = (core.name == self.system.name)
+            for param in core.get_parameters(_flags):
+                if param.paramtype in paramtypes:
                     if not param.paramtype in param_groups:
                         param_groups[param.paramtype] = \
                         parser.add_argument_group(_descr[param.paramtype])
@@ -121,15 +120,15 @@ class EdaTool(object):
                         except KeyError as e:
                             pass
                     try:
-                        param_groups[param.paramtype].add_argument('--'+param_name,
+                        param_groups[param.paramtype].add_argument('--'+param.name,
                                                                    help=param.description,
                                                                    default=default,
                                                                    **typedict[param.datatype])
                     except KeyError as e:
                         raise RuntimeError("Invalid data type {} for parameter '{}' in '{}'".format(str(e),
-                                                                                                   param_name,
+                                                                                                   param.name,
                                                                                                    core.name))
-                    all_params[param_name.replace('-','_')] = param.paramtype
+                    all_params[param.name.replace('-','_')] = param.paramtype
         p = parser.parse_args(args)
 
         for key,value in sorted(vars(p).items()):
