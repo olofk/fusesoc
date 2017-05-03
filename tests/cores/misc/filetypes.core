@@ -1,0 +1,13 @@
+CAPI=1
+[main]
+
+[fileset file_types]
+files =
+ qip_file.qip[file_type=QIP]
+ sv_file.sv[file_type=systemVerilogSource]
+ ucf_file.ucf[file_type=UCF]
+ user_file[file_type=user]
+ vlog_file.v[file_type=verilogSource]
+ vhdl_file.vhd[file_type=vhdlSource]
+ xdc_file[file_type=xdc]
+

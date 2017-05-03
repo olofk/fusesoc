@@ -3,6 +3,7 @@ CAPI=1
 backend = ise
 depend =
  adv_debug_sys
+ filetypes
  libstorage
  paramtest
 
