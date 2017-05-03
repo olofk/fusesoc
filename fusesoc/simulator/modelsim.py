@@ -48,7 +48,7 @@ class Modelsim(Simulator):
     def _write_build_rtl_tcl_file(self, tcl_main):
         tcl_build_rtl  = open(os.path.join(self.work_root, "fusesoc_build_rtl.tcl"), 'w')
 
-        (src_files, incdirs) = self._get_fileset_files(['sim', 'modelsim'])
+        (src_files, incdirs) = self._get_fileset_files()
         vlog_include_dirs = ['+incdir+'+d.replace('\\','/') for d in incdirs]
 
         libs = []

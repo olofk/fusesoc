@@ -52,7 +52,7 @@ quit
             s = 'project set "Generics, Parameters" "{}" -process "Synthesize - XST"\n'
             tcl_file.write(s.format('|'.join([k+'='+str(v) for k,v in self.vlogparam.items()])))
 
-        (src_files, incdirs) = self._get_fileset_files(['synth', 'ise'])
+        (src_files, incdirs) = self._get_fileset_files()
 
         if incdirs:
             tcl_file.write('project set "Verilog Include Directories" "{}" -process "Synthesize - XST"\n'.format('|'.join(incdirs)))

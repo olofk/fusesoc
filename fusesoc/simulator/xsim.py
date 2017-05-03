@@ -17,7 +17,7 @@ class Xsim(Simulator):
         self.incdirs = set()
         src_files = []
 
-        (src_files, self.incdirs) = self._get_fileset_files(['sim', 'xsim'])
+        (src_files, self.incdirs) = self._get_fileset_files()
         for src_file in src_files:
             if src_file.file_type in ["verilogSource",
 		                      "verilogSource-95",

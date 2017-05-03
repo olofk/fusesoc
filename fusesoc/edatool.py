@@ -145,7 +145,7 @@ class EdaTool(object):
                 getattr(self, paramtype)[key] = _value
         self.parsed_args = True
 
-    def _get_fileset_files(self, usage):
+    def _get_fileset_files(self):
         incdirs = []
         src_files = []
         _flags = self.flags.copy()

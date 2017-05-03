@@ -12,7 +12,7 @@ class Ghdl(Simulator):
     def build(self):
         super(Ghdl, self).build()
 
-        (src_files, incdirs) = self._get_fileset_files(['sim', 'ghdl'])
+        (src_files, incdirs) = self._get_fileset_files()
 
         cmd = 'ghdl'
         # ghdl does not support mixing incompatible versions

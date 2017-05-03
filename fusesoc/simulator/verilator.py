@@ -59,7 +59,7 @@ class Verilator(Simulator):
         incdirs = set()
         src_files = []
 
-        (src_files, incdirs) = self._get_fileset_files(['synth', 'verilator'])
+        (src_files, incdirs) = self._get_fileset_files()
 
         self.verilator_file = self.system.sanitized_name + '.vc'
 

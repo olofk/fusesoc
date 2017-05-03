@@ -76,7 +76,7 @@ qsys:"""
             for key, value in self.vlogdefine.items():
                 tcl_file.write('set_global_assignment -name VERILOG_MACRO "{}={}"\n'.format(key, value))
 
-            (src_files, incdirs) = self._get_fileset_files(['synth', 'quartus'])
+            (src_files, incdirs) = self._get_fileset_files()
 
             qsys_files = []
             for f in src_files:

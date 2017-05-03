@@ -40,7 +40,7 @@ class Vivado(Backend):
     """
     def _write_project_tcl_file(self):
         # Get the synthesis files and files specific to vivado
-        (src, incdirs) = self._get_fileset_files(['vivado', 'synth'])
+        (src, incdirs) = self._get_fileset_files()
 
         ip = []             # IP descriptions (xci files)
         constr = []         # Constraints (xdc files)

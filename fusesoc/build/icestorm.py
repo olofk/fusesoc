@@ -36,7 +36,7 @@ ARACHNE_PNR_OPTIONS := {arachne_pnr_options}
             makefile.write(self.MAKEFILE_TEMPLATE)
 
         # Write yosys script file
-        (src_files, incdirs) = self._get_fileset_files(['synth', 'icestorm'])
+        (src_files, incdirs) = self._get_fileset_files()
         with open(os.path.join(self.work_root, self.system.sanitized_name+'.ys'), 'w') as yosys_file:
             yosys_file.write("verilog_defaults -push\n")
             yosys_file.write("verilog_defaults -add -defer\n")

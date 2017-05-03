@@ -19,7 +19,7 @@ class Icarus(Simulator):
         incdirs = set()
         src_files = []
 
-        (src_files, incdirs) = self._get_fileset_files(['sim', 'icarus'])
+        (src_files, incdirs) = self._get_fileset_files()
         for id in incdirs:
             f.write("+incdir+" + id+'\n')
         for src_file in src_files:
