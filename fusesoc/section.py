@@ -9,6 +9,7 @@ class File(object):
     FILE_TYPES = [
         'QIP',
         'SDC',
+        'UCF',
         'tclSource',
         'user',
         'verilogSource',
