@@ -121,7 +121,7 @@ class Core:
             self.setup()
 
         for f in self.main.component:
-            self._parse_component(os.path.join(self.files_root, f))
+            self._parse_component(f)
 
     def cache_status(self):
         if self.provider:
@@ -339,8 +339,9 @@ class Core:
             self.export_files += [f.name for f in _files]
 
     def _parse_component(self, component_file):
+        component_dir = os.path.dirname(component_file)
         component = Component()
-        component.load(component_file)
+        component.load(os.path.join(self.files_root, component_file))
 
         if not self.main.description:
             self.main.description = component.description
@@ -349,6 +350,7 @@ class Core:
         for file_set in component.fileSets.fileSet:
             _name = file_set.name
             for f in file_set.file:
+                f.name = os.path.normpath(os.path.join(component_dir, f.name))
                 self.export_files.append(f.name)
                 #FIXME: Harmonize underscore vs camelcase
                 f.file_type = f.fileType
