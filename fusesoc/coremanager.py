@@ -176,6 +176,3 @@ class CoreManager(object):
         c = self.db.find(name)
         c.name.relation = "=="
         return c
-
-    def get_systems(self):
-        return {str(x.name) : x for x in self.db.find() if x.backend}

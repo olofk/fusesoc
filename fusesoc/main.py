@@ -41,8 +41,9 @@ def _get_core(name, has_system=False):
     except DependencyError as e:
         logger.error("'" + name + "' or any of its dependencies requires '" + e.value + "', but this core was not found")
         exit(1)
-    if has_system and not core.backend:
-        logger.error("Unable to find .system file for '{}'".format(name))
+    if has_system and not core.get_tool({'flow' : 'synth',
+                                         'tool' : None}):
+        logger.error("Unable to find synthesis info for '{}'".format(name))
         exit(1)
     return core
 
@@ -62,11 +63,13 @@ signal.signal(signal.SIGINT, abort_handler)
 
 def build(args):
     core = _get_core(args.system, True)
-
+    flags = {'flow' : 'synth',
+             'tool' : None}
+    tool = core.get_tool(flags)
     try:
-        backend =_import('build', core.main.backend)(core, export=True)
+        backend =_import('build', tool)(core, export=True)
     except ImportError:
-        logger.error('Backend "{}" not found'.format(core.main.backend))
+        logger.error('Backend "{}" not found'.format(tool))
         exit(1)
     except RuntimeError as e:
         logger.error("Failed to build '{}': {}".format(args.system, e))
@@ -86,12 +89,14 @@ def build(args):
 
 def pgm(args):
     core = _get_core(args.system, True)
-
+    flags = {'flow' : 'synth',
+             'tool' : None}
+    tool = core.get_tool(flags)
     try:
-        backend =_import('build', core.main.backend)(core, export=True)
+        backend =_import('build', tool)(core, export=True)
         backend.pgm(args.backendargs)
     except ImportError:
-        logger.error('Backend "{}" not found'.format(core.main.backend))
+        logger.error('Backend "{}" not found'.format(tool))
         exit(1)
     except RuntimeError as e:
         logger.error("Failed to program the FPGA: " + str(e))
@@ -184,8 +189,9 @@ def core_info(args):
 
 def list_systems(args):
     print("Available systems:")
-    for system in CoreManager().get_systems():
-        print(system)
+    for core in CoreManager().get_cores().values():
+        if core.get_tool({'flow' : 'synth', 'tool' : None}):
+            print(str(core.name))
 
 def sim(args):
     core = _get_core(args.system)
