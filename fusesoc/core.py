@@ -129,14 +129,6 @@ class Core:
         else:
             return 'local'
 
-    def get_default_sim(self, flags):
-        if flags['tool']:
-            return flags['tool']
-        elif len(self.simulators) > 0:
-            return self.simulators[0]
-        else:
-            return None
-
     def get_depends(self, flags={}):
         _depends = self.depend
         try:
@@ -172,6 +164,17 @@ class Core:
             return flags['testbench']
         else:
             return self.simulator['toplevel']
+
+    def get_tool(self, flags):
+        if flags['tool']:
+            return flags['tool']
+        elif flags['flow'] == 'sim':
+            if len(self.simulators) > 0:
+                return self.simulators[0]
+        elif flags['flow'] == 'synth':
+            if hasattr(self.main, 'backend'):
+                return self.main.backend
+        return None
 
     def setup(self):
         if self.provider:

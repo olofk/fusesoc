@@ -32,14 +32,19 @@ def test_core_info():
         ref_info = [x for x in f.readlines() if not 'Core root' in x]
     assert '' == ''.join(difflib.unified_diff(ref_info, gen_info))
 
-def test_get_default_sim():
-    tests_dir = os.path.dirname(__file__)
+def test_get_tool():
     core = get_core("atlys")
-    assert None     == core.get_default_sim({'tool' : None})
-    assert 'icarus' == core.get_default_sim({'tool' : 'icarus'})
+    assert None     == core.get_tool({'flow' : 'sim', 'tool' : None})
+    assert 'icarus' == core.get_tool({'flow' : 'sim', 'tool' : 'icarus'})
+    assert 'ise'    == core.get_tool({'flow' : 'synth', 'tool' : None})
+    assert 'vivado' == core.get_tool({'flow' : 'synth', 'tool' : 'vivado'})
     core = get_core("sockit")
-    assert 'icarus' == core.get_default_sim({'tool' : None})
-    assert 'icarus' == core.get_default_sim({'tool' : 'icarus'})
+    assert 'icarus' == core.get_tool({'flow' : 'sim', 'tool' : None})
+    assert 'icarus' == core.get_tool({'flow' : 'sim', 'tool' : 'icarus'})
+    del core.main.backend
+    assert None     == core.get_tool({'flow' : 'synth', 'tool' : None})
+    assert 'vivado' == core.get_tool({'flow' : 'synth', 'tool' : 'vivado'})
+    core.main.backend = 'quartus'
 
 def test_get_toplevel():
     filename = os.path.join(os.path.dirname(__file__),

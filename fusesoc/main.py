@@ -189,13 +189,16 @@ def list_systems(args):
 
 def sim(args):
     core = _get_core(args.system)
-    sim_name = core.get_default_sim({'tool' : args.sim})
+    flags = {'flow' : 'sim',
+             'tool' : args.sim,
+             'testbench' : args.testbench}
+    sim_name = core.get_tool(flags)
 
     if not sim_name:
         logger.error("No simulator was supplied on command line or found in '"+ args.system + "' core description")
         exit(1)
-    toplevel = core.get_toplevel({'flow'      : 'sim',
-                                  'testbench' : args.testbench})
+    toplevel = core.get_toplevel(flags)
+
     logger.debug("Simulator toplevel is '{}'".format(toplevel))
     try:
         sim = _import('simulator', sim_name)(core, export=True, toplevel=toplevel)
