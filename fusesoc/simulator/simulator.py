@@ -15,8 +15,8 @@ class Simulator(EdaTool):
 
     TOOL_TYPE = 'sim'
 
-    def __init__(self, system, export, toplevel):
-        super(Simulator, self).__init__(system, export, toplevel)
+    def __init__(self, system, export, eda_api):
+        super(Simulator, self).__init__(system, export, eda_api)
 
         logger.debug( "depend -->  " +str (self.cores))
 

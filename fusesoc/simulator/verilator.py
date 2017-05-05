@@ -38,10 +38,8 @@ class Verilator(Simulator):
         if self.system.verilator is None:
             raise RuntimeError("verilator section is missing in top-level core file")
 
-        self.top_module = self.system.verilator.top_module
-
-        if self.top_module == '':
-            raise RuntimeError("'" + system.name.name + "' miss a mandatory parameter 'top_module'")
+        if not self.toplevel:
+            raise RuntimeError("'" + self.name + "' miss a mandatory parameter 'top_module'")
 
         skip = not (self.system.verilator.cli_parser == 'fusesoc')
         super(Verilator, self).configure(args, skip_params = skip)
@@ -76,7 +74,7 @@ class Verilator(Simulator):
                     f.write(src_file.name + '\n')
                 elif src_file.file_type in ['cppSource', 'systemCSource', 'cSource']:
                     opt_c_files.append(src_file.name)
-            f.write('--top-module {}\n'.format(self.top_module))
+            f.write('--top-module {}\n'.format(self.toplevel))
             f.write('--exe\n')
             f.write('\n'.join(opt_c_files))
             f.write('\n')
@@ -88,7 +86,7 @@ class Verilator(Simulator):
 
         with open(os.path.join(self.work_root, 'config.mk'), 'w') as config_mk:
             config_mk.write(CONFIG_MK_TEMPLATE.format(
-                top_module        = self.top_module,
+                top_module        = self.toplevel,
                 vc_file           = self.verilator_file,
                 verilator_options = ' '.join(self.system.verilator.verilator_options)))
 
@@ -124,7 +122,7 @@ class Verilator(Simulator):
         else:
             _args = args
         logger.info("Running simulation")
-        utils.Launcher('./V' + self.system.verilator.top_module,
+        utils.Launcher('./V' + self.toplevel,
                        _args,
                        cwd=self.work_root,
                        env = self.env).run()

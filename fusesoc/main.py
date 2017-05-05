@@ -66,8 +66,11 @@ def build(args):
     flags = {'flow' : 'synth',
              'tool' : None}
     tool = core.get_tool(flags)
+    flags['tool'] = tool
+    eda_api = CoreManager().get_eda_api(core.name, flags)
+
     try:
-        backend =_import('build', tool)(core, export=True)
+        backend =_import('build', tool)(core, export=True, eda_api=eda_api)
     except ImportError:
         logger.error('Backend "{}" not found'.format(tool))
         exit(1)
@@ -199,15 +202,15 @@ def sim(args):
              'tool' : args.sim,
              'testbench' : args.testbench}
     sim_name = core.get_tool(flags)
+    flags['tool'] = sim_name
+
+    eda_api = CoreManager().get_eda_api(core.name, flags)
 
     if not sim_name:
         logger.error("No simulator was supplied on command line or found in '"+ args.system + "' core description")
         exit(1)
-    toplevel = core.get_toplevel(flags)
-
-    logger.debug("Simulator toplevel is '{}'".format(toplevel))
     try:
-        sim = _import('simulator', sim_name)(core, export=True, toplevel=toplevel)
+        sim = _import('simulator', sim_name)(core, export=True, eda_api=eda_api)
     except DependencyError as e:
         logger.error("'" + args.system + "' or any of its dependencies requires '" + e.value + "', but this core was not found")
         exit(1)

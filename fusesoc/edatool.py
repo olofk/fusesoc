@@ -29,7 +29,7 @@ class FileAction(argparse.Action):
 
 class EdaTool(object):
 
-    def __init__(self, system, export, toplevel):
+    def __init__(self, system, export, eda_api):
         self.system = system
         self.export = export
         self.TOOL_NAME = self.__class__.__name__.lower()
@@ -58,7 +58,7 @@ class EdaTool(object):
         self.cmdlinearg  = OrderedDict()
         self.parsed_args = False
 
-        self.toplevel = toplevel
+        self.toplevel = eda_api['toplevel']
 
     def configure(self, args):
         if os.path.exists(self.work_root):

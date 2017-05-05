@@ -176,3 +176,16 @@ class CoreManager(object):
         c = self.db.find(name)
         c.name.relation = "=="
         return c
+
+    def get_eda_api(self, vlnv, flags):
+
+        cores = self.get_depends(vlnv, flags)
+
+        _flags = flags.copy()
+        for core in cores:
+            _flags['is_toplevel'] = (core.name == vlnv)
+
+        top_core = cores[-1]
+        return {
+            'toplevel'     : top_core.get_toplevel(flags)
+        }

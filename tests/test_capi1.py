@@ -51,16 +51,18 @@ def test_get_toplevel():
                             __name__,
                             "atlys.core")
     core = Core(filename)
-    assert 'orpsoc_tb' == core.get_toplevel()
-    assert 'orpsoc_tb' == core.get_toplevel({'testbench' : None})
-    assert 'tb'        == core.get_toplevel({'testbench' : 'tb'})
+    assert 'orpsoc_tb'  == core.get_toplevel({'tool' : 'icarus', 'flow' : 'sim'})
+    assert 'orpsoc_tb'  == core.get_toplevel({'tool' : 'icarus', 'flow' : 'sim', 'testbench' : None})
+    assert 'tb'         == core.get_toplevel({'tool' : 'icarus', 'flow' : 'sim', 'testbench' : 'tb'})
+    assert 'orpsoc_top' == core.get_toplevel({'tool' : 'vivado', 'flow' : 'synth'})
     filename = os.path.join(os.path.dirname(__file__),
                             __name__,
                             "sockit.core")
     core = Core(filename)
-    assert 'dummy_tb'  == core.get_toplevel()
-    assert 'dummy_tb'  == core.get_toplevel({'testbench' : None})
-    assert 'tb' == core.get_toplevel({'testbench' : 'tb'})
+    assert 'dummy_tb'   == core.get_toplevel({'tool' : 'icarus', 'flow' : 'sim'})
+    assert 'dummy_tb'   == core.get_toplevel({'tool' : 'icarus', 'flow' : 'sim', 'testbench' : None})
+    assert 'tb'         == core.get_toplevel({'tool' : 'icarus', 'flow' : 'sim', 'testbench' : 'tb'})
+    assert 'orpsoc_top' == core.get_toplevel({'tool' : 'vivado', 'flow' : 'synth'})
 
 def test_icestorm():
     filename = os.path.join(os.path.dirname(__file__),

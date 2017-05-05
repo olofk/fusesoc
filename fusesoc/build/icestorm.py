@@ -53,14 +53,15 @@ ARACHNE_PNR_OPTIONS := {arachne_pnr_options}
                 _s = "chparam -set {} {} $abstract\{}\n"
                 yosys_file.write(_s.format(key,
                                            self._param_value_str(value, strings_in_quotes=True),
-                                           self.backend.top_module))
+                                           self.toplevel))
+
             if self.backend.top_module:
                 _top = "-top " + self.backend.top_module
             yosys_file.write("verilog_defaults -pop\n")
             yosys_file.write("synth_ice40")
             yosys_file.write(" -blif {}.blif".format(self.system.sanitized_name))
-            if self.backend.top_module:
-                yosys_file.write(" -top " + self.backend.top_module)
+            if self.toplevel:
+                yosys_file.write(" -top " + self.toplevel)
             yosys_file.write("\n")
 
         if not pcf_files:

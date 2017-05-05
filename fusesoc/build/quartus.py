@@ -1,3 +1,4 @@
+
 import os.path
 from fusesoc import utils
 import logging
@@ -69,7 +70,7 @@ qsys:"""
             tcl_file.write("project_new " + self.system.sanitized_name + " -overwrite\n")
             tcl_file.write("set_global_assignment -name FAMILY " + self.backend.family + '\n')
             tcl_file.write("set_global_assignment -name DEVICE " + self.backend.device + '\n')
-            tcl_file.write("set_global_assignment -name TOP_LEVEL_ENTITY " + self.backend.top_module + '\n')
+            tcl_file.write("set_global_assignment -name TOP_LEVEL_ENTITY " + self.toplevel + '\n')
 
             for key, value in self.vlogparam.items():
                 tcl_file.write("set_parameter -name {} {}\n".format(key, self._param_value_str(value)))

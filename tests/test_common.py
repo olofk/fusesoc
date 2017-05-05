@@ -29,19 +29,25 @@ def get_sim(sim, core, export=False):
     from fusesoc.coremanager import CoreManager
     from fusesoc.main import _import
 
-    CoreManager().tool = sim
-    toplevel = core.get_toplevel({})
+    flags = {'flow' : 'sim',
+             'tool' : sim}
+
+    eda_api = CoreManager().get_eda_api(core.name, flags)
     return _import('simulator', sim)(core,
                                      export=export,
-                                     toplevel=toplevel)
+                                     eda_api=eda_api)
 
 def get_synth(tool, core, export=False):
     from fusesoc.coremanager import CoreManager
     from fusesoc.main import _import
 
+    flags = {'flow' : 'synth',
+             'tool' : tool}
+
+    eda_api = CoreManager().get_eda_api(core.name, flags)
     return _import('build', core.main.backend)(core,
                                                export=export,
-                                               toplevel=None)
+                                               eda_api=eda_api)
 
 cmdlineargs = ' --cmdlinearg_bool --cmdlinearg_int=42 --cmdlinearg_str=hello'.split()
 plusargs    = ' --plusarg_bool --plusarg_int=42 --plusarg_str=hello'.split()

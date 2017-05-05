@@ -78,7 +78,7 @@ quit
             elif f.file_type == 'user':
                 pass
 
-        tcl_file.write('project set top "{}"\n'.format(self.backend.top_module))
+        tcl_file.write('project set top "{}"\n'.format(self.toplevel))
         tcl_file.write(self.TCL_FUNCTIONS)
         tcl_file.close()
 
@@ -101,6 +101,6 @@ quit
         pgm_file = open(pgm_file_name,'w')
         pgm_file.write(self.PGM_FILE_TEMPLATE.format(
             pgm_file             = pgm_file_name,
-            bit_file             = os.path.join(self.work_root, self.backend.top_module+'.bit'),
-            cdf_file             = os.path.join(self.work_root, self.backend.top_module+'.cdf')))
+            bit_file             = os.path.join(self.work_root, self.toplevel+'.bit'),
+            cdf_file             = os.path.join(self.work_root, self.toplevel+'.cdf')))
         pgm_file.close()

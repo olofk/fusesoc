@@ -160,6 +160,10 @@ class Core:
         return parameters
 
     def get_toplevel(self, flags={}):
+        if flags['tool'] == 'verilator':
+            return self.verilator.top_module
+        if flags['flow'] == 'synth':
+            return self.backend.top_module
         if 'testbench' in flags and flags['testbench']:
             return flags['testbench']
         else:
