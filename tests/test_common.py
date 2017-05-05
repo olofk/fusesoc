@@ -35,6 +35,14 @@ def get_sim(sim, core, export=False):
                                      export=export,
                                      toplevel=toplevel)
 
+def get_synth(tool, core, export=False):
+    from fusesoc.coremanager import CoreManager
+    from fusesoc.main import _import
+
+    return _import('build', core.main.backend)(core,
+                                               export=export,
+                                               toplevel=None)
+
 cmdlineargs = ' --cmdlinearg_bool --cmdlinearg_int=42 --cmdlinearg_str=hello'.split()
 plusargs    = ' --plusarg_bool --plusarg_int=42 --plusarg_str=hello'.split()
 vlogdefines = ' --vlogdefine_bool --vlogdefine_int=42 --vlogdefine_str=hello'.split()

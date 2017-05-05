@@ -2,8 +2,7 @@ import difflib
 import os
 import pytest
 
-from fusesoc.main import _import
-from test_common import compare_file, get_core, vlogdefines, vlogparams
+from test_common import compare_file, get_core, get_synth, vlogdefines, vlogparams
 
 def test_quartus():
     tests_dir = os.path.dirname(__file__)
@@ -11,7 +10,7 @@ def test_quartus():
 
     core = get_core("sockit")
 
-    backend =_import('build', core.main.backend)(core, export=False)
+    backend = get_synth('quartus', core)
     backend.configure(params)
 
     tcl_file = core.name.sanitized_name + '.tcl'

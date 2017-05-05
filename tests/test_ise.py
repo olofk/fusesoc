@@ -5,9 +5,8 @@ import pytest
 from fusesoc.config import Config
 from fusesoc.core import Core
 from fusesoc.coremanager import CoreManager
-from fusesoc.main import _import
 
-from test_common import get_core
+from test_common import get_core, get_synth
 
 def test_ise():
     tests_dir = os.path.dirname(__file__)
@@ -16,7 +15,7 @@ def test_ise():
 
     core = get_core("atlys")
 
-    backend =_import('build', core.main.backend)(core, export=False)
+    backend = get_synth('ise', core)
     backend.configure(params.split())
 
     tcl_file = core.name.sanitized_name + '.tcl'
