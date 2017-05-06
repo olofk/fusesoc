@@ -197,6 +197,7 @@ class CoreManager(object):
                     'paramtype'   : param.paramtype})
         top_core = cores[-1]
         return {
+            'name'         : top_core.sanitized_name,
             'parameters'   : parameters,
             'toplevel'     : top_core.get_toplevel(flags)
         }

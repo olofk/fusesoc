@@ -34,7 +34,7 @@ clean_{name}:
         self._write_config_files()
 
     def _write_config_files(self):
-        f = open(os.path.join(self.work_root, self.system.sanitized_name+'.scr'),'w')
+        f = open(os.path.join(self.work_root, self.name+'.scr'),'w')
 
         (src_files, incdirs) = self._get_fileset_files()
         for key, value in self.vlogdefine.items():
@@ -62,7 +62,7 @@ clean_{name}:
 
         with open(os.path.join(self.work_root, 'Makefile'), 'w') as f:
 
-            f.write("TARGET           := {}\n".format(self.system.sanitized_name))
+            f.write("TARGET           := {}\n".format(self.name))
             _vpi_modules = ' '.join([m['name']+'.vpi' for m in self.vpi_modules])
             if _vpi_modules:
                 f.write("VPI_MODULES      := {}\n".format(_vpi_modules))
@@ -95,7 +95,7 @@ clean_{name}:
         args += ['-M.']                                    # VPI module directory is '.'
         args += ['-l', 'icarus.log']                       # Log file
         args += ['-m'+s['name'] for s in self.vpi_modules] # Load VPI modules
-        args += [self.system.sanitized_name]                                # Simulation binary file
+        args += [self.name]                                # Simulation binary file
         args += ['-lxt2']
 
         # Plusargs

@@ -66,8 +66,8 @@ qsys:"""
     def configure(self, args):
         super(Quartus, self).configure(args)
 
-        with open(os.path.join(self.work_root, self.system.sanitized_name+'.tcl'), 'w') as tcl_file:
-            tcl_file.write("project_new " + self.system.sanitized_name + " -overwrite\n")
+        with open(os.path.join(self.work_root, self.name+'.tcl'), 'w') as tcl_file:
+            tcl_file.write("project_new " + self.name + " -overwrite\n")
             tcl_file.write("set_global_assignment -name FAMILY " + self.backend.family + '\n')
             tcl_file.write("set_global_assignment -name DEVICE " + self.backend.device + '\n')
             tcl_file.write("set_global_assignment -name TOP_LEVEL_ENTITY " + self.toplevel + '\n')
@@ -136,7 +136,7 @@ qsys:"""
 
         with open(os.path.join(self.work_root, 'config.mk'), 'w') as config_mk:
             config_mk.write(self.CONFIG_MK_TEMPLATE.format(
-                design_name     = self.system.sanitized_name,
+                design_name     = self.name,
                 quartus_options = self.backend.quartus_options))
             for qsys_file in qsys_files:
                 config_mk.write(self.QSYS_TEMPLATE.format(
@@ -157,5 +157,5 @@ qsys:"""
         args = ['--mode=jtag']
         args += remaining
         args += ['-o']
-        args += ['p;' + self.system.sanitized_name + '.sof']
+        args += ['p;' + self.name + '.sof']
         utils.Launcher('quartus_pgm', args, cwd=self.work_root).run()

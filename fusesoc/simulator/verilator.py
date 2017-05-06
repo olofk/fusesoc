@@ -52,7 +52,7 @@ class Verilator(Simulator):
 
         (src_files, incdirs) = self._get_fileset_files()
 
-        self.verilator_file = self.system.sanitized_name + '.vc'
+        self.verilator_file = self.name + '.vc'
 
         with open(os.path.join(self.work_root,self.verilator_file),'w') as f:
             f.write('--Mdir .\n')

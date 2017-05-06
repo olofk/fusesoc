@@ -37,7 +37,7 @@ ARACHNE_PNR_OPTIONS := {arachne_pnr_options}
 
         # Write yosys script file
         (src_files, incdirs) = self._get_fileset_files()
-        with open(os.path.join(self.work_root, self.system.sanitized_name+'.ys'), 'w') as yosys_file:
+        with open(os.path.join(self.work_root, self.name+'.ys'), 'w') as yosys_file:
             yosys_file.write("verilog_defaults -push\n")
             yosys_file.write("verilog_defaults -add -defer\n")
             if incdirs:
@@ -59,7 +59,7 @@ ARACHNE_PNR_OPTIONS := {arachne_pnr_options}
                 _top = "-top " + self.backend.top_module
             yosys_file.write("verilog_defaults -pop\n")
             yosys_file.write("synth_ice40")
-            yosys_file.write(" -blif {}.blif".format(self.system.sanitized_name))
+            yosys_file.write(" -blif {}.blif".format(self.name))
             if self.toplevel:
                 yosys_file.write(" -top " + self.toplevel)
             yosys_file.write("\n")
@@ -71,7 +71,7 @@ ARACHNE_PNR_OPTIONS := {arachne_pnr_options}
         # Write config.mk
         with open(os.path.join(self.work_root, 'config.mk'), 'w') as config_mk:
             config_mk.write(self.CONFIG_MK_TEMPLATE.format(
-                target              =  self.system.sanitized_name,
+                target              =  self.name,
                 pcf_file            = pcf_files[0],
                 arachne_pnr_options = ' '.join(self.backend.arachne_pnr_options)))
 

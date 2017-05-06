@@ -35,10 +35,10 @@ quit
         self._write_tcl_file()
 
     def _write_tcl_file(self):
-        tcl_file = open(os.path.join(self.work_root, self.system.sanitized_name+'.tcl'),'w')
+        tcl_file = open(os.path.join(self.work_root, self.name+'.tcl'),'w')
 
         tcl_file.write(self.TCL_FILE_TEMPLATE.format(
-            design               = self.system.sanitized_name,
+            design               = self.name,
             family               = self.backend.family,
             device               = self.backend.device,
             package              = self.backend.package,
@@ -85,13 +85,13 @@ quit
     def build(self, args):
         super(Ise, self).build(args)
 
-        utils.Launcher('xtclsh', [os.path.join(self.work_root, self.system.sanitized_name+'.tcl')],
+        utils.Launcher('xtclsh', [os.path.join(self.work_root, self.name+'.tcl')],
                            cwd = self.work_root,
                            errormsg = "Failed to make FPGA load module").run()
         super(Ise, self).done()
 
     def pgm(self, remaining):
-        pgm_file_name = os.path.join(self.work_root, self.system.sanitized_name+'.pgm')
+        pgm_file_name = os.path.join(self.work_root, self.name+'.pgm')
         self._write_pgm_file(pgm_file_name)
         utils.Launcher('impact', ['-batch', pgm_file_name],
                            cwd = self.work_root,
