@@ -1,0 +1,11 @@
+SAPI=1
+[main]
+name = mor1kx-arty
+description = "Xilinx/Digilent Arty board OpenRISC system"
+
+backend = vivado
+
+[vivado]
+part = "xc7a35tcsg324-1"
+hw_device = xc7a35t_0
+top_module = mor1kx_arty_top

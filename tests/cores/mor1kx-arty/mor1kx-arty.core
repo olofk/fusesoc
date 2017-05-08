@@ -1,0 +1,10 @@
+CAPI=1
+[main]
+depend =
+ filetypes
+ mor1kx
+ paramtest
+
+[verilog]
+src_files =
+  rtl/verilog/mor1kx_arty.sv

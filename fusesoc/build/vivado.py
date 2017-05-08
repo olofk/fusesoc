@@ -85,10 +85,10 @@ class Vivado(Backend):
 
         parameters = ""
         for key, value in self.vlogparam.items():
-            parameters += "set_property generic {{{key}={value}}} [get_filesets sources_1]".format(key=key, value=value)
+            parameters += "set_property generic {{{key}={value}}} [get_filesets sources_1]\n".format(key=key, value=value)
 
         if len(self.vlogdefine.items()) > 0:
-            parameters += "set_property verilog_define \"{}\" [get_filesets sources_1]".format(" ".join(k+"="+v for k,v in self.vlogdefine.items()))
+            parameters += "set_property verilog_define \"{}\" [get_filesets sources_1]\n".format(" ".join(k+"="+v for k,v in self.vlogdefine.items()))
 
         if self.backend.top_module:
             extras += "set_property top "+self.backend.top_module+" [current_fileset]"
@@ -97,7 +97,7 @@ class Vivado(Backend):
         tcl_file.write(PROJECT_TCL_TEMPLATE.format(
             design       = self.system.sanitized_name,
             part         = self.system.backend.part,
-            bitstream    = os.path.join(self.work_root, self.system.sanitized_name+'.bit'),
+            bitstream    = self.system.sanitized_name+'.bit',
             incdirs      = ' '.join(incdirs),
             ip           = ipconfig,
             parameters   = parameters,
@@ -119,7 +119,7 @@ class Vivado(Backend):
         super(Vivado, self).build(args)
 
         utils.Launcher('vivado', ['-mode', 'batch', '-source',
-                                  os.path.join(self.work_root, self.system.sanitized_name+'.tcl')],
+                                  self.system.sanitized_name+'.tcl'],
                        cwd = self.work_root,
                        errormsg = "Failed to build FPGA bitstream").run()
 
