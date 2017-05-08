@@ -1,3 +1,6 @@
+from functools import total_ordering
+
+@total_ordering
 class Vlnv(object):
     def __init__(self, s, default_relation = ">="):
         def _is_rev(s):
@@ -108,3 +111,11 @@ class Vlnv(object):
         else:
             relation = self.relation
         return relation+str(self)
+
+    def __eq__(self, other):
+        return ((self.vendor , self.library , self.name , self.version) ==
+                (other.vendor, other.library, other.name, other.version))
+
+    def __lt__(self, other):
+        return ((self.vendor , self.library , self.name , self.version) <
+                (other.vendor, other.library, other.name, other.version))
