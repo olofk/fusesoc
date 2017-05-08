@@ -3,6 +3,7 @@ CAPI=1
 description = "Minimal mor1kx simulation environment"
 depend =
  adv_debug_sys
+ filetypes
  jtag_tap-1.13
  mor1kx
  paramtest

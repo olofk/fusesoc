@@ -30,6 +30,8 @@
 ../../../cores/adv_debug_sys/Hardware/adv_dbg_if/rtl/verilog/adbg_or1k_defines.v
 ../../../cores/adv_debug_sys/Hardware/adv_dbg_if/rtl/verilog/syncreg.v
 ../../../cores/adv_debug_sys/Hardware/adv_dbg_if/rtl/verilog/adbg_wb_module.v
+../../../cores/misc/sv_file.sv
+../../../cores/misc/vlog_file.v
 ../../../cache/jtag_tap_1.13/tap/rtl/verilog/tap_top.v
 ../../../cache/mor1kx_3.1/rtl/verilog/mor1kx_branch_prediction.v
 ../../../cache/mor1kx_3.1/rtl/verilog/mor1kx_bus_if_avalon.v
