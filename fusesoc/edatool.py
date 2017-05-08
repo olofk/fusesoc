@@ -34,6 +34,7 @@ class EdaTool(object):
         self.system = system
         self.export = export
         self.TOOL_NAME = self.__class__.__name__.lower()
+        self.tool_options = eda_api['tool_options'][self.TOOL_NAME]
         self.flags = {'tool'   : self.TOOL_NAME,
                       'flow'   : self.TOOL_TYPE}
         build_root = os.path.join(Config().build_root, self.name)

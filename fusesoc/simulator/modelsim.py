@@ -56,8 +56,8 @@ class Modelsim(Simulator):
                 cmd = 'vlog'
                 args = []
 
-                if self.system.modelsim is not None:
-                    args += self.system.modelsim.vlog_options
+                if 'vlog_options' in self.tool_options:
+                    args += self.tool_options['vlog_options']
 
                 for k, v in self.vlogdefine.items():
                     args += ['+define+{}={}'.format(k,self._param_value_str(v))]
@@ -99,8 +99,8 @@ class Modelsim(Simulator):
             vpi_options += ['-pli', vpi_module['name']]
 
         args = ['vsim']
-        if self.system.modelsim is not None:
-            args += self.system.modelsim.vsim_options
+        if 'vsim_options' in self.tool_options:
+            args += self.tool_options['vsim_options']
         args += vpi_options
         args += self.toplevel.split()
 

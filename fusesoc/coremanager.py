@@ -178,8 +178,15 @@ class CoreManager(object):
         return c
 
     def get_eda_api(self, vlnv, flags):
+        def merge_dict(d1, d2):
+            for key, value in d2.items():
+                if key in d1:
+                    d1[key] += value
+                else:
+                    d1[key] = value
 
         parameters   = []
+        tool_options = {}
 
         cores = self.get_depends(vlnv, flags)
 
@@ -195,9 +202,14 @@ class CoreManager(object):
                     'description' : param.description,
                     'name'        : param.name,
                     'paramtype'   : param.paramtype})
+
+            #Extract tool options
+            merge_dict(tool_options, core.get_tool_options(_flags))
+
         top_core = cores[-1]
         return {
             'name'         : top_core.sanitized_name,
             'parameters'   : parameters,
+            'tool_options' : {flags['tool'] : tool_options},
             'toplevel'     : top_core.get_toplevel(flags)
         }

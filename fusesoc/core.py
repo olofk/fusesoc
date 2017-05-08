@@ -180,6 +180,22 @@ class Core:
                 return self.main.backend
         return None
 
+    def get_tool_options(self, flags):
+        options = {}
+        section = getattr(self, flags['tool'])
+
+        if section:
+
+            #Special case to pick up verilator libs from all dependencies
+            if flags['tool'] is 'verilator':
+                options['libs'] = section.libs
+            #Otherwise, only care about options from toplevel core
+            if flags['is_toplevel']:
+                for member in section._members:
+                    if hasattr(section, member) and getattr(section, member) and not member == 'depend':
+                        options[member] = getattr(section, member)
+        return options
+
     def setup(self):
         if self.provider:
             if self.provider.fetch():
@@ -330,7 +346,7 @@ class Core:
                 _file_type = 'cppSource'
             elif self.verilator.source_type == 'systemC':
                 _file_type = 'systemCSource'
-            elif self.verilator.source_type in ['', 'C']:
+            elif self.verilator.source_type == 'C':
                 _file_type = 'cSource'
             else:
                 raise RuntimeError("Invalid verilator file type '{}'".format(self.verilator.source_type))

@@ -68,8 +68,8 @@ class Xsim(Simulator):
         for key, value in self.vlogparam.items():
             args += ['--generic_top', '{}={}'.format(key, self._param_value_str(value))]
 
-        if self.system.xsim is not None:
-            args += self.system.xsim.xsim_options
+        if 'xsim_options' in self.tool_options:
+            args += self.tool_options['xsim_options']
 
         Launcher('xelab', args,
                  cwd      = self.work_root,

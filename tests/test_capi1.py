@@ -46,6 +46,14 @@ def test_get_tool():
     assert 'vivado' == core.get_tool({'flow' : 'synth', 'tool' : 'vivado'})
     core.main.backend = 'quartus'
 
+def test_get_tool_options():
+    core = get_core("mor1kx-generic")
+    assert {'iverilog_options' : ['-DSIM']} == core.get_tool_options({'is_toplevel' : True, 'tool' : 'icarus'})
+    assert {} == core.get_tool_options({'is_toplevel' : True, 'tool' : 'modelsim'})
+    assert {} == core.get_tool_options({'is_toplevel' : True, 'tool' : 'isim'})
+    assert {} == core.get_tool_options({'is_toplevel' : False, 'tool' : 'icarus'})
+    core = get_core("elf-loader")
+    assert {'libs' : ['-lelf']} == core.get_tool_options({'is_toplevel' : False, 'tool' : 'verilator'})
 def test_get_toplevel():
     filename = os.path.join(os.path.dirname(__file__),
                             __name__,

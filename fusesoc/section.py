@@ -421,6 +421,8 @@ class VerilatorSection(ToolSection):
             self.include_dirs  = unique_dirs(self.include_files)
             if self.define_files:
                 logger.warning("verilator define_files are deprecated")
+            if not self.source_type:
+                self.source_type = 'C'
 
     def __str__(self):
         s = super(VerilatorSection, self).__str__()

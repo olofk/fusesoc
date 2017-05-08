@@ -32,6 +32,9 @@ quit
 
     def configure(self, args):
         super(Ise, self).configure(args)
+        for i in ['family', 'device', 'package', 'speed']:
+            if not i in self.tool_options:
+                raise RuntimeError("Missing required option '{}'".format(i))
         self._write_tcl_file()
 
     def _write_tcl_file(self):
@@ -39,10 +42,10 @@ quit
 
         tcl_file.write(self.TCL_FILE_TEMPLATE.format(
             design               = self.name,
-            family               = self.backend.family,
-            device               = self.backend.device,
-            package              = self.backend.package,
-            speed                = self.backend.speed))
+            family               = self.tool_options['family'],
+            device               = self.tool_options['device'],
+            package              = self.tool_options['package'],
+            speed                = self.tool_options['speed']))
 
         if self.vlogdefine:
             s = 'project set "Verilog Macros" "{}" -process "Synthesize - XST"\n'

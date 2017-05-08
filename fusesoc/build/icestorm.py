@@ -55,8 +55,6 @@ ARACHNE_PNR_OPTIONS := {arachne_pnr_options}
                                            self._param_value_str(value, strings_in_quotes=True),
                                            self.toplevel))
 
-            if self.backend.top_module:
-                _top = "-top " + self.backend.top_module
             yosys_file.write("verilog_defaults -pop\n")
             yosys_file.write("synth_ice40")
             yosys_file.write(" -blif {}.blif".format(self.name))
@@ -73,7 +71,7 @@ ARACHNE_PNR_OPTIONS := {arachne_pnr_options}
             config_mk.write(self.CONFIG_MK_TEMPLATE.format(
                 target              =  self.name,
                 pcf_file            = pcf_files[0],
-                arachne_pnr_options = ' '.join(self.backend.arachne_pnr_options)))
+                arachne_pnr_options = ' '.join(self.tool_options['arachne_pnr_options'])))
 
     def build(self, args):
         super(Icestorm, self).build(args)

@@ -65,11 +65,14 @@ qsys:"""
 
     def configure(self, args):
         super(Quartus, self).configure(args)
+        for i in ['family', 'device']:
+            if not i in self.tool_options:
+                raise RuntimeError("Missing required option '{}'".format(i))
 
         with open(os.path.join(self.work_root, self.name+'.tcl'), 'w') as tcl_file:
             tcl_file.write("project_new " + self.name + " -overwrite\n")
-            tcl_file.write("set_global_assignment -name FAMILY " + self.backend.family + '\n')
-            tcl_file.write("set_global_assignment -name DEVICE " + self.backend.device + '\n')
+            tcl_file.write("set_global_assignment -name FAMILY " + self.tool_options['family'] + '\n')
+            tcl_file.write("set_global_assignment -name DEVICE " + self.tool_options['device'] + '\n')
             tcl_file.write("set_global_assignment -name TOP_LEVEL_ENTITY " + self.toplevel + '\n')
 
             for key, value in self.vlogparam.items():
@@ -135,16 +138,20 @@ qsys:"""
             makefile.write(self.MAKEFILE_TEMPLATE)
 
         with open(os.path.join(self.work_root, 'config.mk'), 'w') as config_mk:
+            if 'quartus_options' in self.tool_options:
+                quartus_options = self.tool_options['quartus_options']
+            else:
+                quartus_options = ""
             config_mk.write(self.CONFIG_MK_TEMPLATE.format(
                 design_name     = self.name,
-                quartus_options = self.backend.quartus_options))
+                quartus_options = quartus_options))
             for qsys_file in qsys_files:
                 config_mk.write(self.QSYS_TEMPLATE.format(
                     src_dir = qsys_file[0],
                     dst_dir = qsys_file[1],
                     name    = qsys_file[2],
-                    family  = self.backend.family,
-                    device  = self.backend.device))
+                    family  = self.tool_options['family'],
+                    device  = self.tool_options['device']))
 
     def build(self, args):
         super(Quartus, self).build(args)

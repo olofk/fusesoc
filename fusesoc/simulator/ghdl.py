@@ -43,8 +43,8 @@ class Ghdl(Simulator):
         _vhdltypes = ("vhdlSource", "vhdlSource-87", "vhdlSource-93", "vhdlSource-2008")
         for f in src_files:
             args = ['-a']+stdarg
-            if self.system.ghdl is not None:
-                args += self.system.ghdl.analyze_options[:]
+            if 'analyze_options' in self.tool_options:
+                args += self.tool_options['analyze_options'][:]
             if f.file_type in _vhdltypes:
                 if f.logical_name:
                     args += ['--work='+f.logical_name]
@@ -64,8 +64,8 @@ class Ghdl(Simulator):
 
         cmd = 'ghdl'
         args = ['-r']
-        if self.system.ghdl is not None:
-            args += self.system.ghdl.run_options
+        if 'run_options' in self.tool_options:
+            args += self.tool_options['run_options']
         args += [self.toplevel]
         Launcher(cmd, args,
                  cwd      = self.work_root,

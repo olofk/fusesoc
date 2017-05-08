@@ -30,8 +30,8 @@ class Rivierapro(Simulator):
                 cmd = 'vlog'
                 args = []
 
-                if self.system.rivierapro is not None:
-                    args += self.system.rivierapro.vlog_options
+                if 'vlog_options' in self.tool_options:
+                    args += self.tool_options['vlog_options']
 
                 if f.file_type.startswith("verilogSource"):
                     if f.file_type.endswith("95"):
@@ -81,8 +81,8 @@ class Rivierapro(Simulator):
             vpi_options += ['-pli', vpi_module['name']]
 
         args = ['vsim']
-        if self.system.rivierapro is not None:
-            args += self.system.rivierapro.vsim_options
+        if 'vsim_options' in self.tool_options:
+            args += self.tool_options['vsim_options']
         args += vpi_options
         args += self.toplevel.split()
 

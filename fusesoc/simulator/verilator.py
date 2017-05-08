@@ -35,13 +35,11 @@ V$(TOP_MODULE).mk:
 class Verilator(Simulator):
 
     def configure(self, args):
-        if self.system.verilator is None:
-            raise RuntimeError("verilator section is missing in top-level core file")
 
         if not self.toplevel:
             raise RuntimeError("'" + self.name + "' miss a mandatory parameter 'top_module'")
 
-        skip = not (self.system.verilator.cli_parser == 'fusesoc')
+        skip = not ('cli_parser' in self.tool_options and self.tool_options['cli_parser'] == 'fusesoc')
         super(Verilator, self).configure(args, skip_params = skip)
         self._write_config_files()
 
@@ -56,15 +54,14 @@ class Verilator(Simulator):
 
         with open(os.path.join(self.work_root,self.verilator_file),'w') as f:
             f.write('--Mdir .\n')
-            if self.system.verilator.source_type == 'systemC':
+            if self.tool_options['source_type'] == 'systemC':
                 f.write('--sc\n')
             else:
                 f.write('--cc\n')
 
-            for core in self.cores:
-                if core.verilator:
-                    for lib in core.verilator.libs:
-                        f.write('-LDFLAGS {}\n'.format(lib))
+            if 'libs' in self.tool_options:
+                for lib in self.tool_options['libs']:
+                    f.write('-LDFLAGS {}\n'.format(lib))
             for include_dir in incdirs:
                 f.write("+incdir+" + include_dir + '\n')
                 f.write("-CFLAGS -I{}\n".format(include_dir))
@@ -88,7 +85,7 @@ class Verilator(Simulator):
             config_mk.write(CONFIG_MK_TEMPLATE.format(
                 top_module        = self.toplevel,
                 vc_file           = self.verilator_file,
-                verilator_options = ' '.join(self.system.verilator.verilator_options)))
+                verilator_options = ' '.join(self.tool_options['verilator_options'])))
 
     def build(self):
         super(Verilator, self).build()
@@ -109,7 +106,7 @@ class Verilator(Simulator):
                            stdout = open(_s.format('out'),'w')).run()
 
     def run(self, args):
-        fusesoc_cli_parser = (self.system.verilator.cli_parser == 'fusesoc')
+        fusesoc_cli_parser = (self.tool_options['cli_parser'] == 'fusesoc')
 
         super(Verilator, self).run(args)
 

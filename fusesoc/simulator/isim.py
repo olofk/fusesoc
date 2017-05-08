@@ -62,8 +62,8 @@ class Isim(Simulator):
 
         for key, value in self.vlogparam.items():
             args += ['--generic_top', '{}={}'.format(key, self._param_value_str(value))]
-        if self.system.isim is not None:
-            args += self.system.isim.isim_options
+        if 'isim_options' in self.tool_options:
+            args += self.tool_options['isim_options']
 
         Launcher('fuse', args,
                  cwd      = self.work_root,
