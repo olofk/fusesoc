@@ -22,8 +22,12 @@ xfile add ../../../cores/adv_debug_sys/Hardware/adv_dbg_if/rtl/verilog/adbg_or1k
 xfile add ../../../cores/adv_debug_sys/Hardware/adv_dbg_if/rtl/verilog/syncreg.v
 xfile add ../../../cores/adv_debug_sys/Hardware/adv_dbg_if/rtl/verilog/adbg_wb_module.v
 xfile add ../../../cores/misc/ucf_file.ucf
+source ../../../cores/misc/tcl_file.tcl
 xfile add ../../../cores/misc/vlog_file.v
 xfile add ../../../cores/misc/vhdl_file.vhd
+lib_vhdl new libx
+xfile add ../../../cores/misc/vhdl_lib_file.vhd -lib_vhdl libx
+xfile add ../../../cores/misc/vhdl2008_file.vhd
 lib_vhdl new libstorage_1
 xfile add ../../../cache/libstorage_1.0/rtl/vhdl/suv/libstorage_pkg.vhd -lib_vhdl libstorage_1
 xfile add ../../../cache/libstorage_1.0/rtl/vhdl/suv/dpram_generic.vhd -lib_vhdl libstorage_1

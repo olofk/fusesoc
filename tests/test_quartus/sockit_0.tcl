@@ -21,6 +21,13 @@ set_global_assignment -name VERILOG_FILE ../../../cores/adv_debug_sys/Hardware/a
 set_global_assignment -name VERILOG_FILE ../../../cores/adv_debug_sys/Hardware/adv_dbg_if/rtl/verilog/adbg_or1k_defines.v
 set_global_assignment -name VERILOG_FILE ../../../cores/adv_debug_sys/Hardware/adv_dbg_if/rtl/verilog/syncreg.v
 set_global_assignment -name VERILOG_FILE ../../../cores/adv_debug_sys/Hardware/adv_dbg_if/rtl/verilog/adbg_wb_module.v
+set_global_assignment -name QIP_FILE ../../../cores/misc/qip_file.qip
+set_global_assignment -name SYSTEMVERILOG_FILE ../../../cores/misc/sv_file.sv
+source ../../../cores/misc/tcl_file.tcl
+set_global_assignment -name VERILOG_FILE ../../../cores/misc/vlog_file.v
+set_global_assignment -name VHDL_FILE ../../../cores/misc/vhdl_file.vhd
+set_global_assignment -name VHDL_FILE ../../../cores/misc/vhdl_lib_file.vhd
+set_global_assignment -name VHDL_FILE ../../../cores/misc/vhdl2008_file.vhd
 set_global_assignment -name VERILOG_FILE ../../../cores/gpio/gpio.v
 set_global_assignment -name VERILOG_FILE ../../../cache/jtag_tap_1.13/tap/rtl/verilog/tap_top.v
 set_global_assignment -name VERILOG_FILE ../../../cache/mor1kx_3.1/rtl/verilog/mor1kx_branch_prediction.v
@@ -94,9 +101,6 @@ set_global_assignment -name VERILOG_FILE ../../../cores/sockit/rtl/verilog/clkge
 set_global_assignment -name VERILOG_FILE ../../../cores/sockit/rtl/verilog/orpsoc_top.v
 set_global_assignment -name VERILOG_FILE ../../../cores/sockit/rtl/verilog/rom.v
 set_global_assignment -name VERILOG_FILE ../../../cores/sockit/rtl/verilog/wb_intercon.v
-set_global_assignment -name VHDL_FILE ../../../cores/sockit/vhdl_file.vhd
-set_global_assignment -name SYSTEMVERILOG_FILE ../../../cores/sockit/sv_file.sv
-set_global_assignment -name QIP_FILE ../../../cores/sockit/qip_file.qip
 set_global_assignment -name QIP_FILE qsys/sockit/sockit.qip
 set_global_assignment -name QIP_FILE qsys/sockit/sockit.qip
 set_global_assignment -name SDC_FILE ../../../cores/sockit/data/sockit.sdc

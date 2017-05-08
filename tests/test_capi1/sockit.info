@@ -2,7 +2,7 @@ CORE INFO
 Name                 : ::sockit:0
 Core root            : /home/olof/.local/share/orpsoc-cores/systems/sockit
 Supported simulators : icarus
-Common dependencies  : >=::jtag_tap:0 >=::wb_intercon:0 >=::adv_debug_sys:0 >=::mor1kx:0 ::uart16550:1.5 >=::gpio:0 >=::paramtest:0 >=::vga_lcd:0
+Common dependencies  : >=::filetypes:0 >=::jtag_tap:0 >=::wb_intercon:0 >=::adv_debug_sys:0 >=::mor1kx:0 ::uart16550:1.5 >=::gpio:0 >=::paramtest:0 >=::vga_lcd:0
 
 == quartus ==
 FPGA device family : "Cyclone V"
@@ -34,16 +34,6 @@ Name  : verilog_tb_private_src_files
  Usage : sim
  Files :
  <No files>
-
-Name  : file_types
- Scope : public
- Usage : sim/synth
- Files :
-  vhdl_file.vhd vhdlSource          
-  sv_file.sv    systemVerilogSource 
-  qip_file.qip  QIP                 
-  user_file     user                
-  other_file    xdc                 
 
 Name  : qsys
  Scope : public

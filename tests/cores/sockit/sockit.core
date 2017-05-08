@@ -4,6 +4,7 @@ name = sockit
 description = "Arrow/Terasic SoCKit board"
 backend = quartus
 depend =
+ filetypes
  jtag_tap
  wb_intercon
  adv_debug_sys
@@ -28,14 +29,6 @@ include_files =
  rtl/verilog/include/timescale.v
  rtl/verilog/include/uart_defines.v
  rtl/verilog/wb_intercon.vh
-
-[fileset file_types]
-files =
- vhdl_file.vhd[file_type=vhdlSource]
- sv_file.sv[file_type=systemVerilogSource]
- qip_file.qip[file_type=QIP]
- user_file[file_type=user]
- other_file[file_type=xdc]
 
 [fileset qsys]
 files = data/sockit.qsys
