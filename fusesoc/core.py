@@ -187,6 +187,9 @@ class Core:
 
 
         src_files = [f.name for f in self.get_files(flags)]
+        if self.vpi and flags['tool'] in ['icarus', 'modelsim', 'rivierapro']:
+            src_files += [f.name for f in self.vpi.src_files + self.vpi.include_files]
+
         dirs = list(set(map(os.path.dirname,src_files)))
         for d in dirs:
             if not os.path.exists(os.path.join(dst_dir, d)):
