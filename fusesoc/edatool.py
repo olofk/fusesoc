@@ -3,17 +3,7 @@ from collections import OrderedDict
 import copy
 import os
 import shutil
-import sys
 import logging
-
-if sys.version_info[0] >= 3:
-    import urllib.request as urllib
-    from urllib.error import URLError
-    from urllib.error import HTTPError
-else:
-    import urllib
-    from urllib2 import URLError
-    from urllib2 import HTTPError
 
 from fusesoc.config import Config
 from fusesoc.coremanager import CoreManager
@@ -72,21 +62,6 @@ class EdaTool(object):
                     os.remove(os.path.join(self.work_root, f))
         else:
             os.makedirs(self.work_root)
-
-        _flags = self.flags.copy()
-        for core in self.cores:
-            logger.info("Preparing " + str(core.name))
-            dst_dir = os.path.join(self.src_root, core.sanitized_name)
-            try:
-                core.setup()
-            except URLError as e:
-                raise RuntimeError("Problem while fetching '" + core.name + "': " + str(e.reason))
-            except HTTPError as e:
-                raise RuntimeError("Problem while fetching '" + core.name + "': " + str(e.reason))
-
-            if self.export:
-                _flags['is_toplevel'] = (core.name == self.system.name)
-                core.export(dst_dir, _flags)
 
     def parse_args(self, args, prog, paramtypes):
         if self.parsed_args:

@@ -26,13 +26,17 @@ def get_core(core):
     return _get_core(core)
 
 def get_sim(sim, core, export=False):
+    import os.path
     from fusesoc.coremanager import CoreManager
+    from fusesoc.config import Config
     from fusesoc.main import _import
 
     flags = {'flow' : 'sim',
              'tool' : sim}
 
     eda_api = CoreManager().get_eda_api(core.name, flags)
+    export_root = os.path.join(Config().build_root, core.name.sanitized_name, 'src')
+    CoreManager().setup(core.name, flags, export=export, export_root=export_root)
     return _import('simulator', sim)(core,
                                      export=export,
                                      eda_api=eda_api)

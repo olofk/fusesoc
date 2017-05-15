@@ -213,3 +213,16 @@ class CoreManager(object):
             'tool_options' : {flags['tool'] : tool_options},
             'toplevel'     : top_core.get_toplevel(flags)
         }
+
+    def setup(self, vlnv, flags, export, export_root=None):
+        cores = self.get_depends(vlnv, flags)
+        _flags = flags.copy()
+
+        for core in cores:
+            logger.info("Preparing " + str(core.name))
+            core.setup()
+
+            if export:
+                dst_dir = os.path.join(export_root, core.sanitized_name)
+                _flags['is_toplevel'] = (core.name == vlnv)
+                core.export(dst_dir, _flags)

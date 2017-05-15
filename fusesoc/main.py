@@ -78,6 +78,8 @@ def build(args):
         logger.error("Failed to build '{}': {}".format(args.system, e))
         exit(1)
     try:
+        export_root = os.path.join(Config().build_root, core.name.sanitized_name, 'src')
+        CoreManager().setup(core.name, flags, export=True, export_root=export_root)
         backend.configure(args.backendargs)
     except RuntimeError as e:
         logger.error(str(e))
@@ -222,6 +224,8 @@ def sim(args):
         exit(1)
     if not args.keep or not os.path.exists(sim.work_root):
         try:
+            export_root = os.path.join(Config().build_root, core.name.sanitized_name, 'src')
+            CoreManager().setup(core.name, flags, export=True, export_root=export_root)
             sim.configure(args.plusargs)
             print('')
         except RuntimeError as e:
