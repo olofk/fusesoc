@@ -1,6 +1,5 @@
 import argparse
 from collections import OrderedDict
-import copy
 import os
 import shutil
 import logging
@@ -50,6 +49,7 @@ class EdaTool(object):
         self.cmdlinearg  = OrderedDict()
         self.parsed_args = False
 
+        self.files      = eda_api['files']
         self.parameters = eda_api['parameters']
         self.toplevel = eda_api['toplevel']
 
@@ -121,26 +121,23 @@ class EdaTool(object):
         self.parsed_args = True
 
     def _get_fileset_files(self):
+        class File:
+            def __init__(self, name, file_type, logical_name):
+                self.name         = name
+                self.file_type    = file_type
+                self.logical_name = logical_name
         incdirs = []
         src_files = []
-        _flags = self.flags.copy()
-        for core in self.cores:
-            if self.export:
-                files_root = os.path.join(self.src_root, core.sanitized_name)
+        for f in self.files:
+            if f['is_include_file']:
+                _incdir = os.path.relpath(os.path.dirname(f['name']),self.work_root)
+                if not _incdir in incdirs:
+                    incdirs.append(_incdir)
             else:
-                files_root = core.files_root
-            basepath = os.path.relpath(files_root, self.work_root)
-            _flags['is_toplevel'] = (core.name == self.system.name)
-            for file in core.get_files(_flags):
-                if file.is_include_file:
-                    _incdir = os.path.join(basepath, os.path.dirname(file.name))
-                    if not _incdir in incdirs:
-                        incdirs.append(_incdir)
-                else:
-                    new_file = copy.deepcopy(file)
-                    new_file.name = os.path.join(basepath, file.name)
-                    src_files.append(new_file)
-
+                _name = os.path.relpath(f['name'], self.work_root)
+                src_files.append(File(_name,
+                                      f['file_type'],
+                                      f['logical_name']))
         return (src_files, incdirs)
 
     """ Convert a parameter value to string suitable to be passed to an EDA tool

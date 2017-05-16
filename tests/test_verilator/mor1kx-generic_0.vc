@@ -3,16 +3,16 @@
 -LDFLAGS -lelf
 +incdir+../../../cores/adv_debug_sys/Hardware/adv_dbg_if/rtl/verilog
 -CFLAGS -I../../../cores/adv_debug_sys/Hardware/adv_dbg_if/rtl/verilog
-+incdir+../../../cores/elf-loader/
--CFLAGS -I../../../cores/elf-loader/
++incdir+../../../cores/elf-loader
+-CFLAGS -I../../../cores/elf-loader
 +incdir+../../../cache/mor1kx_3.1/rtl/verilog
 -CFLAGS -I../../../cache/mor1kx_3.1/rtl/verilog
-+incdir+../../../cores/verilog_utils/
--CFLAGS -I../../../cores/verilog_utils/
-+incdir+../../../cores/wb_common/
--CFLAGS -I../../../cores/wb_common/
-+incdir+../../../cores/verilator_tb_utils/
--CFLAGS -I../../../cores/verilator_tb_utils/
++incdir+../../../cores/verilog_utils
+-CFLAGS -I../../../cores/verilog_utils
++incdir+../../../cores/wb_common
+-CFLAGS -I../../../cores/wb_common
++incdir+../../../cores/verilator_tb_utils
+-CFLAGS -I../../../cores/verilator_tb_utils
 +incdir+../../../cores/mor1kx-generic/rtl/verilog
 -CFLAGS -I../../../cores/mor1kx-generic/rtl/verilog
 +incdir+../../../cores/mor1kx-generic/bench/verilog/include

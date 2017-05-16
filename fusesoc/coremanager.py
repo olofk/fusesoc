@@ -177,7 +177,7 @@ class CoreManager(object):
         c.name.relation = "=="
         return c
 
-    def get_eda_api(self, vlnv, flags):
+    def get_eda_api(self, vlnv, flags, export_root=None):
         def merge_dict(d1, d2):
             for key, value in d2.items():
                 if key in d1:
@@ -185,6 +185,7 @@ class CoreManager(object):
                 else:
                     d1[key] = value
 
+        files        = []
         parameters   = []
         tool_options = {}
 
@@ -206,8 +207,22 @@ class CoreManager(object):
             #Extract tool options
             merge_dict(tool_options, core.get_tool_options(_flags))
 
+            #Extract files
+            if export_root:
+                files_root = os.path.join(export_root, core.sanitized_name)
+            else:
+                files_root = core.files_root
+
+            for file in core.get_files(_flags):
+                files.append({
+                    'name'            : os.path.join(files_root, file.name),
+                    'file_type'       : file.file_type,
+                    'is_include_file' : file.is_include_file,
+                    'logical_name'    : file.logical_name})
+
         top_core = cores[-1]
         return {
+            'files'        : files,
             'name'         : top_core.sanitized_name,
             'parameters'   : parameters,
             'tool_options' : {flags['tool'] : tool_options},

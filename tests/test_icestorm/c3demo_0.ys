@@ -1,6 +1,6 @@
 verilog_defaults -push
 verilog_defaults -add -defer
-verilog_defaults -add -I../../../cores/misc/
+verilog_defaults -add -I../../../cores/misc
 read_verilog ../../../cores/misc/c3demo.v
 read_verilog ../../../cores/misc/picorv32.v
 chparam -set vlogparam_bool 1 $abstract\c3demo

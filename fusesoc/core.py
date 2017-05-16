@@ -218,10 +218,10 @@ class Core:
         for f in src_files:
             if not os.path.isabs(f):
                 if(os.path.exists(os.path.join(self.core_root, f))):
-                    shutil.copyfile(os.path.join(self.core_root, f),
+                    shutil.copy2(os.path.join(self.core_root, f),
                                     os.path.join(dst_dir, f))
                 elif (os.path.exists(os.path.join(self.files_root, f))):
-                    shutil.copyfile(os.path.join(self.files_root, f),
+                    shutil.copy2(os.path.join(self.files_root, f),
                                     os.path.join(dst_dir, f))
                 else:
                     raise RuntimeError('Cannot find %s in :\n\t%s\n\t%s'

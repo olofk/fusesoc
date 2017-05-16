@@ -6,8 +6,8 @@
 +parameter+orpsoc_tb.vlogparam_str="hello"
 +incdir+../../../cores/adv_debug_sys/Hardware/adv_dbg_if/rtl/verilog
 +incdir+../../../cache/mor1kx_3.1/rtl/verilog
-+incdir+../../../cores/verilog_utils/
-+incdir+../../../cores/wb_common/
++incdir+../../../cores/verilog_utils
++incdir+../../../cores/wb_common
 +incdir+../../../cores/mor1kx-generic/rtl/verilog
 +incdir+../../../cores/mor1kx-generic/bench/verilog/include
 ../../../cores/adv_debug_sys/Hardware/adv_dbg_if/rtl/verilog/adbg_wb_biu.v

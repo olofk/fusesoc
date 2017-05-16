@@ -107,8 +107,8 @@ set_global_assignment -name SDC_FILE ../../../cores/sockit/data/sockit.sdc
 source ../../../cores/sockit/data/pinmap.tcl
 set_global_assignment -name SEARCH_PATH ../../../cores/adv_debug_sys/Hardware/adv_dbg_if/rtl/verilog
 set_global_assignment -name SEARCH_PATH ../../../cache/mor1kx_3.1/rtl/verilog
-set_global_assignment -name SEARCH_PATH ../../../cores/verilog_utils/
+set_global_assignment -name SEARCH_PATH ../../../cores/verilog_utils
 set_global_assignment -name SEARCH_PATH ../../../cache/vga_lcd_0/rtl/verilog
-set_global_assignment -name SEARCH_PATH ../../../cores/wb_common/
+set_global_assignment -name SEARCH_PATH ../../../cores/wb_common
 set_global_assignment -name SEARCH_PATH ../../../cores/sockit/rtl/verilog/include
 set_global_assignment -name SEARCH_PATH ../../../cores/sockit/rtl/verilog

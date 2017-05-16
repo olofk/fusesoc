@@ -67,7 +67,8 @@ def build(args):
              'tool' : None}
     tool = core.get_tool(flags)
     flags['tool'] = tool
-    eda_api = CoreManager().get_eda_api(core.name, flags)
+    export_root = os.path.join(Config().build_root, core.name.sanitized_name, 'src')
+    eda_api = CoreManager().get_eda_api(core.name, flags, export_root)
 
     try:
         backend =_import('build', tool)(core, export=True, eda_api=eda_api)
@@ -205,8 +206,9 @@ def sim(args):
              'testbench' : args.testbench}
     sim_name = core.get_tool(flags)
     flags['tool'] = sim_name
+    export_root = os.path.join(Config().build_root, core.name.sanitized_name, 'src')
 
-    eda_api = CoreManager().get_eda_api(core.name, flags)
+    eda_api = CoreManager().get_eda_api(core.name, flags, export_root)
 
     if not sim_name:
         logger.error("No simulator was supplied on command line or found in '"+ args.system + "' core description")
