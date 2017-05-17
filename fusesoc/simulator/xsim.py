@@ -66,7 +66,7 @@ class Xsim(Simulator):
             args += ['-i', include_dir]
 
         for key, value in self.vlogparam.items():
-            args += ['--generic_top', '{}={}'.format(key, value)]
+            args += ['--generic_top', '{}={}'.format(key, self._param_value_str(value))]
 
         if self.system.xsim is not None:
             args += self.system.xsim.xsim_options

@@ -3,7 +3,7 @@ verilog_defaults -add -defer
 verilog_defaults -add -I../../../cores/misc/
 read_verilog ../../../cores/misc/c3demo.v
 read_verilog ../../../cores/misc/picorv32.v
-chparam -set vlogparam_bool true $abstract\c3demo
+chparam -set vlogparam_bool 1 $abstract\c3demo
 chparam -set vlogparam_int 42 $abstract\c3demo
 chparam -set vlogparam_str "hello" $abstract\c3demo
 verilog_defaults -pop

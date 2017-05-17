@@ -46,11 +46,11 @@ quit
 
         if self.vlogdefine:
             s = 'project set "Verilog Macros" "{}" -process "Synthesize - XST"\n'
-            tcl_file.write(s.format('|'.join([k+'='+str(v) for k,v in self.vlogdefine.items()])))
+            tcl_file.write(s.format('|'.join([k+'='+self._param_value_str(v) for k,v in self.vlogdefine.items()])))
 
         if self.vlogparam:
             s = 'project set "Generics, Parameters" "{}" -process "Synthesize - XST"\n'
-            tcl_file.write(s.format('|'.join([k+'='+str(v) for k,v in self.vlogparam.items()])))
+            tcl_file.write(s.format('|'.join([k+'='+self._param_value_str(v) for k,v in self.vlogparam.items()])))
 
         (src_files, incdirs) = self._get_fileset_files()
 
