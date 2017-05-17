@@ -52,7 +52,7 @@ ARACHNE_PNR_OPTIONS := {arachne_pnr_options}
             for key, value in self.vlogparam.items():
                 _s = "chparam -set {} {} $abstract\{}\n"
                 yosys_file.write(_s.format(key,
-                                           value,
+                                           self._param_value_str(value, strings_in_quotes=True),
                                            self.backend.top_module))
             if self.backend.top_module:
                 _top = "-top " + self.backend.top_module

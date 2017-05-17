@@ -87,8 +87,8 @@ class Verilator(Simulator):
             f.write('--exe\n')
             f.write('\n'.join(opt_c_files))
             f.write('\n')
-            f.write(''.join(['-G{}={}\n'.format(key, value) for key, value in self.vlogparam.items()]))
-            f.write(''.join(['-D{}={}\n'.format(key, value) for key, value in self.vlogdefine.items()]))
+            f.write(''.join(['-G{}={}\n'.format(key, self._param_value_str(value)) for key, value in self.vlogparam.items()]))
+            f.write(''.join(['-D{}={}\n'.format(key, self._param_value_str(value)) for key, value in self.vlogdefine.items()]))
 
         with open(os.path.join(self.work_root, 'Makefile'), 'w') as makefile:
             makefile.write(MAKEFILE_TEMPLATE)
@@ -131,9 +131,9 @@ class Verilator(Simulator):
         if fusesoc_cli_parser:
             _args = []
             for key, value in self.plusarg.items():
-                _args += ['+{}={}'.format(key, value)]
+                _args += ['+{}={}'.format(key, self._param_value_str(value))]
             for key, value in self.cmdlinearg.items():
-                _args += ['--{}={}'.format(key, value)]
+                _args += ['--{}={}'.format(key, self._param_value_str(value))]
         else:
             _args = args
         logger.info("Running simulation")

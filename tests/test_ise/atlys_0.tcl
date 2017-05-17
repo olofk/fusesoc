@@ -5,8 +5,8 @@ project set device xc6slx45
 project set package csg324
 project set speed -2
 project set "Generate Detailed MAP Report" true
-project set "Verilog Macros" "vlogdefine_bool=true|vlogdefine_int=42|vlogdefine_str=hello" -process "Synthesize - XST"
-project set "Generics, Parameters" "vlogparam_bool=true|vlogparam_int=42|vlogparam_str="hello"" -process "Synthesize - XST"
+project set "Verilog Macros" "vlogdefine_bool=1|vlogdefine_int=42|vlogdefine_str=hello" -process "Synthesize - XST"
+project set "Generics, Parameters" "vlogparam_bool=1|vlogparam_int=42|vlogparam_str=hello" -process "Synthesize - XST"
 project set "Verilog Include Directories" "../../../cores/adv_debug_sys/Hardware/adv_dbg_if/rtl/verilog|../../../cores/atlys/rtl/verilog/include|../../../cores/atlys/rtl/verilog" -process "Synthesize - XST"
 xfile add ../../../cores/adv_debug_sys/Hardware/adv_dbg_if/rtl/verilog/adbg_wb_biu.v
 xfile add ../../../cores/adv_debug_sys/Hardware/adv_dbg_if/rtl/verilog/adbg_or1k_status_reg.v

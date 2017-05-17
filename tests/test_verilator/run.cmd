@@ -1,1 +1,1 @@
---cmdlinearg_bool=true --cmdlinearg_int=42 --cmdlinearg_str=hello
+--cmdlinearg_bool=1 --cmdlinearg_int=42 --cmdlinearg_str=hello
