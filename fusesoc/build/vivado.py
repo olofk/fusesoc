@@ -173,14 +173,16 @@ set_property include_dirs [list {incdirs}] [get_filesets sources_1]
 
 {extras}
 
-regexp -- {{Vivado v([0-9]{{4}})\.[0-9]}} [version] -> year
+# By default create_project creates the synth_1 and impl_1 runs.
+# To explicitly create customized runs, uncomment the code below.
+#regexp -- {{Vivado v([0-9]{{4}})\.[0-9]}} [version] -> year
+#create_run synth_1 -quiet -flow "Vivado Synthesis $year" -strategy "Vivado Synthesis Defaults"
+#create_run impl_1 -quiet -flow "Vivado Implementation $year" -strategy "Vivado Implementation Defaults" -parent_run synth_1
+#current_run [get_runs synth_1]
 
-create_run -name synthesis -flow "Vivado Synthesis $year" -strategy "Vivado Synthesis Defaults"
-create_run implementation -flow "Vivado Implementation $year" -strategy "Vivado Implementation Defaults" -parent_run synthesis
-
-launch_runs implementation
-wait_on_run implementation
-open_run implementation
+launch_runs impl_1
+wait_on_run impl_1
+open_run impl_1
 write_bitstream {bitstream}
 """
 
