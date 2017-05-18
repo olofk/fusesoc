@@ -1,0 +1,1 @@
+--name=elf-loader_0 -lelf ../../../cores/elf-loader/elf-loader.c ../../../cores/elf-loader/vpi_wrapper.c
