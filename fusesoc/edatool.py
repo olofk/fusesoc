@@ -133,16 +133,15 @@ class EdaTool(object):
 
         for key,value in sorted(vars(p).items()):
             paramtype = all_params[key]
-            if value == True:
-                getattr(self, paramtype)[key] = "true"
-            elif value == False or value is None:
-                pass
+            if value is None:
+                continue
+
+            if type(value) == bool:
+                _value = value
             else:
-                if type(value[0]) == str and paramtype == 'vlogparam':
-                    _value = '"'+str(value[0])+'"'
-                else:
-                    _value = str(value[0])
-                getattr(self, paramtype)[key] = _value
+                _value = value[0]
+
+            getattr(self, paramtype)[key] = _value
         self.parsed_args = True
 
     def _get_fileset_files(self):
@@ -167,3 +166,27 @@ class EdaTool(object):
                     src_files.append(new_file)
 
         return (src_files, incdirs)
+
+    """ Convert a parameter value to string suitable to be passed to an EDA tool
+
+    Rules:
+    - Booleans are represented as 0/1
+    - Strings are either passed through (strings_in_quotes=False) or
+      put into double quotation marks (")
+    - Everything else (including int, float, etc.) are converted using the str()
+      function.
+    """
+    def _param_value_str(self, param_value, strings_in_quotes=False):
+
+      if type(param_value) == bool:
+          if (param_value) == True:
+              return '1'
+          else:
+              return '0'
+      elif type(param_value) == str:
+          if strings_in_quotes:
+              return '"'+str(param_value)+'"'
+          else:
+              return str(param_value)
+      else:
+          return str(param_value)

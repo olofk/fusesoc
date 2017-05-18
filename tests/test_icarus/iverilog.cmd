@@ -1,0 +1,1 @@
+-sorpsoc_tb -c icarus.scr -o fusesoc.elf -Dvlogdefine_bool=1 -Dvlogdefine_int=42 -Dvlogdefine_str="hello" -Porpsoc_tb.vlogparam_bool=1 -Porpsoc_tb.vlogparam_int=42 -Porpsoc_tb.vlogparam_str="hello" -DSIM

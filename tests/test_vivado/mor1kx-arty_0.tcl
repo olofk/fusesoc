@@ -54,10 +54,10 @@ read_vhdl ../../../cores/misc/vhdl_file.vhd
 read_vhdl -library libx ../../../cores/misc/vhdl_lib_file.vhd
 read_vhdl -vhdl2008 ../../../cores/misc/vhdl2008_file.vhd
 
-set_property generic {vlogparam_bool=true} [get_filesets sources_1]
+set_property generic {vlogparam_bool=1} [get_filesets sources_1]
 set_property generic {vlogparam_int=42} [get_filesets sources_1]
-set_property generic {vlogparam_str="hello"} [get_filesets sources_1]
-set_property verilog_define "vlogdefine_bool=true vlogdefine_int=42 vlogdefine_str=hello" [get_filesets sources_1]
+set_property generic {vlogparam_str=hello} [get_filesets sources_1]
+set_property verilog_define "vlogdefine_bool=1 vlogdefine_int=42 vlogdefine_str=hello" [get_filesets sources_1]
 
 
 set_property include_dirs [list ../../../cache/mor1kx_3.1/rtl/verilog] [get_filesets sources_1]

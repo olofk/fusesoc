@@ -61,14 +61,11 @@ class Icarus(Simulator):
         args += ['-o', 'fusesoc.elf']
 
         for key, value in self.vlogdefine.items():
-            args += ['-D{}={}'.format(key, value)]
+            args += ['-D{}={}'.format(key, self._param_value_str(value, strings_in_quotes=True))]
 
         for key, value in self.vlogparam.items():
-            #Workaround since Icarus treats all unqouted strings containing 'e' as floats
-            if value == "true":
-                value = "\"true\""
-            print("'{}' '{}'".format(key, value))
-            args += ['-P{}.{}={}'.format(self.toplevel, key, value)]
+            args += ['-P{}.{}={}'.format(self.toplevel, key,
+                                         self._param_value_str(value, strings_in_quotes=True))]
         if self.system.icarus is not None:
             args += self.system.icarus.iverilog_options
 
@@ -90,7 +87,7 @@ class Icarus(Simulator):
 
         # Plusargs
         for key, value in self.plusarg.items():
-            args += ['+{}={}'.format(key, value)]
+            args += ['+{}={}'.format(key, self._param_value_str(value))]
         #FIXME Top-level parameters
         Launcher('vvp', args,
                  cwd = self.work_root,

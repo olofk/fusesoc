@@ -67,7 +67,7 @@ class Modelsim(Simulator):
                     args += self.system.modelsim.vlog_options
 
                 for k, v in self.vlogdefine.items():
-                    args += ['+define+{}={}'.format(k,v)]
+                    args += ['+define+{}={}'.format(k,self._param_value_str(v))]
 
                 if f.file_type.startswith("systemVerilogSource"):
                     args += ['-sv']
@@ -113,10 +113,10 @@ class Modelsim(Simulator):
 
         # Plusargs
         for key, value in self.plusarg.items():
-            args += ['+{}={}'.format(key, value)]
+            args += ['+{}={}'.format(key, self._param_value_str(value))]
         #Top-level parameters
         for key, value in self.vlogparam.items():
-            args += ['-g{}={}'.format(key, value)]
+            args += ['-g{}={}'.format(key, self._param_value_str(value))]
         tcl_run.write(' '.join(args)+'\n')
         tcl_run.close()
 

@@ -2,10 +2,10 @@ project_new sockit_0 -overwrite
 set_global_assignment -name FAMILY "Cyclone V"
 set_global_assignment -name DEVICE 5CSXFC6D6F31C8ES
 set_global_assignment -name TOP_LEVEL_ENTITY orpsoc_top
-set_parameter -name vlogparam_bool true
+set_parameter -name vlogparam_bool 1
 set_parameter -name vlogparam_int 42
-set_parameter -name vlogparam_str "hello"
-set_global_assignment -name VERILOG_MACRO "vlogdefine_bool=true"
+set_parameter -name vlogparam_str hello
+set_global_assignment -name VERILOG_MACRO "vlogdefine_bool=1"
 set_global_assignment -name VERILOG_MACRO "vlogdefine_int=42"
 set_global_assignment -name VERILOG_MACRO "vlogdefine_str=hello"
 set_global_assignment -name VERILOG_FILE ../../../cores/adv_debug_sys/Hardware/adv_dbg_if/rtl/verilog/adbg_wb_biu.v

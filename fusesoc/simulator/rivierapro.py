@@ -51,7 +51,7 @@ class Rivierapro(Simulator):
                     args += ['-sv']
 
                 for k, v in self.vlogdefine.items():
-                    args += ['+define+{}={}'.format(k,v)]
+                    args += ['+define+{}={}'.format(k,self._param_value_str(v))]
 
                 args += vlog_include_dirs
             elif f.file_type.startswith("vhdlSource"):
@@ -95,10 +95,10 @@ class Rivierapro(Simulator):
 
         # Plusargs
         for key, value in self.plusarg.items():
-            args += ['+{}={}'.format(key, value)]
+            args += ['+{}={}'.format(key, self._param_value_str(value))]
         #Top-level parameters
         for key, value in self.vlogparam.items():
-            args += ['-g{}={}'.format(key, value)]
+            args += ['-g{}={}'.format(key, self._param_value_str(value))]
         tcl_launch.write(' '.join(args)+'\n')
         tcl_launch.close()
 

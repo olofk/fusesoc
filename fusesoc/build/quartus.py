@@ -72,9 +72,9 @@ qsys:"""
             tcl_file.write("set_global_assignment -name TOP_LEVEL_ENTITY " + self.backend.top_module + '\n')
 
             for key, value in self.vlogparam.items():
-                tcl_file.write("set_parameter -name {} {}\n".format(key, value))
+                tcl_file.write("set_parameter -name {} {}\n".format(key, self._param_value_str(value)))
             for key, value in self.vlogdefine.items():
-                tcl_file.write('set_global_assignment -name VERILOG_MACRO "{}={}"\n'.format(key, value))
+                tcl_file.write('set_global_assignment -name VERILOG_MACRO "{}={}"\n'.format(key, self._param_value_str(value)))
 
             (src_files, incdirs) = self._get_fileset_files()
 
