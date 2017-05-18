@@ -7,19 +7,41 @@ logger = logging.getLogger(__name__)
 
 class Icarus(Simulator):
 
+    MAKEFILE_TEMPLATE = """
+all: $(VPI_MODULES) $(TARGET)
+
+$(TARGET):
+	iverilog -s$(TOPLEVEL) -c $(TARGET).scr -o $@ $(IVERILOG_OPTIONS)
+
+clean:
+	$(RM) $(VPI_MODULES) $(TARGET)
+"""
+
+    VPI_MAKE_SECTION = """
+{name}_LIBS := {libs}
+{name}_INCS := {incs}
+{name}_SRCS := {srcs}
+
+{name}.vpi: $({name}_SRCS)
+	iverilog-vpi --name={name} $({name}_LIBS) $({name}_INCS) $?
+
+clean_{name}:
+	$(RM) {name}.vpi
+"""
+
     def configure(self, args):
         super(Icarus, self).configure(args)
         self._write_config_files()
 
     def _write_config_files(self):
-        icarus_file = 'icarus.scr'
-
-        f = open(os.path.join(self.work_root,icarus_file),'w')
-
-        incdirs = set()
-        src_files = []
+        f = open(os.path.join(self.work_root, self.system.sanitized_name+'.scr'),'w')
 
         (src_files, incdirs) = self._get_fileset_files()
+        for key, value in self.vlogdefine.items():
+            f.write('+define+{}={}\n'.format(key, self._param_value_str(value, strings_in_quotes=True)))
+
+        for key, value in self.vlogparam.items():
+            f.write('+parameter+{}.{}={}\n'.format(self.toplevel, key, self._param_value_str(value, strings_in_quotes=True)))
         for id in incdirs:
             f.write("+incdir+" + id+'\n')
         for src_file in src_files:
@@ -38,40 +60,31 @@ class Icarus(Simulator):
 
         f.close()
 
+        with open(os.path.join(self.work_root, 'Makefile'), 'w') as f:
+
+            f.write("TARGET           := {}\n".format(self.system.sanitized_name))
+            _vpi_modules = ' '.join([m['name']+'.vpi' for m in self.vpi_modules])
+            if _vpi_modules:
+                f.write("VPI_MODULES      := {}\n".format(_vpi_modules))
+            f.write("TOPLEVEL         := {}\n".format(self.toplevel))
+            if self.system.icarus is not None:
+                f.write("IVERILOG_OPTIONS := {}\n".format(' '.join(self.system.icarus.iverilog_options)))
+
+            f.write(self.MAKEFILE_TEMPLATE)
+
+            for vpi_module in self.vpi_modules:
+                _incs = ['-I' + s for s in vpi_module['include_dirs']]
+                f.write(self.VPI_MAKE_SECTION.format(name = vpi_module['name'],
+                                                     libs = ' '.join(vpi_module['libs']),
+                                                     incs = ' '.join(_incs),
+                                                     srcs = ' '.join(vpi_module['src_files'])))
+
     def build(self):
         super(Icarus, self).build()
 
-        #Build VPI modules
-        for vpi_module in self.vpi_modules:
-            args = []
-            args += ['--name='+vpi_module['name']]
-            args += [s for s in vpi_module['libs']]
-            args += ['-I' + s for s in vpi_module['include_dirs']]
-            args += vpi_module['src_files']
-
-            Launcher('iverilog-vpi', args,
-                     stderr   = open(os.path.join(self.work_root,vpi_module['name']+'.log'),'w'),
-                     cwd      = os.path.join(self.work_root),
-                     errormsg = "Failed to compile VPI library " + vpi_module['name']).run()
-
-        #Build simulation model
-        args = []
-        args += ['-s'+s for s in self.toplevel.split(' ')]
-        args += ['-c', 'icarus.scr']
-        args += ['-o', 'fusesoc.elf']
-
-        for key, value in self.vlogdefine.items():
-            args += ['-D{}={}'.format(key, self._param_value_str(value, strings_in_quotes=True))]
-
-        for key, value in self.vlogparam.items():
-            args += ['-P{}.{}={}'.format(self.toplevel, key,
-                                         self._param_value_str(value, strings_in_quotes=True))]
-        if self.system.icarus is not None:
-            args += self.system.icarus.iverilog_options
-
-        Launcher('iverilog', args,
-                 cwd      = self.work_root,
-                 errormsg = "Failed to compile Icarus Simulation model").run()
+        Launcher('make',
+                 cwd=self.work_root,
+                 stdout=open(os.path.join(self.work_root, 'build.log'),'w')).run()
 
     def run(self, args):
         super(Icarus, self).run(args)
@@ -82,13 +95,13 @@ class Icarus(Simulator):
         args += ['-M.']                                    # VPI module directory is '.'
         args += ['-l', 'icarus.log']                       # Log file
         args += ['-m'+s['name'] for s in self.vpi_modules] # Load VPI modules
-        args += ['fusesoc.elf']                            # Simulation binary file
+        args += [self.system.sanitized_name]                                # Simulation binary file
         args += ['-lxt2']
 
         # Plusargs
         for key, value in self.plusarg.items():
             args += ['+{}={}'.format(key, self._param_value_str(value))]
-        #FIXME Top-level parameters
+
         Launcher('vvp', args,
                  cwd = self.work_root,
                  errormsg = "Failed to run Icarus Simulation").run()

@@ -15,16 +15,7 @@ def test_icarus_configure():
 
     backend.configure(sim_params)
 
-    assert '' == compare_file(ref_dir, work_root, 'icarus.scr')
-
-def test_icarus_build():
-    os.environ['PATH'] = os.path.join(tests_dir, 'mock_commands')+':'+os.environ['PATH']
-
-    backend.build()
-
-    assert '' == compare_file(ref_dir, work_root, 'iverilog-vpi.cmd')
-    assert '' == compare_file(ref_dir, work_root, 'iverilog.cmd')
-
+    assert '' == compare_file(ref_dir, work_root, core.sanitized_name+'.scr')
 
 def test_icarus_run():
 

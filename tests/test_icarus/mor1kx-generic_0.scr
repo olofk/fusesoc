@@ -1,3 +1,9 @@
++define+vlogdefine_bool=1
++define+vlogdefine_int=42
++define+vlogdefine_str="hello"
++parameter+orpsoc_tb.vlogparam_bool=1
++parameter+orpsoc_tb.vlogparam_int=42
++parameter+orpsoc_tb.vlogparam_str="hello"
 +incdir+../../../cores/adv_debug_sys/Hardware/adv_dbg_if/rtl/verilog
 +incdir+../../../cache/mor1kx_3.1/rtl/verilog
 +incdir+../../../cores/verilog_utils/
