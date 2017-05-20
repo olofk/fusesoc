@@ -58,6 +58,7 @@ class EdaTool(object):
         self.cmdlinearg  = OrderedDict()
         self.parsed_args = False
 
+        self.parameters = eda_api['parameters']
         self.toplevel = eda_api['toplevel']
 
     def configure(self, args):
@@ -103,36 +104,34 @@ class EdaTool(object):
                   'vlogdefine' : 'Verilog defines (Compile-time global symbol)',
                   'generic'    : 'VHDL generic (Run-time option)',
                   'cmdlinearg' : 'Command-line arguments (Run-time option)'}
-        all_params = {}
-        _flags = self.flags.copy()
-        for core in self.cores:
-            _flags['is_toplevel'] = (core.name == self.system.name)
-            for param in core.get_parameters(_flags):
-                if param.paramtype in paramtypes:
-                    if not param.paramtype in param_groups:
-                        param_groups[param.paramtype] = \
-                        parser.add_argument_group(_descr[param.paramtype])
+        param_type_map = {}
 
-                    default = None
-                    if not param.default == '':
-                        try:
-                            default = [typedict[param.datatype]['type'](param.default)]
-                        except KeyError as e:
-                            pass
+        for param in self.parameters:
+            _paramtype = param['paramtype']
+            if _paramtype in paramtypes:
+                if not _paramtype in param_groups:
+                    param_groups[_paramtype] = \
+                    parser.add_argument_group(_descr[_paramtype])
+
+                default = None
+                if param['default']:
                     try:
-                        param_groups[param.paramtype].add_argument('--'+param.name,
-                                                                   help=param.description,
-                                                                   default=default,
-                                                                   **typedict[param.datatype])
+                        default = [typedict[param['datatype']]['type'](param['default'])]
                     except KeyError as e:
-                        raise RuntimeError("Invalid data type {} for parameter '{}' in '{}'".format(str(e),
-                                                                                                   param.name,
-                                                                                                   core.name))
-                    all_params[param.name.replace('-','_')] = param.paramtype
-        p = parser.parse_args(args)
+                        pass
+                try:
+                    param_groups[_paramtype].add_argument('--'+param['name'],
+                                                               help=param['description'],
+                                                               default=default,
+                                                               **typedict[param['datatype']])
+                except KeyError as e:
+                    raise RuntimeError("Invalid data type {} for parameter '{}'".format(str(e),
+                                                                                        param['name']))
+                param_type_map[param['name'].replace('-','_')] = _paramtype
+        #Parse arguments
+        for key,value in sorted(vars(parser.parse_args(args)).items()):
 
-        for key,value in sorted(vars(p).items()):
-            paramtype = all_params[key]
+            paramtype = param_type_map[key]
             if value is None:
                 continue
 

@@ -179,13 +179,24 @@ class CoreManager(object):
 
     def get_eda_api(self, vlnv, flags):
 
+        parameters   = []
+
         cores = self.get_depends(vlnv, flags)
 
         _flags = flags.copy()
         for core in cores:
             _flags['is_toplevel'] = (core.name == vlnv)
 
+            #Extract parameters
+            for param in core.get_parameters(_flags):
+                parameters.append ({
+                    'datatype'    : param.datatype,
+                    'default'     : param.default,
+                    'description' : param.description,
+                    'name'        : param.name,
+                    'paramtype'   : param.paramtype})
         top_core = cores[-1]
         return {
+            'parameters'   : parameters,
             'toplevel'     : top_core.get_toplevel(flags)
         }
