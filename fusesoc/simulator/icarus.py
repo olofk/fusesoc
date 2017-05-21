@@ -73,11 +73,13 @@ clean_{name}:
             f.write(self.MAKEFILE_TEMPLATE)
 
             for vpi_module in self.vpi_modules:
-                _incs = ['-I' + s for s in vpi_module['include_dirs']]
+                _incs = ['-I' + os.path.relpath(s, self.work_root) for s in vpi_module['include_dirs']]
+                _libs = ['-l'+l for l in vpi_module['libs']]
+                _srcs = [os.path.relpath(_f, self.work_root) for _f in vpi_module['src_files']]
                 f.write(self.VPI_MAKE_SECTION.format(name = vpi_module['name'],
-                                                     libs = ' '.join(vpi_module['libs']),
+                                                     libs = ' '.join(_libs),
                                                      incs = ' '.join(_incs),
-                                                     srcs = ' '.join(vpi_module['src_files'])))
+                                                     srcs = ' '.join(_srcs)))
 
     def build(self):
         super(Icarus, self).build()

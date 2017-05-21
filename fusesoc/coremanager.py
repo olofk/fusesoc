@@ -188,6 +188,7 @@ class CoreManager(object):
         files        = []
         parameters   = []
         tool_options = {}
+        vpi          = []
 
         cores = self.get_depends(vlnv, flags)
 
@@ -219,6 +220,12 @@ class CoreManager(object):
                     'file_type'       : file.file_type,
                     'is_include_file' : file.is_include_file,
                     'logical_name'    : file.logical_name})
+            #Extract VPI modules
+            for _vpi in core.get_vpi(_flags):
+                vpi.append({'name'         : _vpi['name'],
+                            'src_files'    : [os.path.join(files_root, f.name) for f in _vpi['src_files']],
+                            'include_dirs' : [os.path.join(files_root, i) for i in _vpi['include_dirs']],
+                            'libs'         : _vpi['libs']})
 
         top_core = cores[-1]
         return {
@@ -226,7 +233,8 @@ class CoreManager(object):
             'name'         : top_core.sanitized_name,
             'parameters'   : parameters,
             'tool_options' : {flags['tool'] : tool_options},
-            'toplevel'     : top_core.get_toplevel(flags)
+            'toplevel'     : top_core.get_toplevel(flags),
+            'vpi'          : vpi,
         }
 
     def setup(self, vlnv, flags, export, export_root=None):

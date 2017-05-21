@@ -10,7 +10,8 @@ backend   = get_sim('icarus', core, export=True)
 ref_dir   = os.path.join(tests_dir, __name__)
 
 def test_edatool():
-
+    from fusesoc.config import Config
+    export_root = os.path.join(Config().build_root, core.name.sanitized_name, 'src')
     backend.configure([])
     for f in [
             'verilog_utils_0/verilog_utils.vh',
@@ -29,4 +30,4 @@ def test_edatool():
             'verilog-arbiter_0-r1/src/arbiter.v',
             'wb_common_0/wb_common_params.v',
             'wb_common_0/wb_common.v']:
-        assert os.path.isfile(os.path.join(backend.src_root, f))
+        assert os.path.isfile(os.path.join(export_root, f))

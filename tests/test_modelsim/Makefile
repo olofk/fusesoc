@@ -12,13 +12,12 @@ all: elf-loader_0
 
 clean: clean_elf-loader_0
 
-elf-loader_0_ROOT := ../../../cores/elf-loader
-elf-loader_0_OBJS := elf-loader.o vpi_wrapper.o
+elf-loader_0_OBJS := ../../../cores/elf-loader/elf-loader.o ../../../cores/elf-loader/vpi_wrapper.o
 elf-loader_0_LIBS := -lelf
 elf-loader_0_INCS := $(INCS) 
 
-$(elf-loader_0_OBJS): %.o : $(elf-loader_0_ROOT)/%.c
-	$(CC) $(CFLAGS) $(elf-loader_0_INCS) $<
+$(elf-loader_0_OBJS): %.o : %.c
+	$(CC) $(CFLAGS) $(elf-loader_0_INCS) -o $@ $<
 
 elf-loader_0: $(elf-loader_0_OBJS)
 	$(LD) $(LDFLAGS) -o $@ $? $(elf-loader_0_LIBS)

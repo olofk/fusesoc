@@ -15,30 +15,6 @@ class Simulator(EdaTool):
 
     TOOL_TYPE = 'sim'
 
-    def __init__(self, system, export, eda_api):
-        super(Simulator, self).__init__(system, export, eda_api)
-
-        logger.debug( "depend -->  " +str (self.cores))
-
-        self._get_vpi_modules()
-
-    def _get_vpi_modules(self):
-        self.vpi_modules = []
-        for core in self.cores:
-
-            if core.vpi:
-                vpi_module = {}
-                if self.export:
-                    core_root = os.path.join(self.src_root, core.sanitized_name)
-                else:
-                    core_root = core.files_root
-                vpi_module['root']          = os.path.relpath(core_root, self.work_root)
-                vpi_module['include_dirs']  = [os.path.join(vpi_module['root'], d) for d in core.vpi.include_dirs]
-                vpi_module['src_files']     = [os.path.relpath(os.path.join(core_root, f.name), self.work_root) for f in core.vpi.src_files]
-                vpi_module['name']          = core.sanitized_name
-                vpi_module['libs']          = [l for l in core.vpi.libs]
-                self.vpi_modules += [vpi_module]
-
     def configure(self, args, skip_params = False):
         if not skip_params:
             self.parse_args(args, 'sim', ['plusarg', 'vlogdefine', 'vlogparam', 'cmdlinearg'])

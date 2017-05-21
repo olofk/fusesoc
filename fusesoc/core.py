@@ -196,6 +196,16 @@ class Core:
                         options[member] = getattr(section, member)
         return options
 
+    def get_vpi(self, flags):
+        vpi = []
+        if self.vpi:
+            vpi.append({'name'         : self.sanitized_name,
+                        'src_files'    : self.vpi.src_files,
+                        'include_dirs' : self.vpi.include_dirs,
+                        'libs'         : [l[2:] for l in self.vpi.libs],
+            })
+        return vpi
+
     def setup(self):
         if self.provider:
             if self.provider.fetch():

@@ -18,17 +18,15 @@ class FileAction(argparse.Action):
 
 class EdaTool(object):
 
-    def __init__(self, system, export, eda_api):
+    def __init__(self, system, eda_api):
         self.name = eda_api['name']
         self.system = system
-        self.export = export
         self.TOOL_NAME = self.__class__.__name__.lower()
         self.tool_options = eda_api['tool_options'][self.TOOL_NAME]
         self.flags = {'tool'   : self.TOOL_NAME,
                       'flow'   : self.TOOL_TYPE}
         build_root = os.path.join(Config().build_root, self.name)
 
-        self.src_root  = os.path.join(build_root, 'src')
         self.work_root = os.path.join(build_root, self.TOOL_TYPE+'-'+self.TOOL_NAME)
         self.cm = CoreManager()
         self.cores = self.cm.get_depends(self.system.name,
@@ -39,7 +37,6 @@ class EdaTool(object):
         #FIXME: Remove BUILD_ROOT once cores have had some time
         # to migrate to SRC_ROOT/WORK_ROOT
         self.env['BUILD_ROOT'] = os.path.abspath(build_root)
-        self.env['SRC_ROOT']  = os.path.abspath(self.src_root)
         self.env['WORK_ROOT'] = os.path.abspath(self.work_root)
 
         self.plusarg     = OrderedDict()
@@ -52,6 +49,7 @@ class EdaTool(object):
         self.files      = eda_api['files']
         self.parameters = eda_api['parameters']
         self.toplevel = eda_api['toplevel']
+        self.vpi_modules = eda_api['vpi']
 
     def configure(self, args):
         if os.path.exists(self.work_root):

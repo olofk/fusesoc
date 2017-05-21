@@ -21,13 +21,12 @@ clean: {clean_targets}
 """
 
 VPI_MAKE_SECTION = """
-{name}_ROOT := {root}
 {name}_OBJS := {objs}
 {name}_LIBS := {libs}
 {name}_INCS := $(INCS) {incs}
 
-$({name}_OBJS): %.o : $({name}_ROOT)/%.c
-	$(CC) $(CFLAGS) $({name}_INCS) $<
+$({name}_OBJS): %.o : %.c
+	$(CC) $(CFLAGS) $({name}_INCS) -o $@ $<
 
 {name}: $({name}_OBJS)
 	$(LD) $(LDFLAGS) -o $@ $? $({name}_LIBS)
@@ -125,12 +124,10 @@ class Modelsim(Simulator):
 
         for vpi_module in self.vpi_modules:
             _name = vpi_module['name']
-            _root = vpi_module['root']
-            _objs = [os.path.splitext(os.path.basename(s))[0]+'.o' for s in vpi_module['src_files']]
-            _libs = vpi_module['libs']
-            _incs = ['-I'+d for d in vpi_module['include_dirs']]
+            _objs = [os.path.splitext(os.path.relpath(s, self.work_root))[0]+'.o' for s in vpi_module['src_files']]
+            _libs = ['-l'+l for l in vpi_module['libs']]
+            _incs = ['-I'+os.path.relpath(d, self.work_root) for d in vpi_module['include_dirs']]
             _s = VPI_MAKE_SECTION.format(name=_name,
-                                         root=_root,
                                          objs=' '.join(_objs),
                                          libs=' '.join(_libs),
                                          incs=' '.join(_incs))

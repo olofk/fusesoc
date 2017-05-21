@@ -38,7 +38,6 @@ def get_sim(sim, core, export=False):
     export_root = os.path.join(Config().build_root, core.name.sanitized_name, 'src')
     CoreManager().setup(core.name, flags, export=export, export_root=export_root)
     return _import('simulator', sim)(core,
-                                     export=export,
                                      eda_api=eda_api)
 
 def get_synth(tool, core, export=False):
@@ -50,7 +49,6 @@ def get_synth(tool, core, export=False):
 
     eda_api = CoreManager().get_eda_api(core.name, flags)
     return _import('build', core.main.backend)(core,
-                                               export=export,
                                                eda_api=eda_api)
 
 cmdlineargs = ' --cmdlinearg_bool --cmdlinearg_int=42 --cmdlinearg_str=hello'.split()
