@@ -117,8 +117,8 @@ class Vivado(Backend):
     This launches the actual build of the vivado project by executing the project
     tcl file in batch mode.
     """
-    def build(self, args):
-        super(Vivado, self).build(args)
+    def build(self):
+        super(Vivado, self).build()
 
         utils.Launcher('vivado', ['-mode', 'batch', '-source',
                                   self.name+'.tcl'],

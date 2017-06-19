@@ -32,6 +32,31 @@ def test_core_info():
         ref_info = [x for x in f.readlines() if not 'Core root' in x]
     assert '' == ''.join(difflib.unified_diff(ref_info, gen_info))
 
+def test_get_scripts():
+    import pprint
+    flag_combos = [{'flow' : 'sim', 'is_toplevel' : False},
+                   {'flow' : 'sim', 'is_toplevel' : True},
+                   {'flow' : 'synth', 'is_toplevel' : False},
+                   {'flow' : 'synth', 'is_toplevel' : True},
+    ]
+    core = get_core("scriptscore")
+
+    for flags in flag_combos:
+        env = {'BUILD_ROOT' : os.path.join(os.path.dirname(__file__), 'build')}
+        result = core.get_scripts(flags)
+        expected = {}
+        if flags['flow'] == 'sim':
+            sections = ['post_run_scripts', 'pre_build_scripts', 'pre_run_scripts']
+        else:
+            if flags['is_toplevel']:
+                env['SYSTEM_ROOT'] = core.files_root
+                sections = ['pre_build_scripts', 'post_build_scripts']
+            else:
+                sections = []
+        for section in sections:
+            expected[section] = [{flags['flow'] + section + str(i) : {'env' : env}} for i in range(2)]
+        assert pprint.pformat(expected) == pprint.pformat(result)
+
 def test_get_tool():
     core = get_core("atlys")
     assert None     == core.get_tool({'flow' : 'sim', 'tool' : None})

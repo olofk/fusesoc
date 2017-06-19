@@ -153,8 +153,8 @@ qsys:"""
                     family  = self.tool_options['family'],
                     device  = self.tool_options['device']))
 
-    def build(self, args):
-        super(Quartus, self).build(args)
+    def build(self):
+        super(Quartus, self).build()
 
         utils.Launcher('make', cwd=self.work_root).run()
 

@@ -21,6 +21,6 @@ def test_vivado_configure():
 
 def test_vivado_build():
     os.environ['PATH'] = os.path.join(tests_dir, 'mock_commands')+':'+os.environ['PATH']
-    backend.build(params)
+    backend.build()
 
     assert '' == compare_file(ref_dir, work_root, 'run.cmd')

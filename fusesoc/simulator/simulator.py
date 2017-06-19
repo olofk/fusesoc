@@ -3,7 +3,6 @@ import os
 import logging
 
 from fusesoc.edatool import EdaTool
-from fusesoc.utils import run_scripts
 
 logger = logging.getLogger(__name__)
 
@@ -20,29 +19,11 @@ class Simulator(EdaTool):
             self.parse_args(args, 'sim', ['plusarg', 'vlogdefine', 'vlogparam', 'cmdlinearg'])
         super(Simulator, self).configure(args)
 
-    def build(self):
-        for core in self.cores:
-            if core.scripts:
-                run_scripts(core.scripts.pre_build_scripts,
-                            core.files_root,
-                            self.work_root,
-                            self.env)
-        return
-
     def run(self, args):
         self.parse_args(args, 'sim', ['plusarg', 'vlogdefine', 'vlogparam', 'cmdlinearg'])
-        for core in self.cores:
-            if core.scripts:
-                run_scripts(core.scripts.pre_run_scripts,
-                            core.core_root,
-                            self.work_root,
-                            self.env)
+        if 'pre_run_scripts' in self.fusesoc_options:
+            self._run_scripts(self.fusesoc_options['pre_run_scripts'])
 
     def done(self, args):
-
-        for core in self.cores:
-            if core.scripts:
-                run_scripts(core.scripts.post_run_scripts,
-                            core.core_root,
-                            self.work_root,
-                            self.env)
+        if 'post_run_scripts' in self.fusesoc_options:
+            self._run_scripts(self.fusesoc_options['post_run_scripts'])

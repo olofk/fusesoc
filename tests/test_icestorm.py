@@ -23,6 +23,8 @@ def test_icestorm_configure():
 
 def test_icestorm_build():
     os.environ['PATH'] = os.path.join(tests_dir, 'mock_commands')+':'+os.environ['PATH']
-    backend.build(params)
+    backend.build()
 
     assert '' == compare_file(ref_dir, work_root, 'run.cmd')
+    assert os.path.isfile(os.path.join(work_root, 'pre_build_script_executed'))
+    assert os.path.isfile(os.path.join(work_root, 'post_build_script_executed'))

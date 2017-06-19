@@ -1,0 +1,9 @@
+CAPI=1
+[main]
+
+[scripts]
+pre_synth_scripts = synthpre_build_scripts0  synthpre_build_scripts1
+post_impl_scripts = synthpost_build_scripts0 synthpost_build_scripts1
+pre_build_scripts = simpre_build_scripts0    simpre_build_scripts1
+pre_run_scripts   = simpre_run_scripts0      simpre_run_scripts1
+post_run_scripts  = simpost_run_scripts0     simpost_run_scripts1

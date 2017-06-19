@@ -47,12 +47,6 @@ class Launcher:
     def __str__(self):
         return ' '.join([self.cmd] + self.args)
 
-def run_scripts(scripts, scripts_root, cwd, env):
-    for script_name in scripts:
-        script = os.path.abspath(os.path.join(scripts_root, script_name))
-        logger.info("Running " + script);
-        Launcher(script, cwd = cwd, env = env, shell=True).run()
-
 def find_verilator():
     verilator_root = os.getenv('VERILATOR_ROOT')
     if verilator_root is None:

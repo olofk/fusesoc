@@ -71,7 +71,7 @@ def build(args):
     eda_api = CoreManager().get_eda_api(core.name, flags, export_root)
 
     try:
-        backend =_import('build', tool)(core, eda_api=eda_api)
+        backend =_import('build', tool)(eda_api=eda_api)
     except ImportError:
         logger.error('Backend "{}" not found'.format(tool))
         exit(1)
@@ -88,7 +88,7 @@ def build(args):
     print('')
     try:
         if not args.setup:
-            backend.build(args.backendargs)
+            backend.build()
     except RuntimeError as e:
         logger.error("Failed to build FPGA: " + str(e))
         exit(1)
@@ -99,7 +99,7 @@ def pgm(args):
              'tool' : None}
     tool = core.get_tool(flags)
     try:
-        backend =_import('build', tool)(core)
+        backend =_import('build', tool)()
         backend.pgm(args.backendargs)
     except ImportError:
         logger.error('Backend "{}" not found'.format(tool))
@@ -214,7 +214,7 @@ def sim(args):
         logger.error("No simulator was supplied on command line or found in '"+ args.system + "' core description")
         exit(1)
     try:
-        sim = _import('simulator', sim_name)(core, eda_api=eda_api)
+        sim = _import('simulator', sim_name)(eda_api=eda_api)
     except DependencyError as e:
         logger.error("'" + args.system + "' or any of its dependencies requires '" + e.value + "', but this core was not found")
         exit(1)

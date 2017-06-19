@@ -2,10 +2,10 @@ import argparse
 from collections import OrderedDict
 import os
 import shutil
+import subprocess
 import logging
 
 from fusesoc.config import Config
-from fusesoc.coremanager import CoreManager
 
 logger = logging.getLogger(__name__)
 
@@ -18,25 +18,18 @@ class FileAction(argparse.Action):
 
 class EdaTool(object):
 
-    def __init__(self, system, eda_api):
+    def __init__(self, eda_api):
         self.name = eda_api['name']
-        self.system = system
         self.TOOL_NAME = self.__class__.__name__.lower()
         self.tool_options = eda_api['tool_options'][self.TOOL_NAME]
+        self.fusesoc_options = eda_api['tool_options']['fusesoc']
         self.flags = {'tool'   : self.TOOL_NAME,
                       'flow'   : self.TOOL_TYPE}
         build_root = os.path.join(Config().build_root, self.name)
 
         self.work_root = os.path.join(build_root, self.TOOL_TYPE+'-'+self.TOOL_NAME)
-        self.cm = CoreManager()
-        self.cores = self.cm.get_depends(self.system.name,
-                                         self.flags)
-
         self.env = os.environ.copy()
 
-        #FIXME: Remove BUILD_ROOT once cores have had some time
-        # to migrate to SRC_ROOT/WORK_ROOT
-        self.env['BUILD_ROOT'] = os.path.abspath(build_root)
         self.env['WORK_ROOT'] = os.path.abspath(self.work_root)
 
         self.plusarg     = OrderedDict()
@@ -61,6 +54,10 @@ class EdaTool(object):
         else:
             os.makedirs(self.work_root)
 
+    def build(self):
+        if 'pre_build_scripts' in self.fusesoc_options:
+            self._run_scripts(self.fusesoc_options['pre_build_scripts'])
+
     def parse_args(self, args, prog, paramtypes):
         if self.parsed_args:
             return
@@ -70,7 +67,7 @@ class EdaTool(object):
                     'str'  : {'type' : str , 'nargs' : 1},
                     }
         progname = 'fusesoc {} {}'.format(prog,
-                                          self.system.name)
+                                          self.name)
         parser = argparse.ArgumentParser(prog = progname,
                                          conflict_handler='resolve')
         param_groups = {}
@@ -161,3 +158,20 @@ class EdaTool(object):
               return str(param_value)
       else:
           return str(param_value)
+
+    def _run_scripts(self, scripts):
+        for script in scripts:
+            for cmd, options in script.items():
+                if not (os.path.isfile(cmd) and os.access(cmd, os.X_OK)):
+                    raise RuntimeError("'{}' is not an executable file".format(cmd))
+                _env = self.env.copy()
+                if 'env' in options:
+                    _env.update(options['env'])
+                logger.info("Running " + cmd);
+                try:
+                    subprocess.check_call([cmd],
+                                          cwd = self.work_root,
+                                          env = _env,
+                                          shell=True)
+                except subprocess.CalledProcessError:
+                    raise RuntimeError("'{}' exited with an error code.\nERROR: See stderr for details.".format(cmd))

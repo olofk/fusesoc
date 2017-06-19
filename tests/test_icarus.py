@@ -17,6 +17,10 @@ def test_icarus_configure():
 
     assert '' == compare_file(ref_dir, work_root, core.sanitized_name+'.scr')
 
+def test_icarus_build():
+    os.environ['PATH'] = os.path.join(tests_dir, 'mock_commands')+':'+os.environ['PATH']
+    backend.build()
+    assert os.path.isfile(os.path.join(work_root, 'pre_build_script_executed'))
 def test_icarus_run():
 
     os.environ['PATH'] = os.path.join(tests_dir, 'mock_commands')+':'+os.environ['PATH']
@@ -24,3 +28,5 @@ def test_icarus_run():
     backend.run(sim_params)
 
     assert '' == compare_file(ref_dir, work_root, 'run.cmd')
+    assert os.path.isfile(os.path.join(work_root, 'pre_run_script_executed'))
+    assert os.path.isfile(os.path.join(work_root, 'post_run_script_executed'))

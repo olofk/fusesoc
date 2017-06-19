@@ -159,6 +159,28 @@ class Core:
                 parameters.append(v)
         return parameters
 
+    def get_scripts(self, flags):
+        scripts = {}
+        if self.scripts:
+            env = {'BUILD_ROOT' : Config().build_root}
+            if flags['flow'] is 'sim':
+                for s in ['pre_build_scripts', 'pre_run_scripts', 'post_run_scripts']:
+                    v = getattr(self.scripts, s)
+                    if v:
+                        scripts[s] = [{x : {'env' : env}} for x in v]
+            #For backwards compatibility we only use the script from the
+            #top-level core in synth flows. We also rename them here to match
+            #the backend stages and set the SYSTEM_ROOT env var
+            elif flags['flow'] is 'synth' and flags['is_toplevel']:
+                env['SYSTEM_ROOT'] = self.files_root
+                v = self.scripts.pre_synth_scripts
+                if v:
+                    scripts['pre_build_scripts'] = [{x : {'env' : env}} for x in v]
+                v = self.scripts.post_impl_scripts
+                if v:
+                    scripts['post_build_scripts'] = [{x : {'env' : env}} for x in v]
+        return scripts
+
     def get_toplevel(self, flags={}):
         if flags['tool'] == 'verilator':
             return self.verilator.top_module
@@ -219,6 +241,9 @@ class Core:
         src_files = [f.name for f in self.get_files(flags)]
         if self.vpi and flags['tool'] in ['icarus', 'modelsim', 'rivierapro']:
             src_files += [f.name for f in self.vpi.src_files + self.vpi.include_files]
+        for section in self.get_scripts(flags).values():
+            for script in section:
+                src_files += script.keys()
 
         dirs = list(set(map(os.path.dirname,src_files)))
         for d in dirs:

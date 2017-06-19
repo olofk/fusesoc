@@ -30,6 +30,10 @@ description = "Firmware"
 paramtype = vlogparam
 scope = private
 
+[scripts]
+pre_synth_scripts = scripts/pre_build_script
+post_impl_scripts = scripts/post_build_script
+
 [icestorm]
 arachne_pnr_options = -s 1 -d 8k
 pcf_file = c3demo.pcf

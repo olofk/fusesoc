@@ -187,6 +187,7 @@ class CoreManager(object):
 
         files        = []
         parameters   = []
+        scripts      = {}
         tool_options = {}
         vpi          = []
 
@@ -214,6 +215,15 @@ class CoreManager(object):
             else:
                 files_root = core.files_root
 
+            #Extract scripts
+            _scripts = core.get_scripts(_flags)
+            for section in _scripts.values():
+                for script in section:
+                    for name in script.keys():
+                        script[name]['env']['FILES_ROOT'] = files_root
+                        script[os.path.join(files_root, name)] = script.pop(name)
+            merge_dict(scripts, _scripts)
+
             for file in core.get_files(_flags):
                 files.append({
                     'name'            : os.path.join(files_root, file.name),
@@ -232,7 +242,8 @@ class CoreManager(object):
             'files'        : files,
             'name'         : top_core.sanitized_name,
             'parameters'   : parameters,
-            'tool_options' : {flags['tool'] : tool_options},
+            'tool_options' : {flags['tool'] : tool_options,
+                              'fusesoc' : scripts},
             'toplevel'     : top_core.get_toplevel(flags),
             'vpi'          : vpi,
         }

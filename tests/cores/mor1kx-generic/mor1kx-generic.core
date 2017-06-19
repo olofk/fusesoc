@@ -51,3 +51,8 @@ datatype    = bool
 description = Preset RAM to a known value (0)
 paramtype   = plusarg
 scope       = private
+
+[scripts]
+pre_build_scripts = scripts/pre_build_script
+pre_run_scripts = scripts/pre_run_script
+post_run_scripts = scripts/post_run_script

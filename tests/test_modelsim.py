@@ -7,7 +7,6 @@ from test_common import compare_file, get_core, get_sim, sim_params
 tests_dir = os.path.dirname(__file__)
 core      = get_core("mor1kx-generic")
 backend   = get_sim('modelsim', core)
-backend.toplevel = backend.system.simulator['toplevel']
 ref_dir   = os.path.join(tests_dir, __name__)
 work_root = backend.work_root
 

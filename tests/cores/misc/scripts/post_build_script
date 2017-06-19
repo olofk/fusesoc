@@ -1,0 +1,3 @@
+#!/bin/sh
+touch post_build_script_executed
+exit 0

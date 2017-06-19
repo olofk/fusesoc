@@ -85,8 +85,8 @@ quit
         tcl_file.write(self.TCL_FUNCTIONS)
         tcl_file.close()
 
-    def build(self, args):
-        super(Ise, self).build(args)
+    def build(self):
+        super(Ise, self).build()
 
         utils.Launcher('xtclsh', [os.path.join(self.work_root, self.name+'.tcl')],
                            cwd = self.work_root,
