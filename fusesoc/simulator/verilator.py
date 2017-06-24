@@ -34,13 +34,6 @@ V$(TOP_MODULE).mk:
 
 class Verilator(Simulator):
 
-    def _basepath(self, core):
-        if self.export:
-            files_root = os.path.join(self.src_root, core.sanitized_name)
-        else:
-            files_root = core.files_root
-        return os.path.relpath(files_root, self.work_root)
-
     def configure(self, args):
         if self.system.verilator is None:
             raise RuntimeError("verilator section is missing in top-level core file")
@@ -98,12 +91,6 @@ class Verilator(Simulator):
                 top_module        = self.top_module,
                 vc_file           = self.verilator_file,
                 verilator_options = ' '.join(self.system.verilator.verilator_options)))
-
-        #convert verilog defines into C file
-        for f in self.system.verilator.define_files:
-            read_file = os.path.join(self._basepath(self.system), f)
-            write_file = os.path.splitext(read_file)+'.h'
-            utils.convert_V2H(read_file, write_file)
 
     def build(self):
         super(Verilator, self).build()

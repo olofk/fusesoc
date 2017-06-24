@@ -129,3 +129,36 @@ These filesets can be further combined by setting some per-file attributes
 
 `file_type` can also be overridden on a per-file basis (e.g. `file2.v[file_type=verilogSource-2005]` `file3.vh[is_include_file,file_type=systemVerilogSource]`), but scope and usage are set for each fileset.
 
+Migrating from verilator define_files
+-------------------------------------
+
+Why
+~~~
+Files specified as `define_files` in the verilator core section were treated as verilog files containing ` `define` statements to C header files with equivalent #define statements. While there are use-cases for this functionality, the actual implementation is limited and makes assumptions that makes it difficult to maintain in the FuseSoC code base. The decision is therefore made to deprecate this functionality and instead require the user to make the conversion.
+
+When
+~~~~
+`verilator define_files` are no longer converted in FuseSoC 1.7
+
+How
+~~~
+
+The following stand-alone Python script will perform the same function. It can also be executed as a `pre_build` script to perform the conversion automatically before a build
+
+    def convert_V2H( read_file, write_file):
+        fV = open (read_file,'r')
+        fC = open (write_file,'w')
+        fC.write("//File auto-converted the Verilog to C. converted by FuseSoC//\n")
+        fC.write("//source file --> " + read_file + "\n")
+        for line in fV:
+            Sline=line.split('`',1)
+            if len(Sline) == 1:
+                fC.write(Sline[0])
+            else:
+                fC.write(Sline[0]+"#"+Sline[1])
+        fC.close
+        fV.close
+    
+    import sys
+    if __name__ == "__main__":
+        convert_V2H(sys.argv[1], sys.argv[2])

@@ -47,21 +47,6 @@ class Launcher:
     def __str__(self):
         return ' '.join([self.cmd] + self.args)
 
-
-def convert_V2H( read_file, write_file):
-            fV = open (read_file,'r')
-            fC = open (write_file,'w')
-            fC.write("//File auto-converted the Verilog to C. converted by FuseSoC//\n")
-            fC.write("//source file --> " + read_file + "\n")
-            for line in fV:
-                Sline=line.split('`',1)
-                if len(Sline) == 1:
-                    fC.write(Sline[0])
-                else:
-                    fC.write(Sline[0]+"#"+Sline[1])
-            fC.close
-            fV.close
-
 def run_scripts(scripts, scripts_root, cwd, env):
     for script_name in scripts:
         script = os.path.abspath(os.path.join(scripts_root, script_name))

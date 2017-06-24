@@ -408,7 +408,7 @@ class VerilatorSection(ToolSection):
         self._add_member('verilator_options', StringList, "Verilator build options")
         self._add_member('src_files'        , FileList  , "Verilator testbench C/cpp/sysC source files")
         self._add_member('include_files'    , FileList  , "Verilator testbench C include files")
-        self._add_member('define_files'     , PathList  , "Verilog include files containing `define directives to be converted to C #define directives in corresponding .h files")
+        self._add_member('define_files'     , PathList  , "Verilog include files containing `define directives to be converted to C #define directives in corresponding .h files (deprecated)")
         self._add_member('libs'             , PathList  , "External libraries linked with the generated model")
 
         self._add_member('tb_toplevel', FileList, 'Testbench top-level C/C++/SC file')
@@ -419,6 +419,8 @@ class VerilatorSection(ToolSection):
         if items:
             self.load_dict(items)
             self.include_dirs  = unique_dirs(self.include_files)
+            if self.define_files:
+                logger.warning("verilator define_files are deprecated")
 
     def __str__(self):
         s = super(VerilatorSection, self).__str__()

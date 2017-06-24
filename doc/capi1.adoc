@@ -182,13 +182,13 @@ verilator
 |==============================
 |Name | Type | Description
 |cli_parser | String | Select CLI argument parser. Set to 'fusesoc' to handle parameter sections like other simulators. Set to 'passthrough' to send the arguments directly to the verilated model. Default is 'passthrough'
-|define_files | Space-separated list of paths | Verilog include files containing `define directives to be converted to C #define directives in corresponding .h files
+|define_files | Space-separated list of paths | Verilog include files containing `define directives to be converted to C #define directives in corresponding .h files (deprecated)
 |depend | Space-separated list of VLNV identifiers | Tool-specific Dependencies
 |include_files | Space-separated list of files | Verilator testbench C include files
 |libs | Space-separated list of paths | External libraries linked with the generated model
 |source_type | String | Testbench source code language (Legal values are systemC, C, CPP. Default is C)
 |src_files | Space-separated list of files | Verilator testbench C/cpp/sysC source files
-|tb_toplevel | String | Testbench top-level C/C++/SC file
+|tb_toplevel | Space-separated list of files | Testbench top-level C/C++/SC file
 |top_module | String | verilog top-level module
 |verilator_options | Space-separated list | Verilator build options
 |==============================
