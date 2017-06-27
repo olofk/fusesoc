@@ -38,13 +38,6 @@ clean_{name}:
 
 class Modelsim(Simulator):
 
-    def __init__(self, system, export, toplevel):
-
-        super(Modelsim, self).__init__(system, export, toplevel)
-        self.model_tech = os.getenv('MODEL_TECH')
-        if not self.model_tech:
-            raise RuntimeError("Environment variable MODEL_TECH was not found. It should be set to <modelsim install path>/bin")
-
     def _write_build_rtl_tcl_file(self, tcl_main):
         tcl_build_rtl  = open(os.path.join(self.work_root, "fusesoc_build_rtl.tcl"), 'w')
 
@@ -159,6 +152,9 @@ class Modelsim(Simulator):
 
 
     def build(self):
+        self.model_tech = os.getenv('MODEL_TECH')
+        if not self.model_tech:
+            raise RuntimeError("Environment variable MODEL_TECH was not found. It should be set to <modelsim install path>/bin")
         super(Modelsim, self).build()
         args = ['-c', '-do', 'do fusesoc_main.tcl; exit']
         Launcher(self.model_tech+'/vsim', args,
@@ -166,6 +162,9 @@ class Modelsim(Simulator):
                  errormsg = "Failed to build simulation model. Log is available in '{}'".format(os.path.join(self.work_root, 'transcript'))).run()
 
     def run(self, args):
+        self.model_tech = os.getenv('MODEL_TECH')
+        if not self.model_tech:
+            raise RuntimeError("Environment variable MODEL_TECH was not found. It should be set to <modelsim install path>/bin")
         super(Modelsim, self).run(args)
 
         args = ['-c', '-quiet', '-do', 'fusesoc_run.tcl', '-do', 'run -all']

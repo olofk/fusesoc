@@ -22,9 +22,8 @@ def test_modelsim_configure():
 
 def test_modelsim_run():
 
-#FIXME: Do something about the path to vsim
-#    os.environ['PATH'] = os.path.join(tests_dir, 'mock_commands')+':'+os.environ['PATH']
-    backend.model_tech = os.path.join(tests_dir, 'mock_commands')
+    #FIXME: Do something about the path to vsim
+    os.environ['MODEL_TECH'] = os.path.join(tests_dir, 'mock_commands')
     backend.run(sim_params)
 
     assert '' == compare_file(ref_dir, work_root, 'run.cmd')
