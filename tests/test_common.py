@@ -36,10 +36,14 @@ def get_sim(sim, core, export=False):
 
     eda_api = CoreManager().get_eda_api(core.name, flags)
     export_root = os.path.join(Config().build_root, core.name.sanitized_name, 'src')
+    work_root   = os.path.join(Config().build_root, core.name.sanitized_name, 'sim-'+sim)
+    
     CoreManager().setup(core.name, flags, export=export, export_root=export_root)
-    return _import('simulator', sim)(eda_api=eda_api)
+    return _import('simulator', sim)(eda_api=eda_api, work_root=work_root)
 
 def get_synth(tool, core, export=False):
+    import os.path
+    from fusesoc.config import Config
     from fusesoc.coremanager import CoreManager
     from fusesoc.main import _import
 
@@ -47,8 +51,8 @@ def get_synth(tool, core, export=False):
              'tool' : tool}
 
     eda_api = CoreManager().get_eda_api(core.name, flags)
-    return _import('build', core.main.backend)(eda_api=eda_api)
-                                               
+    work_root   = os.path.join(Config().build_root, core.name.sanitized_name, 'bld-'+tool)
+    return _import('build', core.main.backend)(eda_api=eda_api, work_root=work_root)
 
 cmdlineargs = ' --cmdlinearg_bool --cmdlinearg_int=42 --cmdlinearg_str=hello'.split()
 plusargs    = ' --plusarg_bool --plusarg_int=42 --plusarg_str=hello'.split()

@@ -5,8 +5,6 @@ import shutil
 import subprocess
 import logging
 
-from fusesoc.config import Config
-
 logger = logging.getLogger(__name__)
 
 class FileAction(argparse.Action):
@@ -18,16 +16,15 @@ class FileAction(argparse.Action):
 
 class EdaTool(object):
 
-    def __init__(self, eda_api):
+    def __init__(self, eda_api, work_root):
         self.name = eda_api['name']
         self.TOOL_NAME = self.__class__.__name__.lower()
         self.tool_options = eda_api['tool_options'][self.TOOL_NAME]
         self.fusesoc_options = eda_api['tool_options']['fusesoc']
         self.flags = {'tool'   : self.TOOL_NAME,
                       'flow'   : self.TOOL_TYPE}
-        build_root = os.path.join(Config().build_root, self.name)
 
-        self.work_root = os.path.join(build_root, self.TOOL_TYPE+'-'+self.TOOL_NAME)
+        self.work_root = work_root
         self.env = os.environ.copy()
 
         self.env['WORK_ROOT'] = os.path.abspath(self.work_root)

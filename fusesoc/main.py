@@ -68,10 +68,11 @@ def build(args):
     tool = core.get_tool(flags)
     flags['tool'] = tool
     export_root = os.path.join(Config().build_root, core.name.sanitized_name, 'src')
+    work_root   = os.path.join(Config().build_root, core.name.sanitized_name, 'bld-'+tool)
     eda_api = CoreManager().get_eda_api(core.name, flags, export_root)
 
     try:
-        backend =_import('build', tool)(eda_api=eda_api)
+        backend =_import('build', tool)(eda_api=eda_api, work_root=work_root)
     except ImportError:
         logger.error('Backend "{}" not found'.format(tool))
         exit(1)
@@ -204,22 +205,22 @@ def sim(args):
     flags = {'flow' : 'sim',
              'tool' : args.sim,
              'testbench' : args.testbench}
-    sim_name = core.get_tool(flags)
-    flags['tool'] = sim_name
+    tool = core.get_tool(flags)
+    flags['tool'] = tool
     export_root = os.path.join(Config().build_root, core.name.sanitized_name, 'src')
-
+    work_root   = os.path.join(Config().build_root, core.name.sanitized_name, 'sim-'+tool)
     eda_api = CoreManager().get_eda_api(core.name, flags, export_root)
 
-    if not sim_name:
+    if not tool:
         logger.error("No simulator was supplied on command line or found in '"+ args.system + "' core description")
         exit(1)
     try:
-        sim = _import('simulator', sim_name)(eda_api=eda_api)
+        sim = _import('simulator', tool)(eda_api=eda_api, work_root=work_root)
     except DependencyError as e:
         logger.error("'" + args.system + "' or any of its dependencies requires '" + e.value + "', but this core was not found")
         exit(1)
     except ImportError:
-        logger.error("Unknown simulator '{}'".format(sim_name))
+        logger.error("Unknown simulator '{}'".format(tool))
         exit(1)
     except RuntimeError as e:
         logger.error(str(e))
