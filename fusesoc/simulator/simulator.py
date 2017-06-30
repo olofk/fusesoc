@@ -1,14 +1,8 @@
-import argparse
-import os
 import logging
 
 from fusesoc.edatool import EdaTool
 
 logger = logging.getLogger(__name__)
-
-class FileAction(argparse.Action):
-    def __call__(self, parser, namespace, values, option_string=None):
-        setattr(namespace, self.dest, [os.path.abspath(values[0])])
 
 class Simulator(EdaTool):
 
