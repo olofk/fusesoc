@@ -31,7 +31,7 @@ REPOS = [('orpsoc-cores',
           'https://github.com/fusesoc/fusesoc-cores',
           "new base library")]
 
-def _get_core(name, has_system=False):
+def _get_core(name):
     core = None
     try:
         core = CoreManager().get_core(Vlnv(name))
@@ -40,10 +40,6 @@ def _get_core(name, has_system=False):
         exit(1)
     except DependencyError as e:
         logger.error("'" + name + "' or any of its dependencies requires '" + e.value + "', but this core was not found")
-        exit(1)
-    if has_system and not core.get_tool({'flow' : 'synth',
-                                         'tool' : None}):
-        logger.error("Unable to find synthesis info for '{}'".format(name))
         exit(1)
     return core
 
@@ -62,43 +58,24 @@ def abort_handler(signal, frame):
 signal.signal(signal.SIGINT, abort_handler)
 
 def build(args):
-    core = _get_core(args.system, True)
+    do_configure = True
+    do_build = not args.setup
+    do_run = False
     flags = {'flow' : 'synth',
              'tool' : None}
-    tool = core.get_tool(flags)
-    flags['tool'] = tool
-    export_root = os.path.join(Config().build_root, core.name.sanitized_name, 'src')
-    work_root   = os.path.join(Config().build_root, core.name.sanitized_name, 'bld-'+tool)
-    eda_api = CoreManager().get_eda_api(core.name, flags, export_root)
-
-    try:
-        backend =_import('build', tool)(eda_api=eda_api, work_root=work_root)
-    except ImportError:
-        logger.error('Backend "{}" not found'.format(tool))
-        exit(1)
-    except RuntimeError as e:
-        logger.error("Failed to build '{}': {}".format(args.system, e))
-        exit(1)
-    try:
-        export_root = os.path.join(Config().build_root, core.name.sanitized_name, 'src')
-        CoreManager().setup(core.name, flags, export=True, export_root=export_root)
-        backend.configure(args.backendargs)
-    except RuntimeError as e:
-        logger.error(str(e))
-        exit(1)
-    print('')
-    try:
-        if not args.setup:
-            backend.build()
-    except RuntimeError as e:
-        logger.error("Failed to build FPGA: " + str(e))
-        exit(1)
+    run_backend('build',
+                do_configure, do_build, do_run,
+                flags, args.system, args.backendargs)
 
 def pgm(args):
-    core = _get_core(args.system, True)
     flags = {'flow' : 'synth',
              'tool' : None}
+    tool_error = "Unable to find synthesis info for '{}'"
+    core = _get_core(args.system)
     tool = core.get_tool(flags)
+    if not tool:
+        logger.error(tool_error.format(system))
+        exit(1)
     try:
         backend =_import('build', tool)()
         backend.pgm(args.backendargs)
@@ -200,56 +177,73 @@ def list_systems(args):
         if core.get_tool({'flow' : 'synth', 'tool' : None}):
             print(str(core.name))
 
-def sim(args):
-    core = _get_core(args.system)
-    flags = {'flow' : 'sim',
-             'tool' : args.sim,
-             'testbench' : args.testbench}
+def run_backend(tool_type, do_configure, do_build, do_run, flags, system, backendargs):
+    if tool_type == 'simulator':
+        tool_type_short = 'sim'
+        tool_error = "No simulator was supplied on command line or found in '{}' core description"
+        build_error = "Failed to build simulation model"
+    else:
+        tool_type_short = 'bld'
+        tool_error = "Unable to find synthesis info for '{}'"
+        build_error = "Failed to build FPGA"
+
+    core = _get_core(system)
     tool = core.get_tool(flags)
     if not tool:
-        logger.error("No simulator was supplied on command line or found in '"+ args.system + "' core description")
+        logger.error(tool_error.format(system))
         exit(1)
     flags['tool'] = tool
     export_root = os.path.join(Config().build_root, core.name.sanitized_name, 'src')
-    work_root   = os.path.join(Config().build_root, core.name.sanitized_name, 'sim-'+tool)
-    eda_api = CoreManager().get_eda_api(core.name, flags, export_root)
+    work_root   = os.path.join(Config().build_root, core.name.sanitized_name, tool_type_short+'-'+tool)
+    try:
+        eda_api = CoreManager().get_eda_api(core.name, flags, export_root)
+    except DependencyError as e:
+        logger.error(e.msg + "\nFailed to resolve dependencies for {}".format(system))
+        exit(1)
 
     try:
-        sim = _import('simulator', tool)(eda_api=eda_api, work_root=work_root)
-    except DependencyError as e:
-        logger.error("'" + args.system + "' or any of its dependencies requires '" + e.value + "', but this core was not found")
-        exit(1)
+        backend = _import(tool_type, tool)(eda_api=eda_api, work_root=work_root)
     except ImportError:
-        logger.error("Unknown simulator '{}'".format(tool))
+        logger.error('Backend "{}" not found'.format(tool))
         exit(1)
     except RuntimeError as e:
         logger.error(str(e))
         exit(1)
-    if not args.keep or not os.path.exists(sim.work_root):
+    if do_configure:
         try:
             export_root = os.path.join(Config().build_root, core.name.sanitized_name, 'src')
             CoreManager().setup(core.name, flags, export=True, export_root=export_root)
-            sim.configure(args.plusargs)
+            backend.configure(backendargs)
             print('')
         except RuntimeError as e:
             logger.error("Failed to configure the system")
             logger.error(str(e))
             exit(1)
-        if args.setup:
-            exit(0)
+    if do_build:
         try:
-            sim.build()
+            backend.build()
         except RuntimeError as e:
-            logger.error("Failed to build simulation model")
-            logger.error(str(e))
+            logger.error(build_error + " : " + str(e))
             exit(1)
-    if not args.build_only:
+
+    if do_run:
         try:
-            sim.run(args.plusargs)
+            backend.run(backendargs)
         except RuntimeError as e:
             logger.error("Failed to run the simulation")
             logger.error(str(e))
             exit(1)
+
+def sim(args):
+    do_configure = not args.keep or not os.path.exists(backend.work_root)
+    do_build = not args.setup
+    do_run   = not args.build_only
+    flags = {'flow' : 'sim',
+             'tool' : args.sim,
+             'testbench' : args.testbench}
+    run_backend('simulator',
+                do_configure, do_build, do_run,
+                flags, args.system, args.backendargs)
 
 def update(args):
     for root in CoreManager().get_cores_root():
@@ -378,7 +372,7 @@ def main():
     parser_sim.add_argument('--dry-run', action='store_true')
     parser_sim.add_argument('--testbench', help='Override default testbench')
     parser_sim.add_argument('system', help='Select a system to simulate') #, choices = Config().get_systems())
-    parser_sim.add_argument('plusargs', nargs=argparse.REMAINDER)
+    parser_sim.add_argument('backendargs', nargs=argparse.REMAINDER)
     parser_sim.set_defaults(func=sim)
 
     # update subparser

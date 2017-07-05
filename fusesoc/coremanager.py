@@ -15,8 +15,9 @@ from fusesoc.core import Core
 logger = logging.getLogger(__name__)
 
 class DependencyError(Exception):
-    def __init__(self, value):
+    def __init__(self, value, msg=""):
         self.value = value
+        self.msg = msg
     def __str__(self):
         return repr(self.value)
 
@@ -107,8 +108,8 @@ class CoreDB(object):
         try:
             transaction = solver.solve(request)
         except SatisfiabilityError as e:
-            msg = "UNSATISFIABLE: {}"
-            raise RuntimeError(msg.format(e.unsat.to_string(pool)))
+            raise DependencyError(top_core.name,
+                                  msg=e.unsat.to_string(pool))
         except NoPackageFound as e:
             raise DependencyError(top_core.name)
 

@@ -7,7 +7,7 @@ def test_sim(capsys):
         sim = None
         testbench = None
         keep = False
-        plusargs = None
+        backendargs = None
         setup = True
         build_only = False
         def __init__(self, system):
