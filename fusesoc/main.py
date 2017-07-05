@@ -206,14 +206,14 @@ def sim(args):
              'tool' : args.sim,
              'testbench' : args.testbench}
     tool = core.get_tool(flags)
+    if not tool:
+        logger.error("No simulator was supplied on command line or found in '"+ args.system + "' core description")
+        exit(1)
     flags['tool'] = tool
     export_root = os.path.join(Config().build_root, core.name.sanitized_name, 'src')
     work_root   = os.path.join(Config().build_root, core.name.sanitized_name, 'sim-'+tool)
     eda_api = CoreManager().get_eda_api(core.name, flags, export_root)
 
-    if not tool:
-        logger.error("No simulator was supplied on command line or found in '"+ args.system + "' core description")
-        exit(1)
     try:
         sim = _import('simulator', tool)(eda_api=eda_api, work_root=work_root)
     except DependencyError as e:
