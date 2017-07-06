@@ -170,5 +170,6 @@ class EdaTool(object):
                                           cwd = self.work_root,
                                           env = _env,
                                           shell=True)
-                except subprocess.CalledProcessError:
-                    raise RuntimeError("'{}' exited with an error code.\nERROR: See stderr for details.".format(cmd))
+                except subprocess.CalledProcessError as e:
+                    msg = "'{}' exited with error code {}"
+                    raise RuntimeError(msg.format(cmd, e.returncode))
