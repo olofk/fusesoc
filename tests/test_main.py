@@ -6,6 +6,7 @@ def test_sim(capsys):
     class Args():
         sim = None
         testbench = None
+        target = None
         keep = False
         backendargs = None
         setup = True

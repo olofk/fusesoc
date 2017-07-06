@@ -62,7 +62,8 @@ def build(args):
     do_build = not args.setup
     do_run = False
     flags = {'flow' : 'synth',
-             'tool' : None}
+             'tool' : None,
+             'target' : args.target}
     run_backend('build',
                 do_configure, do_build, do_run,
                 flags, args.system, args.backendargs)
@@ -231,9 +232,14 @@ def sim(args):
     do_configure = not args.keep or not os.path.exists(backend.work_root)
     do_build = not args.setup
     do_run   = not (args.build_only or args.setup)
+    if args.testbench:
+        logger.warn("--testbench is deprecated. Use --target instead")
+        if not args.target:
+            args.target = args.testbench
+    
     flags = {'flow' : 'sim',
              'tool' : args.sim,
-             'testbench' : args.testbench}
+             'target' : args.target}
     run_backend('simulator',
                 do_configure, do_build, do_run,
                 flags, args.system, args.backendargs)
@@ -318,6 +324,7 @@ def main():
     # build subparser
     parser_build = subparsers.add_parser('build', help='Build an FPGA load module')
     parser_build.add_argument('--setup', action='store_true', help='Only create the project files without running the EDA tool')
+    parser_build.add_argument('--target', help='Override default target')
     parser_build.add_argument('system')
     parser_build.add_argument('backendargs', nargs=argparse.REMAINDER)
     parser_build.set_defaults(func=build)
@@ -363,6 +370,7 @@ def main():
     parser_sim.add_argument('--force', action='store_true', help='Force rebuilding simulation model when directory exists')
     parser_sim.add_argument('--keep', action='store_true', help='Prevent rebuilding simulation model if it exists')
     parser_sim.add_argument('--dry-run', action='store_true')
+    parser_sim.add_argument('--target', help='Override default target')
     parser_sim.add_argument('--testbench', help='Override default testbench')
     parser_sim.add_argument('system', help='Select a system to simulate') #, choices = Config().get_systems())
     parser_sim.add_argument('backendargs', nargs=argparse.REMAINDER)

@@ -193,8 +193,8 @@ class Core:
             return self.verilator.top_module
         if flags['flow'] == 'synth':
             return self.backend.top_module
-        if 'testbench' in flags and flags['testbench']:
-            return flags['testbench']
+        if 'target' in flags and flags['target']:
+            return flags['target']
         else:
             return self.simulator['toplevel']
 
