@@ -112,7 +112,7 @@ class EdaTool(object):
             getattr(self, paramtype)[key] = _value
         self.parsed_args = True
 
-    def _get_fileset_files(self):
+    def _get_fileset_files(self, force_slash=False):
         class File:
             def __init__(self, name, file_type, logical_name):
                 self.name         = name
@@ -123,10 +123,14 @@ class EdaTool(object):
         for f in self.files:
             if f['is_include_file']:
                 _incdir = os.path.relpath(os.path.dirname(f['name']),self.work_root)
+                if force_slash:
+                    _incdir = _incdir.replace('\\', '/')
                 if not _incdir in incdirs:
                     incdirs.append(_incdir)
             else:
                 _name = os.path.relpath(f['name'], self.work_root)
+                if force_slash:
+                    _name = _name.replace('\\', '/')
                 src_files.append(File(_name,
                                       f['file_type'],
                                       f['logical_name']))
