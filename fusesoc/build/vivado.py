@@ -1,4 +1,5 @@
 import os.path
+import platform
 from fusesoc import utils
 
 from fusesoc.build.backend import Backend
@@ -42,7 +43,7 @@ class Vivado(Backend):
     """
     def _write_project_tcl_file(self):
         # Get the synthesis files and files specific to vivado
-        (src, incdirs) = self._get_fileset_files()
+        (src, incdirs) = self._get_fileset_files(force_slash=True)
 
         ip = []             # IP descriptions (xci files)
         constr = []         # Constraints (xdc files)
@@ -123,6 +124,7 @@ class Vivado(Backend):
         utils.Launcher('vivado', ['-mode', 'batch', '-source',
                                   self.name+'.tcl'],
                        cwd = self.work_root,
+                       shell=platform.system() == 'Windows',
                        errormsg = "Failed to build FPGA bitstream").run()
 
         super(Vivado, self).done()
