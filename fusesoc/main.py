@@ -237,7 +237,7 @@ def run_backend(tool_type, do_configure, do_build, do_run, flags, system, backen
 def sim(args):
     do_configure = not args.keep or not os.path.exists(backend.work_root)
     do_build = not args.setup
-    do_run   = not args.build_only
+    do_run   = not (args.build_only or args.setup)
     flags = {'flow' : 'sim',
              'tool' : args.sim,
              'testbench' : args.testbench}
