@@ -25,7 +25,6 @@ def test_name_version_vlnv():
     ('', '', 'uart16550', '1.5', 0)
 
 #VLNV tests with revision
-@pytest.mark.xfail
 def test_full_vlnv_revision():
     assert vlnv_tuple(Vlnv("librecores.org:peripherals:uart16550:1.5-r5")) == \
     ('librecores.org', 'peripherals', 'uart16550', '1.5', 5)

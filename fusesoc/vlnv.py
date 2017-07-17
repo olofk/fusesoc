@@ -59,7 +59,12 @@ class Vlnv(object):
             self.vendor  = vlnv_parts[0]
             self.library = vlnv_parts[1]
             self.name    = vlnv_parts[2]
-            self.version = vlnv_parts[3]
+            sl = vlnv_parts[3].split('-')
+            if len(sl) > 1 and _is_rev(sl[-1]):
+                self.revision = int(sl.pop()[1:])
+                self.version = '-'.join(sl)
+            else:
+                self.version = vlnv_parts[3]
         else:
             raise SyntaxError("Illegal core name '{}'".format(s))
 
