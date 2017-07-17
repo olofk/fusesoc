@@ -1,0 +1,24 @@
+From faa1d73b006878c7d2e863b7c2b8bc2478bfd2e0 Mon Sep 17 00:00:00 2001
+From: Olof Kindgren <olof.kindgren@gmail.com>
+Date: Mon, 17 Jul 2017 23:06:16 +0200
+Subject: [PATCH] testpatch.diff
+
+---
+ vlog_functions.v | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/vlog_functions.v b/vlog_functions.v
+index 52b5818..55ff587 100644
+--- a/vlog_functions.v
++++ b/vlog_functions.v
+@@ -16,6 +16,7 @@
+  *  OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+  */
+ 
++//I have been patched
+ module vlog_functions;
+    
+    task progress_bar;
+-- 
+2.13.0
+

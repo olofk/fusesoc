@@ -103,7 +103,12 @@ class Core:
             self.plusargs = Plusargs(dict(config.items('plusargs')))
         if config.has_section('provider'):
             items    = dict(config.items('provider'))
-
+            patch_root = os.path.join(self.core_root, 'patches')
+            patches = self.main.patches
+            if os.path.exists(patch_root):
+                for p in sorted(os.listdir(patch_root)):
+                    patches.append(os.path.join('patches', p))
+            items['patches'] = patches
             provider_name = items.get('name')
             if provider_name is None:
                 raise RuntimeError('Missing "name" in section [provider]')
@@ -230,8 +235,7 @@ class Core:
 
     def setup(self):
         if self.provider:
-            if self.provider.fetch():
-                self.patch(self.files_root)
+            self.provider.fetch()
 
     def export(self, dst_dir, flags={}):
         if os.path.exists(dst_dir):
@@ -261,28 +265,6 @@ class Core:
                 else:
                     raise RuntimeError('Cannot find %s in :\n\t%s\n\t%s'
                                   % (f, self.files_root, self.core_root))
-
-    def patch(self, dst_dir):
-        #FIXME: Use native python patch instead
-        patch_root = os.path.join(self.core_root, 'patches')
-        patches = self.main.patches
-        if os.path.exists(patch_root):
-            for p in sorted(os.listdir(patch_root)):
-                patches.append(os.path.join('patches', p))
-
-        for f in patches:
-            patch_file = os.path.abspath(os.path.join(self.core_root, f))
-            if os.path.isfile(patch_file):
-                logger.debug("  applying patch file: " + patch_file + "\n" +
-                             "                   to: " + os.path.join(dst_dir))
-                try:
-                    utils.Launcher('git', ['apply', '--unsafe-paths',
-                                     '--directory', os.path.join(dst_dir),
-                                     patch_file]).run()
-                except OSError:
-                    print("Error: Failed to call external command 'patch'")
-                    return False
-        return True
 
     def _merge_system_file(self, system_file, config):
         def _replace(sec, src=None, dst=None):

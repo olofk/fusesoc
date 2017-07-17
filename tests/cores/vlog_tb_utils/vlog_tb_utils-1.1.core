@@ -2,6 +2,7 @@ CAPI=1
 [main]
 name = ::vlog_tb_utils:1.1
 description = Verilog test bench utilities
+patches = files/0001-testpatch.patch
 
 [fileset tb_files]
 files =
