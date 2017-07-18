@@ -181,6 +181,7 @@ class CoreManager(object):
         return c
 
     def get_eda_api(self, vlnv, flags, export_root=None):
+        logger.debug("Building EDA API")
         def merge_dict(d1, d2):
             for key, value in d2.items():
                 if key in d1:
@@ -198,6 +199,7 @@ class CoreManager(object):
 
         _flags = flags.copy()
         for core in cores:
+            logger.debug("Collecting EDA API parameters from {}".format(str(core.name)))
             _flags['is_toplevel'] = (core.name == vlnv)
 
             #Extract parameters
