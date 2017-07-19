@@ -106,7 +106,7 @@ class Verilator(Simulator):
                            stdout = open(_s.format('out'),'w')).run()
 
     def run(self, args):
-        fusesoc_cli_parser = (self.tool_options['cli_parser'] == 'fusesoc')
+        fusesoc_cli_parser = ('cli_parser' in self.tool_options and self.tool_options['cli_parser'] == 'fusesoc')
 
         super(Verilator, self).run(args)
 
