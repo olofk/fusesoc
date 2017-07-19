@@ -214,7 +214,7 @@ class Core:
         if section:
 
             #Special case to pick up verilator libs from all dependencies
-            if flags['tool'] is 'verilator':
+            if flags['tool'] == 'verilator':
                 options['libs'] = section.libs
             #Otherwise, only care about options from toplevel core
             if flags['is_toplevel']:
