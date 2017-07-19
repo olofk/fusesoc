@@ -47,16 +47,6 @@ class Launcher:
     def __str__(self):
         return ' '.join([self.cmd] + self.args)
 
-def find_verilator():
-    verilator_root = os.getenv('VERILATOR_ROOT')
-    if verilator_root is None:
-        output = which('verilator')
-        if not output:
-            return None
-        return output[0]
-
-    return os.path.join(verilator_root,'bin','verilator')
-
 #Copied from http://twistedmatrix.com/trac/browser/tags/releases/twisted-8.2.0/twisted/python/procutils.py
 
 #Permission is hereby granted, free of charge, to any person obtaining
