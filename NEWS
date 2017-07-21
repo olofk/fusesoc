@@ -1,3 +1,31 @@
+1.7 2017-07-21 Olof Kindgren <olof.kindgren@gmail.com>
+======================================================
+* Exit with error code when synthesis fails
+* Add --version command-line switch
+* Improve logging
+* Support setting verilog defines in quartus from cli
+* Support multiple top-levels in isim
+* Removed unmaintained submodule provider
+* Remove broken system-info command
+* Allow IP-XACT files in subdirectories
+* Add UCF as valid file type
+* Correctly escape parameters before passing to tools
+* Rewrite icarus backend to make reruns easier
+* Deprecate verilator define_files
+* Separate frontend and backend through EDA API
+* Report return code from scripts on failure
+* Fix Windows compatibility for Vivado backend
+* Fix revision parsing of VLNV names
+* vivado: Make our run the default run
+* More robust parsing of core files
+* + improved error handling, bug fixes and refactoring
+
+Contributors:
+Antony Pavlov <antonynpavlov@gmail.com>
+Ben Reynwar <ben@reynwar.net>
+Olof Kindgren <olof.kindgren@gmail.com>
+Philipp Wagner <philipp.wagner@tum.de>
+
 1.6.1 2017-03-21 Olof Kindgren <olof.kindgren@gmail.com>
 ======================================================
 * Add cmdlineargs support for verilator
