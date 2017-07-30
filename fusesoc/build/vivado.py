@@ -155,7 +155,7 @@ class Vivado(Backend):
 """ Template for vivado project tcl file """
 PROJECT_TCL_TEMPLATE = """# Auto-generated project tcl file
 
-create_project -part {part} {design}
+create_project -part "{part}" {design}
 
 set_property "simulator_language" "Mixed" [current_project]
 

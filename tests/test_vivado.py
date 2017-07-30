@@ -2,7 +2,7 @@ import difflib
 import os
 import pytest
 
-from test_common import compare_file, get_core, get_synth, vlogdefines, vlogparams
+from test_common import compare_files, get_core, get_synth, vlogdefines, vlogparams
 
 tests_dir = os.path.dirname(__file__)
 params = vlogparams + vlogdefines
@@ -17,10 +17,10 @@ def test_vivado_configure():
 
     tcl_file = core.name.sanitized_name + '.tcl'
 
-    assert '' == compare_file(ref_dir, work_root, tcl_file)
+    compare_files(ref_dir, work_root, [tcl_file])
 
 def test_vivado_build():
     os.environ['PATH'] = os.path.join(tests_dir, 'mock_commands')+':'+os.environ['PATH']
     backend.build()
 
-    assert '' == compare_file(ref_dir, work_root, 'run.cmd')
+    compare_files(ref_dir, work_root, ['run.cmd'])

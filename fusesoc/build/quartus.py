@@ -45,7 +45,7 @@ qsys:"""
 --project-directory={src_dir} \
 --output-directory={dst_dir} \
 --report-file=bsf:{dst_dir}/{name}.bsf \
---system-info=DEVICE_FAMILY={family} \
+--system-info=DEVICE_FAMILY="{family}" \
 --system-info=DEVICE={device} \
 --component-file={src_dir}/{name}.qsys
 	ip-generate \
@@ -57,7 +57,7 @@ qsys:"""
 --report-file=qip:{dst_dir}/{name}.qip \
 --report-file=cmp:{dst_dir}/{name}.cmp \
 --report-file=svd \
---system-info=DEVICE_FAMILY={family} \
+--system-info=DEVICE_FAMILY="{family}" \
 --system-info=DEVICE={device} \
 --component-file={src_dir}/{name}.qsys \
 --language=VERILOG
@@ -70,10 +70,16 @@ qsys:"""
                 raise RuntimeError("Missing required option '{}'".format(i))
 
         with open(os.path.join(self.work_root, self.name+'.tcl'), 'w') as tcl_file:
-            tcl_file.write("project_new " + self.name + " -overwrite\n")
-            tcl_file.write("set_global_assignment -name FAMILY " + self.tool_options['family'] + '\n')
-            tcl_file.write("set_global_assignment -name DEVICE " + self.tool_options['device'] + '\n')
-            tcl_file.write("set_global_assignment -name TOP_LEVEL_ENTITY " + self.toplevel + '\n')
+            s = """project_new {} -overwrite
+set_global_assignment -name FAMILY "{}"
+set_global_assignment -name DEVICE {}
+set_global_assignment -name TOP_LEVEL_ENTITY {}
+"""
+
+            tcl_file.write(s.format(self.name,
+                                    self.tool_options['family'],
+                                    self.tool_options['device'],
+                                    self.toplevel))
 
             for key, value in self.vlogparam.items():
                 tcl_file.write("set_parameter -name {} {}\n".format(key, self._param_value_str(value)))

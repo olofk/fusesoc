@@ -220,7 +220,11 @@ class Core:
             if flags['is_toplevel']:
                 for member in section._members:
                     if hasattr(section, member) and getattr(section, member) and not member == 'depend':
-                        options[member] = getattr(section, member)
+                        #Strip quoted strings
+                        _member = getattr(section, member)
+                        if (type(_member) == str) and _member.startswith('"') and _member.endswith('"'):
+                            _member = _member[1:-1]
+                        options[member] = _member
         return options
 
     def get_vpi(self, flags):

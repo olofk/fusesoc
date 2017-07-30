@@ -10,6 +10,19 @@ def compare_file(ref_dir, work_root, name):
         diff = ''.join(difflib.unified_diff(f1.readlines(), f2.readlines()))
         return diff
 
+def compare_files(ref_dir, work_root, files):
+    import difflib
+    import os
+
+    for f in files:
+        reference_file = os.path.join(ref_dir, f)
+        generated_file = os.path.join(work_root, f)
+
+        assert os.path.exists(generated_file)
+
+        with open(reference_file) as fref, open(generated_file) as fgen:
+            assert fref.read() == fgen.read(), f
+
 def get_core(core):
     import os
     from fusesoc.config import Config
