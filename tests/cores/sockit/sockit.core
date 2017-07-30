@@ -1,6 +1,6 @@
 CAPI=1
 [main]
-name = sockit
+name = sockit-1.0
 description = "Arrow/Terasic SoCKit board"
 backend = quartus
 depend =

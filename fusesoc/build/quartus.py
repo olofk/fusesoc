@@ -69,14 +69,14 @@ qsys:"""
             if not i in self.tool_options:
                 raise RuntimeError("Missing required option '{}'".format(i))
 
-        with open(os.path.join(self.work_root, self.name+'.tcl'), 'w') as tcl_file:
+        with open(os.path.join(self.work_root, self.name.replace('.', '_')+'.tcl'), 'w') as tcl_file:
             s = """project_new {} -overwrite
 set_global_assignment -name FAMILY "{}"
 set_global_assignment -name DEVICE {}
 set_global_assignment -name TOP_LEVEL_ENTITY {}
 """
 
-            tcl_file.write(s.format(self.name,
+            tcl_file.write(s.format(self.name.replace('.', '_'),
                                     self.tool_options['family'],
                                     self.tool_options['device'],
                                     self.toplevel))
@@ -149,7 +149,7 @@ set_global_assignment -name TOP_LEVEL_ENTITY {}
             else:
                 quartus_options = ""
             config_mk.write(self.CONFIG_MK_TEMPLATE.format(
-                design_name     = self.name,
+                design_name     = self.name.replace('.', '_'),
                 quartus_options = quartus_options))
             for qsys_file in qsys_files:
                 config_mk.write(self.QSYS_TEMPLATE.format(
@@ -170,5 +170,5 @@ set_global_assignment -name TOP_LEVEL_ENTITY {}
         args = ['--mode=jtag']
         args += remaining
         args += ['-o']
-        args += ['p;' + self.name + '.sof']
+        args += ['p;' + self.name.replace('.', '_') + '.sof']
         utils.Launcher('quartus_pgm', args, cwd=self.work_root).run()

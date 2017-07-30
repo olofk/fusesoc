@@ -2,7 +2,7 @@ import difflib
 import os
 import pytest
 
-from test_common import get_core, get_synth, vlogdefines, vlogparams
+from test_common import compare_files, get_core, get_synth, vlogdefines, vlogparams
 
 tests_dir = os.path.dirname(__file__)
 core = get_core("sockit")
@@ -14,14 +14,12 @@ def test_quartus_configure():
 
     backend.configure(params)
 
-    tcl_file = core.name.sanitized_name + '.tcl'
     ref_dir = os.path.join(tests_dir, __name__)
 
-    for f in ['config.mk',
-              'Makefile',
-              'sockit_0.tcl']:
-        with open(os.path.join(ref_dir, f)) as fref, open(os.path.join(work_root, f)) as fgen:
-            assert fref.read() == fgen.read(), f
+    files = ['config.mk',
+             'Makefile',
+             'sockit_1_0.tcl']
+    compare_files(ref_dir, work_root, files)
 
 def test_quartus_build():
     os.environ['PATH'] = os.path.join(tests_dir, 'mock_commands')+':'+os.environ['PATH']

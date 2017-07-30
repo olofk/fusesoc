@@ -1,4 +1,4 @@
-project_new sockit_0 -overwrite
+project_new sockit_1_0 -overwrite
 set_global_assignment -name FAMILY "Cyclone V"
 set_global_assignment -name DEVICE 5CSXFC6D6F31C8ES
 set_global_assignment -name TOP_LEVEL_ENTITY orpsoc_top

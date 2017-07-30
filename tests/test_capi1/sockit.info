@@ -1,5 +1,5 @@
 CORE INFO
-Name                 : ::sockit:0
+Name                 : ::sockit:1.0
 Core root            : /home/olof/.local/share/orpsoc-cores/systems/sockit
 Supported simulators : icarus
 Common dependencies  : >=::filetypes:0 >=::jtag_tap:0 >=::wb_intercon:0 >=::adv_debug_sys:0 >=::mor1kx:0 ::uart16550:1.5 >=::gpio:0 >=::paramtest:0 >=::vga_lcd:0
