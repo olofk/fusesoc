@@ -135,6 +135,9 @@ class Section(object):
         self.warnings = []
 
     def _add_member(self, name, _type, desc):
+        if name in self._members:
+            _s = "{}: the section '{}' is already defined"
+            raise ValueError(_s.format(self.__class__.__name__, name))
         self._members[name] = {'type' : _type, 'desc' : desc}
         setattr(self, name, _type())
 
@@ -172,7 +175,6 @@ class ScriptsSection(Section):
         super(ScriptsSection, self).__init__()
         self._add_member('pre_synth_scripts', StringList, 'Scripts to run before backend synthesis')
         self._add_member('post_impl_scripts', StringList, 'Scripts to run after backend implementation')
-        self._add_member('pre_run_scripts'  , StringList, 'Scripts to run before running simulations')
         self._add_member('pre_build_scripts', StringList, 'Scripts to run before building')
         self._add_member('pre_run_scripts'  , StringList, 'Scripts to run before running simulations')
         self._add_member('post_run_scripts' , StringList, 'Scripts to run after simulations')
