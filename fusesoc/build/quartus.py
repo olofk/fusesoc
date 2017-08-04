@@ -166,7 +166,7 @@ set_global_assignment -name TOP_LEVEL_ENTITY {}
 
         super(Quartus, self).done()
 
-    def pgm(self, remaining):
+    def run(self, remaining):
         args = ['--mode=jtag']
         args += remaining
         args += ['-o']

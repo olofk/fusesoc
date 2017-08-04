@@ -135,7 +135,7 @@ class Vivado(Backend):
     correct FPGA board and then downloads the bitstream. The tcl script is then
     executed in Vivado's batch mode.
     """
-    def pgm(self, remaining):
+    def run(self, remaining):
         tcl_file_name = os.path.join(self.work_root, self.name+"_pgm.tcl")
         self._write_program_tcl_file(tcl_file_name)
         utils.Launcher('vivado', ['-mode', 'batch', '-source', tcl_file_name ],

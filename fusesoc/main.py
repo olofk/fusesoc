@@ -68,23 +68,14 @@ def build(args):
                 flags, args.system, args.backendargs)
 
 def pgm(args):
+    do_configure = False
+    do_build = False
+    do_run = True
     flags = {'flow' : 'synth',
              'tool' : None}
-    tool_error = "Unable to find synthesis info for '{}'"
-    core = _get_core(args.system)
-    tool = core.get_tool(flags)
-    if not tool:
-        logger.error(tool_error.format(system))
-        exit(1)
-    try:
-        backend =_import('build', tool)()
-        backend.pgm(args.backendargs)
-    except ImportError:
-        logger.error('Backend "{}" not found'.format(tool))
-        exit(1)
-    except RuntimeError as e:
-        logger.error("Failed to program the FPGA: " + str(e))
-        exit(1)
+    run_backend('build',
+                do_configure, do_build, do_run,
+                flags, args.system, args.backendargs)
 
 def fetch(args):
     core = _get_core(args.core)
@@ -182,10 +173,12 @@ def run_backend(tool_type, do_configure, do_build, do_run, flags, system, backen
         tool_type_short = 'sim'
         tool_error = "No simulator was supplied on command line or found in '{}' core description"
         build_error = "Failed to build simulation model"
+        run_error   = "Failed to run the simulation"
     else:
         tool_type_short = 'bld'
         tool_error = "Unable to find synthesis info for '{}'"
         build_error = "Failed to build FPGA"
+        run_error   = "Failed to program the FPGA"
 
     core = _get_core(system)
     tool = core.get_tool(flags)
@@ -230,7 +223,7 @@ def run_backend(tool_type, do_configure, do_build, do_run, flags, system, backen
         try:
             backend.run(backendargs)
         except RuntimeError as e:
-            logger.error("Failed to run the simulation")
+            logger.error(run_error + " : " + str(e))
             logger.error(str(e))
             exit(1)
 

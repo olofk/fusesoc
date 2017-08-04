@@ -93,7 +93,7 @@ quit
                            errormsg = "Failed to make FPGA load module").run()
         super(Ise, self).done()
 
-    def pgm(self, remaining):
+    def run(self, remaining):
         pgm_file_name = os.path.join(self.work_root, self.name+'.pgm')
         self._write_pgm_file(pgm_file_name)
         utils.Launcher('impact', ['-batch', pgm_file_name],

@@ -27,4 +27,4 @@ def test_quartus_build():
 
 def test_quartus_pgm():
     os.environ['PATH'] = os.path.join(tests_dir, 'mock_commands')+':'+os.environ['PATH']
-    backend.pgm([])
+    backend.run([])
