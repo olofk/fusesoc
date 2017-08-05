@@ -38,9 +38,11 @@ def test_core_parsing():
     assert core.name == Vlnv("::nomain:0")
 
     from fusesoc.core import Core
-    with pytest.raises(SyntaxError) as e:
-        core = Core("tests/cores/misc/duplicateoptions.core")
-    assert "option 'file_type' in section 'fileset dummy' already exists" in str(e.value)
+    import sys
+    if sys.version_info[0] > 2:
+        with pytest.raises(SyntaxError) as e:
+            core = Core("tests/cores/misc/duplicateoptions.core")
+        assert "option 'file_type' in section 'fileset dummy' already exists" in str(e.value)
 
 def test_get_scripts():
     import pprint
