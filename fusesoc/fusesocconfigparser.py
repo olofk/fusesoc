@@ -35,6 +35,8 @@ class FusesocConfigParser(configparser.SafeConfigParser):
             raise SyntaxError(e.message)
         except configparser.DuplicateSectionError as e:
             raise SyntaxError(e.message)
+        except configparser.DuplicateOptionError as e:
+            raise SyntaxError(e.message)
 
     def get_section(self, section):
         if self.has_section(section):

@@ -1,0 +1,5 @@
+CAPI=1
+[fileset dummy]
+files = a b c
+file_type = verilogSource
+file_type = vhdlSource
