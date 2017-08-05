@@ -32,6 +32,11 @@ def test_core_info():
         ref_info = [x for x in f.readlines() if not 'Core root' in x]
     assert '' == ''.join(difflib.unified_diff(ref_info, gen_info))
 
+def test_core_parsing():
+    from fusesoc.vlnv import Vlnv
+    core = get_core("nomain")
+    assert core.name == Vlnv("::nomain:0")
+
 def test_get_scripts():
     import pprint
     flag_combos = [{'flow' : 'sim', 'is_toplevel' : False},

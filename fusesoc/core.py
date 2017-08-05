@@ -82,6 +82,8 @@ class Core:
             else:
                 setattr(self, s.TAG, s)
 
+        if not self.main:
+            self.main = section.MainSection()
         if self.main.name:
             self.name = Vlnv(self.main.name)
         else:
