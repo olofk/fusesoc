@@ -87,11 +87,14 @@ class Vivado(Backend):
             extras += "set_param project.enableVHDL2008 1\n"
 
         parameters = ""
-        for key, value in self.vlogparam.items():
-            parameters += "set_property generic {{{key}={value}}} [get_filesets sources_1]\n".format(key=key, value=self._param_value_str(value))
+
+        if len(self.vlogparam.items()) > 0:
+            generics = " ".join(k+"="+self._param_value_str(v) for k,v in self.vlogparam.items())
+            parameters += "set_property generic {"+generics+"} [get_filesets sources_1]\n"
 
         if len(self.vlogdefine.items()) > 0:
-            parameters += "set_property verilog_define \"{}\" [get_filesets sources_1]\n".format(" ".join(k+"="+self._param_value_str(v) for k,v in self.vlogdefine.items()))
+            defines = " ".join(k+"="+self._param_value_str(v) for k,v in self.vlogdefine.items())
+            parameters += "set_property verilog_define \""+defines+"\" [get_filesets sources_1]\n"
 
         if self.toplevel:
             extras += "set_property top "+self.toplevel+" [current_fileset]"
