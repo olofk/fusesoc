@@ -369,7 +369,6 @@ def main():
     parser_sim.add_argument('--build-only', action='store_true', help='Build the simulation binary without running the simulator')
     parser_sim.add_argument('--force', action='store_true', help='Force rebuilding simulation model when directory exists')
     parser_sim.add_argument('--keep', action='store_true', help='Prevent rebuilding simulation model if it exists')
-    parser_sim.add_argument('--dry-run', action='store_true')
     parser_sim.add_argument('--target', help='Override default target')
     parser_sim.add_argument('--testbench', help='Override default testbench')
     parser_sim.add_argument('system', help='Select a system to simulate') #, choices = Config().get_systems())
