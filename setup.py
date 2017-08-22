@@ -42,5 +42,6 @@ setup(
         'pytest>=3.3.0',
         'pyyaml',
         'simplesat>=0.8.0',
+        'Jinja2>=2.8',
     ],
 )

@@ -5,9 +5,41 @@ import subprocess
 import logging
 import sys
 import yaml
+from jinja2 import Environment, PackageLoader
 
 from fusesoc.utils import Launcher
 logger = logging.getLogger(__name__)
+
+# Jinja2 tests and filters, available in all templates
+def jinja_is_verilog_file(f):
+    return f.file_type.startswith('verilogSource')
+
+def jinja_is_system_verilog_file(f):
+    return f.file_type.startswith('systemVerilogSource')
+
+def jinja_is_vhdl_file(f):
+    return f.file_type.startswith('vhdlSource')
+
+def jinja_filter_param_value_str(value, str_quote_style=""):
+    """ Convert a parameter value to string suitable to be passed to an EDA tool
+
+    Rules:
+    - Booleans are represented as 0/1
+    - Strings are either passed through or enclosed in the characters specified
+      in str_quote_style (e.g. '"' or '\\"')
+    - Everything else (including int, float, etc.) are converted using the str()
+      function.
+    """
+    if type(value) == bool:
+        if (value) == True:
+            return '1'
+        else:
+            return '0'
+    elif type(value) == str:
+        return str_quote_style + str(value) + str_quote_style
+    else:
+        return str(value)
+
 
 class FileAction(argparse.Action):
     def __call__(self, parser, namespace, values, option_string=None):
@@ -74,6 +106,17 @@ class EdaTool(object):
         self.generic     = OrderedDict()
         self.cmdlinearg  = OrderedDict()
         self.parsed_args = False
+
+        self.jinja_env = Environment(
+            loader = PackageLoader(__package__, 'templates'),
+            trim_blocks = True,
+            lstrip_blocks = True,
+        )
+        self.jinja_env.tests['verilog_file'] = jinja_is_verilog_file
+        self.jinja_env.tests['system_verilog_file'] = jinja_is_system_verilog_file
+        self.jinja_env.tests['vhdl_file'] = jinja_is_vhdl_file
+        self.jinja_env.filters['param_value_str'] = jinja_filter_param_value_str
+
 
     def configure(self, args):
         logger.info("Setting up project")
@@ -212,26 +255,8 @@ class EdaTool(object):
                                       logical_name))
         return (src_files, incdirs)
 
-    """ Convert a parameter value to string suitable to be passed to an EDA tool
-
-    Rules:
-    - Booleans are represented as 0/1
-    - Strings are either passed through or enclosed in the characters specified
-      in str_quote_style (e.g. '"' or '\\"')
-    - Everything else (including int, float, etc.) are converted using the str()
-      function.
-    """
     def _param_value_str(self, param_value, str_quote_style=""):
-
-      if type(param_value) == bool:
-          if (param_value) == True:
-              return '1'
-          else:
-              return '0'
-      elif type(param_value) == str:
-          return str_quote_style+str(param_value)+str_quote_style
-      else:
-          return str(param_value)
+        return jinja_filter_param_value_str(param_value, str_quote_style)
 
     def _run_scripts(self, scripts):
         for script in scripts:
