@@ -1,0 +1,51 @@
+#!SPYGLASS_PROJECT_FILE
+#!VERSION 3.0
+#  -------------------------------------------------------------------
+#  This is a automatically generated project file by fusesoc.
+#  -------------------------------------------------------------------
+
+
+set_option projectwdir .
+set_option language_mode mixed
+set_option designread_enable_synthesis yes
+set_option designread_disable_flatten no
+
+# Make no only FATAL messages return a non-zero exit code, but also ERRORs and
+# WARNINGs
+set_option enable_pass_exit_codes yes
+
+{% for option in tool_options.spyglass_options %}
+set_option {{ option }}
+{% endfor %}
+
+{% for src_file in src_files if src_file|src_file_filter%}
+{{ src_file|src_file_filter }}
+{% endfor %}
+
+{% if vlogparam -%}
+set_option param {
+  {%- for k, v in vlogparam.items() %}{{ k }}={{ v|param_value_str }} {% endfor -%}
+  }
+{%- endif %}
+
+{% if vlogdefine -%}
+set_option define {
+  {%- for k, v in vlogdefine.items() %}{{ k }}={{ v|param_value_str }} {% endfor -%}
+  }
+{%- endif %}
+
+{% if incdirs -%}
+set_option incdir [list {{ incdirs|join(' ') }}]
+{%- endif %}
+
+{% if toplevel -%}
+set_option top {{ toplevel }}
+{%- endif %}
+
+{% if has_systemVerilog -%}
+set_option enableSV09 yes
+{%- endif %}
+
+set_option active_methodology $SPYGLASS_HOME/{{ tool_options.methodology }}
+
+current_methodology $SPYGLASS_HOME/{{ tool_options.methodology }}

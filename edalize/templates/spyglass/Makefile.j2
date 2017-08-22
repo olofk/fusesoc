@@ -1,0 +1,12 @@
+NAME := {{ name }}
+
+run-goals: {% for goal in sanitized_goals %}run-goal-{{ goal }} {% endfor %}
+
+{% for goal in sanitized_goals %}
+run-goal-{{ goal }}:
+	sg_shell -enable_pass_exit_codes -tcl spyglass-run-{{ goal }}.tcl
+
+{% endfor -%}
+
+run-gui:
+	spyglass -project $(NAME).prj
