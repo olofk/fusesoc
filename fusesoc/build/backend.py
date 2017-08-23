@@ -7,8 +7,6 @@ logger = logging.getLogger(__name__)
 
 class Backend(EdaTool):
 
-    TOOL_TYPE = 'bld'
-
     def configure(self, args):
         self.parse_args(args, 'build', ['vlogparam', 'vlogdefine'])
         super(Backend, self).configure(args)

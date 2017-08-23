@@ -18,11 +18,9 @@ class EdaTool(object):
 
     def __init__(self, eda_api, work_root):
         self.name = eda_api['name']
-        self.TOOL_NAME = self.__class__.__name__.lower()
-        self.tool_options = eda_api['tool_options'][self.TOOL_NAME]
+        _tool_name = self.__class__.__name__.lower()
+        self.tool_options = eda_api['tool_options'][_tool_name]
         self.fusesoc_options = eda_api['tool_options']['fusesoc']
-        self.flags = {'tool'   : self.TOOL_NAME,
-                      'flow'   : self.TOOL_TYPE}
 
         self.work_root = work_root
         self.env = os.environ.copy()

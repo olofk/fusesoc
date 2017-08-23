@@ -6,8 +6,6 @@ logger = logging.getLogger(__name__)
 
 class Simulator(EdaTool):
 
-    TOOL_TYPE = 'sim'
-
     def configure(self, args, skip_params = False):
         if not skip_params:
             self.parse_args(args, 'sim', ['plusarg', 'vlogdefine', 'vlogparam', 'cmdlinearg'])
