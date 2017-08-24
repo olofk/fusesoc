@@ -1,9 +1,8 @@
-
 import os.path
 from fusesoc import utils
 import logging
 
-from fusesoc.build.backend import Backend
+from .backend import Backend
 
 logger = logging.getLogger(__name__)
 

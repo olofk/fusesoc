@@ -43,8 +43,8 @@ def _get_core(name):
         exit(1)
     return core
 
-def _import(package, name):
-    module = importlib.import_module('fusesoc.{}.{}'.format(package, name))
+def _import(name):
+    module = importlib.import_module('fusesoc.edatools.{}'.format(name))
     return getattr(module, name.capitalize())
 
 def abort_handler(signal, frame):
@@ -196,7 +196,7 @@ def run_backend(tool_type, do_configure, do_build, do_run, flags, system, backen
         exit(1)
 
     try:
-        backend = _import(tool_type, tool)(eda_api=eda_api, work_root=work_root)
+        backend = _import(tool)(eda_api=eda_api, work_root=work_root)
     except ImportError:
         logger.error('Backend "{}" not found'.format(tool))
         exit(1)

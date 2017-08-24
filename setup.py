@@ -7,8 +7,7 @@ def read(fname):
 setup(
     name = "fusesoc",
     packages=['fusesoc',
-              'fusesoc.build',
-              'fusesoc.simulator',
+              'fusesoc.edatools',
               'fusesoc.provider'],
     use_scm_version = {
         "relative_to": __file__,

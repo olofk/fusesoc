@@ -1,5 +1,5 @@
 import os
-from fusesoc.simulator.simulator import Simulator
+from .simulator import Simulator
 import logging
 from fusesoc.utils import Launcher
 

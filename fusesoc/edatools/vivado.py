@@ -2,7 +2,7 @@ import os.path
 import platform
 from fusesoc import utils
 
-from fusesoc.build.backend import Backend
+from .backend import Backend
 
 """ Vivado Backend
 
