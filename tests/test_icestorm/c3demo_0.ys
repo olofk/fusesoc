@@ -1,3 +1,6 @@
+verilog_defines -Dvlogdefine_bool=1
+verilog_defines -Dvlogdefine_int=42
+verilog_defines -Dvlogdefine_str=hello
 verilog_defaults -push
 verilog_defaults -add -defer
 verilog_defaults -add -I../../../cores/misc

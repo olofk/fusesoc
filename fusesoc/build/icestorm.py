@@ -39,8 +39,7 @@ ARACHNE_PNR_OPTIONS := {arachne_pnr_options}
         (src_files, incdirs) = self._get_fileset_files()
         with open(os.path.join(self.work_root, self.name+'.ys'), 'w') as yosys_file:
             for key, value in self.vlogdefine.items():
-                _define = key+"="+str(value) if value == None else key
-                yosys_file.write("verilog_defines -D{}\n".format(key))
+                yosys_file.write("verilog_defines -D{}={}\n".format(key, self._param_value_str(value)))
 
             yosys_file.write("verilog_defaults -push\n")
             yosys_file.write("verilog_defaults -add -defer\n")
