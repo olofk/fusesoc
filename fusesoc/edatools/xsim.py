@@ -46,9 +46,7 @@ class Xsim(Simulator):
         f2.write('run all\n')
         f2.close()
 
-    def build(self):
-        super(Xsim, self).build()
-
+    def build_main(self):
         #Check if any VPI modules are present and display warning
         if len(self.vpi_modules) > 0:
             modules = [m['name'] for m in self.vpi_modules]

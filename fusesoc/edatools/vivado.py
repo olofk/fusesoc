@@ -121,16 +121,12 @@ class Vivado(Backend):
     This launches the actual build of the vivado project by executing the project
     tcl file in batch mode.
     """
-    def build(self):
-        super(Vivado, self).build()
-
+    def build_main(self):
         utils.Launcher('vivado', ['-mode', 'batch', '-source',
                                   self.name+'.tcl'],
                        cwd = self.work_root,
                        shell=platform.system() == 'Windows',
                        errormsg = "Failed to build FPGA bitstream").run()
-
-        super(Vivado, self).done()
 
     """ Program the FPGA
 

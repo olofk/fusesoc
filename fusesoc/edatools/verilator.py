@@ -87,9 +87,7 @@ class Verilator(Simulator):
                 vc_file           = self.verilator_file,
                 verilator_options = ' '.join(self.tool_options['verilator_options'])))
 
-    def build(self):
-        super(Verilator, self).build()
-
+    def build_main(self):
         logger.info("Building simulation model")
 
         if not os.getenv('VERILATOR_ROOT') and not utils.which('verilator'):

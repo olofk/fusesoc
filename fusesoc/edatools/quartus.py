@@ -158,13 +158,6 @@ set_global_assignment -name TOP_LEVEL_ENTITY {}
                     family  = self.tool_options['family'],
                     device  = self.tool_options['device']))
 
-    def build(self):
-        super(Quartus, self).build()
-
-        utils.Launcher('make', cwd=self.work_root).run()
-
-        super(Quartus, self).done()
-
     def run(self, remaining):
         args = ['--mode=jtag']
         args += remaining

@@ -130,11 +130,12 @@ class Rivierapro(Simulator):
         tcl_main.close()
         self._write_run_tcl_file()
 
-
-    def build(self):
+    def build_pre(self):
         if not os.getenv('ALDEC_PATH'):
             raise RuntimeError("Environment variable ALDEC_PATH was not found. It should be set to Riviera Pro install path. Please source <Riviera Pro install path>/etc/setenv to set it")
-        super(Rivierapro, self).build()
+        super(Rivierapro, self).build_pre()
+
+    def build_main(self):
         args = ['-c', '-do', 'do fusesoc_main.tcl; exit']
         Launcher('vsim', args,
                  cwd      = self.work_root,

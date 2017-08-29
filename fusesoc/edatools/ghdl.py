@@ -9,9 +9,7 @@ class Ghdl(Simulator):
     def configure(self, args):
         super(Ghdl, self).configure(args)
 
-    def build(self):
-        super(Ghdl, self).build()
-
+    def build_main(self):
         (src_files, incdirs) = self._get_fileset_files()
 
         cmd = 'ghdl'

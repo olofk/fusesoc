@@ -1,5 +1,4 @@
 import os.path
-from fusesoc import utils
 
 from .backend import Backend
 class Icestorm(Backend):
@@ -75,10 +74,3 @@ ARACHNE_PNR_OPTIONS := {arachne_pnr_options}
                 target              =  self.name,
                 pcf_file            = pcf_files[0],
                 arachne_pnr_options = ' '.join(self.tool_options['arachne_pnr_options'])))
-
-    def build(self):
-        super(Icestorm, self).build()
-
-        utils.Launcher('make', cwd = self.work_root).run()
-
-        super(Icestorm, self).done()

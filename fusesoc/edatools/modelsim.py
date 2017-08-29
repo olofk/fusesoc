@@ -147,12 +147,13 @@ class Modelsim(Simulator):
         tcl_main.close()
         self._write_run_tcl_file()
 
-
-    def build(self):
+    def build_pre(self):
         self.model_tech = os.getenv('MODEL_TECH')
         if not self.model_tech:
             raise RuntimeError("Environment variable MODEL_TECH was not found. It should be set to <modelsim install path>/bin")
-        super(Modelsim, self).build()
+        super(Modelsim, self).build_pre()
+
+    def build_main(self):
         args = ['-c', '-do', 'do fusesoc_main.tcl; exit']
         Launcher(self.model_tech+'/vsim', args,
                  cwd      = self.work_root,

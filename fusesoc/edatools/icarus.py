@@ -81,13 +81,6 @@ clean_{name}:
                                                      incs = ' '.join(_incs),
                                                      srcs = ' '.join(_srcs)))
 
-    def build(self):
-        super(Icarus, self).build()
-
-        Launcher('make',
-                 cwd=self.work_root,
-                 stdout=open(os.path.join(self.work_root, 'build.log'),'w')).run()
-
     def run(self, args):
         super(Icarus, self).run(args)
 

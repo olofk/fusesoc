@@ -85,13 +85,10 @@ quit
         tcl_file.write(self.TCL_FUNCTIONS)
         tcl_file.close()
 
-    def build(self):
-        super(Ise, self).build()
-
+    def build_main(self):
         utils.Launcher('xtclsh', [os.path.join(self.work_root, self.name+'.tcl')],
                            cwd = self.work_root,
                            errormsg = "Failed to make FPGA load module").run()
-        super(Ise, self).done()
 
     def run(self, remaining):
         pgm_file_name = os.path.join(self.work_root, self.name+'.pgm')

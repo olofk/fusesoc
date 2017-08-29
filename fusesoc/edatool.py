@@ -5,6 +5,7 @@ import shutil
 import subprocess
 import logging
 
+from fusesoc.utils import Launcher
 logger = logging.getLogger(__name__)
 
 class FileAction(argparse.Action):
@@ -50,8 +51,20 @@ class EdaTool(object):
             os.makedirs(self.work_root)
 
     def build(self):
+        self.build_pre()
+        self.build_main()
+        self.build_post()
+
+    def build_pre(self):
         if 'pre_build_scripts' in self.fusesoc_options:
             self._run_scripts(self.fusesoc_options['pre_build_scripts'])
+
+    def build_main(self):
+        Launcher('make', cwd=self.work_root).run()
+
+    def build_post(self):
+        if 'post_build_scripts' in self.fusesoc_options:
+            self._run_scripts(self.fusesoc_options['post_build_scripts'])
 
     def parse_args(self, args, prog, paramtypes):
         if self.parsed_args:
