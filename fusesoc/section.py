@@ -7,6 +7,7 @@ logger = logging.getLogger(__name__)
 
 class File(object):
     FILE_TYPES = [
+        'PCF',
         'QIP',
         'SDC',
         'UCF',
