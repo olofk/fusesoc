@@ -11,6 +11,7 @@ def test_sim(capsys):
         backendargs = None
         setup = True
         build_only = False
+        no_export = False
         def __init__(self, system):
             self.system = system
 

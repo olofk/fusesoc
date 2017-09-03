@@ -65,6 +65,7 @@ def build(args):
              'tool' : None,
              'target' : args.target}
     run_backend('build',
+                not args.no_export,
                 do_configure, do_build, do_run,
                 flags, args.system, args.backendargs)
 
@@ -169,7 +170,7 @@ def list_systems(args):
         if core.get_tool({'flow' : 'synth', 'tool' : None}):
             print(str(core.name))
 
-def run_backend(tool_type, do_configure, do_build, do_run, flags, system, backendargs):
+def run_backend(tool_type, export, do_configure, do_build, do_run, flags, system, backendargs):
     if tool_type == 'simulator':
         tool_type_short = 'sim'
         tool_error = "No simulator was supplied on command line or found in '{}' core description"
@@ -187,7 +188,10 @@ def run_backend(tool_type, do_configure, do_build, do_run, flags, system, backen
         logger.error(tool_error.format(system))
         exit(1)
     flags['tool'] = tool
-    export_root = os.path.join(Config().build_root, core.name.sanitized_name, 'src')
+    if export:
+        export_root = os.path.join(Config().build_root, core.name.sanitized_name, 'src')
+    else:
+        export_root = None
     work_root   = os.path.join(Config().build_root, core.name.sanitized_name, tool_type_short+'-'+tool)
     try:
         eda_api = CoreManager().get_eda_api(core.name, flags, export_root)
@@ -205,8 +209,7 @@ def run_backend(tool_type, do_configure, do_build, do_run, flags, system, backen
         exit(1)
     if do_configure:
         try:
-            export_root = os.path.join(Config().build_root, core.name.sanitized_name, 'src')
-            CoreManager().setup(core.name, flags, export=True, export_root=export_root)
+            CoreManager().setup(core.name, flags, export=export, export_root=export_root)
             backend.configure(backendargs)
             print('')
         except RuntimeError as e:
@@ -241,6 +244,7 @@ def sim(args):
              'tool' : args.sim,
              'target' : args.target}
     run_backend('simulator',
+                not args.no_export,
                 do_configure, do_build, do_run,
                 flags, args.system, args.backendargs)
 
@@ -323,6 +327,7 @@ def main():
 
     # build subparser
     parser_build = subparsers.add_parser('build', help='Build an FPGA load module')
+    parser_build.add_argument('--no-export', action='store_true', help='Reference source files from their current location instead of exporting to a build tree')
     parser_build.add_argument('--setup', action='store_true', help='Only create the project files without running the EDA tool')
     parser_build.add_argument('--target', help='Override default target')
     parser_build.add_argument('system')
@@ -364,6 +369,7 @@ def main():
 
     # sim subparser
     parser_sim = subparsers.add_parser('sim', help='Setup and run a simulation')
+    parser_sim.add_argument('--no-export', action='store_true', help='Reference source files from their current location instead of exporting to a build tree')
     parser_sim.add_argument('--sim', help='Override the simulator settings from the system file')
     parser_sim.add_argument('--setup', action='store_true', help='Only create the project files without running the EDA tool')
     parser_sim.add_argument('--build-only', action='store_true', help='Build the simulation binary without running the simulator')
