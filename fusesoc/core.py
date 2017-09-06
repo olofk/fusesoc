@@ -137,6 +137,7 @@ class Core:
             return 'local'
 
     def get_depends(self, flags={}):
+        self._debug("Getting dependencies for flags {}".format(str(flags)))
         _depends = self.depend
         try:
             _depends += getattr(self, flags['tool']).depend
@@ -159,11 +160,13 @@ class Core:
         return files
 
     def get_parameters(self, flags={}):
+        self._debug("Getting parameters for flags '{}'".format(str(flags)))
         parameters = []
         for k, v in self.parameter.items():
             if (v.scope == 'public') or flags['is_toplevel']:
                 v.name = k
                 parameters.append(v)
+        self._debug("Found parameters {}".format(parameters))
         return parameters
 
     def get_scripts(self, flags):
@@ -189,27 +192,34 @@ class Core:
         return scripts
 
     def get_toplevel(self, flags={}):
+        self._debug("Getting toplevel for flags {}".format(str(flags)))
         if flags['tool'] == 'verilator':
-            return self.verilator.top_module
-        if flags['flow'] == 'synth':
-            return self.backend.top_module
-        if 'target' in flags and flags['target']:
-            return flags['target']
+            toplevel = self.verilator.top_module
+        elif flags['flow'] == 'synth':
+            toplevel = self.backend.top_module
+        elif 'target' in flags and flags['target']:
+            toplevel = flags['target']
         else:
-            return self.simulator['toplevel']
+            toplevel = self.simulator['toplevel']
+        self._debug("Matched toplevel {}".format(toplevel))
+        return toplevel
 
     def get_tool(self, flags):
+        self._debug("Getting tool for flags {}".format(str(flags)))
+        tool = None
         if flags['tool']:
-            return flags['tool']
+            tool =  flags['tool']
         elif flags['flow'] == 'sim':
             if len(self.simulators) > 0:
-                return self.simulators[0]
+                tool = self.simulators[0]
         elif flags['flow'] == 'synth':
             if hasattr(self.main, 'backend'):
-                return self.main.backend
-        return None
+                tool = self.main.backend
+        self._debug(" Matched tool {}".format(tool))
+        return tool
 
     def get_tool_options(self, flags):
+        self._debug("Getting tool options for flags {}".format(str(flags)))
         options = {}
         section = getattr(self, flags['tool'])
 
@@ -227,9 +237,11 @@ class Core:
                         if (type(_member) == str) and _member.startswith('"') and _member.endswith('"'):
                             _member = _member[1:-1]
                         options[member] = _member
+        self._debug("Found tool options {}".format(str(options)))
         return options
 
     def get_vpi(self, flags):
+        self._debug("Getting VPI libraries for flags {}".format(flags))
         vpi = []
         if self.vpi:
             vpi.append({'name'         : self.sanitized_name,
@@ -237,6 +249,7 @@ class Core:
                         'include_dirs' : self.vpi.include_dirs,
                         'libs'         : [l[2:] for l in self.vpi.libs],
             })
+        self._debug(" Matched VPI libraries {}".format([v['name'] for v in vpi]))
         return vpi
 
     def setup(self):
@@ -254,6 +267,8 @@ class Core:
         for section in self.get_scripts(flags).values():
             for script in section:
                 src_files += script.keys()
+
+        self._debug("Exporting {}".format(str(src_files)))
 
         dirs = list(set(map(os.path.dirname,src_files)))
         for d in dirs:
@@ -386,6 +401,9 @@ class Core:
                                           usage = ['verilator'],
                                           private = True))
             self.export_files += [f.name for f in _files]
+
+    def _debug(self, msg):
+        logger.debug("{} : {}".format(str(self.name), msg))
 
     def _parse_component(self, component_file):
         component_dir = os.path.dirname(component_file)
