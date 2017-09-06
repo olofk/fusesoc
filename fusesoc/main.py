@@ -198,7 +198,9 @@ def run_backend(tool_type, export, do_configure, do_build, do_run, flags, system
     except DependencyError as e:
         logger.error(e.msg + "\nFailed to resolve dependencies for {}".format(system))
         exit(1)
-
+    except SyntaxError as e:
+        logger.error(e.msg)
+        exit(1)
     try:
         backend = _import(tool)(eda_api=eda_api, work_root=work_root)
     except ImportError:
