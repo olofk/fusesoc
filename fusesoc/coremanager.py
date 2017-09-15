@@ -244,6 +244,7 @@ class CoreManager(object):
 
         top_core = cores[-1]
         return {
+            'version'      : '0.1',
             'files'        : files,
             'name'         : top_core.sanitized_name,
             'parameters'   : parameters,
