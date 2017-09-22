@@ -61,11 +61,9 @@ def build(args):
     do_configure = True
     do_build = not args.setup
     do_run = False
-    flags = {'flow' : 'synth',
-             'tool' : None,
-             'target' : args.target}
-    run_backend('build',
-                not args.no_export,
+    flags = {'target' : 'synth',
+             'tool' : None,}
+    run_backend(not args.no_export,
                 do_configure, do_build, do_run,
                 flags, args.system, args.backendargs)
 
@@ -73,7 +71,7 @@ def pgm(args):
     do_configure = False
     do_build = False
     do_run = True
-    flags = {'flow' : 'synth',
+    flags = {'target' : 'synth',
              'tool' : None}
     run_backend('build',
                 do_configure, do_build, do_run,
@@ -167,21 +165,11 @@ def core_info(args):
 def list_systems(args):
     print("Available systems:")
     for core in CoreManager().get_cores().values():
-        if core.get_tool({'flow' : 'synth', 'tool' : None}):
+        if core.get_tool({'target' : 'synth', 'tool' : None}):
             print(str(core.name))
 
-def run_backend(tool_type, export, do_configure, do_build, do_run, flags, system, backendargs):
-    if tool_type == 'simulator':
-        tool_type_short = 'sim'
-        tool_error = "No simulator was supplied on command line or found in '{}' core description"
-        build_error = "Failed to build simulation model"
-        run_error   = "Failed to run the simulation"
-    else:
-        tool_type_short = 'bld'
-        tool_error = "Unable to find synthesis info for '{}'"
-        build_error = "Failed to build FPGA"
-        run_error   = "Failed to program the FPGA"
-
+def run_backend(export, do_configure, do_build, do_run, flags, system, backendargs):
+    tool_error = "No tool was supplied on command line or found in '{}' core description"
     core = _get_core(system)
     tool = core.get_tool(flags)
     if not tool:
@@ -192,7 +180,9 @@ def run_backend(tool_type, export, do_configure, do_build, do_run, flags, system
         export_root = os.path.join(Config().build_root, core.name.sanitized_name, 'src')
     else:
         export_root = None
-    work_root   = os.path.join(Config().build_root, core.name.sanitized_name, tool_type_short+'-'+tool)
+    work_root   = os.path.join(Config().build_root,
+                               core.name.sanitized_name,
+                               core.get_work_root(flags))
     try:
         eda_api = CoreManager().get_eda_api(core.name, flags, export_root)
     except DependencyError as e:
@@ -222,31 +212,29 @@ def run_backend(tool_type, export, do_configure, do_build, do_run, flags, system
         try:
             backend.build()
         except RuntimeError as e:
-            logger.error(build_error + " : " + str(e))
+            logger.error("Failed to build {} : {}".format(str(core.name),
+                                                          str(e)))
             exit(1)
 
     if do_run:
         try:
             backend.run(backendargs)
         except RuntimeError as e:
-            logger.error(run_error + " : " + str(e))
-            logger.error(str(e))
+            logger.error("Failed to run {} : {}".format(str(core.name),
+                                                        str(e)))
             exit(1)
 
 def sim(args):
     do_configure = not args.keep or not os.path.exists(backend.work_root)
     do_build = not args.setup
     do_run   = not (args.build_only or args.setup)
-    if args.testbench:
-        logger.warn("--testbench is deprecated. Use --target instead")
-        if not args.target:
-            args.target = args.testbench
     
     flags = {'flow' : 'sim',
              'tool' : args.sim,
-             'target' : args.target}
-    run_backend('simulator',
-                not args.no_export,
+             'target' : 'sim',
+             'testbench' : args.testbench
+    }
+    run_backend(not args.no_export,
                 do_configure, do_build, do_run,
                 flags, args.system, args.backendargs)
 

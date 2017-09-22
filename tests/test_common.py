@@ -44,7 +44,7 @@ def get_sim(sim, core, export=False):
     from fusesoc.config import Config
     from fusesoc.main import _import
 
-    flags = {'flow' : 'sim',
+    flags = {'target' : 'sim',
              'tool' : sim}
 
     eda_api = CoreManager().get_eda_api(core.name, flags)
@@ -60,7 +60,7 @@ def get_synth(tool, core, export=False):
     from fusesoc.coremanager import CoreManager
     from fusesoc.main import _import
 
-    flags = {'flow' : 'synth',
+    flags = {'target' : 'synth',
              'tool' : tool}
 
     eda_api = CoreManager().get_eda_api(core.name, flags)

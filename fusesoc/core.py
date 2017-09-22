@@ -147,11 +147,7 @@ class Core:
 
     def get_files(self, flags={}):
         files = []
-        if flags['tool'] in ['ghdl', 'icarus', 'isim', 'modelsim', 'rivierapro', 'xsim']:
-            flow = 'sim'
-        elif flags['tool'] in ['icestorm', 'ise', 'quartus', 'verilator', 'vivado']:
-            flow = 'synth'
-
+        flow = self._get_flow(flags)
         usage = set([flow, flags['tool']])
 
         for fs in self.file_sets:
@@ -173,7 +169,8 @@ class Core:
         scripts = {}
         if self.scripts:
             env = {'BUILD_ROOT' : Config().build_root}
-            if flags['flow'] is 'sim':
+            flow = self._get_flow(flags)
+            if flow is 'sim':
                 for s in ['pre_build_scripts', 'pre_run_scripts', 'post_run_scripts']:
                     v = getattr(self.scripts, s)
                     if v:
@@ -181,7 +178,7 @@ class Core:
             #For backwards compatibility we only use the script from the
             #top-level core in synth flows. We also rename them here to match
             #the backend stages and set the SYSTEM_ROOT env var
-            elif flags['flow'] is 'synth' and flags['is_toplevel']:
+            elif flow is 'synth' and flags['is_toplevel']:
                 env['SYSTEM_ROOT'] = self.files_root
                 v = self.scripts.pre_synth_scripts
                 if v:
@@ -195,10 +192,10 @@ class Core:
         self._debug("Getting toplevel for flags {}".format(str(flags)))
         if flags['tool'] == 'verilator':
             toplevel = self.verilator.top_module
-        elif flags['flow'] == 'synth':
+        elif self._get_flow(flags) == 'synth':
             toplevel = self.backend.top_module
-        elif 'target' in flags and flags['target']:
-            toplevel = flags['target']
+        elif 'testbench' in flags and flags['testbench']:
+            toplevel = flags['testbench']
         else:
             toplevel = self.simulator['toplevel']
         self._debug("Matched toplevel {}".format(toplevel))
@@ -207,14 +204,15 @@ class Core:
     def get_tool(self, flags):
         self._debug("Getting tool for flags {}".format(str(flags)))
         tool = None
+        flow = self._get_flow(flags)
         if flags['tool']:
             tool =  flags['tool']
-        elif flags['flow'] == 'sim':
-            if len(self.simulators) > 0:
-                tool = self.simulators[0]
-        elif flags['flow'] == 'synth':
+        elif flags['target'] == 'synth':
             if hasattr(self.main, 'backend'):
                 tool = self.main.backend
+        else:
+            if len(self.simulators) > 0:
+                tool = self.simulators[0]
         self._debug(" Matched tool {}".format(tool))
         return tool
 
@@ -252,6 +250,13 @@ class Core:
         self._debug(" Matched VPI libraries {}".format([v['name'] for v in vpi]))
         return vpi
 
+    def get_work_root(self, flags):
+        if self._get_flow(flags) is 'synth':
+            s = 'bld-'
+        else:
+            s = 'sim-'
+        return s+flags['tool']
+
     def setup(self):
         if self.provider:
             self.provider.fetch()
@@ -286,6 +291,20 @@ class Core:
                 else:
                     raise RuntimeError('Cannot find %s in :\n\t%s\n\t%s'
                                   % (f, self.files_root, self.core_root))
+
+    def _get_flow(self, flags):
+        flow = None
+        if 'tool' in flags:
+            if flags['tool'] in ['ghdl', 'icarus', 'isim', 'modelsim', 'rivierapro', 'xsim']:
+                flow = 'sim'
+            elif flags['tool'] in ['icestorm', 'ise', 'quartus', 'verilator', 'vivado']:
+                flow = 'synth'
+        elif 'target' in flags:
+            if flags['target'] is 'synth':
+                flow = 'synth'
+            elif flags['target'] is 'sim':
+                flow = 'sim'
+        return flow
 
     def _merge_system_file(self, system_file, config):
         def _replace(sec, src=None, dst=None):

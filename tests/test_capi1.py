@@ -46,10 +46,10 @@ def test_core_parsing():
 
 def test_get_scripts():
     import pprint
-    flag_combos = [{'flow' : 'sim', 'is_toplevel' : False},
-                   {'flow' : 'sim', 'is_toplevel' : True},
-                   {'flow' : 'synth', 'is_toplevel' : False},
-                   {'flow' : 'synth', 'is_toplevel' : True},
+    flag_combos = [{'target' : 'sim'  , 'is_toplevel' : False},
+                   {'target' : 'sim'  , 'is_toplevel' : True},
+                   {'target' : 'synth', 'is_toplevel' : False},
+                   {'target' : 'synth', 'is_toplevel' : True},
     ]
     core = get_core("scriptscore")
 
@@ -57,7 +57,7 @@ def test_get_scripts():
         env = {'BUILD_ROOT' : os.path.join(os.path.dirname(__file__), 'build')}
         result = core.get_scripts(flags)
         expected = {}
-        if flags['flow'] == 'sim':
+        if flags['target'] == 'sim':
             sections = ['post_run_scripts', 'pre_build_scripts', 'pre_run_scripts']
         else:
             if flags['is_toplevel']:
@@ -66,21 +66,21 @@ def test_get_scripts():
             else:
                 sections = []
         for section in sections:
-            expected[section] = [{flags['flow'] + section + str(i) : {'env' : env}} for i in range(2)]
+            expected[section] = [{flags['target'] + section + str(i) : {'env' : env}} for i in range(2)]
         assert pprint.pformat(expected) == pprint.pformat(result)
 
 def test_get_tool():
     core = get_core("atlys")
-    assert None     == core.get_tool({'flow' : 'sim', 'tool' : None})
-    assert 'icarus' == core.get_tool({'flow' : 'sim', 'tool' : 'icarus'})
-    assert 'ise'    == core.get_tool({'flow' : 'synth', 'tool' : None})
-    assert 'vivado' == core.get_tool({'flow' : 'synth', 'tool' : 'vivado'})
+    assert None     == core.get_tool({'target' : 'sim', 'tool' : None})
+    assert 'icarus' == core.get_tool({'target' : 'sim', 'tool' : 'icarus'})
+    assert 'ise'    == core.get_tool({'target' : 'synth', 'tool' : None})
+    assert 'vivado' == core.get_tool({'target' : 'synth', 'tool' : 'vivado'})
     core = get_core("sockit")
-    assert 'icarus' == core.get_tool({'flow' : 'sim', 'tool' : None})
-    assert 'icarus' == core.get_tool({'flow' : 'sim', 'tool' : 'icarus'})
+    assert 'icarus' == core.get_tool({'target' : 'sim', 'tool' : None})
+    assert 'icarus' == core.get_tool({'target' : 'sim', 'tool' : 'icarus'})
     del core.main.backend
-    assert None     == core.get_tool({'flow' : 'synth', 'tool' : None})
-    assert 'vivado' == core.get_tool({'flow' : 'synth', 'tool' : 'vivado'})
+    assert None     == core.get_tool({'target' : 'synth', 'tool' : None})
+    assert 'vivado' == core.get_tool({'target' : 'synth', 'tool' : 'vivado'})
     core.main.backend = 'quartus'
 
 def test_get_tool_options():
@@ -96,18 +96,18 @@ def test_get_toplevel():
                             __name__,
                             "atlys.core")
     core = Core(filename)
-    assert 'orpsoc_tb'  == core.get_toplevel({'tool' : 'icarus', 'flow' : 'sim'})
-    assert 'orpsoc_tb'  == core.get_toplevel({'tool' : 'icarus', 'flow' : 'sim', 'target' : None})
-    assert 'tb'         == core.get_toplevel({'tool' : 'icarus', 'flow' : 'sim', 'target' : 'tb'})
-    assert 'orpsoc_top' == core.get_toplevel({'tool' : 'vivado', 'flow' : 'synth'})
+    assert 'orpsoc_tb'  == core.get_toplevel({'tool' : 'icarus'})
+    assert 'orpsoc_tb'  == core.get_toplevel({'tool' : 'icarus', 'testbench' : None})
+    assert 'tb'         == core.get_toplevel({'tool' : 'icarus', 'testbench' : 'tb'})
+    assert 'orpsoc_top' == core.get_toplevel({'tool' : 'vivado'})
     filename = os.path.join(os.path.dirname(__file__),
                             __name__,
                             "sockit.core")
     core = Core(filename)
-    assert 'dummy_tb'   == core.get_toplevel({'tool' : 'icarus', 'flow' : 'sim'})
-    assert 'dummy_tb'   == core.get_toplevel({'tool' : 'icarus', 'flow' : 'sim', 'target' : None})
-    assert 'tb'         == core.get_toplevel({'tool' : 'icarus', 'flow' : 'sim', 'target' : 'tb'})
-    assert 'orpsoc_top' == core.get_toplevel({'tool' : 'vivado', 'flow' : 'synth'})
+    assert 'dummy_tb'   == core.get_toplevel({'tool' : 'icarus'})
+    assert 'dummy_tb'   == core.get_toplevel({'tool' : 'icarus', 'testbench' : None})
+    assert 'tb'         == core.get_toplevel({'tool' : 'icarus', 'testbench' : 'tb'})
+    assert 'orpsoc_top' == core.get_toplevel({'tool' : 'vivado'})
 
 def test_icestorm():
     filename = os.path.join(os.path.dirname(__file__),
