@@ -39,33 +39,28 @@ def get_core(core):
     return _get_core(core)
 
 def get_sim(sim, core, export=False):
-    import os.path
-    from fusesoc.coremanager import CoreManager
-    from fusesoc.config import Config
-    from fusesoc.main import _import
-
     flags = {'target' : 'sim',
              'tool' : sim}
+    return get_backend(core, flags, export)
+
+def get_synth(tool, core, export=False):
+    flags = {'target' : 'synth',
+             'tool' : tool}
+    return get_backend(core, flags, export)
+
+def get_backend(core, flags, export):
+    import os.path
+    from fusesoc.config import Config
+    from fusesoc.coremanager import CoreManager
+    from fusesoc.main import _import
 
     eda_api = CoreManager().get_eda_api(core.name, flags)
     export_root = os.path.join(Config().build_root, core.name.sanitized_name, 'src')
-    work_root   = os.path.join(Config().build_root, core.name.sanitized_name, 'sim-'+sim)
-    
+    work_root   = os.path.join(Config().build_root,
+                               core.name.sanitized_name,
+                               core.get_work_root(flags))
     CoreManager().setup(core.name, flags, export=export, export_root=export_root)
-    return _import(sim)(eda_api=eda_api, work_root=work_root)
-
-def get_synth(tool, core, export=False):
-    import os.path
-    from fusesoc.config import Config
-    from fusesoc.coremanager import CoreManager
-    from fusesoc.main import _import
-
-    flags = {'target' : 'synth',
-             'tool' : tool}
-
-    eda_api = CoreManager().get_eda_api(core.name, flags)
-    work_root   = os.path.join(Config().build_root, core.name.sanitized_name, 'bld-'+tool)
-    return _import(core.main.backend)(eda_api=eda_api, work_root=work_root)
+    return _import(flags['tool'])(eda_api=eda_api, work_root=work_root)
 
 cmdlineargs = ' --cmdlinearg_bool --cmdlinearg_int=42 --cmdlinearg_str=hello'.split()
 plusargs    = ' --plusarg_bool --plusarg_int=42 --plusarg_str=hello'.split()
