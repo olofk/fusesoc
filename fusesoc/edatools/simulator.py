@@ -9,7 +9,6 @@ class Simulator(EdaTool):
     def configure(self, args, skip_params = False):
         if not skip_params:
             self.parse_args(args, 'sim', ['plusarg', 'vlogdefine', 'vlogparam', 'cmdlinearg'])
-        super(Simulator, self).configure(args)
 
     def run(self, args):
         self.parse_args(args, 'sim', ['plusarg', 'vlogdefine', 'vlogparam', 'cmdlinearg'])

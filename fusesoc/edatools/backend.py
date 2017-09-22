@@ -9,4 +9,3 @@ class Backend(EdaTool):
 
     def configure(self, args):
         self.parse_args(args, 'build', ['vlogparam', 'vlogdefine'])
-        super(Backend, self).configure(args)

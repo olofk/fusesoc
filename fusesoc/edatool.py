@@ -1,9 +1,9 @@
 import argparse
 from collections import OrderedDict
 import os
-import shutil
 import subprocess
 import logging
+import yaml
 
 from fusesoc.utils import Launcher
 logger = logging.getLogger(__name__)
@@ -17,7 +17,8 @@ class FileAction(argparse.Action):
 
 class EdaTool(object):
 
-    def __init__(self, eda_api, work_root):
+    def __init__(self, eda_api_file, work_root):
+        eda_api = yaml.load(open(eda_api_file))
         self.name = eda_api['name']
         _tool_name = self.__class__.__name__.lower()
         self.tool_options = eda_api['tool_options'][_tool_name]
@@ -39,16 +40,6 @@ class EdaTool(object):
         self.parameters = eda_api['parameters']
         self.toplevel = eda_api['toplevel']
         self.vpi_modules = eda_api['vpi']
-
-    def configure(self, args):
-        if os.path.exists(self.work_root):
-            for f in os.listdir(self.work_root):
-                if os.path.isdir(os.path.join(self.work_root, f)):
-                    shutil.rmtree(os.path.join(self.work_root, f))
-                else:
-                    os.remove(os.path.join(self.work_root, f))
-        else:
-            os.makedirs(self.work_root)
 
     def build(self):
         self.build_pre()
@@ -133,13 +124,13 @@ class EdaTool(object):
         src_files = []
         for f in self.files:
             if f['is_include_file']:
-                _incdir = os.path.relpath(os.path.dirname(f['name']),self.work_root)
+                _incdir = os.path.dirname(f['name'])
                 if force_slash:
                     _incdir = _incdir.replace('\\', '/')
                 if not _incdir in incdirs:
                     incdirs.append(_incdir)
             else:
-                _name = os.path.relpath(f['name'], self.work_root)
+                _name = f['name']
                 if force_slash:
                     _name = _name.replace('\\', '/')
                 src_files.append(File(_name,

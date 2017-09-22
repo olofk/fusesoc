@@ -3,9 +3,12 @@ import argparse
 import importlib
 import os
 import platform
+import shutil
 import subprocess
 import sys
 import signal
+import yaml
+
 from fusesoc import __version__
 
 #Check if this is run from a local installation
@@ -184,30 +187,60 @@ def run_backend(export, do_configure, do_build, do_run, flags, system, backendar
                                core.name.sanitized_name,
                                core.get_work_root(flags))
     try:
-        eda_api = CoreManager().get_eda_api(core.name, flags, export_root)
+        eda_api = CoreManager().get_eda_api(core.name,
+                                            flags,
+                                            work_root,
+                                            export_root)
     except DependencyError as e:
         logger.error(e.msg + "\nFailed to resolve dependencies for {}".format(system))
         exit(1)
     except SyntaxError as e:
         logger.error(e.msg)
         exit(1)
+
+    eda_api_file = os.path.join(work_root,
+                                core.name.sanitized_name+'.eda.yml')
+    if do_configure:
+        if os.path.exists(work_root):
+            for f in os.listdir(work_root):
+                if os.path.isdir(os.path.join(work_root, f)):
+                    shutil.rmtree(os.path.join(work_root, f))
+                else:
+                    os.remove(os.path.join(work_root, f))
+        else:
+            os.makedirs(work_root)
+        CoreManager().setup(core.name,
+                            flags,
+                            export=export,
+                            export_root=export_root)
+        if not os.path.exists(work_root):
+            os.makedirs(work_root)
+        with open(eda_api_file,'w') as f:
+            f.write(yaml.dump(eda_api))
+
+    #Frontend/backend separation
+
     try:
-        backend = _import(tool)(eda_api=eda_api, work_root=work_root)
+        backend = _import(tool)(eda_api_file=eda_api_file, work_root=work_root)
     except ImportError:
         logger.error('Backend "{}" not found'.format(tool))
         exit(1)
     except RuntimeError as e:
         logger.error(str(e))
         exit(1)
+    except FileNotFoundError as e:
+        logger.error('Could not find EDA API file "{}"'.format(e.filename))
+        exit(1)
+
     if do_configure:
         try:
-            CoreManager().setup(core.name, flags, export=export, export_root=export_root)
             backend.configure(backendargs)
             print('')
         except RuntimeError as e:
             logger.error("Failed to configure the system")
             logger.error(str(e))
             exit(1)
+
     if do_build:
         try:
             backend.build()
@@ -225,7 +258,7 @@ def run_backend(export, do_configure, do_build, do_run, flags, system, backendar
             exit(1)
 
 def sim(args):
-    do_configure = not args.keep or not os.path.exists(backend.work_root)
+    do_configure = not args.keep
     do_build = not args.setup
     do_run   = not (args.build_only or args.setup)
     

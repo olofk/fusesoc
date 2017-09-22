@@ -180,7 +180,7 @@ class CoreManager(object):
         c.name.relation = "=="
         return c
 
-    def get_eda_api(self, vlnv, flags, export_root=None):
+    def get_eda_api(self, vlnv, flags, work_root, export_root=None):
         logger.debug("Building EDA API")
         def merge_dict(d1, d2):
             for key, value in d2.items():
@@ -231,7 +231,7 @@ class CoreManager(object):
 
             for file in core.get_files(_flags):
                 files.append({
-                    'name'            : os.path.join(files_root, file.name),
+                    'name'            : os.path.relpath(os.path.join(files_root, file.name), work_root),
                     'file_type'       : file.file_type,
                     'is_include_file' : file.is_include_file,
                     'logical_name'    : file.logical_name})
