@@ -32,13 +32,13 @@ class Config(object):
         xdg_config_home = os.environ.get('XDG_CONFIG_HOME') or \
                           os.path.join(os.path.expanduser('~'), '.config')
         config = configparser.SafeConfigParser()
-        config_files = ['/etc/fusesoc/fusesoc.conf',
+        candidate_files = ['/etc/fusesoc/fusesoc.conf',
                         os.path.join(xdg_config_home, 'fusesoc','fusesoc.conf'),
                         'fusesoc.conf']
 
-        logger.debug('Looking for config files from ' + ':'.join(config_files))
-        files_read = config.read(config_files)
-        logger.debug('Found config files in ' + ':'.join(files_read))
+        logger.debug('Looking for config files from ' + ':'.join(candidate_files))
+        self.config_files = config.read(candidate_files)
+        logger.debug('Found config files in ' + ':'.join(self.config_files))
 
         for item in ['build_root', 'cache_root', 'systems_root']:
             try:

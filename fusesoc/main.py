@@ -7,6 +7,10 @@ import subprocess
 import sys
 import signal
 from fusesoc import __version__
+if sys.version[0] == '2':
+    import ConfigParser as configparser
+else:
+    import configparser
 
 #Check if this is run from a local installation
 fusesocdir = os.path.abspath(os.path.join(os.path.dirname(os.path.realpath(__file__)), ".."))
@@ -87,12 +91,6 @@ def fetch(args):
         exit(1)
 
 def init(args):
-    # Fix Python 2.x.
-    global input
-    try:
-        input = raw_input
-    except NameError:
-        pass
 
     xdg_data_home = os.environ.get('XDG_DATA_HOME') or \
                     os.path.join(os.path.expanduser('~'),
@@ -140,6 +138,42 @@ def init(args):
 def list_paths(args):
     cores_root = CoreManager().get_cores_root()
     print("\n".join(cores_root))
+    
+def add_paths(args):
+    if len(Config().config_files) > 1:
+        done = False
+        print("Found multiple config files. Select which to use:")
+        while not done:
+            done = True
+            for idx,element in enumerate(Config().config_files):
+                print("{}) {}".format(idx+1,element))
+            i = input("Which file? [{}]: ".format(len(Config().config_files)))
+            try:
+                if i == '':
+                    config_file = Config().config_files[-1]
+                elif (0 < int(i) <= len(Config().config_files)):
+                    config_file = Config().config_files[int(i)-1]
+                else:
+                    print("Please enter a number between 1 and {}.".format(len(Config().config_files)))
+                    done = False
+            except:
+                print("Please enter a number between 1 and {}.".format(len(Config().config_files)))
+                done = False
+    else:
+        config_file = Config().config_files[0]
+    print("Modifying " + config_file)
+    parser = configparser.ConfigParser()
+    parser.read(config_file)
+    current_roots = parser.get("main", "cores_root", "")
+    new_paths = filter(lambda x: not x in current_roots.split(), args.paths)
+    old_paths = filter(lambda x: x in current_roots.split(), args.paths)
+    new_roots = (current_roots + " " + ' '.join(new_paths)).strip()
+    parser.set("main", "cores_root", new_roots)
+    with open(config_file, 'wb') as configfile:
+        parser.write(configfile)
+    print(str(old_paths) + " are already present in " + config_file)
+    if new_paths:
+        print("Added " + str(new_paths) + " as core roots.")
 
 def list_cores(args):
     cores = CoreManager().get_cores()
@@ -301,6 +335,12 @@ def run(args):
     args.func(args)
 
 def main():
+    # Fix Python 2.x.
+    global input
+    try:
+        input = raw_input
+    except NameError:
+        pass
 
     parser = argparse.ArgumentParser()
     subparsers = parser.add_subparsers()
@@ -356,6 +396,11 @@ def main():
     # list-paths subparser
     parser_list_paths = subparsers.add_parser('list-paths', help='Display the search order for core root paths')
     parser_list_paths.set_defaults(func=list_paths)
+    
+    # add-paths subparser
+    parser_add_paths = subparsers.add_parser('add-paths', help='Add core root paths to the config file')
+    parser_add_paths.add_argument('paths', nargs="+", help='A list of paths to add to the config file')
+    parser_add_paths.set_defaults(func=add_paths)
 
     # sim subparser
     parser_sim = subparsers.add_parser('sim', help='Setup and run a simulation')
