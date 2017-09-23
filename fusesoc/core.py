@@ -392,6 +392,8 @@ class Core:
                 _files += _append_files(_b.sdc_files, 'SDC')
                 _files += _append_files(_b.tcl_files, 'tclSource')
                 del(_b.qsys_files)
+                del(_b.sdc_files)
+                del(_b.tcl_files)
             if _files:
                 self.file_sets.append(FileSet(name = "backend_files",
                                               file = _files,
