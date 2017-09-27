@@ -140,40 +140,29 @@ def list_paths(args):
     print("\n".join(cores_root))
     
 def add_paths(args):
-    if len(Config().config_files) > 1:
-        done = False
-        print("Found multiple config files. Select which to use:")
-        while not done:
-            done = True
-            for idx,element in enumerate(Config().config_files):
-                print("{}) {}".format(idx+1,element))
-            i = input("Which file? [{}]: ".format(len(Config().config_files)))
-            try:
-                if i == '':
-                    config_file = Config().config_files[-1]
-                elif (0 < int(i) <= len(Config().config_files)):
-                    config_file = Config().config_files[int(i)-1]
-                else:
-                    print("Please enter a number between 1 and {}.".format(len(Config().config_files)))
-                    done = False
-            except:
-                print("Please enter a number between 1 and {}.".format(len(Config().config_files)))
-                done = False
-    else:
-        config_file = Config().config_files[0]
-    print("Modifying " + config_file)
+    config_file = Config().config_files[-1]
+    logger.debug("Modifying " + config_file)
     parser = configparser.ConfigParser()
     parser.read(config_file)
-    current_roots = parser.get("main", "cores_root", "")
+    try:
+        current_roots = parser.get("main", "cores_root")
+    except (configparser.NoSectionError, configparser.NoOptionError):
+        logger.warning("Config file {} does not contain a cores_root option".format(config_file))
+        current_roots = ""
+    if not parser.has_section("main"):
+        parser.add_section("main")
     new_paths = filter(lambda x: not x in current_roots.split(), args.paths)
     old_paths = filter(lambda x: x in current_roots.split(), args.paths)
     new_roots = (current_roots + " " + ' '.join(new_paths)).strip()
     parser.set("main", "cores_root", new_roots)
     with open(config_file, 'wb') as configfile:
         parser.write(configfile)
-    print(str(old_paths) + " are already present in " + config_file)
+    if old_paths:
+        logger.info("core roots " + str(old_paths) + " are already present in " + config_file)
     if new_paths:
-        print("Added " + str(new_paths) + " as core roots.")
+        logger.info("Added " + str(new_paths) + " as core roots.")
+    else:
+        logger.warning("No new paths added!")
 
 def list_cores(args):
     cores = CoreManager().get_cores()
@@ -393,12 +382,16 @@ def main():
     parser_core_info.add_argument('core')
     parser_core_info.set_defaults(func=core_info)
 
-    # list-paths subparser
-    parser_list_paths = subparsers.add_parser('list-paths', help='Display the search order for core root paths')
-    parser_list_paths.set_defaults(func=list_paths)
+    # library subparser
+    parser_library = subparsers.add_parser('library', help='Subcommands for dealing with library management')
+    library_subparsers = parser_library.add_subparsers()
     
-    # add-paths subparser
-    parser_add_paths = subparsers.add_parser('add-paths', help='Add core root paths to the config file')
+    # library list subparser
+    parser_library_list = library_subparsers.add_parser('list', help='Display the search order for core root paths')
+    parser_library_list.set_defaults(func=list_paths)
+    
+    # library add subparser
+    parser_add_paths = library_subparsers.add_parser('add', help='Add core root paths to the config file')
     parser_add_paths.add_argument('paths', nargs="+", help='A list of paths to add to the config file')
     parser_add_paths.set_defaults(func=add_paths)
 
