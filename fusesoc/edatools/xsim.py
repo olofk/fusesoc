@@ -119,11 +119,14 @@ class Xsim(Simulator):
                              cwd      = self.work_root,
                              errormsg = "Failed to compile Xsim simulation model").run()
 
-        # .dat should be src_file for sim
-        #  for src_file in src_files:
-        #      print(src_file.name)
-        #      if os.path.splitext(src_file.name)[1] == 'dat':
-        #          copyfile(src_file.name, os.path.join(self.work_root, os.path.basename(src_file.name)))
+        #  .dat should be src_file for sim
+        for src_file in src_files:
+            print(src_file.name + ' type: ' + src_file.file_type)
+            if os.path.splitext(src_file.name)[1] == '.dat':
+                print('Copying file...')
+                print(src_file.name)
+                print(os.path.join(self.work_root, os.path.basename(src_file.name)))
+                copyfile(os.path.join(self.work_root,src_file.name), os.path.join(self.work_root, os.path.basename(src_file.name)))
 
         #Check if any VPI modules are present and display warning
         if len(self.vpi_modules) > 0:
