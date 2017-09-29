@@ -143,6 +143,7 @@ class Vivado(Backend):
         tcl_file_name = os.path.join(self.work_root, self.name+"_pgm.tcl")
         self._write_program_tcl_file(tcl_file_name)
         utils.Launcher('vivado', ['-mode', 'batch', '-source', tcl_file_name ],
+                       shell=platform.system() == 'Windows',
                        cwd = self.work_root,
                        errormsg = "Failed to program the FPGA").run()
 

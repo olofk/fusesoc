@@ -1,4 +1,5 @@
 import os
+import platform
 from .simulator import Simulator
 import logging
 from fusesoc.utils import Launcher
@@ -86,6 +87,7 @@ class Xsim(Simulator):
         tcl_file_name = os.path.join(self.work_root, 'xci_sim.tcl')
         if (os.path.isfile(tcl_file_name)):
             Launcher('vivado', ['-mode', 'batch', '-source', tcl_file_name],
+                               shell=platform.system() == 'Windows',
                                cwd = self.work_root,
                                errormsg = "Failed to generate simulation scripts from xci").run()
 
@@ -108,16 +110,19 @@ class Xsim(Simulator):
 
                 if os.path.isfile(vlog_prj):
                     Launcher('xvlog', ['--prj', vlog_prj],
+                             shell=platform.system() == 'Windows',
                              cwd      = self.work_root,
                              errormsg = "Failed to compile Xsim simulation model").run()
 
                 if os.path.isfile(vhdl_prj):
                     Launcher('xvhdl', ['--prj', vhdl_prj],
+                             shell=platform.system() == 'Windows',
                              cwd      = self.work_root,
                              errormsg = "Failed to compile Xsim simulation model").run()
 
                 if os.path.isfile(vlog_prj):
                     Launcher('xvlog', [glbl_file],
+                             shell=platform.system() == 'Windows',
                              cwd      = self.work_root,
                              errormsg = "Failed to compile Xsim simulation model").run()
 
@@ -173,6 +178,7 @@ class Xsim(Simulator):
         #      args += self.tool_options['xsim_options']
 
         Launcher('xelab', args,
+                 shell=platform.system() == 'Windows',
                  cwd      = self.work_root,
                  errormsg = "Failed to compile Xsim simulation model").run()
 
@@ -193,6 +199,7 @@ class Xsim(Simulator):
 
 
         Launcher('xsim', args,
+                 shell=platform.system() == 'Windows',
                  cwd = self.work_root,
                  errormsg = "Failed to run Xsim simulation").run()
 
