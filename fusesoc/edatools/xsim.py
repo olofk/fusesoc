@@ -21,7 +21,7 @@ class Xsim(Simulator):
         self.incdirs = set()
         src_files = []
 
-        (src_files, self.incdirs) = self._get_fileset_files()
+        (src_files, self.incdirs) = self._get_fileset_files(force_slash=True)
         for src_file in src_files:
             if src_file.file_type in ["verilogSource",
 		                      "verilogSource-95",
@@ -56,7 +56,7 @@ class Xsim(Simulator):
 
     def _generate_xci_sim_scripts(self):
         # make project from all xci
-        (src_files, self.incdirs) = self._get_fileset_files()
+        (src_files, self.incdirs) = self._get_fileset_files(force_slash=True)
         xci_ip = []
         for src_file in src_files:
             if src_file.file_type == 'xci':
@@ -100,7 +100,7 @@ class Xsim(Simulator):
         #                         cwd = self.work_root,
         #                         errormsg = "Failed to generate simulation scripts from xci").run()
 
-        (src_files, self.incdirs) = self._get_fileset_files()
+        (src_files, self.incdirs) = self._get_fileset_files(force_slash=True)
         for src_file in src_files:
             if src_file.file_type == 'xci':
                 ip_name = os.path.splitext(os.path.basename(src_file.name))[0]
