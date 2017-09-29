@@ -72,10 +72,9 @@ class Xsim(Simulator):
             ipconfig += '\n'.join(['generate_target all [get_files '+ s +']' for s in xci_ip]) + '\n'
             ipconfig += '\n'.join(['export_ip_user_files -of_objects [get_files '+ s +'] -no_script -ip_user_files_dir '+ self.work_root + ' -force -quiet' for s in xci_ip]) + '\n'
             ipconfig += '\n'.join(['create_ip_run [get_files ' + s + ']' for s in xci_ip]) + '\n'
-            ipconfig += '\n'.join(['launch_runs -dir ' + self.work_root +' ' +os.path.splitext(os.path.basename(s))[0]+'_synth_1' for s in xci_ip]) + '\n'
+            ipconfig += '\n'.join(['launch_runs ' +os.path.splitext(os.path.basename(s))[0]+'_synth_1' for s in xci_ip]) + '\n'
             ipconfig += '\n'.join(['wait_on_run '+os.path.splitext(os.path.basename(s))[0]+'_synth_1' for s in xci_ip]) + '\n'
-            ipconfig += '\n'.join(['export_simulation -directory ' + self.work_root +\
-                        ' -simulator xsim -of_objects [get_files '+ s +'] -ip_user_files_dir ' + self.work_root + ' -force -quiet' for s in xci_ip])
+            ipconfig += '\n'.join(['export_simulation -directory . -simulator xsim -of_objects [get_files '+ s +'] -ip_user_files_dir . -force -quiet' for s in xci_ip])
             tcl_file.write(ipconfig)
 
         tcl_file = 'xsim.tcl'
@@ -100,7 +99,7 @@ class Xsim(Simulator):
         #                         cwd = self.work_root,
         #                         errormsg = "Failed to generate simulation scripts from xci").run()
 
-        (src_files, self.incdirs) = self._get_fileset_files(force_slash=True)
+        (src_files, self.incdirs) = self._get_fileset_files()
         for src_file in src_files:
             if src_file.file_type == 'xci':
                 ip_name = os.path.splitext(os.path.basename(src_file.name))[0]
@@ -132,7 +131,7 @@ class Xsim(Simulator):
             if src_file.file_type in ["datSource"]:
                 #  print('Copying file...')
                 #  print(src_file.name)
-                print(os.path.join(self.work_root, os.path.basename(src_file.name)))
+                # print(os.path.join(self.work_root, os.path.basename(src_file.name)))
                 copyfile(os.path.join(self.work_root,src_file.name), os.path.join(self.work_root, os.path.basename(src_file.name)))
 
         #Check if any VPI modules are present and display warning
