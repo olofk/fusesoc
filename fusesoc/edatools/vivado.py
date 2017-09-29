@@ -75,7 +75,7 @@ class Vivado(Backend):
                 vhdl.append(params+s.name)
             elif s.file_type.startswith('tclSource'):
                 tcl.append(s.name)
-            elif s.file_type.startswith('datSource'):
+            elif s.file_type.startswith('dat'):
                 dat.append(s.name)
 
 

@@ -26,7 +26,7 @@ class File(object):
         'vhdlSource-93',
         'vhdlSource-2008',
         'xci',
-        'datSource',
+        'dat',
         'xdc',
         ]
     name      = ""

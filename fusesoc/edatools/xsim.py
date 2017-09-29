@@ -24,8 +24,8 @@ class Xsim(Simulator):
         (src_files, self.incdirs) = self._get_fileset_files(force_slash=True)
         for src_file in src_files:
             if src_file.file_type in ["verilogSource",
-		                      "verilogSource-95",
-		                      "verilogSource-2001"]:
+                                      "verilogSource-95",
+                                      "verilogSource-2001"]:
                 f1.write('verilog work ' + src_file.name + '\n')
             elif src_file.file_type in ["vhdlSource",
                                         "vhdlSource-87",
@@ -41,7 +41,7 @@ class Xsim(Simulator):
                 f1.write('sv work ' + src_file.name + '\n')
             elif src_file.file_type in ["xci"]:
                 pass
-            elif src_file.file_type in ["datSource"]:
+            elif src_file.file_type in ["dat"]:
                 pass
             else:
                 _s = "{} has unknown file type '{}'"
@@ -55,20 +55,22 @@ class Xsim(Simulator):
         f2.close()
 
     def _generate_xci_sim_scripts(self):
-        # make project from all xci
+
+        # get all xci IP cores
         (src_files, self.incdirs) = self._get_fileset_files(force_slash=True)
         xci_ip = []
         for src_file in src_files:
             if src_file.file_type == 'xci':
                 xci_ip.append(src_file.name);
 
+        # make Vivado project tcl from all xci IP cores
+        # to generate IP products
         if len(xci_ip)>0:
             tcl_file = open(os.path.join(self.work_root, 'xci_sim.tcl'), 'w')
             ipconfig = 'create_project ' + self.name + '_xci_sim\n'
             ipconfig += 'set_property \"simulator_language\" \"Mixed\" [current_project]\n'
             ipconfig += '\n'.join(['read_ip '+s for s in xci_ip])+'\n'
             ipconfig += 'upgrade_ip [get_ips]\n'
-            #  ipconfig += '\n'.join(['generate_target simulation [get_files '+os.path.basename(s)+']'\
             ipconfig += '\n'.join(['generate_target all [get_files '+ s +']' for s in xci_ip]) + '\n'
             ipconfig += '\n'.join(['export_ip_user_files -of_objects [get_files '+ s +'] -no_script -ip_user_files_dir '+ self.work_root + ' -force -quiet' for s in xci_ip]) + '\n'
             ipconfig += '\n'.join(['create_ip_run [get_files ' + s + ']' for s in xci_ip]) + '\n'
@@ -77,28 +79,15 @@ class Xsim(Simulator):
             ipconfig += '\n'.join(['export_simulation -directory . -simulator xsim -of_objects [get_files '+ s +'] -ip_user_files_dir . -force -quiet' for s in xci_ip])
             tcl_file.write(ipconfig)
 
-        tcl_file = 'xsim.tcl'
-        f2 = open(os.path.join(self.work_root,tcl_file),'w')
-        f2.write('add_wave -radix hex /\n')
-        f2.write('run all\n')
-        f2.close()
-
-        tcl_file_name = os.path.join(self.work_root, 'xci_sim.tcl')
-        if (os.path.isfile(tcl_file_name)):
             Launcher('vivado', ['-mode', 'batch', '-source', tcl_file_name],
                                shell=platform.system() == 'Windows',
                                cwd = self.work_root,
-                               errormsg = "Failed to generate simulation scripts from xci").run()
+                               errormsg = "Failed to generate IP products").run()
 
 
     def build_main(self):
 
-        #  tcl_file_name = os.path.join(self.work_root, 'xci_sim.tcl')
-        #  if (os.path.isfile(tcl_file_name)):
-        #      Launcher('vivado', ['-mode', 'batch', '-source', tcl_file_name],
-        #                         cwd = self.work_root,
-        #                         errormsg = "Failed to generate simulation scripts from xci").run()
-
+        # process IP products and design files with 'xvlog' and 'xvhdl'
         (src_files, self.incdirs) = self._get_fileset_files()
         for src_file in src_files:
             if src_file.file_type == 'xci':
@@ -111,27 +100,23 @@ class Xsim(Simulator):
                     Launcher('xvlog', ['--prj', vlog_prj],
                              shell=platform.system() == 'Windows',
                              cwd      = self.work_root,
-                             errormsg = "Failed to compile Xsim simulation model").run()
+                             errormsg = "Failed to process Xsim simulation model").run()
 
                 if os.path.isfile(vhdl_prj):
                     Launcher('xvhdl', ['--prj', vhdl_prj],
                              shell=platform.system() == 'Windows',
                              cwd      = self.work_root,
-                             errormsg = "Failed to compile Xsim simulation model").run()
+                             errormsg = "Failed to process Xsim simulation model").run()
 
                 if os.path.isfile(vlog_prj):
                     Launcher('xvlog', [glbl_file],
                              shell=platform.system() == 'Windows',
                              cwd      = self.work_root,
-                             errormsg = "Failed to compile Xsim simulation model").run()
+                             errormsg = "Failed to process Xsim simulation model").run()
 
-        #  .dat should be src_file for sim
+        # copy 'dat' files to root directory; needed by xsim
         for src_file in src_files:
-            #  print(src_file.name + ' type: ' + src_file.file_type)
-            if src_file.file_type in ["datSource"]:
-                #  print('Copying file...')
-                #  print(src_file.name)
-                # print(os.path.join(self.work_root, os.path.basename(src_file.name)))
+            if src_file.file_type in ["dat"]:
                 copyfile(os.path.join(self.work_root,src_file.name), os.path.join(self.work_root, os.path.basename(src_file.name)))
 
         #Check if any VPI modules are present and display warning
