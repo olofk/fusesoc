@@ -40,6 +40,8 @@ class Xsim(Simulator):
                 f1.write('sv work ' + src_file.name + '\n')
             elif src_file.file_type in ["xci"]:
                 pass
+            elif src_file.file_type in ["datSource"]:
+                pass
             else:
                 _s = "{} has unknown file type '{}'"
                 logger.warning(_s.format(src_file.name, src_file.file_type))
@@ -121,10 +123,10 @@ class Xsim(Simulator):
 
         #  .dat should be src_file for sim
         for src_file in src_files:
-            print(src_file.name + ' type: ' + src_file.file_type)
-            if os.path.splitext(src_file.name)[1] == '.dat':
-                print('Copying file...')
-                print(src_file.name)
+            #  print(src_file.name + ' type: ' + src_file.file_type)
+            if src_file.file_type in ["datSource"]:
+                #  print('Copying file...')
+                #  print(src_file.name)
                 print(os.path.join(self.work_root, os.path.basename(src_file.name)))
                 copyfile(os.path.join(self.work_root,src_file.name), os.path.join(self.work_root, os.path.basename(src_file.name)))
 
