@@ -140,14 +140,23 @@ def list_paths(args):
     print("\n".join(cores_root))
     
 def add_paths(args):
-    config_file = Config().config_files[-1]
-    logger.debug("Modifying " + config_file)
     parser = configparser.ConfigParser()
-    parser.read(config_file)
-    try:
-        current_roots = parser.get("main", "cores_root")
-    except (configparser.NoSectionError, configparser.NoOptionError):
-        logger.warning("Config file {} does not contain a cores_root option".format(config_file))
+    if Config().config_files:
+        config_file = Config().config_files[-1]
+        logger.debug("Modifying " + config_file)
+        parser.read(config_file)
+        try:
+            current_roots = parser.get("main", "cores_root")
+        except (configparser.NoSectionError, configparser.NoOptionError):
+            logger.warning("Config file {} does not contain a cores_root option".format(config_file))
+            current_roots = ""
+    else:
+        xdg_config_home = os.environ.get('XDG_CONFIG_HOME') or \
+                          os.path.join(os.path.expanduser('~'), '.config')
+        config_file = os.path.join(xdg_config_home, 'fusesoc','fusesoc.conf')
+        if not os.path.exists(os.path.dirname(config_file)):
+            os.makedirs(os.path.dirname(config_file))
+        logger.warning("No config file found - creating one at " + config_file)
         current_roots = ""
     if not parser.has_section("main"):
         parser.add_section("main")
