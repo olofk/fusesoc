@@ -71,6 +71,8 @@ class Verilator(Simulator):
                     f.write(src_file.name + '\n')
                 elif src_file.file_type in ['cppSource', 'systemCSource', 'cSource']:
                     opt_c_files.append(src_file.name)
+                elif src_file.file_type in ['user']:
+                    pass
             f.write('--top-module {}\n'.format(self.toplevel))
             f.write('--exe\n')
             f.write('\n'.join(opt_c_files))

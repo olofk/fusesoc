@@ -74,6 +74,8 @@ class Vivado(Backend):
                 vhdl.append(params+s.name)
             elif s.file_type.startswith('tclSource'):
                 tcl.append(s.name)
+            elif s.file_type == 'user':
+                pass
 
         tcl_file = open(os.path.join(self.work_root, self.name+".tcl"), 'w')
 

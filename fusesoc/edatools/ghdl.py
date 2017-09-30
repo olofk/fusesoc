@@ -50,6 +50,8 @@ class Ghdl(Simulator):
                 Launcher(cmd, args,
                          cwd      = self.work_root,
                          errormsg = "Failed to analyze {}".format(f.name)).run()
+            elif f.file_type in ["user"]:
+                pass
             else:
                 _s = "{} has unknown file type '{}'"
                 logger.warning(_s.format(f.name, f.file_type))

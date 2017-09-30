@@ -54,6 +54,8 @@ clean_{name}:
 			              "systemVerilogSource-3.1",
 			              "systemVerilogSource-3.1a"]:
                 f.write(src_file.name+'\n')
+            elif src_file.file_type == 'user':
+                pass
             else:
                 _s = "{} has unknown file type '{}'"
                 logger.warning(_s.format(src_file.name, src_file.file_type))
