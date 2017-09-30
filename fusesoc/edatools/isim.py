@@ -31,6 +31,8 @@ class Isim(Simulator):
                                         "systemVerilogSource-3.1a",
                                         "verilogSource-2005"]:
                 f1.write('sv work ' + src_file.name + '\n')
+            elif src_file.file_type in ["user"]:
+                pass
             else:
                 _s = "{} has unknown file type '{}'"
                 logger.warning(_s.format(src_file.name,

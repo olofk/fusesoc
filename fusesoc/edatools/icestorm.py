@@ -51,6 +51,8 @@ ARACHNE_PNR_OPTIONS := {arachne_pnr_options}
                     yosys_file.write("read_verilog {}\n".format(f.name))
                 elif f.file_type == 'PCF':
                     pcf_files.append(f.name)
+                elif f.file_type == 'user':
+                    pass
             for key, value in self.vlogparam.items():
                 _s = "chparam -set {} {} $abstract\{}\n"
                 yosys_file.write(_s.format(key,
