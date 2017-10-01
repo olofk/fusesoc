@@ -3,7 +3,6 @@ import platform
 from .simulator import Simulator
 import logging
 from fusesoc.utils import Launcher
-import time
 from shutil import copyfile
 
 logger = logging.getLogger(__name__)
@@ -158,8 +157,8 @@ class Xsim(Simulator):
         for key, value in self.vlogparam.items():
             args += ['--generic_top', '{}={}'.format(key, self._param_value_str(value))]
 
-        #  if 'xsim_options' in self.tool_options:
-        #      args += self.tool_options['xsim_options']
+        if 'xsim_options' in self.tool_options:
+            args += self.tool_options['xsim_options']
 
         Launcher('xelab', args,
                  shell=platform.system() == 'Windows',
@@ -188,4 +187,3 @@ class Xsim(Simulator):
                  errormsg = "Failed to run Xsim simulation").run()
 
         super(Xsim, self).done(args)
-
