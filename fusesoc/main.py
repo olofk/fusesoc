@@ -186,18 +186,6 @@ def run_backend(export, do_configure, do_build, do_run, flags, system, backendar
     work_root   = os.path.join(Config().build_root,
                                core.name.sanitized_name,
                                core.get_work_root(flags))
-    try:
-        eda_api = CoreManager().get_eda_api(core.name,
-                                            flags,
-                                            work_root,
-                                            export_root)
-    except DependencyError as e:
-        logger.error(e.msg + "\nFailed to resolve dependencies for {}".format(system))
-        exit(1)
-    except SyntaxError as e:
-        logger.error(e.msg)
-        exit(1)
-
     eda_api_file = os.path.join(work_root,
                                 core.name.sanitized_name+'.eda.yml')
     if do_configure:
@@ -209,12 +197,17 @@ def run_backend(export, do_configure, do_build, do_run, flags, system, backendar
                     os.remove(os.path.join(work_root, f))
         else:
             os.makedirs(work_root)
-        CoreManager().setup(core.name,
-                            flags,
-                            export=export,
-                            export_root=export_root)
-        if not os.path.exists(work_root):
-            os.makedirs(work_root)
+        try:
+            eda_api = CoreManager().setup(core.name,
+                                          flags,
+                                          work_root=work_root,
+                                          export_root=export_root)
+        except DependencyError as e:
+            logger.error(e.msg + "\nFailed to resolve dependencies for {}".format(system))
+            exit(1)
+        except SyntaxError as e:
+            logger.error(e.msg)
+            exit(1)
         with open(eda_api_file,'w') as f:
             f.write(yaml.dump(eda_api))
 

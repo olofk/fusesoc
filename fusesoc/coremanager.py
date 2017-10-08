@@ -180,7 +180,7 @@ class CoreManager(object):
         c.name.relation = "=="
         return c
 
-    def get_eda_api(self, vlnv, flags, work_root, export_root=None):
+    def setup(self, vlnv, flags, work_root, export_root=None):
         logger.debug("Building EDA API")
         def merge_dict(d1, d2):
             for key, value in d2.items():
@@ -199,6 +199,9 @@ class CoreManager(object):
 
         _flags = flags.copy()
         for core in cores:
+            logger.info("Preparing " + str(core.name))
+            core.setup()
+
             logger.debug("Collecting EDA API parameters from {}".format(str(core.name)))
             _flags['is_toplevel'] = (core.name == vlnv)
 
@@ -217,6 +220,8 @@ class CoreManager(object):
             #Extract files
             if export_root:
                 files_root = os.path.join(export_root, core.sanitized_name)
+                dst_dir = os.path.join(export_root, core.sanitized_name)
+                core.export(dst_dir, _flags)
             else:
                 files_root = core.files_root
 
@@ -254,15 +259,3 @@ class CoreManager(object):
             'vpi'          : vpi,
         }
 
-    def setup(self, vlnv, flags, export, export_root=None):
-        cores = self.get_depends(vlnv, flags)
-        _flags = flags.copy()
-
-        for core in cores:
-            logger.info("Preparing " + str(core.name))
-            core.setup()
-
-            if export:
-                dst_dir = os.path.join(export_root, core.sanitized_name)
-                _flags['is_toplevel'] = (core.name == vlnv)
-                core.export(dst_dir, _flags)

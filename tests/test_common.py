@@ -56,14 +56,17 @@ def get_backend(core, flags, export):
     from fusesoc.coremanager import CoreManager
     from fusesoc.main import _import
 
-    export_root = os.path.join(Config().build_root, core.name.sanitized_name, 'src')
+    if export:
+        export_root = os.path.join(Config().build_root, core.name.sanitized_name, 'src')
+    else:
+        export_root = None
     work_root   = os.path.join(Config().build_root,
                                core.name.sanitized_name,
                                core.get_work_root(flags))
     if not os.path.exists(work_root):
         os.makedirs(work_root)
-    eda_api = CoreManager().get_eda_api(core.name, flags, work_root)
-    CoreManager().setup(core.name, flags, export=export, export_root=export_root)
+    eda_api = CoreManager().setup(core.name, flags, work_root, export_root)
+
     (h, eda_api_file) = tempfile.mkstemp()
     with open(eda_api_file,'w') as f:
         f.write(yaml.dump(eda_api))
