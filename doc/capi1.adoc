@@ -21,8 +21,11 @@ The following options are defined:
 * *is_include_file :* Boolean value to indicate this should be treated as an include file
 
 * *logical_name :* Indicate that the file belongs to a logical unit (e.g. VHDL Library) with the name set by the value
+* *copyto :* Indicate that the file should be copied to a new location relative to the work root.
 
 Example: rtl/verilog/uart_defines.v[file_type=verilogSource,is_include_file]
+
+Example: data/mem_init_file.bin[copyto=out/boot.bin]
 
 
 

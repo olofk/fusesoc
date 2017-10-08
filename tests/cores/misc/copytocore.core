@@ -1,0 +1,8 @@
+CAPI=1
+[main]
+
+[fileset copyfiles]
+files =
+ subdir/dummy.extra[copyto=copied.file,file_type=user]
+ dummy.tcl[copyto=subdir/another.file]
+file_type = tclSource

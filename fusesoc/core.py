@@ -447,6 +447,7 @@ class Core:
                 else:
                     f.is_include_file = False
                 f.logical_name = f.logicalName
+                f.copyto = ""
             #FIXME: Handle duplicates. Resolution function? (merge/replace, prio ipxact/core)
             _taken = False
             for fs in self.file_sets:

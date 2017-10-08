@@ -18,8 +18,11 @@ The following options are defined:
 * *is_include_file :* Boolean value to indicate this should be treated as an include file
 
 * *logical_name :* Indicate that the file belongs to a logical unit (e.g. VHDL Library) with the name set by the value
+* *copyto :* Indicate that the file should be copied to a new location relative to the work root.
 
 Example: rtl/verilog/uart_defines.v[file_type=verilogSource,is_include_file]
+
+Example: data/mem_init_file.bin[copyto=out/boot.bin]
 
 """
     FILE_TYPES = [
@@ -45,6 +48,7 @@ Example: rtl/verilog/uart_defines.v[file_type=verilogSource,is_include_file]
         'xdc',
         ]
     name      = ""
+    copyto    = ""
     file_type = ""
     is_include_file = False
     logical_name = ""
@@ -63,7 +67,7 @@ Example: rtl/verilog/uart_defines.v[file_type=verilogSource,is_include_file]
                     if _tmp[0] == 'file_type' and _tmp[1] not in self.FILE_TYPES:
                         _s = "Unknown file type '{}'. Allowed file types are {}"
                         raise SyntaxError(_s.format(_tmp[1], ', '.join(self.FILE_TYPES)))
-                    if _tmp[0] in ['file_type', 'logical_name']:
+                    if _tmp[0] in ['copyto', 'file_type', 'logical_name']:
                         setattr(self, _tmp[0], _tmp[1])
                 else:
                     raise SyntaxError("Unexpected argument '"+_arg+"'")

@@ -1,5 +1,6 @@
 import logging
 import os
+import shutil
 
 from okonomiyaki.versions import EnpkgVersion
 
@@ -235,8 +236,18 @@ class CoreManager(object):
             merge_dict(scripts, _scripts)
 
             for file in core.get_files(_flags):
+                if file.copyto:
+                    _name = file.copyto
+                    dst = os.path.join(work_root, _name)
+                    _dstdir = os.path.dirname(dst)
+                    if not os.path.exists(_dstdir):
+                        os.makedirs(_dstdir)
+                    shutil.copy2(os.path.join(files_root, file.name),
+                                 dst)
+                else:
+                    _name = os.path.relpath(os.path.join(files_root, file.name), work_root)
                 files.append({
-                    'name'            : os.path.relpath(os.path.join(files_root, file.name), work_root),
+                    'name'            : _name,
                     'file_type'       : file.file_type,
                     'is_include_file' : file.is_include_file,
                     'logical_name'    : file.logical_name})
