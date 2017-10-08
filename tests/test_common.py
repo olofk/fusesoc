@@ -60,6 +60,8 @@ def get_backend(core, flags, export):
     work_root   = os.path.join(Config().build_root,
                                core.name.sanitized_name,
                                core.get_work_root(flags))
+    if not os.path.exists(work_root):
+        os.makedirs(work_root)
     eda_api = CoreManager().get_eda_api(core.name, flags, work_root)
     CoreManager().setup(core.name, flags, export=export, export_root=export_root)
     (h, eda_api_file) = tempfile.mkstemp()
