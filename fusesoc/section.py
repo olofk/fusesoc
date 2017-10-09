@@ -598,7 +598,7 @@ def load_section(config, section_name, file_name='<unknown>'):
     section = cls(items)
     if section.warnings:
         for warning in section.warnings:
-            logger.warning('Warning: %s in %s' % (warning, file_name))
+            logger.warning('%s in %s' % (warning, file_name))
     if _name:
         return (section, _name)
     else:
