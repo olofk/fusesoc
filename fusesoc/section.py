@@ -6,6 +6,22 @@ from fusesoc.vlnv import Vlnv
 logger = logging.getLogger(__name__)
 
 class File(object):
+    """File objects consist of a mandatory file name, with path relative to
+the core root. Extra options can be specified as a comma-separated list
+enclosed in [] after the file name. Options are either boolean (option) or has a 
+value (option=value). No white-space is allowed anywhere in the file object
+
+The following options are defined:
+
+* *file_type :* Value can be any type defined in <<FileTypes, File types>>
+
+* *is_include_file :* Boolean value to indicate this should be treated as an include file
+
+* *logical_name :* Indicate that the file belongs to a logical unit (e.g. VHDL Library) with the name set by the value
+
+Example: rtl/verilog/uart_defines.v[file_type=verilogSource,is_include_file]
+
+"""
     FILE_TYPES = [
         'PCF',
         'QIP',
@@ -66,6 +82,7 @@ class UnknownSection(Error):
     pass
 
 class StringList(list):
+    """Space-separated list of strings"""
     def __new__(cls, *args, **kwargs):
         if not args:
             return list()
@@ -73,6 +90,11 @@ class StringList(list):
             return list(args[0].split())
 
 class PathList(StringList):
+    """Space-separated list of paths
+
+Each element in the list is subjected to expansion of environment variables and
+ ~ to home directories
+"""
     def __new__(cls, *args, **kwargs):
         if not args:
             return list()
@@ -80,6 +102,11 @@ class PathList(StringList):
             return [os.path.expandvars(p) for p in args[0].split()]
 
 class FileList(PathList):
+    """Space-separated list of <<File>>
+
+Each element in the list is first subjected to the expansion according to
+<<PathList>> and then parsed as a <<File>>
+"""
     def __new__(clk, *args, **kwargs):
         if not args:
             return list()
@@ -87,6 +114,12 @@ class FileList(PathList):
             return [File(p) for p in PathList(args[0])]
 
 class VlnvList(StringList):
+    """Space-separated list of VLNV tags
+
+Each element is treated as a VLNV element with an optional version range
+
+Example: librecores.org:peripherals:uart16550:1.5 >=::simple_spi:1.6 mor1kx =::i2c:1.14
+"""
     def __new__(clk, *args, **kwargs):
         if not args:
             return list()
@@ -112,11 +145,13 @@ class EnumList(list):
             return _valid
 
 class SimulatorList(EnumList):
+    """List of supported simulators. Allowed values are ghdl, icarus, isim, modelsim, verilator, xsim"""
     def __new__(cls, *args, **kwargs):
         values = ['ghdl', 'icarus', 'modelsim', 'verilator', 'isim', 'xsim']
         return super(SimulatorList, cls).__new__(cls, *args, values=values)
 
 class SourceType(str):
+    """Language used for Verilator testbenches. Allowed values are C, CPP or systemC"""
     def __new__(cls, *args, **kwargs):
         if args:
             arg = args[0]
@@ -587,15 +622,35 @@ def _register_subclasses(parent):
 _register_subclasses(Section)
 
 if __name__ == "__main__":
-    typenames = {str           : 'String',
-                 FileList      : 'Space-separated list of files',
-                 PathList      : 'Space-separated list of paths',
-                 SimulatorList : 'Space-separated list',
-                 SourceType    : 'String',
-                 StringList    : 'Space-separated list',
-                 VlnvList      : 'Space-separated list of VLNV identifiers',
-                 list : 'List'}
+    FILE_TEMPLATE = """CAPI1 Definition
+===============
+:toc:
+
+Type definitions
+----------------
+{types}
+
+[[FileTypes]]
+File types
+----------
+
+The following valid file types are defined: {filetypes}
+
+Sections
+--------
+{sections}
+"""
+
+    TYPE_TEMPLATE = """
+
+[[{name}]]
+{name}
+{bar}
+{doc}
+
+"""
     SECTION_TEMPLATE = """
+
 {}
 {}
 
@@ -607,7 +662,27 @@ if __name__ == "__main__":
 
 """
 
+    types = ""
+    for _type in [File, FileList, PathList, SimulatorList, SourceType, StringList, VlnvList]:
+        types += TYPE_TEMPLATE.format(name = _type.__name__,
+                                      bar  = '~'*len(_type.__name__),
+                                      doc  = _type.__doc__)
+    filetypes = ', '.join(File.FILE_TYPES)
+
+    sections = ""
     for k,v in sorted(SECTION_MAP.items()):
-        c = v()
-        s="\n".join(["|{} | {} | {}".format(k2, typenames[v2['type']], v2['desc']) for k2, v2 in sorted(c._members.items())])
-        print(SECTION_TEMPLATE.format(k, '-'*len(k), s))
+        s = []
+        for k2, v2 in sorted(v()._members.items()):
+            _typename = v2['type'].__name__
+            if _typename == 'str':
+                _typename = "String"
+            else:
+                _typename = "<<{},{}>>".format(_typename, _typename)
+            s.append("|{} | {} | {}".format(k2,
+                                            _typename,
+                                            v2['desc']))
+        sections += SECTION_TEMPLATE.format(k, '~'*len(k), '\n'.join(s))
+
+    print(FILE_TEMPLATE.format(types=types,
+                               filetypes = filetypes,
+                               sections = sections))

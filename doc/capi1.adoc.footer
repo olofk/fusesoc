@@ -1,62 +1,45 @@
-Core Description files
-======================
-:Author: Olof Kindgren
-:Email: olof.kindgren@gmail.com
-:Date: 2015-06-04
-:Revision: 1.0
-
-include::capi1.adoc[Core API]
 
 provider
---------
+~~~~~~~~
 The provider section gives information on where to find the source code for the core. If the provider section is missing, the core is assumed to be local, with the directory of the .core file as the root directory.
 
 [cols="2,1,5",options="header"]
 |==============================
 |Name | Type | Description
 |name | String | The name option selects which provider backend to use. All other provider options are specific to the selected provider. Currently supported backends are github, git, opencores, submodule and url.
+|cachable | boolean | If the cachable option is set to false, FuseSoc will unconditionally refetch the core even if it is found in the cache. Default is true
 |==============================
 
-Provider-specific options
--------------------------
+Provider-specific options:
 
-name = github
-~~~~~~~~~~~~~
+github
+^^^^^^
 * *user :* Name of the github user or organisation.
 
 * *repo :* Name of the GIT repository.
 
 * *version :* Name of the GIT ref (i.e. commit SHA, branch or tag) to use
 
-* *cachable :* If the cachable option is set to false, FuseSoc will unconditionally refetch the core even if it is found in the cache
-
-name = git
-~~~~~~~~~~
+git
+^^^
 * *repo :* URL of the GIT repository.
 
 * *version :* Name of the GIT ref (i.e. commit SHA, branch or tag) to use
 
-* *cachable :* If the cachable option is set to false, FuseSoc will unconditionally refetch the core even if it is found in the cache
 
-name  = opencores
-~~~~~~~~~~~~~~~~~
+opencores
+^^^^^^^^^
 * *repo_name :* Name of the opencores project. Can be found under Details on the project homepage.
 
 * *repo_root :* The sub directory in the repo that contains the files of interest. In most cases the value "trunk" is used to avoid pulling in tags and branches.
 
 * *revision :* The svn revision of the repository.
 
-name = submodule
-~~~~~~~~~~
-* *repo :* Path to the GIT repository to use for the submodule
-
-name = url
-~~~~~~~~~~
+url
+^^^
 * *url :* URL of the core file (or archive).
 
 * *filetype :* File type (zip, tar, simple).
-
-* *corename :* Name of the directory where the archive is unpacked (or the simple file is copied). If not provided, the name of the cache/build directory is the same as the core.
 
 Known issues
 ------------
@@ -84,5 +67,3 @@ src_files =
 is ok in python 2 and python 3.
 +
 . Spaces are not allowed anywhere in the paths.
-
-. A specific git commit cannot be selected for the github backend.
