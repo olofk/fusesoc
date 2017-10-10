@@ -23,8 +23,8 @@ class FusesocConfigParser(configparser.SafeConfigParser):
         try:
             self.version = int(id_string[1].strip())
         except ValueError:
-                raise SyntaxError("Unknown version '{}' in {}".format(id_string[1].strip(),
-                                                                      config_file))
+                raise SyntaxError("Unknown version '{}'".format(id_string[1].strip()))
+
         except IndexError:
             raise SyntaxError("Could not find API version in " + config_file)
         try:

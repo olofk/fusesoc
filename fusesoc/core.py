@@ -101,8 +101,10 @@ class Core:
 
         cache_root = os.path.join(Config().cache_root, self.sanitized_name)
         if config.has_section('plusargs'):
-            logger.warning("plusargs section is deprecated and will not be parsed by FuseSoC. Please migrate to parameters in " + str(self.name))
+            self._warning("plusargs section is deprecated and will not be parsed by FuseSoC. Please migrate to parameters")
             self.plusargs = Plusargs(dict(config.items('plusargs')))
+        if config.has_section('verilator') and config.has_option('verilator', 'define_files'):
+            self._warning("verilator define_files are deprecated")
         if config.has_section('provider'):
             items    = dict(config.items('provider'))
             patch_root = os.path.join(self.core_root, 'patches')
@@ -425,6 +427,9 @@ class Core:
 
     def _debug(self, msg):
         logger.debug("{} : {}".format(str(self.name), msg))
+
+    def _warning(self, msg):
+        logger.warning("{} : {}".format(str(self.name), msg))
 
     def _parse_component(self, component_file):
         component_dir = os.path.dirname(component_file)

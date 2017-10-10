@@ -135,7 +135,7 @@ class CoreManager(object):
                 core = Core(file)
                 self.db.add(core)
             except SyntaxError as e:
-                w = "Failed to parse " + file + ": " + e.msg
+                w = "Parse error. Ignoring file " + file + ": " + e.msg
                 logger.warning(w)
             except ImportError as e:
                 logger.warning('Failed to register "{}" due to unknown provider: {}'.format(file, str(e)))
