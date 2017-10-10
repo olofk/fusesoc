@@ -56,7 +56,7 @@ ARACHNE_PNR_OPTIONS := {arachne_pnr_options}
             for key, value in self.vlogparam.items():
                 _s = "chparam -set {} {} $abstract\{}\n"
                 yosys_file.write(_s.format(key,
-                                           self._param_value_str(value, strings_in_quotes=True),
+                                           self._param_value_str(value, '"'),
                                            self.toplevel))
 
             yosys_file.write("verilog_defaults -pop\n")

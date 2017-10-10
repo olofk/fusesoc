@@ -53,7 +53,7 @@ quit
 
         if self.vlogparam:
             s = 'project set "Generics, Parameters" "{}" -process "Synthesize - XST"\n'
-            tcl_file.write(s.format('|'.join([k+'='+self._param_value_str(v) for k,v in self.vlogparam.items()])))
+            tcl_file.write(s.format('|'.join([k+'='+self._param_value_str(v, '\\"') for k,v in self.vlogparam.items()])))
 
         (src_files, incdirs) = self._get_fileset_files()
 
