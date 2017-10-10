@@ -142,12 +142,12 @@ class EdaTool(object):
 
     Rules:
     - Booleans are represented as 0/1
-    - Strings are either passed through (strings_in_quotes=False) or
-      put into double quotation marks (")
+    - Strings are either passed through or enclosed in the characters specified
+      in str_quote_style (e.g. '"' or '\\"')
     - Everything else (including int, float, etc.) are converted using the str()
       function.
     """
-    def _param_value_str(self, param_value, strings_in_quotes=False):
+    def _param_value_str(self, param_value, str_quote_style=""):
 
       if type(param_value) == bool:
           if (param_value) == True:
@@ -155,10 +155,7 @@ class EdaTool(object):
           else:
               return '0'
       elif type(param_value) == str:
-          if strings_in_quotes:
-              return '"'+str(param_value)+'"'
-          else:
-              return str(param_value)
+          return str_quote_style+str(param_value)+str_quote_style
       else:
           return str(param_value)
 
