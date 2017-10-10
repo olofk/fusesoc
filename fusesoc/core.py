@@ -95,7 +95,10 @@ class Core:
         self.simulators = self.main.simulators
 
         if self.main.backend:
-            self.backend = getattr(self, self.main.backend)
+            try:
+                self.backend = getattr(self, self.main.backend)
+            except AttributeError:
+                raise SyntaxError('Invalid backend "{}"'.format(self.main.backend))
 
         self._collect_filesets()
 
