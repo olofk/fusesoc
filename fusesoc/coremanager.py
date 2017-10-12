@@ -182,6 +182,15 @@ class CoreManager(object):
         return c
 
     def setup(self, vlnv, flags, work_root, export_root=None):
+        if os.path.exists(work_root):
+            for f in os.listdir(work_root):
+                if os.path.isdir(os.path.join(work_root, f)):
+                    shutil.rmtree(os.path.join(work_root, f))
+                else:
+                    os.remove(os.path.join(work_root, f))
+        else:
+            os.makedirs(work_root)
+
         logger.debug("Building EDA API")
         def merge_dict(d1, d2):
             for key, value in d2.items():

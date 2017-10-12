@@ -189,14 +189,6 @@ def run_backend(export, do_configure, do_build, do_run, flags, system, backendar
     eda_api_file = os.path.join(work_root,
                                 core.name.sanitized_name+'.eda.yml')
     if do_configure:
-        if os.path.exists(work_root):
-            for f in os.listdir(work_root):
-                if os.path.isdir(os.path.join(work_root, f)):
-                    shutil.rmtree(os.path.join(work_root, f))
-                else:
-                    os.remove(os.path.join(work_root, f))
-        else:
-            os.makedirs(work_root)
         try:
             eda_api = CoreManager().setup(core.name,
                                           flags,
