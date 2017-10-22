@@ -30,6 +30,7 @@ Example: data/mem_init_file.bin[copyto=out/boot.bin]
         'QIP',
         'SDC',
         'UCF',
+        'BMM',
         'tclSource',
         'user',
         'verilogSource',
