@@ -386,7 +386,9 @@ class Core:
             elif _bname == 'ise':
                 _files += _append_files(_b.tcl_files, 'tclSource')
                 _files += _append_files(_b.ucf_files, 'UCF')
+                _files += _append_files(_b.bmm_files, 'BMM')
                 del(_b.ucf_files)
+                del(_b.bmm_files)
             elif _bname == 'quartus':
                 _files += _append_files(_b.qsys_files, 'QSYS')
                 _files += _append_files(_b.sdc_files, 'SDC')

@@ -68,6 +68,8 @@ quit
                 tcl_file.write('xfile add {}\n'.format(f.name))
             elif f.file_type == 'UCF':
                 tcl_file.write('xfile add {}\n'.format(f.name))
+            elif f.file_type == 'BMM':
+                tcl_file.write('xfile add {}\n'.format(f.name))
             elif f.file_type.startswith('vhdlSource'):
                 if f.logical_name:
                     if not f.logical_name in _libraries:

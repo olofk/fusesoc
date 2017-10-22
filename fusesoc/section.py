@@ -30,6 +30,7 @@ Example: data/mem_init_file.bin[copyto=out/boot.bin]
         'QIP',
         'SDC',
         'UCF',
+        'BMM',
         'tclSource',
         'user',
         'verilogSource',
@@ -522,6 +523,7 @@ class IseSection(ToolSection):
         super(IseSection, self).__init__()
 
         self._add_member('ucf_files' , FileList, "UCF constraint files")
+        self._add_member('bmm_files' , FileList, "bmm constraint files")
         self._add_member('tcl_files' , FileList, "Extra TCL scripts")
         self._add_member('family'    , str, 'FPGA device family')
         self._add_member('device'    , str, 'FPGA device identifier')
