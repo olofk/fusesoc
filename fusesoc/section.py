@@ -492,6 +492,7 @@ class IcestormSection(ToolSection):
         super(IcestormSection, self).__init__()
 
         self._add_member('arachne_pnr_options', StringList, "arachne-pnr options")
+        self._add_member('yosys_synth_options' , StringList, "Additional options for the synth_* commands in yosys")
         self._add_member('pcf_file' , FileList, "Physical constraint file")
         self._add_member('top_module', str, 'RTL top-level module')
 

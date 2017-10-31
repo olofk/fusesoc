@@ -147,6 +147,7 @@ icestorm
 |depend | <<VlnvList,VlnvList>> | Tool-specific Dependencies
 |pcf_file | <<FileList,FileList>> | Physical constraint file
 |top_module | String | RTL top-level module
+|yosys_synth_options | <<StringList,StringList>> | Additional options for the synth_* commands in yosys
 |==============================
 
 
