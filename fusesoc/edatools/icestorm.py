@@ -61,8 +61,10 @@ ARACHNE_PNR_OPTIONS := {arachne_pnr_options}
 
             yosys_file.write("verilog_defaults -pop\n")
             yosys_file.write("synth_ice40")
-            if self.tool_options['yosys_synth_options']:
+            try:
                 yosys_file.write(' ' + ' '.join(self.tool_options['yosys_synth_options']))
+            except KeyError:
+                pass
             yosys_file.write(" -blif {}.blif".format(self.name))
             if self.toplevel:
                 yosys_file.write(" -top " + self.toplevel)
