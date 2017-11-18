@@ -64,9 +64,9 @@ class Ghdl(Simulator):
 
         cmd = 'ghdl'
         args = ['-r']
-        if 'run_options' in self.tool_options:
-            args += self.tool_options['run_options']
         args += [self.toplevel]
+        if 'run_options' in self.tool_options:
+            args += self.tool_options['run_options'] 
         Launcher(cmd, args,
                  cwd      = self.work_root,
                  errormsg = "Simulation failed").run()
