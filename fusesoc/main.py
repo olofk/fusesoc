@@ -10,6 +10,10 @@ import signal
 import yaml
 
 from fusesoc import __version__
+if sys.version[0] == '2':
+    import ConfigParser as configparser
+else:
+    import configparser
 
 #Check if this is run from a local installation
 fusesocdir = os.path.abspath(os.path.join(os.path.dirname(os.path.realpath(__file__)), ".."))
@@ -90,12 +94,6 @@ def fetch(args):
         exit(1)
 
 def init(args):
-    # Fix Python 2.x.
-    global input
-    try:
-        input = raw_input
-    except NameError:
-        pass
 
     xdg_data_home = os.environ.get('XDG_DATA_HOME') or \
                     os.path.join(os.path.expanduser('~'),
@@ -143,6 +141,40 @@ def init(args):
 def list_paths(args):
     cores_root = CoreManager().get_cores_root()
     print("\n".join(cores_root))
+    
+def add_paths(args):
+    parser = configparser.ConfigParser()
+    if Config().config_files:
+        config_file = Config().config_files[-1]
+        logger.debug("Modifying " + config_file)
+        parser.read(config_file)
+        try:
+            current_roots = parser.get("main", "cores_root")
+        except (configparser.NoSectionError, configparser.NoOptionError):
+            logger.warning("Config file {} does not contain a cores_root option".format(config_file))
+            current_roots = ""
+    else:
+        xdg_config_home = os.environ.get('XDG_CONFIG_HOME') or \
+                          os.path.join(os.path.expanduser('~'), '.config')
+        config_file = os.path.join(xdg_config_home, 'fusesoc','fusesoc.conf')
+        if not os.path.exists(os.path.dirname(config_file)):
+            os.makedirs(os.path.dirname(config_file))
+        logger.warning("No config file found - creating one at " + config_file)
+        current_roots = ""
+    if not parser.has_section("main"):
+        parser.add_section("main")
+    new_paths = filter(lambda x: not x in current_roots.split(), args.paths)
+    old_paths = filter(lambda x: x in current_roots.split(), args.paths)
+    new_roots = (current_roots + " " + ' '.join(new_paths)).strip()
+    parser.set("main", "cores_root", new_roots)
+    with open(config_file, 'wb') as configfile:
+        parser.write(configfile)
+    if old_paths:
+        logger.info("core roots " + str(old_paths) + " are already present in " + config_file)
+    if new_paths:
+        logger.info("Added " + str(new_paths) + " as core roots.")
+    else:
+        logger.warning("No new paths added!")
 
 def list_cores(args):
     cores = CoreManager().get_cores()
@@ -325,6 +357,12 @@ def run(args):
     args.func(args)
 
 def main():
+    # Fix Python 2.x.
+    global input
+    try:
+        input = raw_input
+    except NameError:
+        pass
 
     parser = argparse.ArgumentParser()
     subparsers = parser.add_subparsers()
@@ -378,9 +416,18 @@ def main():
     parser_core_info.add_argument('core')
     parser_core_info.set_defaults(func=core_info)
 
-    # list-paths subparser
-    parser_list_paths = subparsers.add_parser('list-paths', help='Display the search order for core root paths')
-    parser_list_paths.set_defaults(func=list_paths)
+    # library subparser
+    parser_library = subparsers.add_parser('library', help='Subcommands for dealing with library management')
+    library_subparsers = parser_library.add_subparsers()
+    
+    # library list subparser
+    parser_library_list = library_subparsers.add_parser('list', help='Display the search order for core root paths')
+    parser_library_list.set_defaults(func=list_paths)
+    
+    # library add subparser
+    parser_add_paths = library_subparsers.add_parser('add', help='Add core root paths to the config file')
+    parser_add_paths.add_argument('paths', nargs="+", help='A list of paths to add to the config file')
+    parser_add_paths.set_defaults(func=add_paths)
 
     # sim subparser
     parser_sim = subparsers.add_parser('sim', help='Setup and run a simulation')
