@@ -41,7 +41,7 @@ class FileSet(object):
         return s
 
 class Core:
-    def __init__(self, core_file):
+    def __init__(self, core_file, cache_root, build_root):
         basename = os.path.basename(core_file)
         self.depend = []
         self.simulators = []
@@ -59,6 +59,7 @@ class Core:
 
         self.core_root = os.path.dirname(core_file)
         self.files_root = self.core_root
+        self.build_root = build_root
 
         self.export_files = []
 
@@ -102,7 +103,7 @@ class Core:
 
         self._collect_filesets()
 
-        cache_root = os.path.join(Config().cache_root, self.sanitized_name)
+        cache_root = os.path.join(cache_root, self.sanitized_name)
         if config.has_section('plusargs'):
             self._warning("plusargs section is deprecated and will not be parsed by FuseSoC. Please migrate to parameters")
             self.plusargs = Plusargs(dict(config.items('plusargs')))
@@ -173,7 +174,7 @@ class Core:
     def get_scripts(self, flags):
         scripts = {}
         if self.scripts:
-            env = {'BUILD_ROOT' : Config().build_root}
+            env = {'BUILD_ROOT' : self.build_root}
             flow = self._get_flow(flags)
             if flow is 'sim':
                 for s in ['pre_build_scripts', 'pre_run_scripts', 'post_run_scripts']:

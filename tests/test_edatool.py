@@ -2,7 +2,7 @@ import os
 import shutil
 import pytest
 
-from test_common import get_core, get_sim
+from test_common import get_core, get_sim, build_root
 
 tests_dir = os.path.dirname(__file__)
 core      = get_core("wb_intercon")
@@ -10,8 +10,7 @@ backend   = get_sim('icarus', core, export=True)
 ref_dir   = os.path.join(tests_dir, __name__)
 
 def test_edatool():
-    from fusesoc.config import Config
-    export_root = os.path.join(Config().build_root, core.name.sanitized_name, 'src')
+    export_root = os.path.join(build_root, core.name.sanitized_name, 'src')
     backend.configure([])
     for f in [
             'verilog_utils_0/verilog_utils.vh',

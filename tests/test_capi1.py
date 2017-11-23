@@ -4,7 +4,7 @@ import pytest
 
 from fusesoc.core import Core
 
-from test_common import get_core
+from test_common import get_core, cache_root, build_root
 def compare_fileset(fileset, name, files):
     assert name == fileset.name
     for i in range(len(files)):
@@ -41,7 +41,7 @@ def test_core_parsing():
     import sys
     if sys.version_info[0] > 2:
         with pytest.raises(SyntaxError) as e:
-            core = Core("tests/cores/misc/duplicateoptions.core")
+            core = Core("tests/cores/misc/duplicateoptions.core", cache_root, build_root)
         assert "option 'file_type' in section 'fileset dummy' already exists" in str(e.value)
 
 def test_get_scripts():
@@ -95,7 +95,7 @@ def test_get_toplevel():
     filename = os.path.join(os.path.dirname(__file__),
                             __name__,
                             "atlys.core")
-    core = Core(filename)
+    core = Core(filename, cache_root, build_root)
     assert 'orpsoc_tb'  == core.get_toplevel({'tool' : 'icarus'})
     assert 'orpsoc_tb'  == core.get_toplevel({'tool' : 'icarus', 'testbench' : None})
     assert 'tb'         == core.get_toplevel({'tool' : 'icarus', 'testbench' : 'tb'})
@@ -103,7 +103,7 @@ def test_get_toplevel():
     filename = os.path.join(os.path.dirname(__file__),
                             __name__,
                             "sockit.core")
-    core = Core(filename)
+    core = Core(filename, cache_root, build_root)
     assert 'dummy_tb'   == core.get_toplevel({'tool' : 'icarus'})
     assert 'dummy_tb'   == core.get_toplevel({'tool' : 'icarus', 'testbench' : None})
     assert 'tb'         == core.get_toplevel({'tool' : 'icarus', 'testbench' : 'tb'})
@@ -113,7 +113,7 @@ def test_icestorm():
     filename = os.path.join(os.path.dirname(__file__),
                             __name__,
                             "c3demo.core")
-    core = Core(filename)
+    core = Core(filename, cache_root, build_root)
     assert len(core.file_sets) == 3
     compare_fileset(core.file_sets[0], 'rtl_files', ['c3demo.v', 'ledpanel.v','picorv32.v'])
     compare_fileset(core.file_sets[1], 'tb_files' , ['firmware.hex', '$YOSYS_DAT_DIR/ice40/cells_sim.v', 'testbench.v'])
@@ -131,7 +131,7 @@ def test_ise():
     filename = os.path.join(os.path.dirname(__file__),
                             __name__,
                             "atlys.core")
-    core = Core(filename)
+    core = Core(filename, cache_root, build_root)
 
     #Check filesets
     assert len(core.file_sets) == 4
@@ -157,7 +157,7 @@ def test_quartus():
     filename = os.path.join(os.path.dirname(__file__),
                             __name__,
                             "sockit.core")
-    core = Core(filename)
+    core = Core(filename, cache_root, build_root)
 
     #Check filesets
     assert len(core.file_sets) == 4
@@ -185,12 +185,12 @@ def test_simulator():
     filename = os.path.join(os.path.dirname(__file__),
                             __name__,
                             "c3demo.core")
-    core = Core(filename)
+    core = Core(filename, cache_root, build_root)
     assert core.simulator['toplevel'] == 'testbench'
 
     #Implicit toplevel
     filename = os.path.join(os.path.dirname(__file__),
                             __name__,
                             "atlys.core")
-    core = Core(filename)
+    core = Core(filename, cache_root, build_root)
     assert core.simulator['toplevel'] == 'orpsoc_tb'

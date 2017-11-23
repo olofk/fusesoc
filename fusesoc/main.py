@@ -180,10 +180,10 @@ def run_backend(export, do_configure, do_build, do_run, flags, system, backendar
         exit(1)
     flags['tool'] = tool
     if export:
-        export_root = os.path.join(Config().build_root, core.name.sanitized_name, 'src')
+        export_root = os.path.join(CoreManager().build_root, core.name.sanitized_name, 'src')
     else:
         export_root = None
-    work_root   = os.path.join(Config().build_root,
+    work_root   = os.path.join(CoreManager().build_root,
                                core.name.sanitized_name,
                                core.get_work_root(flags))
     eda_api_file = os.path.join(work_root,
@@ -289,7 +289,7 @@ def run(args):
         logger.debug("Colorful output")
 
     cm = CoreManager()
-    config = Config()
+    config = CoreManager._config
 
     # Get the environment variable for further cores
     env_cores_root = []
