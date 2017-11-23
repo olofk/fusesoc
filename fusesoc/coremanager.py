@@ -12,6 +12,7 @@ from simplesat.repository import Repository
 from simplesat.request import Request
 
 from fusesoc.core import Core
+from fusesoc.config import Config
 
 logger = logging.getLogger(__name__)
 
@@ -121,18 +122,22 @@ class CoreDB(object):
 class CoreManager(object):
     _instance = None
     _cores_root = []
+    _config = None
 
     db = CoreDB()
+    build_root = None
 
     def __new__(cls, *args, **kwargs):
         if not cls._instance:
             cls._instance = super(CoreManager, cls).__new__(cls, *args, **kwargs)
+            cls._instance._config = Config()
+            cls._instance.build_root = cls._instance._config.build_root
         return cls._instance
 
     def load_core(self, file):
         if os.path.exists(file):
             try:
-                core = Core(file)
+                core = Core(file, self._config.cache_root, self._config.build_root)
                 self.db.add(core)
             except SyntaxError as e:
                 w = "Parse error. Ignoring file " + file + ": " + e.msg

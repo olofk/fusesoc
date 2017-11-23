@@ -11,20 +11,11 @@ import os
 logger = logging.getLogger(__name__)
 
 class Config(object):
-    _instance = None
-    _init_done = False
-
     archbits = 0
     cygpath=False
-    def __new__(cls, *args, **kwargs):
-        if not cls._instance:
-            cls._instance = super(Config, cls).__new__(cls, *args, **kwargs)
-        return cls._instance
 
     def __init__(self):
         #TODO: Add option to load custom config file
-        if self._init_done:
-            return
         self.build_root = None
         self.cache_root = None
         self.cores_root = []
@@ -74,4 +65,3 @@ class Config(object):
         logger.debug('cache_root='+self.cache_root)
         logger.debug('cores_root='+':'.join(self.cores_root))
         logger.debug('systems_root='+self.systems_root if self.systems_root else "Not defined")
-        self._init_done = True

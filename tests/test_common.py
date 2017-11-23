@@ -1,6 +1,12 @@
+import os
+
+tests_dir = os.path.dirname(__file__)
+build_root = os.path.join(tests_dir, 'build')
+cache_root = os.path.join(tests_dir, 'cache')
+cores_root = os.path.join(tests_dir, 'cores')
+
 def compare_file(ref_dir, work_root, name):
     import difflib
-    import os
     reference_file = os.path.join(ref_dir, name)
     generated_file = os.path.join(work_root, name)
 
@@ -12,7 +18,6 @@ def compare_file(ref_dir, work_root, name):
 
 def compare_files(ref_dir, work_root, files):
     import difflib
-    import os
 
     for f in files:
         reference_file = os.path.join(ref_dir, f)
@@ -24,18 +29,13 @@ def compare_files(ref_dir, work_root, files):
             assert fref.read() == fgen.read(), f
 
 def get_core(core):
-    import os
-    from fusesoc.config import Config
     from fusesoc.coremanager import CoreManager
     from fusesoc.main import _get_core
 
-    tests_dir = os.path.dirname(__file__)
-
-    Config().build_root = os.path.join(tests_dir, 'build')
-    Config().cache_root = os.path.join(tests_dir, 'cache')
-    cores_root = os.path.join(tests_dir, 'cores')
-
+    CoreManager()._config.build_root = build_root
+    CoreManager()._config.cache_root = cache_root
     CoreManager().add_cores_root(cores_root)
+    
     return _get_core(core)
 
 def get_sim(sim, core, export=False):
@@ -52,15 +52,14 @@ def get_backend(core, flags, export):
     import os.path
     import tempfile
     import yaml
-    from fusesoc.config import Config
     from fusesoc.coremanager import CoreManager
     from fusesoc.main import _import
 
     if export:
-        export_root = os.path.join(Config().build_root, core.name.sanitized_name, 'src')
+        export_root = os.path.join(build_root, core.name.sanitized_name, 'src')
     else:
         export_root = None
-    work_root   = os.path.join(Config().build_root,
+    work_root   = os.path.join(build_root,
                                core.name.sanitized_name,
                                core.get_work_root(flags))
     eda_api = CoreManager().setup(core.name, flags, work_root, export_root)
