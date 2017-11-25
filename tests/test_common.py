@@ -32,11 +32,12 @@ def get_core(core):
     from fusesoc.coremanager import CoreManager
     from fusesoc.main import _get_core
 
-    CoreManager()._config.build_root = build_root
-    CoreManager()._config.cache_root = cache_root
-    CoreManager().add_cores_root(cores_root)
+    cm = CoreManager()
+    cm._config.build_root = build_root
+    cm._config.cache_root = cache_root
+    cm.add_cores_root(cores_root)
     
-    return _get_core(core)
+    return _get_core(cm, core)
 
 def get_sim(sim, core, export=False):
     flags = {'target' : 'sim',
