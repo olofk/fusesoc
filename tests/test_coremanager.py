@@ -3,6 +3,7 @@ import pytest
 import shutil
 
 from fusesoc.coremanager import CoreManager
+from fusesoc.config import Config
 from test_common import get_core
 
 def test_copyto():
@@ -24,7 +25,7 @@ def test_copyto():
     else:
         os.makedirs(work_root)
 
-    eda_api = CoreManager().setup(core.name, flags, work_root, None)
+    eda_api = CoreManager(Config()).setup(core.name, flags, work_root, None)
 
     assert eda_api['files'] == [{'file_type': 'user',
                                  'logical_name': '',

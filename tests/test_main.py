@@ -2,6 +2,7 @@ import pytest
 
 from fusesoc.main import sim
 from fusesoc.coremanager import CoreManager
+from fusesoc.config import Config
 
 def test_sim(capsys):
     class Args():
@@ -18,7 +19,7 @@ def test_sim(capsys):
 
     args = Args(system="wb_common")
     with pytest.raises(SystemExit):
-        sim(CoreManager(), args)
+        sim(CoreManager(Config()), args)
     out, err = capsys.readouterr()
     assert out == ""
     #Workaround since this test fails with Travis on Python2.7. No idea why
