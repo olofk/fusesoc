@@ -89,7 +89,7 @@ def fetch(cm, args):
         logger.error("Failed to fetch '{}': {}".format(core.name, str(e)))
         exit(1)
 
-def init(args):
+def init(cm, args):
     # Fix Python 2.x.
     global input
     try:
@@ -180,10 +180,10 @@ def run_backend(cm, export, do_configure, do_build, do_run, flags, system, backe
         exit(1)
     flags['tool'] = tool
     if export:
-        export_root = os.path.join(cm.build_root, core.name.sanitized_name, 'src')
+        export_root = os.path.join(cm.config.build_root, core.name.sanitized_name, 'src')
     else:
         export_root = None
-    work_root   = os.path.join(cm.build_root,
+    work_root   = os.path.join(cm.config.build_root,
                                core.name.sanitized_name,
                                core.get_work_root(flags))
     eda_api_file = os.path.join(work_root,
@@ -288,8 +288,8 @@ def run(args):
     else:
         logger.debug("Colorful output")
 
-    cm = CoreManager()
-    config = cm._config
+    config = Config()
+    cm = CoreManager(config)
 
     # Get the environment variable for further cores
     env_cores_root = []

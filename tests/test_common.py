@@ -30,11 +30,13 @@ def compare_files(ref_dir, work_root, files):
 
 def get_core(core):
     from fusesoc.coremanager import CoreManager
+    from fusesoc.config import Config
     from fusesoc.main import _get_core
 
-    cm = CoreManager()
-    cm._config.build_root = build_root
-    cm._config.cache_root = cache_root
+    config = Config()
+    config.build_root = build_root
+    config.cache_root = cache_root
+    cm = CoreManager(config)
     cm.add_cores_root(cores_root)
     
     return _get_core(cm, core)
@@ -54,6 +56,7 @@ def get_backend(core, flags, export):
     import tempfile
     import yaml
     from fusesoc.coremanager import CoreManager
+    from fusesoc.config import Config
     from fusesoc.main import _import
 
     if export:
@@ -63,7 +66,7 @@ def get_backend(core, flags, export):
     work_root   = os.path.join(build_root,
                                core.name.sanitized_name,
                                core.get_work_root(flags))
-    eda_api = CoreManager().setup(core.name, flags, work_root, export_root)
+    eda_api = CoreManager(Config()).setup(core.name, flags, work_root, export_root)
 
     (h, eda_api_file) = tempfile.mkstemp()
     with open(eda_api_file,'w') as f:

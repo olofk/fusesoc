@@ -122,19 +122,17 @@ class CoreDB(object):
 class CoreManager(object):
     _instance = None
     _cores_root = []
-    _config = None
 
     db = CoreDB()
-    build_root = None
+    config = None
 
-    def __init__(self):
-        self._config = Config()
-        self.build_root = self._config.build_root
+    def __init__(self, config):
+        self.config = config
 
     def load_core(self, file):
         if os.path.exists(file):
             try:
-                core = Core(file, self._config.cache_root, self._config.build_root)
+                core = Core(file, self.config.cache_root, self.config.build_root)
                 self.db.add(core)
             except SyntaxError as e:
                 w = "Parse error. Ignoring file " + file + ": " + e.msg
