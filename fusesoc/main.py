@@ -34,10 +34,10 @@ REPOS = [('orpsoc-cores',
           'https://github.com/fusesoc/fusesoc-cores',
           "new base library")]
 
-def _get_core(name):
+def _get_core(cm, name):
     core = None
     try:
-        core = CoreManager().get_core(Vlnv(name))
+        core = cm.get_core(Vlnv(name))
     except RuntimeError as e:
         logger.error(str(e))
         exit(1)
@@ -60,28 +60,28 @@ def abort_handler(signal, frame):
 
 signal.signal(signal.SIGINT, abort_handler)
 
-def build(args):
+def build(cm, args):
     do_configure = True
     do_build = not args.setup
     do_run = False
     flags = {'target' : 'synth',
              'tool' : None,}
-    run_backend(not args.no_export,
+    run_backend(cm, not args.no_export,
                 do_configure, do_build, do_run,
                 flags, args.system, args.backendargs)
 
-def pgm(args):
+def pgm(cm, args):
     do_configure = False
     do_build = False
     do_run = True
     flags = {'target' : 'synth',
              'tool' : None}
-    run_backend('build',
+    run_backend(cm, 'build',
                 do_configure, do_build, do_run,
                 flags, args.system, args.backendargs)
 
-def fetch(args):
-    core = _get_core(args.core)
+def fetch(cm, args):
+    core = _get_core(cm, args.core)
 
     try:
         core.setup()
@@ -140,15 +140,15 @@ def init(args):
         f.write("cores_root = {}\n".format(' '.join(_repo_paths)))
     logger.info("FuseSoC is ready to use!")
 
-def list_paths(args):
-    cores_root = CoreManager().get_cores_root()
+def list_paths(cm, args):
+    cores_root = cm.get_cores_root()
     print("\n".join(cores_root))
 
-def list_cores(args):
-    cores = CoreManager().get_cores()
+def list_cores(cm, args):
+    cores = cm.get_cores()
     print("\nAvailable cores:\n")
     if not cores:
-        cores_root = CoreManager().get_cores_root()
+        cores_root = cm.get_cores_root()
         if cores_root:
             logger.error("No cores found in "+':'.join(cores_root))
         else:
@@ -161,39 +161,39 @@ def list_cores(args):
         core = cores[name]
         print(name.ljust(maxlen) + ' : ' + core.cache_status())
 
-def core_info(args):
-    core = _get_core(args.core)
+def core_info(cm, args):
+    core = _get_core(cm, args.core)
     print(core.info())
 
-def list_systems(args):
+def list_systems(cm, args):
     print("Available systems:")
-    for core in CoreManager().get_cores().values():
+    for core in cm.get_cores().values():
         if core.get_tool({'target' : 'synth', 'tool' : None}):
             print(str(core.name))
 
-def run_backend(export, do_configure, do_build, do_run, flags, system, backendargs):
+def run_backend(cm, export, do_configure, do_build, do_run, flags, system, backendargs):
     tool_error = "No tool was supplied on command line or found in '{}' core description"
-    core = _get_core(system)
+    core = _get_core(cm, system)
     tool = core.get_tool(flags)
     if not tool:
         logger.error(tool_error.format(system))
         exit(1)
     flags['tool'] = tool
     if export:
-        export_root = os.path.join(CoreManager().build_root, core.name.sanitized_name, 'src')
+        export_root = os.path.join(cm.build_root, core.name.sanitized_name, 'src')
     else:
         export_root = None
-    work_root   = os.path.join(CoreManager().build_root,
+    work_root   = os.path.join(cm.build_root,
                                core.name.sanitized_name,
                                core.get_work_root(flags))
     eda_api_file = os.path.join(work_root,
                                 core.name.sanitized_name+'.eda.yml')
     if do_configure:
         try:
-            eda_api = CoreManager().setup(core.name,
-                                          flags,
-                                          work_root=work_root,
-                                          export_root=export_root)
+            eda_api = cm.setup(core.name,
+                               flags,
+                               work_root=work_root,
+                               export_root=export_root)
         except DependencyError as e:
             logger.error(e.msg + "\nFailed to resolve dependencies for {}".format(system))
             exit(1)
@@ -242,7 +242,7 @@ def run_backend(export, do_configure, do_build, do_run, flags, system, backendar
                                                         str(e)))
             exit(1)
 
-def sim(args):
+def sim(cm, args):
     do_configure = not args.keep
     do_build = not args.setup
     do_run   = not (args.build_only or args.setup)
@@ -252,12 +252,12 @@ def sim(args):
              'target' : 'sim',
              'testbench' : args.testbench
     }
-    run_backend(not args.no_export,
+    run_backend(cm, not args.no_export,
                 do_configure, do_build, do_run,
                 flags, args.system, args.backendargs)
 
-def update(args):
-    for root in CoreManager().get_cores_root():
+def update(cm, args):
+    for root in cm.get_cores_root():
         if os.path.exists(root):
             args = ['-C', root,
                     'config', '--get', 'remote.origin.url']
@@ -289,7 +289,7 @@ def run(args):
         logger.debug("Colorful output")
 
     cm = CoreManager()
-    config = CoreManager._config
+    config = cm._config
 
     # Get the environment variable for further cores
     env_cores_root = []
@@ -322,7 +322,7 @@ def run(args):
         else:
             logger.debug("Using native Windows paths")
     # Run the function
-    args.func(args)
+    args.func(cm, args)
 
 def main():
 
