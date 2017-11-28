@@ -12,7 +12,6 @@ logger = logging.getLogger(__name__)
 
 class Config(object):
     archbits = 0
-    cygpath=False
 
     def __init__(self):
         #TODO: Add option to load custom config file

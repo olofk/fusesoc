@@ -2,7 +2,7 @@ import logging
 import sys
 
 from fusesoc.provider.provider import Provider
-from fusesoc.utils import Launcher, cygpath
+from fusesoc.utils import Launcher, cygpath, is_mingw
 from fusesoc.config import Config
 
 logger = logging.getLogger(__name__)
@@ -19,7 +19,8 @@ class Opencores(Provider):
         revision_number  = self.config.get('revision')
         logger.info("Downloading " + repo_name + " from OpenCores")
 
-        if sys.platform == "win32" and Config().cygpath:
+        if is_mingw():
+            logger.debug("Using cygpath translation")
             local_dir = cygpath(local_dir)
 
         Launcher('svn', ['co', '-q', '--no-auth-cache',

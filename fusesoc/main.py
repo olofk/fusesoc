@@ -315,12 +315,6 @@ def run(args):
     else:
         config.archbits = 64 if platform.architecture()[0] == '64bit' else 32
         logger.debug("Autodetected " + str(config.archbits) + "-bit mode")
-    if sys.platform == "win32":
-        config.cygpath = vars(args)['cygpath']
-        if config.cygpath:
-            logger.debug("Using cygpath translation")
-        else:
-            logger.debug("Using native Windows paths")
     # Run the function
     args.func(cm, args)
 
@@ -338,7 +332,6 @@ def main():
     parser.add_argument('--64', help='Force 64 bit mode for invoked tools', action='store_true')
     parser.add_argument('--monochrome', help='Don\'t use color for messages', action='store_true')
     parser.add_argument('--verbose', help='More info messages', action='store_true')
-    parser.add_argument('--cygpath', help='Use POSIX paths on Windows (no effect on POSIX systems)', action='store_true')
 
     # build subparser
     parser_build = subparsers.add_parser('build', help='Build an FPGA load module')
