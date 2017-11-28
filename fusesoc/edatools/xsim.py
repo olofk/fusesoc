@@ -56,7 +56,7 @@ class Xsim(Simulator):
 
         #Build simulation model
         args = []
-        args += [ self.toplevel]
+        args += self.toplevel.split()
         args += ['--prj', 'xsim.prj']      # list of design files
         args += ['--timescale', '1ps/1ps'] # default timescale to prevent error if unspecified
         args += ['--snapshot', 'fusesoc']  # name of the design to simulate
