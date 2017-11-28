@@ -47,6 +47,11 @@ class Launcher:
     def __str__(self):
         return ' '.join([self.cmd] + self.args)
 
+def is_mingw():
+    if sys.platform == "msys":
+        return True
+    return (sys.platform == "win32" and "GCC" in sys.version)
+
 def cygpath(win_path):
     path = subprocess.check_output(["cygpath", "-u", win_path])
     return path.decode('ascii').strip()
