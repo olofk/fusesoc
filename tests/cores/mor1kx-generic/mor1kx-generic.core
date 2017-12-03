@@ -46,6 +46,9 @@ tb_toplevel   = bench/verilator/tb.cpp
 top_module    = orpsoc_top
 cli_parser    = fusesoc
 
+[xsim]
+xsim_options = dummy options for xelab
+
 [parameter clear_ram]
 datatype    = bool
 description = Preset RAM to a known value (0)

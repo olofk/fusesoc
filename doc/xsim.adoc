@@ -1,0 +1,31 @@
+xsim
+====
+
+The xsim backend is used to simulate designs using Xilinx xsim from the Vivado suite.
+
+In order to use the xsim backend, the `xelab` and `xsim` commands must be available on the path
+
+Configure
+---------
+During the configure phase, five files will be created:
+
+* `Makefile` contains the target-independent makefile rules
+* `config.mk` contains the target-specific settings such ass include directories, defines, tool options etc.
+* `$TARGET.prj` contains build commands for all VHDL, Verilog and SystemVerilog files to be consumed by `xelab`
+* `run.tcl` contains TCL commands to be sourced by `xsim` in batch mode
+* `run-gui.tcl` contains TCL commands to be sourced by `xsim` in GUI mode
+
+Build
+-----
+Run `make` to (re)build the simulation model
+
+Run
+---
+xsim can be launched in batch mode or GUI mode
+
+`make run` will launch in batch mode and source `run.tcl` to run simulation and exit afterwards
+
+`make run-gui` will launch in GUI mode, create a waveform window with all signals and run the simulation.
+
+In both cases additional arguments can be set with the `EXTRA_OPTIONS` environment variable, e.g.
+`make run EXTRA_OPTIONS="-testplusarg option1=value1 -testplusarg option2=value2"`
