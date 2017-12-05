@@ -51,6 +51,7 @@ class EdaTool(object):
             self._run_scripts(self.fusesoc_options['pre_build_scripts'])
 
     def build_main(self):
+        logger.info("Building");
         Launcher('make', cwd=self.work_root).run()
 
     def build_post(self):
