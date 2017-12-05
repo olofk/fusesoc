@@ -244,7 +244,7 @@ def run_backend(cm, export, do_configure, do_build, do_run, flags, system, backe
 
 def sim(cm, args):
     do_configure = not args.keep
-    do_build = not args.setup
+    do_build = not (args.setup or args.keep)
     do_run   = not (args.build_only or args.setup)
     
     flags = {'flow' : 'sim',
