@@ -1,0 +1,17 @@
+CAPI=1
+
+[main]
+name = ghdltest
+depend = filetypes paramtest
+
+[ghdl]
+analyze_options = dummy_analyze_option
+run_options = dummy_run_option
+
+[simulator]
+toplevel = e
+
+[scripts]
+pre_build_scripts = scripts/pre_build_script
+pre_run_scripts = scripts/pre_run_script
+post_run_scripts = scripts/post_run_script
