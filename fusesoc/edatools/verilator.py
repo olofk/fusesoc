@@ -54,7 +54,7 @@ class Verilator(Simulator):
 
         with open(os.path.join(self.work_root,self.verilator_file),'w') as f:
             f.write('--Mdir .\n')
-            if self.tool_options['source_type'] == 'systemC':
+            if self.tool_options['mode'] == 'systemC':
                 f.write('--sc\n')
             else:
                 f.write('--cc\n')

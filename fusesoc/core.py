@@ -229,9 +229,19 @@ class Core:
 
         if section:
 
-            #Special case to pick up verilator libs from all dependencies
+            #Special cases for verilator
             if flags['tool'] == 'verilator':
+                #Pick up verilator libs from all dependencies
                 options['libs'] = section.libs
+
+                #Set the mode option
+                if flags['is_toplevel']:
+                    if self.verilator.source_type == 'systemC':
+                        options['mode'] = 'sc'
+                    else:
+                        options['mode'] = 'cc'
+                    del(self.verilator.source_type)
+
             #Otherwise, only care about options from toplevel core
             if flags['is_toplevel']:
                 for member in section._members:
@@ -427,6 +437,7 @@ class Core:
                                           file = _files,
                                           usage = ['verilator'],
                                           private = True))
+            del(self.verilator.tb_toplevel)
             self.export_files += [f.name for f in _files]
 
     def _debug(self, msg):
