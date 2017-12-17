@@ -297,16 +297,20 @@ class Core:
                 os.makedirs(os.path.join(dst_dir, d))
 
         for f in src_files:
-            if not os.path.isabs(f):
-                if(os.path.exists(os.path.join(self.core_root, f))):
-                    shutil.copy2(os.path.join(self.core_root, f),
-                                    os.path.join(dst_dir, f))
-                elif (os.path.exists(os.path.join(self.files_root, f))):
-                    shutil.copy2(os.path.join(self.files_root, f),
-                                    os.path.join(dst_dir, f))
-                else:
-                    raise RuntimeError('Cannot find %s in :\n\t%s\n\t%s'
-                                  % (f, self.files_root, self.core_root))
+            if os.path.isabs(f):
+                continue
+
+            srcfile = ''
+            if (os.path.exists(os.path.join(self.core_root, f))):
+                srcfile = os.path.join(self.core_root, f)
+            elif (os.path.exists(os.path.join(self.files_root, f))):
+                srcfile = os.path.join(self.files_root, f)
+            else:
+                raise RuntimeError('Cannot find %s in :\n\t%s\n\t%s'
+                              % (f, self.files_root, self.core_root))
+
+            #shutil.copy2(srcfile, os.path.join(dst_dir, f))
+            os.symlink(srcfile,  os.path.join(dst_dir, f))
 
     def _get_flow(self, flags):
         flow = None
