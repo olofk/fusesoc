@@ -385,7 +385,7 @@ def main():
     parser_sim.add_argument('--keep', action='store_true', help='Prevent rebuilding simulation model if it exists')
     parser_sim.add_argument('--target', help='Override default target')
     parser_sim.add_argument('--testbench', help='Override default testbench')
-    parser_sim.add_argument('system', help='Select a system to simulate') #, choices = Config().get_systems())
+    parser_sim.add_argument('system', help='Select a system to simulate')
     parser_sim.add_argument('backendargs', nargs=argparse.REMAINDER)
     parser_sim.set_defaults(func=sim)
 

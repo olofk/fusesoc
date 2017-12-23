@@ -7,7 +7,6 @@ import shutil
 from ipyxact.ipyxact import Component
 from fusesoc import section
 from fusesoc import utils
-from fusesoc.config import Config
 from fusesoc.fusesocconfigparser import FusesocConfigParser
 from fusesoc.plusargs import Plusargs
 from fusesoc.vlnv import Vlnv

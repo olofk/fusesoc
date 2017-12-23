@@ -12,7 +12,6 @@ from simplesat.repository import Repository
 from simplesat.request import Request
 
 from fusesoc.core import Core
-from fusesoc.config import Config
 
 logger = logging.getLogger(__name__)
 

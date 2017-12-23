@@ -1,7 +1,6 @@
 import subprocess
 import logging
 import sys
-from fusesoc.config import Config
 
 if sys.version[0] == '2':
     FileNotFoundError = OSError

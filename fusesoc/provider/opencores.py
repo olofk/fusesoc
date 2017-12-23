@@ -3,7 +3,6 @@ import sys
 
 from fusesoc.provider.provider import Provider
 from fusesoc.utils import Launcher, cygpath, is_mingw
-from fusesoc.config import Config
 
 logger = logging.getLogger(__name__)
 
