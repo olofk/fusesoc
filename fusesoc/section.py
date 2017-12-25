@@ -467,21 +467,11 @@ class VerilatorSection(ToolSection):
     def __str__(self):
         s = super(VerilatorSection, self).__str__()
         s += """Verilator options       : {verilator_options}
-Testbench source files  : {src_files}
-Testbench include files : {include_files}
-Testbench define files  : {define_files}
 External libraries      : {libs}
-Testbench top level     : {tb_toplevel}
-Testbench source type   : {source_type}
 Verilog top module      : {top_module}
 """
         return s.format(verilator_options=' '.join(self.verilator_options),
-                        src_files = ' '.join([f.name for f in self.src_files]),
-                        include_files=' '.join([f.name for f in self.include_files]),
-                        define_files=' '.join(self.define_files),
                         libs=' '.join(self.libs),
-                        tb_toplevel=self.tb_toplevel,
-                        source_type=self.source_type,
                         top_module=self.top_module)
 
 class IcestormSection(ToolSection):

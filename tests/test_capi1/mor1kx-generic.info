@@ -1,0 +1,76 @@
+CORE INFO
+Name                 : ::mor1kx-generic:0
+Supported simulators : icarus modelsim
+Common dependencies  : >=::adv_debug_sys:0 >=::filetypes:0 ::jtag_tap:1.13 >=::mor1kx:0 >=::paramtest:0 ::wb_intercon:1.0 >=::elf-loader:0 >=::elf-loader:0 >=::elf-loader:0 >=::elf-loader:0 >=::verilator_tb_utils:0
+
+== icarus ==
+icarus-specific dependencies : >=::elf-loader:0
+Icarus compile options : -DSIM
+
+== modelsim ==
+modelsim-specific dependencies : >=::elf-loader:0
+
+== parameter clear_ram ==
+Data type      : bool
+Default value  : 
+Description    : Preset RAM to a known value (0)
+Parameter type : plusarg
+Scope          : private
+
+== rivierapro ==
+rivierapro-specific dependencies : >=::elf-loader:0
+
+== scripts ==
+
+== verilator ==
+verilator-specific dependencies : >=::verilator_tb_utils:0
+Verilator options       : -Wno-fatal --trace
+External libraries      : 
+Verilog top module      : orpsoc_top
+
+== xsim ==
+Xsim compile options : dummy options for xelab
+
+File sets:
+Name  : verilog_src_files
+ Scope : public
+ Usage : sim/synth
+ Files :
+  rtl/verilog/wb_intercon.vh           verilogSource (include file)
+  bench/verilog/include/test-defines.v verilogSource (include file)
+  rtl/verilog/orpsoc_top.v             verilogSource 
+  rtl/verilog/wb_intercon.v            verilogSource 
+
+Name  : verilog_tb_src_files
+ Scope : public
+ Usage : sim
+ Files :
+ <No files>
+
+Name  : verilog_tb_private_src_files
+ Scope : private
+ Usage : sim
+ Files :
+  bench/verilog/orpsoc_tb.v verilogSource 
+
+Name  : file_types
+ Scope : public
+ Usage : icarus
+ Files :
+  vhdl_file.vhd vhdlSource          
+  sv_file.sv    systemVerilogSource 
+  user_file     user                
+  other_file    xdc                 
+
+Name  : verilator_src_files
+ Scope : public
+ Usage : verilator
+ Files :
+ <No files>
+
+Name  : verilator_tb_toplevel
+ Scope : private
+ Usage : verilator
+ Files :
+  bench/verilator/tb.cpp cSource 
+

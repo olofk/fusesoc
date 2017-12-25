@@ -488,7 +488,7 @@ Common dependencies  : {}\n\n"""
                           self.core_root,
                           ' '.join(self.simulators),
                           ' '.join([x.depstr() for x in self.depend]))
-        for sec in section.SECTION_MAP:
+        for sec in sorted(section.SECTION_MAP):
             if sec in ['main', 'verilog', 'fileset']:
                 continue
             obj = getattr(self, sec)

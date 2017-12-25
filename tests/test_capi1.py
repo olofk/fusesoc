@@ -25,12 +25,11 @@ def compare_file(ref_dir, work_root, name):
 def test_core_info():
     tests_dir = os.path.dirname(__file__)
 
-    core = get_core("sockit")
-    gen_info = [x+'\n' for x in core.info().split('\n') if not 'Core root' in x]
-
-    with open(os.path.join(tests_dir, __name__, "sockit.info")) as f:
-        ref_info = [x for x in f.readlines() if not 'Core root' in x]
-    assert '' == ''.join(difflib.unified_diff(ref_info, gen_info))
+    for core_name in ['sockit', 'mor1kx-generic']:
+        core = get_core(core_name)
+        gen_info = '\n'.join([x for x in core.info().split('\n') if not 'Core root' in x])
+        with open(os.path.join(tests_dir, __name__, core_name+".info")) as f:
+            assert f.read() == gen_info, core_name
 
 def test_core_parsing():
     from fusesoc.vlnv import Vlnv
