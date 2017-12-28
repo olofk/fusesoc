@@ -3,10 +3,6 @@ import os
 import shutil
 import pytest
 
-from fusesoc.config import Config
-from fusesoc.core import Core
-from fusesoc.coremanager import CoreManager
-
 from test_common import cmdlineargs, compare_file, get_core, get_sim, vlogdefines, vlogparams
 
 params    = vlogparams + vlogdefines + cmdlineargs

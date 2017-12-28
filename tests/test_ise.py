@@ -2,10 +2,6 @@ import difflib
 import os
 import pytest
 
-from fusesoc.config import Config
-from fusesoc.core import Core
-from fusesoc.coremanager import CoreManager
-
 from test_common import get_core, get_synth, vlogdefines, vlogparams
 
 def test_ise():

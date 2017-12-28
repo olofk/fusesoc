@@ -36,7 +36,6 @@ def test_core_parsing():
     core = get_core("nomain")
     assert core.name == Vlnv("::nomain:0")
 
-    from fusesoc.core import Core
     import sys
     if sys.version_info[0] > 2:
         with pytest.raises(SyntaxError) as e:
