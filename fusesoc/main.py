@@ -257,8 +257,9 @@ def sim(cm, args):
                 flags, args.system, args.backendargs)
 
 def update(cm, args):
+    libraries = args.libraries
     for root in cm.get_cores_root():
-        if os.path.exists(root):
+        if os.path.exists(root) and (not libraries or root in libraries):
             args = ['-C', root,
                     'config', '--get', 'remote.origin.url']
             repo_root = ""
@@ -402,6 +403,7 @@ def main():
 
     # update subparser
     parser_update = subparsers.add_parser('update', help='Update the FuseSoC core libraries')
+    parser_update.add_argument('libraries', nargs='*', help='The libraries (or core roots) to update (defaults to all)')
     parser_update.set_defaults(func=update)
 
     parsed_args = parser.parse_args()
