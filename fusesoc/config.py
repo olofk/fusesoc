@@ -19,6 +19,8 @@ class Config(object):
         self.cache_root = None
         self.cores_root = []
         self.systems_root = None
+        self.library_root = None
+        self.libraries = {}
 
         config = configparser.SafeConfigParser()
         if file is None:
@@ -42,7 +44,7 @@ class Config(object):
                 config.read_file(file)
             file.seek(0)
 
-        for item in ['build_root', 'cache_root', 'systems_root']:
+        for item in ['build_root', 'cache_root', 'systems_root', 'library_root']:
             try:
                 setattr(self, item, config.get('main', item))
             except configparser.NoOptionError:
@@ -70,8 +72,44 @@ class Config(object):
             self.cores_root   = [os.path.abspath('cores')]
         if self.systems_root is None and os.path.exists('systems'):
             self.systems_root = os.path.abspath('systems')
+        if self.library_root is None:
+            xdg_data_home = os.environ.get('XDG_DATA_HOME') or \
+                             os.path.join(os.path.expanduser('~'), '.local/share')
+            self.library_root = os.path.join(xdg_data_home, 'fusesoc')
+
+        # Parse library sections
+        library_sections = [x for x in config.sections() if x.startswith('library')]
+        for section in library_sections:
+            library = section.partition('.')[2]
+            try:
+                location = config.get(section, 'location')
+            except configparser.NoOptionError:
+                location = os.path.join(self.library_root, library)
+
+            try:
+                auto_sync = config.get(section, 'auto-sync')
+                if auto_sync in ['yes', 'true']:
+                    auto_sync = True
+                elif auto_sync in ['no', 'false']:
+                    auto_sync = False
+                else:
+                    raise ValueError("Invalid value '{auto_sync}' for option 'auto_sync' in library '{library}'".format(
+                        auto_sync = auto_sync,
+                        library = library))
+            except configparser.NoOptionError:
+                auto_sync = True
+
+            # sync-uri is non-optional
+            sync_uri = config.get(section, 'sync-uri')
+
+            self.libraries[library] = {
+                    'location': location,
+                    'auto-sync': auto_sync,
+                    'sync-uri': sync_uri
+                }
 
         logger.debug('build_root='+self.build_root)
         logger.debug('cache_root='+self.cache_root)
         logger.debug('cores_root='+':'.join(self.cores_root))
         logger.debug('systems_root='+self.systems_root if self.systems_root else "Not defined")
+        logger.debug('library_root='+self.library_root)
