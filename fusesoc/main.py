@@ -288,7 +288,10 @@ def run(args):
     else:
         logger.debug("Colorful output")
 
-    config = Config()
+    if args.config:
+        config = Config(file=args.config)
+    else:
+        config = Config()
     cm = CoreManager(config)
 
     # Get the environment variable for further cores
@@ -328,6 +331,7 @@ def main():
 
     # Global options
     parser.add_argument('--cores-root', help='Add additional directories containing cores', action='append')
+    parser.add_argument('--config', help='Specify the config file to use', type=argparse.FileType('r'))
     parser.add_argument('--32', help='Force 32 bit mode for invoked tools', action='store_true')
     parser.add_argument('--64', help='Force 64 bit mode for invoked tools', action='store_true')
     parser.add_argument('--monochrome', help='Don\'t use color for messages', action='store_true')
