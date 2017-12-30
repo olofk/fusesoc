@@ -308,6 +308,13 @@ def run(args):
             cm.add_cores_root(cores_root)
         except (RuntimeError, IOError) as e:
             logger.warning("Failed to register cores root '{}'".format(str(e)))
+
+    for library in config.libraries.values():
+        try:
+            cm.add_cores_root(library['location'])
+        except (RuntimeError, IOError) as e:
+            logger.warning("Failed to register cores root '{}'".format(str(e)))
+
     # Process global options
     if vars(args)['32']:
         config.archbits = 32
