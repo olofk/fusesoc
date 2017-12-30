@@ -13,23 +13,34 @@ logger = logging.getLogger(__name__)
 class Config(object):
     archbits = 0
 
-    def __init__(self):
+    def __init__(self, path=None, file=None):
         #TODO: Add option to load custom config file
         self.build_root = None
         self.cache_root = None
         self.cores_root = []
         self.systems_root = None
 
-        xdg_config_home = os.environ.get('XDG_CONFIG_HOME') or \
-                          os.path.join(os.path.expanduser('~'), '.config')
         config = configparser.SafeConfigParser()
-        config_files = ['/etc/fusesoc/fusesoc.conf',
+        if file is None:
+            if path is None:
+                xdg_config_home = os.environ.get('XDG_CONFIG_HOME') or \
+                          os.path.join(os.path.expanduser('~'), '.config')
+                config_files = ['/etc/fusesoc/fusesoc.conf',
                         os.path.join(xdg_config_home, 'fusesoc','fusesoc.conf'),
                         'fusesoc.conf']
+            else:
+                config_files = [path]
 
-        logger.debug('Looking for config files from ' + ':'.join(config_files))
-        files_read = config.read(config_files)
-        logger.debug('Found config files in ' + ':'.join(files_read))
+            logger.debug('Looking for config files from ' + ':'.join(config_files))
+            files_read = config.read(config_files)
+            logger.debug('Found config files in ' + ':'.join(files_read))
+        else:
+            logger.debug('Using supplied config file')
+            if sys.version[0] == '2':
+                config.readfp(file)
+            else:
+                config.read_file(file)
+            file.seek(0)
 
         for item in ['build_root', 'cache_root', 'systems_root']:
             try:
