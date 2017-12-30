@@ -120,13 +120,11 @@ class CoreDB(object):
 
 class CoreManager(object):
     _instance = None
-    _cores_root = []
-
-    db = CoreDB()
-    config = None
 
     def __init__(self, config):
         self.config = config
+        self._cores_root = []
+        self.db = CoreDB()
 
     def load_core(self, file):
         if os.path.exists(file):

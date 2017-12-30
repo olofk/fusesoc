@@ -4,7 +4,7 @@ import shutil
 
 from fusesoc.coremanager import CoreManager
 from fusesoc.config import Config
-from test_common import get_core
+from test_common import get_core, common_cm
 
 def test_copyto():
     tests_dir = os.path.dirname(__file__)
@@ -25,7 +25,7 @@ def test_copyto():
     else:
         os.makedirs(work_root)
 
-    eda_api = CoreManager(Config()).setup(core.name, flags, work_root, None)
+    eda_api = common_cm.setup(core.name, flags, work_root, None)
 
     assert eda_api['files'] == [{'file_type': 'user',
                                  'logical_name': '',

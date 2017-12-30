@@ -5,6 +5,15 @@ build_root = os.path.join(tests_dir, 'build')
 cache_root = os.path.join(tests_dir, 'cache')
 cores_root = os.path.join(tests_dir, 'cores')
 
+from fusesoc.config import Config
+from fusesoc.coremanager import CoreManager
+
+config = Config()
+config.build_root = build_root
+config.cache_root = cache_root
+common_cm = CoreManager(config)
+common_cm.add_cores_root(cores_root)
+
 def compare_file(ref_dir, work_root, name):
     import difflib
     reference_file = os.path.join(ref_dir, name)
@@ -29,17 +38,9 @@ def compare_files(ref_dir, work_root, files):
             assert fref.read() == fgen.read(), f
 
 def get_core(core):
-    from fusesoc.coremanager import CoreManager
-    from fusesoc.config import Config
     from fusesoc.main import _get_core
-
-    config = Config()
-    config.build_root = build_root
-    config.cache_root = cache_root
-    cm = CoreManager(config)
-    cm.add_cores_root(cores_root)
     
-    return _get_core(cm, core)
+    return _get_core(common_cm, core)
 
 def get_sim(sim, core, export=False):
     flags = {'target' : 'sim',
@@ -55,8 +56,6 @@ def get_backend(core, flags, export):
     import os.path
     import tempfile
     import yaml
-    from fusesoc.coremanager import CoreManager
-    from fusesoc.config import Config
     from fusesoc.main import _import
 
     if export:
@@ -66,7 +65,7 @@ def get_backend(core, flags, export):
     work_root   = os.path.join(build_root,
                                core.name.sanitized_name,
                                core.get_work_root(flags))
-    eda_api = CoreManager(Config()).setup(core.name, flags, work_root, export_root)
+    eda_api = common_cm.setup(core.name, flags, work_root, export_root)
 
     (h, eda_api_file) = tempfile.mkstemp()
     with open(eda_api_file,'w') as f:
