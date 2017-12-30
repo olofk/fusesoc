@@ -259,6 +259,9 @@ def sim(cm, args):
 def update(cm, args):
     libraries = args.libraries
     for root in cm.get_cores_root():
+        if not root in cm.config.cores_root:
+            # This is a library - handled differently
+            continue
         if os.path.exists(root) and (not libraries or root in libraries):
             args = ['-C', root,
                     'config', '--get', 'remote.origin.url']
@@ -269,6 +272,18 @@ def update(cm, args):
                     logger.info("Updating '{}'".format(root))
                     args = ['-C', root, 'pull']
                     Launcher('git', args).run()
+            except subprocess.CalledProcessError:
+                pass
+
+    for (name, library) in cm.config.libraries.items():
+        if os.path.exists(library['location']) and \
+                (name in libraries or \
+                library['location'] in libraries or \
+                library['auto-sync']):
+            logger.info("Updating '{}'".format(name))
+            args = ['-C', library['location'], 'pull']
+            try:
+                Launcher('git', args).run()
             except subprocess.CalledProcessError:
                 pass
 
