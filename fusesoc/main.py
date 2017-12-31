@@ -97,32 +97,6 @@ def init(cm, args):
     except NameError:
         pass
 
-    xdg_data_home = os.environ.get('XDG_DATA_HOME') or \
-                    os.path.join(os.path.expanduser('~'),
-                                 '.local', 'share', 'fusesoc')
-    _repo_paths = []
-    for repo in REPOS:
-        default_dir = os.path.join(xdg_data_home, repo[0])
-        prompt = 'Directory to use for {} ({}) [{}] : '
-        if args.y:
-            cores_root = None
-        else:
-            cores_root = input(prompt.format(repo[0], repo[2], default_dir))
-        if not cores_root:
-            cores_root = default_dir
-        if os.path.exists(cores_root):
-            logger.warning("'{}' already exists".format(cores_root))
-            #TODO: Prompt for overwrite
-        else:
-            _repo_paths.append(cores_root)
-            logger.info("Initializing {}".format(repo[0]))
-            git_args = ['clone', repo[1], cores_root]
-            try:
-                Launcher('git', git_args).run()
-            except RuntimeError as e:
-                logger.error("Init failed: " + str(e))
-                exit(1)
-
     xdg_config_home = os.environ.get('XDG_CONFIG_HOME') or \
                       os.path.join(os.path.expanduser('~'), '.config')
     config_file = os.path.join(xdg_config_home, 'fusesoc', 'fusesoc.conf')
@@ -131,13 +105,44 @@ def init(cm, args):
     if os.path.exists(config_file):
         logger.warning("'{}' already exists".format(config_file))
         #TODO. Prepend cores_root to file if it doesn't exist
+        f = open(config_file, 'w+')
     else:
         logger.info("Writing configuration file to '{}'".format(config_file))
         if not os.path.exists(os.path.dirname(config_file)):
             os.makedirs(os.path.dirname(config_file))
-        f = open(config_file,'w')
-        f.write("[main]\n")
-        f.write("cores_root = {}\n".format(' '.join(_repo_paths)))
+        f = open(config_file,'w+')
+
+    config = Config(file=f)
+
+    xdg_data_home = os.environ.get('XDG_DATA_HOME') or \
+             os.path.join(os.path.expanduser('~'), '.local/share')
+    _repo_paths = []
+    for repo in REPOS:
+        name = repo[0]
+        library = {
+                'sync-uri': repo[1]
+                }
+
+        default_dir = os.path.join(xdg_data_home, name)
+        prompt = 'Directory to use for {} ({}) [{}] : '
+        if args.y:
+            location = None
+        else:
+            location = input(prompt.format(repo[0], repo[2], default_dir))
+        if location:
+            library['location'] = location
+        else:
+            location = default_dir
+        if os.path.exists(location):
+            logger.warning("'{}' already exists".format(location))
+            #TODO: Prompt for overwrite
+        else:
+            logger.info("Initializing {}".format(name))
+            try:
+                config.add_library(name, library)
+            except RuntimeError as e:
+                logger.error("Init failed: " + str(e))
+                exit(1)
     logger.info("FuseSoC is ready to use!")
 
 def list_paths(cm, args):

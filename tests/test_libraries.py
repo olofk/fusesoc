@@ -32,7 +32,7 @@ def _run_test_util(cm, args):
 def test_library_location():
     from fusesoc.main import run
 
-    tcf = tempfile.TemporaryFile(mode="w+")
+    tcf = tempfile.NamedTemporaryFile(mode="w+")
     tcf.write(EXAMPLE_CONFIG.format(
             build_root = build_root,
             cache_root = cache_root,
@@ -64,7 +64,7 @@ def test_library_add():
     from fusesoc.main import add_library, run
     from fusesoc.coremanager import CoreManager
 
-    tcf = tempfile.TemporaryFile(mode="w+")
+    tcf = tempfile.NamedTemporaryFile(mode="w+")
 
     conf = Config(file=tcf)
     cm = CoreManager(conf)
@@ -95,7 +95,7 @@ def test_library_update(caplog):
     try:
         subprocess.call(['git', 'clone', sync_uri, clone_target])
 
-        tcf = tempfile.TemporaryFile(mode="w+")
+        tcf = tempfile.NamedTemporaryFile(mode="w+")
         tcf.write(EXAMPLE_CONFIG.format(
                 build_root = build_root,
                 cache_root = cache_root,

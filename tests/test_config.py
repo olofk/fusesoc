@@ -19,7 +19,7 @@ sync-uri = https://github.com/fusesoc/fusesoc-cores
 """
 
 def test_config_file():
-    tcf = tempfile.TemporaryFile(mode="w+")
+    tcf = tempfile.NamedTemporaryFile(mode="w+")
     tcf.write(EXAMPLE_CONFIG.format(
             build_root = build_root,
             cache_root = cache_root,
@@ -34,7 +34,7 @@ def test_config_file():
     assert conf.build_root == build_root
 
 def test_config_path():
-    tcf = tempfile.TemporaryFile(mode="w+")
+    tcf = tempfile.NamedTemporaryFile(mode="w+")
     tcf.write(EXAMPLE_CONFIG.format(
             build_root = build_root,
             cache_root = cache_root,
@@ -49,7 +49,7 @@ def test_config_path():
     assert conf.library_root == library_root
 
 def test_config_failure():
-    tcf = tempfile.TemporaryFile(mode="w+")
+    tcf = tempfile.NamedTemporaryFile(mode="w+")
     tcf.write(EXAMPLE_CONFIG.format(
             build_root = build_root,
             cache_root = cache_root,
@@ -59,12 +59,12 @@ def test_config_failure():
         )
     tcf.seek(0)
 
-    conf = Config(path=tcf.name)
+    conf = Config(file=tcf)
 
     assert not conf.cores_root == cores_root
 
 def test_config_libraries():
-    tcf = tempfile.TemporaryFile(mode="w+")
+    tcf = tempfile.NamedTemporaryFile(mode="w+")
     tcf.write(EXAMPLE_CONFIG.format(
             build_root = build_root,
             cache_root = cache_root,
@@ -74,7 +74,7 @@ def test_config_libraries():
         )
     tcf.seek(0)
 
-    conf = Config(path=tcf.name)
+    conf = Config(file=tcf)
 
     assert conf.libraries['test_lib']['location'] == os.path.join(library_root, 'test_lib')
     assert conf.libraries['test_lib']['sync-uri'] == 'https://github.com/fusesoc/fusesoc-cores'

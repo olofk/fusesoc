@@ -36,7 +36,8 @@ class Config(object):
             logger.debug('Looking for config files from ' + ':'.join(config_files))
             files_read = config.read(config_files)
             logger.debug('Found config files in ' + ':'.join(files_read))
-            self._path = files_read[-1]
+            if files_read:
+                self._path = files_read[-1]
         else:
             logger.debug('Using supplied config file')
             if sys.version[0] == '2':
@@ -118,6 +119,9 @@ class Config(object):
 
     def add_library(self, name, library):
         from fusesoc.utils import Launcher
+        if not hasattr(self, '_path'):
+            logger.error("No FuseSoC config file found - can't add library")
+            exit(1)
         section_name = 'library.' + name
 
         config = configparser.SafeConfigParser()
