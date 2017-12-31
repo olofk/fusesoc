@@ -97,32 +97,6 @@ def init(cm, args):
     except NameError:
         pass
 
-    xdg_data_home = os.environ.get('XDG_DATA_HOME') or \
-                    os.path.join(os.path.expanduser('~'),
-                                 '.local', 'share', 'fusesoc')
-    _repo_paths = []
-    for repo in REPOS:
-        default_dir = os.path.join(xdg_data_home, repo[0])
-        prompt = 'Directory to use for {} ({}) [{}] : '
-        if args.y:
-            cores_root = None
-        else:
-            cores_root = input(prompt.format(repo[0], repo[2], default_dir))
-        if not cores_root:
-            cores_root = default_dir
-        if os.path.exists(cores_root):
-            logger.warning("'{}' already exists".format(cores_root))
-            #TODO: Prompt for overwrite
-        else:
-            _repo_paths.append(cores_root)
-            logger.info("Initializing {}".format(repo[0]))
-            git_args = ['clone', repo[1], cores_root]
-            try:
-                Launcher('git', git_args).run()
-            except RuntimeError as e:
-                logger.error("Init failed: " + str(e))
-                exit(1)
-
     xdg_config_home = os.environ.get('XDG_CONFIG_HOME') or \
                       os.path.join(os.path.expanduser('~'), '.config')
     config_file = os.path.join(xdg_config_home, 'fusesoc', 'fusesoc.conf')
@@ -131,18 +105,66 @@ def init(cm, args):
     if os.path.exists(config_file):
         logger.warning("'{}' already exists".format(config_file))
         #TODO. Prepend cores_root to file if it doesn't exist
+        f = open(config_file, 'w+')
     else:
         logger.info("Writing configuration file to '{}'".format(config_file))
         if not os.path.exists(os.path.dirname(config_file)):
             os.makedirs(os.path.dirname(config_file))
-        f = open(config_file,'w')
-        f.write("[main]\n")
-        f.write("cores_root = {}\n".format(' '.join(_repo_paths)))
+        f = open(config_file,'w+')
+
+    config = Config(file=f)
+
+    xdg_data_home = os.environ.get('XDG_DATA_HOME') or \
+             os.path.join(os.path.expanduser('~'), '.local/share')
+    _repo_paths = []
+    for repo in REPOS:
+        name = repo[0]
+        library = {
+                'sync-uri': repo[1]
+                }
+
+        default_dir = os.path.join(xdg_data_home, name)
+        prompt = 'Directory to use for {} ({}) [{}] : '
+        if args.y:
+            location = None
+        else:
+            location = input(prompt.format(repo[0], repo[2], default_dir))
+        if location:
+            library['location'] = location
+        else:
+            location = default_dir
+        if os.path.exists(location):
+            logger.warning("'{}' already exists".format(location))
+            #TODO: Prompt for overwrite
+        else:
+            logger.info("Initializing {}".format(name))
+            try:
+                config.add_library(name, library)
+            except RuntimeError as e:
+                logger.error("Init failed: " + str(e))
+                exit(1)
     logger.info("FuseSoC is ready to use!")
 
 def list_paths(cm, args):
     cores_root = cm.get_cores_root()
     print("\n".join(cores_root))
+
+def add_library(cm, args):
+    library = {}
+    name = args.name
+    library['sync-uri'] = vars(args)['sync-uri']
+    if args.location:
+        library['location'] = args.location
+    if args.no_auto_sync:
+        library['auto-sync'] = False
+
+    if args.config:
+        config = Config(file=args.config)
+    else:
+        config = Config()
+
+    config.add_library(name, library)
+
 
 def list_cores(cm, args):
     cores = cm.get_cores()
@@ -257,8 +279,12 @@ def sim(cm, args):
                 flags, args.system, args.backendargs)
 
 def update(cm, args):
+    libraries = args.libraries
     for root in cm.get_cores_root():
-        if os.path.exists(root):
+        if not root in cm.config.cores_root:
+            # This is a library - handled differently
+            continue
+        if os.path.exists(root) and (not libraries or root in libraries):
             args = ['-C', root,
                     'config', '--get', 'remote.origin.url']
             repo_root = ""
@@ -268,6 +294,18 @@ def update(cm, args):
                     logger.info("Updating '{}'".format(root))
                     args = ['-C', root, 'pull']
                     Launcher('git', args).run()
+            except subprocess.CalledProcessError:
+                pass
+
+    for (name, library) in cm.config.libraries.items():
+        if os.path.exists(library['location']) and \
+                (name in libraries or \
+                library['location'] in libraries or \
+                library['auto-sync']):
+            logger.info("Updating '{}'".format(name))
+            args = ['-C', library['location'], 'pull']
+            try:
+                Launcher('git', args).run()
             except subprocess.CalledProcessError:
                 pass
 
@@ -288,7 +326,10 @@ def run(args):
     else:
         logger.debug("Colorful output")
 
-    config = Config()
+    if args.config:
+        config = Config(file=args.config)
+    else:
+        config = Config()
     cm = CoreManager(config)
 
     # Get the environment variable for further cores
@@ -305,6 +346,13 @@ def run(args):
             cm.add_cores_root(cores_root)
         except (RuntimeError, IOError) as e:
             logger.warning("Failed to register cores root '{}'".format(str(e)))
+
+    for library in config.libraries.values():
+        try:
+            cm.add_cores_root(library['location'])
+        except (RuntimeError, IOError) as e:
+            logger.warning("Failed to register cores root '{}'".format(str(e)))
+
     # Process global options
     if vars(args)['32']:
         config.archbits = 32
@@ -328,6 +376,7 @@ def main():
 
     # Global options
     parser.add_argument('--cores-root', help='Add additional directories containing cores', action='append')
+    parser.add_argument('--config', help='Specify the config file to use', type=argparse.FileType('r'))
     parser.add_argument('--32', help='Force 32 bit mode for invoked tools', action='store_true')
     parser.add_argument('--64', help='Force 64 bit mode for invoked tools', action='store_true')
     parser.add_argument('--monochrome', help='Don\'t use color for messages', action='store_true')
@@ -375,6 +424,18 @@ def main():
     parser_list_paths = subparsers.add_parser('list-paths', help='Display the search order for core root paths')
     parser_list_paths.set_defaults(func=list_paths)
 
+    # library subparser
+    parser_library = subparsers.add_parser('library', help='Subcommands for dealing with library management')
+    library_subparsers = parser_library.add_subparsers()
+
+    # library add subparser
+    parser_library_add = library_subparsers.add_parser('add', help='Add new library to fusesoc.conf')
+    parser_library_add.add_argument('name', help='A friendly name  for the library')
+    parser_library_add.add_argument('sync-uri', help='The URI source for the library')
+    parser_library_add.add_argument('--location', help='The location to store the library into (defaults to $XDG_DATA_HOME/[name])')
+    parser_library_add.add_argument('--no-auto-sync', action='store_true', help='Disable automatic updates of the library')
+    parser_library_add.set_defaults(func=add_library)
+
     # sim subparser
     parser_sim = subparsers.add_parser('sim', help='Setup and run a simulation')
     parser_sim.add_argument('--no-export', action='store_true', help='Reference source files from their current location instead of exporting to a build tree')
@@ -391,6 +452,7 @@ def main():
 
     # update subparser
     parser_update = subparsers.add_parser('update', help='Update the FuseSoC core libraries')
+    parser_update.add_argument('libraries', nargs='*', help='The libraries (or core roots) to update (defaults to all)')
     parser_update.set_defaults(func=update)
 
     parsed_args = parser.parse_args()
