@@ -144,6 +144,23 @@ def list_paths(cm, args):
     cores_root = cm.get_cores_root()
     print("\n".join(cores_root))
 
+def add_library(cm, args):
+    library = {}
+    name = args.name
+    library['sync-uri'] = vars(args)['sync-uri']
+    if args.location:
+        library['location'] = args.location
+    if args.no_auto_sync:
+        library['auto-sync'] = False
+
+    if args.config:
+        config = Config(file=args.config)
+    else:
+        config = Config()
+
+    config.add_library(name, library)
+
+
 def list_cores(cm, args):
     cores = cm.get_cores()
     print("\nAvailable cores:\n")
@@ -401,6 +418,18 @@ def main():
     # list-paths subparser
     parser_list_paths = subparsers.add_parser('list-paths', help='Display the search order for core root paths')
     parser_list_paths.set_defaults(func=list_paths)
+
+    # library subparser
+    parser_library = subparsers.add_parser('library', help='Subcommands for dealing with library management')
+    library_subparsers = parser_library.add_subparsers()
+
+    # library add subparser
+    parser_library_add = library_subparsers.add_parser('add', help='Add new library to fusesoc.conf')
+    parser_library_add.add_argument('name', help='A friendly name  for the library')
+    parser_library_add.add_argument('sync-uri', help='The URI source for the library')
+    parser_library_add.add_argument('--location', help='The location to store the library into (defaults to $XDG_DATA_HOME/[name])')
+    parser_library_add.add_argument('--no-auto-sync', action='store_true', help='Disable automatic updates of the library')
+    parser_library_add.set_defaults(func=add_library)
 
     # sim subparser
     parser_sim = subparsers.add_parser('sim', help='Setup and run a simulation')

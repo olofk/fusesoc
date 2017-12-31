@@ -36,6 +36,7 @@ class Config(object):
             logger.debug('Looking for config files from ' + ':'.join(config_files))
             files_read = config.read(config_files)
             logger.debug('Found config files in ' + ':'.join(files_read))
+            self._path = files_read[-1]
         else:
             logger.debug('Using supplied config file')
             if sys.version[0] == '2':
@@ -43,6 +44,7 @@ class Config(object):
             else:
                 config.read_file(file)
             file.seek(0)
+            self._path = file.name
 
         for item in ['build_root', 'cache_root', 'systems_root', 'library_root']:
             try:
@@ -113,3 +115,40 @@ class Config(object):
         logger.debug('cores_root='+':'.join(self.cores_root))
         logger.debug('systems_root='+self.systems_root if self.systems_root else "Not defined")
         logger.debug('library_root='+self.library_root)
+
+    def add_library(self, name, library):
+        from fusesoc.utils import Launcher
+        section_name = 'library.' + name
+
+        config = configparser.SafeConfigParser()
+        config.read(self._path)
+
+        if not section_name in config.sections():
+            config.add_section(section_name)
+
+        config.set(section_name, 'sync-uri', library['sync-uri'])
+        if 'auto-sync' in library:
+            if library['auto-sync']:
+                config.set(section_name, 'auto-sync', 'true')
+            else:
+                config.set(section_name, 'auto-sync', 'false')
+        else:
+            library['auto-sync'] = True
+
+        if 'location' in library:
+            config.set(section_name, 'location', library['location'])
+        else:
+            library['location'] = os.path.join(self.library_root, name)
+
+        self.libraries[name] = library
+
+        if not os.path.isdir(library['location']):
+            logger.info("Cloning library {}".format(name))
+            git_args = ['clone', library['sync-uri'], library['location']]
+            try:
+                Launcher('git', git_args).run()
+            except RuntimeError as e:
+                logger.error("`library add` failed: " + str(e))
+
+        with open(self._path, 'w') as conf_file:
+            config.write(conf_file)
