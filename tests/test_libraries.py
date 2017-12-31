@@ -60,6 +60,33 @@ def test_library_location():
 
     run(args)
 
+def test_library_add():
+    from fusesoc.main import add_library, run
+    from fusesoc.coremanager import CoreManager
+
+    tcf = tempfile.NamedTemporaryFile(mode="w+")
+
+    conf = Config(file=tcf)
+    cm = CoreManager(conf)
+
+    args = Namespace()
+
+    args.name = 'fusesoc-cores'
+    args.location = None
+    args.config = tcf
+    args.no_auto_sync = False
+    vars(args)['sync-uri'] = sync_uri
+
+    add_library(cm, args)
+
+    expected = """[library.fusesoc-cores]
+sync-uri = https://github.com/fusesoc/fusesoc-cores"""
+
+    tcf.seek(0)
+    result = tcf.read().strip()
+
+    assert expected == result
+
 def test_library_update(caplog):
     from fusesoc.main import update, run
 
