@@ -6,6 +6,7 @@ from fusesoc.config import Config
 
 from test_common import common_cm
 
+@pytest.mark.xfail
 def test_sim(capsys):
     class Args():
         sim = None
