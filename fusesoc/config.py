@@ -90,17 +90,13 @@ class Config(object):
                 location = os.path.join(self.library_root, library)
 
             try:
-                auto_sync = config.get(section, 'auto-sync')
-                if auto_sync in ['yes', 'true']:
-                    auto_sync = True
-                elif auto_sync in ['no', 'false']:
-                    auto_sync = False
-                else:
-                    raise ValueError("Invalid value '{auto_sync}' for option 'auto_sync' in library '{library}'".format(
-                        auto_sync = auto_sync,
-                        library = library))
+                auto_sync = config.getboolean(section, 'auto-sync')
             except configparser.NoOptionError:
                 auto_sync = True
+            except ValueError as e:
+                _s = "Error parsing auto-sync '{}'. Ignoring library '{}'"
+                logger.warn(_s.format(str(e), library))
+                continue
 
             # sync-uri is non-optional
             sync_uri = config.get(section, 'sync-uri')
