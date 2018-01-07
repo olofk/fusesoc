@@ -22,7 +22,7 @@ class ProviderURL(Provider):
 
     def _checkout(self, local_dir):
         url = self.config.get('url')
-        logger.info("Checking out " + url + " to " + local_dir)
+        logger.info("Downloading...")
         try:
             (filename, headers) = urllib.urlretrieve(url)
         except URLError as e:

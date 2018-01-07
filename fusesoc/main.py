@@ -222,6 +222,9 @@ def run_backend(cm, export, do_configure, do_build, do_run, flags, system, backe
         except SyntaxError as e:
             logger.error(e.msg)
             exit(1)
+        except RuntimeError as e:
+            logger.error("Setup failed : {}".format(str(e)))
+            exit(1)
         with open(eda_api_file,'w') as f:
             f.write(yaml.dump(eda_api))
 
