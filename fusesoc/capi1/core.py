@@ -197,7 +197,7 @@ class Core:
         self._debug("Getting toplevel for flags {}".format(str(flags)))
         if flags['tool'] == 'verilator':
             toplevel = self.verilator.top_module
-        elif self._get_flow(flags) == 'synth':
+        elif self.backend and self._get_flow(flags) == 'synth':
             toplevel = self.backend.top_module
         elif 'testbench' in flags and flags['testbench']:
             toplevel = flags['testbench']
