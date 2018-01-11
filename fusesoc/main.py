@@ -15,8 +15,6 @@ from fusesoc import __version__
 fusesocdir = os.path.abspath(os.path.join(os.path.dirname(os.path.realpath(__file__)), ".."))
 if os.path.exists(os.path.join(fusesocdir, "fusesoc")):
     sys.path[0:0] = [fusesocdir]
-else:
-    sys.path[0:0] = ['@pythondir@']
 
 from fusesoc.config import Config
 from fusesoc.coremanager import CoreManager, DependencyError
@@ -187,12 +185,6 @@ def core_info(cm, args):
     core = _get_core(cm, args.core)
     print(core.info())
 
-def list_systems(cm, args):
-    print("Available systems:")
-    for core in cm.get_cores().values():
-        if core.get_tool({'target' : 'synth', 'tool' : None}):
-            print(str(core.name))
-
 def run_backend(cm, export, do_configure, do_build, do_run, flags, system, backendargs):
     tool_error = "No tool was supplied on command line or found in '{}' core description"
     core = _get_core(cm, system)
@@ -271,7 +263,7 @@ def sim(cm, args):
     do_configure = not args.keep
     do_build = not (args.setup or args.keep)
     do_run   = not (args.build_only or args.setup)
-    
+
     flags = {'flow' : 'sim',
              'tool' : args.sim,
              'target' : 'sim',
@@ -312,27 +304,26 @@ def update(cm, args):
             except subprocess.CalledProcessError:
                 pass
 
-def run(args):
-    level = logging.DEBUG if args.verbose else logging.INFO
+def init_logging(verbose, monochrome):
+    level = logging.DEBUG if verbose else logging.INFO
 
-    setup_logging(level=level, monchrome=args.monochrome)
-    logger.debug("Command line arguments: " + str(sys.argv))
-    if os.getenv("FUSESOC_CORES"):
-        logger.debug("FUSESOC_CORES: " + str(os.getenv("FUSESOC_CORES").split(':')))
-    if args.verbose:
+    setup_logging(level=level, monchrome=monochrome)
+
+    if verbose:
         logger.debug("Verbose output")
     else:
         logger.debug("Concise output")
 
-    if args.monochrome:
+    if monochrome:
         logger.debug("Monochrome output")
     else:
         logger.debug("Colorful output")
 
-    if args.config:
-        config = Config(file=args.config)
-    else:
-        config = Config()
+def init_coremanager(config, args_cores_root):
+    logger.debug("Command line arguments: " + str(sys.argv))
+
+    if os.getenv("FUSESOC_CORES"):
+        logger.debug("FUSESOC_CORES: " + str(os.getenv("FUSESOC_CORES").split(':')))
     cm = CoreManager(config)
 
     # Get the environment variable for further cores
@@ -344,7 +335,7 @@ def run(args):
     for cores_root in [config.cores_root,
                        config.systems_root,
                        env_cores_root,
-                       args.cores_root]:
+                       args_cores_root]:
         try:
             cm.add_cores_root(cores_root)
         except (RuntimeError, IOError) as e:
@@ -356,21 +347,9 @@ def run(args):
         except (RuntimeError, IOError) as e:
             logger.warning("Failed to register cores root '{}'".format(str(e)))
 
-    # Process global options
-    if vars(args)['32']:
-        config.archbits = 32
-        logger.debug("Forcing 32-bit mode")
-    elif vars(args)['64']:
-        config.archbits = 64
-        logger.debug("Forcing 64-bit mode")
-    else:
-        config.archbits = 64 if platform.architecture()[0] == '64bit' else 32
-        logger.debug("Autodetected " + str(config.archbits) + "-bit mode")
-    # Run the function
-    args.func(cm, args)
+    return cm
 
-def main():
-
+def parse_args():
     parser = argparse.ArgumentParser()
     subparsers = parser.add_subparsers()
 
@@ -380,8 +359,6 @@ def main():
     # Global options
     parser.add_argument('--cores-root', help='Add additional directories containing cores', action='append')
     parser.add_argument('--config', help='Specify the config file to use', type=argparse.FileType('r'))
-    parser.add_argument('--32', help='Force 32 bit mode for invoked tools', action='store_true')
-    parser.add_argument('--64', help='Force 64 bit mode for invoked tools', action='store_true')
     parser.add_argument('--monochrome', help='Don\'t use color for messages', action='store_true')
     parser.add_argument('--verbose', help='More info messages', action='store_true')
 
@@ -409,10 +386,6 @@ def main():
     parser_fetch = subparsers.add_parser('fetch', help='Fetch a remote core and its dependencies to local cache')
     parser_fetch.add_argument('core')
     parser_fetch.set_defaults(func=fetch)
-
-    # list-systems subparser
-    parser_list_systems = subparsers.add_parser('list-systems', help='List available systems')
-    parser_list_systems.set_defaults(func=list_systems)
 
     # list-cores subparser
     parser_list_cores = subparsers.add_parser('list-cores', help='List available cores')
@@ -458,9 +431,19 @@ def main():
     parser_update.add_argument('libraries', nargs='*', help='The libraries (or core roots) to update (defaults to all)')
     parser_update.set_defaults(func=update)
 
-    parsed_args = parser.parse_args()
-    if hasattr(parsed_args, 'func'):
-        run(parsed_args)
+    return parser.parse_args()
+
+def main():
+
+    args = parse_args()
+
+    if hasattr(args, 'func'):
+        init_logging(args.verbose, args.monochrome)
+        config = Config(file=args.config)
+        cm = init_coremanager(config, args.cores_root)
+
+        # Run the function
+        args.func(cm, args)
     else:
         parser.print_help()
 

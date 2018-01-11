@@ -11,10 +11,8 @@ import os
 logger = logging.getLogger(__name__)
 
 class Config(object):
-    archbits = 0
 
     def __init__(self, path=None, file=None):
-        #TODO: Add option to load custom config file
         self.build_root = None
         self.cache_root = None
         self.cores_root = []

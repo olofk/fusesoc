@@ -24,13 +24,8 @@ sync-uri = {sync_uri}
 
 sync_uri = 'https://github.com/fusesoc/fusesoc-cores'
 
-def _run_test_util(cm, args):
-    from fusesoc.main import _get_core
-    _get_core(cm, 'mor1kx-generic')
-    _get_core(cm, 'atlys')
-
 def test_library_location():
-    from fusesoc.main import run
+    from fusesoc.main import _get_core, init_coremanager
 
     tcf = tempfile.TemporaryFile(mode="w+")
     tcf.write(EXAMPLE_CONFIG.format(
@@ -45,23 +40,13 @@ def test_library_location():
     tcf.seek(0)
 
     conf = Config(file=tcf)
+    cm = init_coremanager(conf, [])
 
-    args = Namespace()
-
-    # TODO find a better way to set up these defaults
-    args.verbose = False
-    args.monochrome = False
-    args.cores_root = []
-    vars(args)['32'] = False
-    vars(args)['64'] = False
-
-    args.config = tcf
-    args.func = _run_test_util
-
-    run(args)
+    _get_core(cm, 'mor1kx-generic')
+    _get_core(cm, 'atlys')
 
 def test_library_add():
-    from fusesoc.main import add_library, run
+    from fusesoc.main import add_library
     from fusesoc.coremanager import CoreManager
 
     tcf = tempfile.NamedTemporaryFile(mode="w+")
@@ -88,7 +73,7 @@ sync-uri = https://github.com/fusesoc/fusesoc-cores"""
     assert expected == result
 
 def test_library_update(caplog):
-    from fusesoc.main import update, run
+    from fusesoc.main import update, init_coremanager, init_logging
 
     clone_target = tempfile.mkdtemp()
 
@@ -111,19 +96,14 @@ def test_library_update(caplog):
 
         args = Namespace()
 
-        # TODO find a better way to set up these defaults
-        args.verbose = False
-        args.monochrome = False
-        args.cores_root = []
-        vars(args)['32'] = False
-        vars(args)['64'] = False
+        init_logging(False, False)
+        cm = init_coremanager(conf, [])
 
-        args.config = tcf
+        # TODO find a better way to set up these defaults
         args.libraries = []
-        args.func = update
 
         with caplog.at_level(logging.INFO):
-            run(args)
+            update(cm, args)
 
         assert not "Updating 'test_lib'" in caplog.text
 
@@ -132,7 +112,7 @@ def test_library_update(caplog):
         args.libraries = ['test_lib']
 
         with caplog.at_level(logging.INFO):
-            run(args)
+            update(cm, args)
 
         assert "Updating 'test_lib'" in caplog.text
 
@@ -142,7 +122,7 @@ def test_library_update(caplog):
         conf.libraries['test_lib']['auto-sync'] = True
 
         with caplog.at_level(logging.INFO):
-            run(args)
+            update(cm, args)
 
         assert "Updating 'test_lib'" in caplog.text
 

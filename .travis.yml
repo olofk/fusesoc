@@ -10,7 +10,6 @@ env:
   - MODEL_TECH=dummy_value
 script:
   - "fusesoc init -y"
-  - "fusesoc list-systems"
   - "fusesoc list-cores"
   - "fusesoc update"
   - "py.test"
