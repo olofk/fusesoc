@@ -17,14 +17,17 @@ class FileAction(argparse.Action):
 
 class EdaTool(object):
 
-    def __init__(self, eda_api_file, work_root):
+    def __init__(self, eda_api_file, work_root=None):
         eda_api = yaml.load(open(eda_api_file))
         self.name = eda_api['name']
         _tool_name = self.__class__.__name__.lower()
         self.tool_options = eda_api['tool_options'][_tool_name]
         self.fusesoc_options = eda_api['tool_options']['fusesoc']
 
-        self.work_root = work_root
+        if work_root:
+            self.work_root = work_root
+        else:
+            self.work_root = os.path.dirname(eda_api_file)
         self.env = os.environ.copy()
 
         self.env['WORK_ROOT'] = os.path.abspath(self.work_root)

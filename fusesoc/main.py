@@ -223,7 +223,7 @@ def run_backend(cm, export, do_configure, do_build, do_run, flags, system, backe
     #Frontend/backend separation
 
     try:
-        backend = _import(tool)(eda_api_file=eda_api_file, work_root=work_root)
+        backend = _import(tool)(eda_api_file=eda_api_file)
     except ImportError:
         logger.error('Backend "{}" not found'.format(tool))
         exit(1)
