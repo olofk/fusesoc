@@ -1,3 +1,36 @@
+1.8 2018-01-31 Olof Kindgren <olof.kindgren@gmail.com>
+======================================================
+* Add BMM and PCF as valid file types
+* Support verilog defines in icestorm backend
+* Add --no-export option
+* Added versioning to EDA API
+* Improved path handling under cygwin
+* Support user files in all backends
+* Added copyto option
+* Exit isim properly after simulations
+* Add yosys_synth_options
+* Fix quoting of vlogparam strings in ISE
+* Pass arguments to ghdl in correct order
+* Support multiple toplevels in xsim
+* Add command-line option for specifying config file
+* Add library add command
+* Add library sections in config file
+* Add run command
+* Add experimental CAPI2 support
+* Add target and tool switches to build command
+
+* + improved error handling, bug fixes and refactoring
+
+Contributors:
+Ahmed Alsawi <ahmedalsawi2012@gmail.com>
+Andrew Wygle <awygle@gmail.com>
+Hatim Kanchwala <hatim@hatimak.me>
+Jack Gassett <jack.gassett@gadgetfactory.net>
+Olof Kindgren <olof.kindgren@gmail.com>
+Philipp Wagner <philipp.wagner@tum.de>
+Thomas Hornschuh <thomas@hornschuh-family.de>
+William D. Jones <thor0505@comcast.net>
+
 1.7 2017-07-21 Olof Kindgren <olof.kindgren@gmail.com>
 ======================================================
 * Exit with error code when synthesis fails
