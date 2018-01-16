@@ -1,0 +1,144 @@
+files:
+- {file_type: verilogSource, is_include_file: false, logical_name: '', name: ../../../cores/adv_debug_sys/Hardware/adv_dbg_if/rtl/verilog/adbg_wb_biu.v}
+- {file_type: verilogSource, is_include_file: false, logical_name: '', name: ../../../cores/adv_debug_sys/Hardware/adv_dbg_if/rtl/verilog/adbg_or1k_status_reg.v}
+- {file_type: verilogSource, is_include_file: false, logical_name: '', name: ../../../cores/adv_debug_sys/Hardware/adv_dbg_if/rtl/verilog/adbg_jsp_biu.v}
+- {file_type: verilogSource, is_include_file: false, logical_name: '', name: ../../../cores/adv_debug_sys/Hardware/adv_dbg_if/rtl/verilog/adbg_or1k_module.v}
+- {file_type: verilogSource, is_include_file: false, logical_name: '', name: ../../../cores/adv_debug_sys/Hardware/adv_dbg_if/rtl/verilog/syncflop.v}
+- {file_type: verilogSource, is_include_file: false, logical_name: '', name: ../../../cores/adv_debug_sys/Hardware/adv_dbg_if/rtl/verilog/adbg_crc32.v}
+- {file_type: verilogSource, is_include_file: true, logical_name: '', name: ../../../cores/adv_debug_sys/Hardware/adv_dbg_if/rtl/verilog/adbg_defines.v}
+- {file_type: verilogSource, is_include_file: false, logical_name: '', name: ../../../cores/adv_debug_sys/Hardware/adv_dbg_if/rtl/verilog/adbg_jsp_module.v}
+- {file_type: verilogSource, is_include_file: false, logical_name: '', name: ../../../cores/adv_debug_sys/Hardware/adv_dbg_if/rtl/verilog/adbg_top.v}
+- {file_type: verilogSource, is_include_file: false, logical_name: '', name: ../../../cores/adv_debug_sys/Hardware/adv_dbg_if/rtl/verilog/bytefifo.v}
+- {file_type: verilogSource, is_include_file: false, logical_name: '', name: ../../../cores/adv_debug_sys/Hardware/adv_dbg_if/rtl/verilog/adbg_or1k_biu.v}
+- {file_type: verilogSource, is_include_file: false, logical_name: '', name: ../../../cores/adv_debug_sys/Hardware/adv_dbg_if/rtl/verilog/adbg_or1k_defines.v}
+- {file_type: verilogSource, is_include_file: false, logical_name: '', name: ../../../cores/adv_debug_sys/Hardware/adv_dbg_if/rtl/verilog/syncreg.v}
+- {file_type: verilogSource, is_include_file: true, logical_name: '', name: ../../../cores/adv_debug_sys/Hardware/adv_dbg_if/rtl/verilog/adbg_wb_defines.v}
+- {file_type: verilogSource, is_include_file: false, logical_name: '', name: ../../../cores/adv_debug_sys/Hardware/adv_dbg_if/rtl/verilog/adbg_wb_module.v}
+- {file_type: cSource, is_include_file: false, logical_name: '', name: ../../../cores/elf-loader/elf-loader.c}
+- {file_type: cSource, is_include_file: true, logical_name: '', name: ../../../cores/elf-loader/elf-loader.h}
+- {file_type: QIP, is_include_file: false, logical_name: '', name: ../../../cores/misc/qip_file.qip}
+- {file_type: systemVerilogSource, is_include_file: false, logical_name: '', name: ../../../cores/misc/sv_file.sv}
+- {file_type: UCF, is_include_file: false, logical_name: '', name: ../../../cores/misc/ucf_file.ucf}
+- {file_type: user, is_include_file: false, logical_name: '', name: ../../../cores/misc/user_file}
+- {file_type: tclSource, is_include_file: false, logical_name: '', name: ../../../cores/misc/tcl_file.tcl}
+- {file_type: verilogSource, is_include_file: false, logical_name: '', name: ../../../cores/misc/vlog_file.v}
+- {file_type: vhdlSource, is_include_file: false, logical_name: '', name: ../../../cores/misc/vhdl_file.vhd}
+- {file_type: vhdlSource, is_include_file: false, logical_name: libx, name: ../../../cores/misc/vhdl_lib_file.vhd}
+- {file_type: vhdlSource-2008, is_include_file: false, logical_name: '', name: ../../../cores/misc/vhdl2008_file.vhd}
+- {file_type: xci, is_include_file: false, logical_name: '', name: ../../../cores/misc/xci_file.xci}
+- {file_type: xdc, is_include_file: false, logical_name: '', name: ../../../cores/misc/xdc_file}
+- {file_type: verilogSource, is_include_file: false, logical_name: '', name: ../../../cache/jtag_tap_1.13/tap/rtl/verilog/tap_top.v}
+- {file_type: verilogSource, is_include_file: true, logical_name: '', name: ../../../cache/mor1kx_3.1/rtl/verilog/mor1kx-defines.v}
+- {file_type: verilogSource, is_include_file: true, logical_name: '', name: ../../../cache/mor1kx_3.1/rtl/verilog/mor1kx-sprs.v}
+- {file_type: verilogSource, is_include_file: true, logical_name: '', name: ../../../cache/mor1kx_3.1/rtl/verilog/mor1kx_utils.vh}
+- {file_type: verilogSource, is_include_file: false, logical_name: '', name: ../../../cache/mor1kx_3.1/rtl/verilog/mor1kx_branch_prediction.v}
+- {file_type: verilogSource, is_include_file: false, logical_name: '', name: ../../../cache/mor1kx_3.1/rtl/verilog/mor1kx_bus_if_avalon.v}
+- {file_type: verilogSource, is_include_file: false, logical_name: '', name: ../../../cache/mor1kx_3.1/rtl/verilog/mor1kx_bus_if_wb32.v}
+- {file_type: verilogSource, is_include_file: false, logical_name: '', name: ../../../cache/mor1kx_3.1/rtl/verilog/mor1kx_cache_lru.v}
+- {file_type: verilogSource, is_include_file: false, logical_name: '', name: ../../../cache/mor1kx_3.1/rtl/verilog/mor1kx_cfgrs.v}
+- {file_type: verilogSource, is_include_file: false, logical_name: '', name: ../../../cache/mor1kx_3.1/rtl/verilog/mor1kx_cpu_cappuccino.v}
+- {file_type: verilogSource, is_include_file: false, logical_name: '', name: ../../../cache/mor1kx_3.1/rtl/verilog/mor1kx_cpu_espresso.v}
+- {file_type: verilogSource, is_include_file: false, logical_name: '', name: ../../../cache/mor1kx_3.1/rtl/verilog/mor1kx_cpu_prontoespresso.v}
+- {file_type: verilogSource, is_include_file: false, logical_name: '', name: ../../../cache/mor1kx_3.1/rtl/verilog/mor1kx_cpu.v}
+- {file_type: verilogSource, is_include_file: false, logical_name: '', name: ../../../cache/mor1kx_3.1/rtl/verilog/mor1kx_ctrl_cappuccino.v}
+- {file_type: verilogSource, is_include_file: false, logical_name: '', name: ../../../cache/mor1kx_3.1/rtl/verilog/mor1kx_ctrl_espresso.v}
+- {file_type: verilogSource, is_include_file: false, logical_name: '', name: ../../../cache/mor1kx_3.1/rtl/verilog/mor1kx_ctrl_prontoespresso.v}
+- {file_type: verilogSource, is_include_file: false, logical_name: '', name: ../../../cache/mor1kx_3.1/rtl/verilog/mor1kx_dcache.v}
+- {file_type: verilogSource, is_include_file: false, logical_name: '', name: ../../../cache/mor1kx_3.1/rtl/verilog/mor1kx_decode_execute_cappuccino.v}
+- {file_type: verilogSource, is_include_file: false, logical_name: '', name: ../../../cache/mor1kx_3.1/rtl/verilog/mor1kx_decode.v}
+- {file_type: verilogSource, is_include_file: false, logical_name: '', name: ../../../cache/mor1kx_3.1/rtl/verilog/mor1kx_dmmu.v}
+- {file_type: verilogSource, is_include_file: false, logical_name: '', name: ../../../cache/mor1kx_3.1/rtl/verilog/mor1kx_execute_alu.v}
+- {file_type: verilogSource, is_include_file: false, logical_name: '', name: ../../../cache/mor1kx_3.1/rtl/verilog/mor1kx_execute_ctrl_cappuccino.v}
+- {file_type: verilogSource, is_include_file: false, logical_name: '', name: ../../../cache/mor1kx_3.1/rtl/verilog/mor1kx_fetch_cappuccino.v}
+- {file_type: verilogSource, is_include_file: false, logical_name: '', name: ../../../cache/mor1kx_3.1/rtl/verilog/mor1kx_fetch_espresso.v}
+- {file_type: verilogSource, is_include_file: false, logical_name: '', name: ../../../cache/mor1kx_3.1/rtl/verilog/mor1kx_fetch_prontoespresso.v}
+- {file_type: verilogSource, is_include_file: false, logical_name: '', name: ../../../cache/mor1kx_3.1/rtl/verilog/mor1kx_fetch_tcm_prontoespresso.v}
+- {file_type: verilogSource, is_include_file: false, logical_name: '', name: ../../../cache/mor1kx_3.1/rtl/verilog/mor1kx_icache.v}
+- {file_type: verilogSource, is_include_file: false, logical_name: '', name: ../../../cache/mor1kx_3.1/rtl/verilog/mor1kx_immu.v}
+- {file_type: verilogSource, is_include_file: false, logical_name: '', name: ../../../cache/mor1kx_3.1/rtl/verilog/mor1kx_lsu_cappuccino.v}
+- {file_type: verilogSource, is_include_file: false, logical_name: '', name: ../../../cache/mor1kx_3.1/rtl/verilog/mor1kx_lsu_espresso.v}
+- {file_type: verilogSource, is_include_file: false, logical_name: '', name: ../../../cache/mor1kx_3.1/rtl/verilog/mor1kx_pic.v}
+- {file_type: verilogSource, is_include_file: false, logical_name: '', name: ../../../cache/mor1kx_3.1/rtl/verilog/mor1kx_rf_cappuccino.v}
+- {file_type: verilogSource, is_include_file: false, logical_name: '', name: ../../../cache/mor1kx_3.1/rtl/verilog/mor1kx_rf_espresso.v}
+- {file_type: verilogSource, is_include_file: false, logical_name: '', name: ../../../cache/mor1kx_3.1/rtl/verilog/mor1kx_simple_dpram_sclk.v}
+- {file_type: verilogSource, is_include_file: false, logical_name: '', name: ../../../cache/mor1kx_3.1/rtl/verilog/mor1kx_store_buffer.v}
+- {file_type: verilogSource, is_include_file: false, logical_name: '', name: ../../../cache/mor1kx_3.1/rtl/verilog/mor1kx_ticktimer.v}
+- {file_type: verilogSource, is_include_file: false, logical_name: '', name: ../../../cache/mor1kx_3.1/rtl/verilog/mor1kx_true_dpram_sclk.v}
+- {file_type: verilogSource, is_include_file: false, logical_name: '', name: ../../../cache/mor1kx_3.1/rtl/verilog/mor1kx.v}
+- {file_type: verilogSource, is_include_file: false, logical_name: '', name: ../../../cache/mor1kx_3.1/rtl/verilog/mor1kx_wb_mux_cappuccino.v}
+- {file_type: verilogSource, is_include_file: false, logical_name: '', name: ../../../cache/mor1kx_3.1/rtl/verilog/mor1kx_wb_mux_espresso.v}
+- {file_type: verilogSource, is_include_file: false, logical_name: '', name: ../../../cache/verilog-arbiter_0-r1/src/arbiter.v}
+- {file_type: verilogSource, is_include_file: true, logical_name: '', name: ../../../cores/verilog_utils/verilog_utils.vh}
+- {file_type: verilogSource, is_include_file: true, logical_name: '', name: ../../../cores/wb_common/wb_common_params.v}
+- {file_type: verilogSource, is_include_file: true, logical_name: '', name: ../../../cores/wb_common/wb_common.v}
+- {file_type: cppSource, is_include_file: false, logical_name: '', name: ../../../cores/verilator_tb_utils/verilator_tb_utils.cpp}
+- {file_type: cppSource, is_include_file: false, logical_name: '', name: ../../../cores/verilator_tb_utils/jtagServer.cpp}
+- {file_type: cppSource, is_include_file: true, logical_name: '', name: ../../../cores/verilator_tb_utils/verilator_tb_utils.h}
+- {file_type: cppSource, is_include_file: true, logical_name: '', name: ../../../cores/verilator_tb_utils/jtagServer.h}
+- {file_type: verilogSource, is_include_file: false, logical_name: '', name: ../../../cache/wb_intercon_1.0/rtl/verilog/wb_arbiter.v}
+- {file_type: verilogSource, is_include_file: false, logical_name: '', name: ../../../cache/wb_intercon_1.0/rtl/verilog/wb_data_resize.v}
+- {file_type: verilogSource, is_include_file: false, logical_name: '', name: ../../../cache/wb_intercon_1.0/rtl/verilog/wb_upsizer.v}
+- {file_type: verilogSource, is_include_file: false, logical_name: '', name: ../../../cache/wb_intercon_1.0/rtl/verilog/wb_mux.v}
+- {file_type: verilogSource, is_include_file: true, logical_name: '', name: ../../../cores/mor1kx-generic/rtl/verilog/wb_intercon.vh}
+- {file_type: verilogSource, is_include_file: true, logical_name: '', name: ../../../cores/mor1kx-generic/bench/verilog/include/test-defines.v}
+- {file_type: verilogSource, is_include_file: false, logical_name: '', name: ../../../cores/mor1kx-generic/rtl/verilog/orpsoc_top.v}
+- {file_type: verilogSource, is_include_file: false, logical_name: '', name: ../../../cores/mor1kx-generic/rtl/verilog/wb_intercon.v}
+- {file_type: cSource, is_include_file: false, logical_name: '', name: ../../../cores/mor1kx-generic/bench/verilator/tb.cpp}
+name: mor1kx-generic_0
+parameters:
+- {datatype: file, default: '', description: ELF file to preload to memory, name: elf-load,
+  paramtype: plusarg}
+- {datatype: bool, default: '', description: Enable mor1kx instruction trace, name: trace_enable,
+  paramtype: plusarg}
+- {datatype: bool, default: '', description: Output mor1kx instruction trace to screen,
+  name: trace_to_screen, paramtype: plusarg}
+- {datatype: bool, default: '', description: boolean verilog parameter, name: vlogparam_bool,
+  paramtype: vlogparam}
+- {datatype: int, default: '', description: integer verilog parameter, name: vlogparam_int,
+  paramtype: vlogparam}
+- {datatype: str, default: '', description: string verilog parameter, name: vlogparam_str,
+  paramtype: vlogparam}
+- {datatype: bool, default: '', description: boolean verilog define, name: vlogdefine_bool,
+  paramtype: vlogdefine}
+- {datatype: int, default: '', description: integer verilog define, name: vlogdefine_int,
+  paramtype: vlogdefine}
+- {datatype: str, default: '', description: string verilog define, name: vlogdefine_str,
+  paramtype: vlogdefine}
+- {datatype: bool, default: '', description: boolean verilog plusarg, name: plusarg_bool,
+  paramtype: plusarg}
+- {datatype: int, default: '', description: integer verilog plusarg, name: plusarg_int,
+  paramtype: plusarg}
+- {datatype: str, default: '', description: string verilog plusarg, name: plusarg_str,
+  paramtype: plusarg}
+- {datatype: bool, default: '', description: boolean verilog cmdlinearg, name: cmdlinearg_bool,
+  paramtype: cmdlinearg}
+- {datatype: int, default: '', description: integer verilog cmdlinearg, name: cmdlinearg_int,
+  paramtype: cmdlinearg}
+- {datatype: str, default: '', description: string verilog cmdlinearg, name: cmdlinearg_str,
+  paramtype: cmdlinearg}
+- {datatype: int, default: '', description: Display a heartbeat message every n*heartbeat
+    time unit, name: heartbeat, paramtype: plusarg}
+- {datatype: str, default: '', description: Name of TAP file, name: tapfile, paramtype: plusarg}
+- {datatype: str, default: '', description: Name of testcase (Used for VCD filename),
+  name: testcase, paramtype: plusarg}
+- {datatype: int, default: '', description: Abort test case after n cycles, name: timeout,
+  paramtype: plusarg}
+- {datatype: bool, default: '', description: Enable VCD logging, name: vcd, paramtype: plusarg}
+- {datatype: bool, default: '', description: Preset RAM to a known value (0), name: clear_ram,
+  paramtype: plusarg}
+tool_options:
+  fusesoc: {}
+  verilator:
+    cli_parser: fusesoc
+    libs: [-lelf]
+    mode: cc
+    top_module: orpsoc_top
+    verilator_options: [-Wno-fatal, --trace]
+toplevel: orpsoc_top
+version: 0.1.1
+vpi:
+- include_dirs: []
+  libs: [elf]
+  name: elf-loader_0
+  src_files: [/home/olof/projects/fusesoc/fusesoc/tests/cores/elf-loader/elf-loader.c,
+    /home/olof/projects/fusesoc/fusesoc/tests/cores/elf-loader/vpi_wrapper.c]

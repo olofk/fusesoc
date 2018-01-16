@@ -1,0 +1,15 @@
+files:
+- {file_type: systemCSource, is_include_file: false, logical_name: '', name: ../../../cores/verilator_tb_utils/verilator_tb_utils.cpp}
+- {file_type: systemCSource, is_include_file: true, logical_name: '', name: ../../../cores/verilator_tb_utils/jtagServer.h}
+- {file_type: verilogSource, is_include_file: true, logical_name: '', name: ../../../cores/mor1kx-generic/bench/verilog/include/test-defines.v}
+- {file_type: verilogSource, is_include_file: false, logical_name: '', name: ../../../cores/mor1kx-generic/rtl/verilog/wb_intercon.v}
+- {file_type: cSource, is_include_file: false, logical_name: '', name: ../../../cores/mor1kx-generic/bench/verilator/tb.cpp}
+name: mor1kx-generic_0
+tool_options:
+  fusesoc: {}
+  verilator:
+    cli_parser: fusesoc
+    mode: sc
+    top_module: orpsoc_top
+toplevel: orpsoc_top
+version: 0.1.1

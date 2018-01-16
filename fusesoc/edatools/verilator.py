@@ -54,11 +54,13 @@ class Verilator(Simulator):
 
         with open(os.path.join(self.work_root,self.verilator_file),'w') as f:
             f.write('--Mdir .\n')
-            if self.tool_options['mode'] == 'systemC':
-                f.write('--sc\n')
+            modes = ['sc', 'cc', 'lint-only']
+            if self.tool_options['mode'] in modes:
+                f.write('--'+self.tool_options['mode']+'\n')
             else:
-                f.write('--cc\n')
-
+                _s = "Illegal verilator mode {}. Allowed values are {}"
+                raise RuntimeError(_s.format(self.tool_options['mode'],
+                                             ', '.join(modes)))
             if 'libs' in self.tool_options:
                 for lib in self.tool_options['libs']:
                     f.write('-LDFLAGS {}\n'.format(lib))

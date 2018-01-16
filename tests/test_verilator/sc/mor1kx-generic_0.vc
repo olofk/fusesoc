@@ -1,0 +1,11 @@
+--Mdir .
+--sc
++incdir+../../../cores/verilator_tb_utils
+-CFLAGS -I../../../cores/verilator_tb_utils
++incdir+../../../cores/mor1kx-generic/bench/verilog/include
+-CFLAGS -I../../../cores/mor1kx-generic/bench/verilog/include
+../../../cores/mor1kx-generic/rtl/verilog/wb_intercon.v
+--top-module orpsoc_top
+--exe
+../../../cores/verilator_tb_utils/verilator_tb_utils.cpp
+../../../cores/mor1kx-generic/bench/verilator/tb.cpp
