@@ -62,8 +62,12 @@ def build(cm, args):
     do_configure = True
     do_build = not args.setup
     do_run = False
-    flags = {'target' : 'synth',
-             'tool' : None,}
+    if not args.target:
+        target = 'synth'
+    else:
+        target = args.target
+    flags = {'target' : target,
+             'tool' : args.tool}
     run_backend(cm, not args.no_export,
                 do_configure, do_build, do_run,
                 flags, args.system, args.backendargs)
@@ -211,7 +215,11 @@ def run(cm, args):
 def run_backend(cm, export, do_configure, do_build, do_run, flags, system, backendargs):
     tool_error = "No tool was supplied on command line or found in '{}' core description"
     core = _get_core(cm, system)
-    tool = core.get_tool(flags)
+    try:
+        tool = core.get_tool(flags)
+    except SyntaxError as e:
+        logger.error(str(e))
+        exit(1)
     if not tool:
         logger.error(tool_error.format(system))
         exit(1)
@@ -390,6 +398,7 @@ def parse_args():
     parser_build.add_argument('--no-export', action='store_true', help='Reference source files from their current location instead of exporting to a build tree')
     parser_build.add_argument('--setup', action='store_true', help='Only create the project files without running the EDA tool')
     parser_build.add_argument('--target', help='Override default target')
+    parser_build.add_argument('--tool', help='Override default tool for target')
     parser_build.add_argument('system')
     parser_build.add_argument('backendargs', nargs=argparse.REMAINDER)
     parser_build.set_defaults(func=build)
