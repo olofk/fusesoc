@@ -225,7 +225,7 @@ class Core:
                 if hasattr(section, member):
                     _member = getattr(section, member)
                     if _member:
-                        options[member] = _member.split()
+                        options[member] = _member
             for member in section.lists:
                 if hasattr(section, member):
                     _member = getattr(section, member)
@@ -488,26 +488,27 @@ Parameter:
     scope       : String
 
 Icarus:
-  members:
+  lists:
     iverilog_options : String
 
 Quartus:
   members:
-    quartus_options : String
     family          : String
     device          : String
+  lists:
+    quartus_options : String
 
 Modelsim:
-  members:
+  lists:
     vlog_options    : String
     vsim_options    : String
 
 Verilator:
   members:
     mode              : String
-    verilator_options : String
   lists:
-    libs        : String
+    libs              : String
+    verilator_options : String
 
 Scripts:
   lists:
