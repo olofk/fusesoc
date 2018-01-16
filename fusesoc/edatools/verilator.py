@@ -83,11 +83,15 @@ class Verilator(Simulator):
         with open(os.path.join(self.work_root, 'Makefile'), 'w') as makefile:
             makefile.write(MAKEFILE_TEMPLATE)
 
+        if 'verilator_options' in self.tool_options:
+            verilator_options = ' '.join(self.tool_options['verilator_options'])
+        else:
+            verilator_options = ''
         with open(os.path.join(self.work_root, 'config.mk'), 'w') as config_mk:
             config_mk.write(CONFIG_MK_TEMPLATE.format(
                 top_module        = self.toplevel,
                 vc_file           = self.verilator_file,
-                verilator_options = ' '.join(self.tool_options['verilator_options'])))
+                verilator_options = verilator_options))
 
     def build_main(self):
         logger.info("Building simulation model")
