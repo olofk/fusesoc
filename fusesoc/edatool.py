@@ -18,11 +18,43 @@ class FileAction(argparse.Action):
 class EdaTool(object):
 
     def __init__(self, eda_api_file, work_root=None):
-        eda_api = yaml.load(open(eda_api_file))
-        self.name = eda_api['name']
         _tool_name = self.__class__.__name__.lower()
-        self.tool_options = eda_api['tool_options'][_tool_name]
-        self.fusesoc_options = eda_api['tool_options']['fusesoc']
+
+        eda_api = yaml.load(open(eda_api_file))
+
+        if not eda_api:
+            raise RuntimeError("Failed to parse " + eda_api_file)
+
+        try:
+            self.name = eda_api['name']
+        except KeyError:
+            raise RuntimeError("Missing required parameter 'name'")
+
+
+        if 'tool_options' in eda_api:
+            self.tool_options = eda_api['tool_options'][_tool_name]
+            self.fusesoc_options = eda_api['tool_options']['fusesoc']
+        else:
+            self.tool_options = {}
+            self.fusesoc_options = {}
+
+        if 'files' in eda_api:
+            self.files = eda_api['files']
+        else:
+            self.files = []
+        if 'parameters' in eda_api:
+            self.parameters = eda_api['parameters']
+        else:
+            self.parameters = []
+
+        if 'toplevel' in eda_api:
+            self.toplevel = eda_api['toplevel']
+        else:
+            self.toplevel = []
+        if 'vpi' in eda_api:
+            self.vpi_modules = eda_api['vpi']
+        else:
+            self.vpi_modules = []
 
         if work_root:
             self.work_root = work_root
@@ -39,10 +71,6 @@ class EdaTool(object):
         self.cmdlinearg  = OrderedDict()
         self.parsed_args = False
 
-        self.files      = eda_api['files']
-        self.parameters = eda_api['parameters']
-        self.toplevel = eda_api['toplevel']
-        self.vpi_modules = eda_api['vpi']
 
     def build(self):
         self.build_pre()
