@@ -106,7 +106,7 @@ class Core:
             _root = Root(yaml.load(open(core_file)))
         except KeyError as e:
             raise SyntaxError("Unknown item {}".format(e))
-        except yaml.scanner.ScannerError as e:
+        except (yaml.scanner.ScannerError, yaml.constructor.ConstructorError) as e:
             raise SyntaxError(str(e))
         for i in _root.members:
             setattr(self, i, getattr(_root, i))
