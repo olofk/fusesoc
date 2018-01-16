@@ -1,7 +1,7 @@
 CORE INFO
 Name                 : ::mor1kx-generic:0
 Supported simulators : icarus modelsim
-Common dependencies  : >=::adv_debug_sys:0 >=::filetypes:0 ::jtag_tap:1.13 >=::mor1kx:0 >=::paramtest:0 ::wb_intercon:1.0 >=::elf-loader:0 >=::elf-loader:0 >=::elf-loader:0 >=::elf-loader:0 >=::verilator_tb_utils:0
+Common dependencies  : >=::adv_debug_sys:0 >=::filetypes:0 ::jtag_tap:1.13 >=::mor1kx:0 >=::paramtest:0 ::wb_intercon:1.0
 
 == icarus ==
 icarus-specific dependencies : >=::elf-loader:0

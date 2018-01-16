@@ -91,7 +91,8 @@ class Core:
 
         self.sanitized_name = self.name.sanitized_name
 
-        self.depend     = self.main.depend
+        self.depend     = self.main.depend[:]
+
         self.simulators = self.main.simulators
 
         if self.main.backend:
@@ -487,7 +488,7 @@ Common dependencies  : {}\n\n"""
         s = HEADER.format(str(self.name),
                           self.core_root,
                           ' '.join(self.simulators),
-                          ' '.join([x.depstr() for x in self.depend]))
+                          ' '.join([x.depstr() for x in self.main.depend]))
         for sec in sorted(section.SECTION_MAP):
             if sec in ['main', 'verilog', 'fileset']:
                 continue
