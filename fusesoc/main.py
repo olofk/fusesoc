@@ -471,21 +471,26 @@ def parse_args():
     parser_update.add_argument('libraries', nargs='*', help='The libraries (or core roots) to update (defaults to all)')
     parser_update.set_defaults(func=update)
 
-    return parser.parse_args()
+    args = parser.parse_args()
+
+    if hasattr(args, 'func'):
+        return args
+    else:
+        parser.print_help()
+        return None
 
 def main():
 
     args = parse_args()
+    if not args:
+        exit(0)
 
-    if hasattr(args, 'func'):
-        init_logging(args.verbose, args.monochrome)
-        config = Config(file=args.config)
-        cm = init_coremanager(config, args.cores_root)
+    init_logging(args.verbose, args.monochrome)
+    config = Config(file=args.config)
+    cm = init_coremanager(config, args.cores_root)
 
-        # Run the function
-        args.func(cm, args)
-    else:
-        parser.print_help()
+    # Run the function
+    args.func(cm, args)
 
 if __name__ == "__main__":
     main()
