@@ -156,7 +156,7 @@ def add_library(cm, args):
     name = args.name
     library['sync-uri'] = vars(args)['sync-uri']
     if args.location:
-        library['location'] = args.location
+        library['location'] = os.path.abspath(args.location)
     if args.no_auto_sync:
         library['auto-sync'] = False
 
