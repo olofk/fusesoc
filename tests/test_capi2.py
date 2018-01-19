@@ -1,8 +1,10 @@
+import pytest
+import os.path
+tests_dir = os.path.dirname(__file__)
+
 def test_capi2_get_files():
-    import os.path
     from fusesoc.core import Core
 
-    tests_dir = os.path.dirname(__file__)
 
     core_file = os.path.join(tests_dir,
                              "capi2_cores",
@@ -41,3 +43,20 @@ def test_capi2_get_files():
     flags = {'tool' : 'icarus'}
     result = [vars(x) for x in core.get_files(flags)]
     assert expected == result
+
+def test_capi2_get_work_root():
+    from fusesoc.core import Core
+
+    core_file = os.path.join(tests_dir,
+                             "capi2_cores",
+                             "misc",
+                             "targets.core")
+    core = Core(core_file, None, None)
+
+    with pytest.raises(KeyError):
+        core.get_work_root({})
+    assert 'default-icarus'      == core.get_work_root({'tool' : 'icarus'})
+    assert 'default-vivado'      == core.get_work_root({'tool' : 'vivado'})
+    with pytest.raises(SyntaxError):
+        core.get_work_root({'tool' : 'icarus', 'target' : 'invalid_target'})
+    assert 'empty_target-icarus' == core.get_work_root({'tool' : 'icarus', 'target' : 'empty_target'})

@@ -77,6 +77,8 @@ class Section(object):
                         raise SyntaxError("Bad option '{}' in section '{}'".format(_item, k))
                 setattr(self, k, _l)
             elif k in self.dicts:
+                if not isinstance(v, dict):
+                    raise SyntaxError("Object in '{}' section must be a dict".format(k))
                 _d = {}
                 for _name, _items in v.items():
                     try:
@@ -276,7 +278,9 @@ class Core:
             raise SyntaxError(s.format(self.name, target.name))
 
     def get_work_root(self, flags):
-        return self._get_target(flags).name
+        _flags = flags.copy()
+        _flags['is_toplevel'] = True
+        return self._get_target(_flags).name+'-'+flags['tool']
 
     def _get_vpi(self, flags):
         vpi = {}
