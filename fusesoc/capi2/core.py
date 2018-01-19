@@ -25,6 +25,8 @@ class File(object):
                     self.file_type = v['file_type']
                 if 'is_include_file' in v:
                     self.is_include_file = v['is_include_file']
+                if 'copyto' in v:
+                    self.copyto = v['copyto']
         else:
             self.name = tree
             self.is_include_file = False #"FIXME"

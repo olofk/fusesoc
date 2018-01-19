@@ -1,0 +1,30 @@
+CAPI=2:
+name: ::copytocore:0
+filesets:
+  copyfiles:
+    files:
+      - subdir/dummy.extra: {copyto : copied.file, file_type : user}
+      - dummy.tcl: {copyto : subdir/another.file}
+    file_type : tclSource
+  unusedfiles:
+    files:
+      - idontexist
+  miscfiles:
+    files:
+      - vlogfile: {file_type : verilogSource, is_include_file : true}
+      - vhdlfile: {is_include_file : false}
+    file_type : vhdlSource
+  pickme:
+    files:
+      - pickthisfile: {file_type : user}
+  dontpickme:
+    files:
+      - dontpickthisfile: {file_type : user}
+
+targets:
+  default:
+    filesets: [
+    copyfiles,
+    miscfiles,
+    "tool_icarus? (pickme)",
+    "!tool_icarus? (dontpickme)"]
