@@ -228,9 +228,13 @@ def run_backend(cm, export, do_configure, do_build, do_run, flags, system, backe
         export_root = os.path.join(cm.config.build_root, core.name.sanitized_name, 'src')
     else:
         export_root = None
-    work_root   = os.path.join(cm.config.build_root,
-                               core.name.sanitized_name,
-                               core.get_work_root(flags))
+    try:
+        work_root   = os.path.join(cm.config.build_root,
+                                   core.name.sanitized_name,
+                                   core.get_work_root(flags))
+    except SyntaxError as e:
+        logger.error(e.msg)
+        exit(1)
     eda_api_file = os.path.join(work_root,
                                 core.name.sanitized_name+'.eda.yml')
     if do_configure:

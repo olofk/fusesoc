@@ -280,7 +280,16 @@ class Core:
     def get_work_root(self, flags):
         _flags = flags.copy()
         _flags['is_toplevel'] = True
-        return self._get_target(_flags).name+'-'+flags['tool']
+        target = self._get_target(_flags)
+        if target:
+            _flags['target'] = target.name
+            tool = self.get_tool(_flags)
+            if tool:
+                return target.name + '-' + tool
+            else:
+                raise SyntaxError("Failed to determine work root. Could not resolve tool for target " + target.name)
+        else:
+            raise SyntaxError("Failed to determine work root. Could not resolve target")
 
     def _get_vpi(self, flags):
         vpi = {}
@@ -389,7 +398,7 @@ File sets:
             self._debug(" Matched target {}".format(target_name))
             return self.targets[target_name]
         else:
-            raise SyntaxError("Could not find target '{}' in {}".format(target_name, self.name))
+            self._debug("Matched no target")
 
     def _get_filesets(self, flags):
         self._debug("Getting filesets for flags '{}'".format(str(flags)))
