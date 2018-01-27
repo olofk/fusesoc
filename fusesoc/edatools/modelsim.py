@@ -159,11 +159,14 @@ class Modelsim(Simulator):
                  cwd      = self.work_root,
                  errormsg = "Failed to build simulation model. Log is available in '{}'".format(os.path.join(self.work_root, 'transcript'))).run()
         if self.vpi_modules:
+            f = open(os.path.join(self.work_root, 'vpi_build.log'),'w')
             args = ['all']
             Launcher('make', args,
                      cwd      = self.work_root,
-                     stdout = open(os.path.join(self.work_root, 'vpi_build.log'),'w'),
+                     stdout =  f,
+                     stderr =  f,
                      errormsg = " vpi build failed. log is available in '{}'".format(os.path.join(self.work_root, 'vpi_build.log'))).run()
+            f.close()
 
     def run(self, args):
         self.model_tech = os.getenv('MODEL_TECH')
