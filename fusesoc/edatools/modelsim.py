@@ -110,6 +110,7 @@ class Modelsim(Simulator):
         for key, value in self.vlogparam.items():
             args += ['-g{}={}'.format(key, self._param_value_str(value))]
         tcl_run.write(' '.join(args)+'\n')
+        tcl_run.write('run -all\n')
         tcl_run.close()
 
     def _write_vpi_makefile(self):
@@ -143,7 +144,6 @@ class Modelsim(Simulator):
         self._write_build_rtl_tcl_file(tcl_main)
         if self.vpi_modules:
             self._write_vpi_makefile()
-            tcl_main.write("make\n")
         tcl_main.close()
         self._write_run_tcl_file()
 
@@ -158,6 +158,12 @@ class Modelsim(Simulator):
         Launcher(self.model_tech+'/vsim', args,
                  cwd      = self.work_root,
                  errormsg = "Failed to build simulation model. Log is available in '{}'".format(os.path.join(self.work_root, 'transcript'))).run()
+        if self.vpi_modules:
+            args = ['all']
+            Launcher('make', args,
+                     cwd      = self.work_root,
+                     stdout = open(os.path.join(self.work_root, 'vpi_build.log'),'w'),
+                     errormsg = " vpi build failed. log is available in '{}'".format(os.path.join(self.work_root, 'vpi_build.log'))).run()
 
     def run(self, args):
         self.model_tech = os.getenv('MODEL_TECH')
@@ -165,7 +171,7 @@ class Modelsim(Simulator):
             raise RuntimeError("Environment variable MODEL_TECH was not found. It should be set to <modelsim install path>/bin")
         super(Modelsim, self).run(args)
 
-        args = ['-c', '-quiet', '-do', 'fusesoc_run.tcl', '-do', 'run -all']
+        args = ['-c', '-quiet', '-do', 'fusesoc_run.tcl']
         Launcher(self.model_tech+'/vsim', args,
                  cwd      = self.work_root,
                  errormsg = "Simulation failed. Simulation log is available in '{}'".format(os.path.join(self.work_root, 'transcript'))).run()
