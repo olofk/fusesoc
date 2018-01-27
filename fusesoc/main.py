@@ -154,9 +154,14 @@ def list_paths(cm, args):
 def add_library(cm, args):
     library = {}
     name = args.name
-    library['sync-uri'] = vars(args)['sync-uri']
-    if args.location:
-        library['location'] = os.path.abspath(args.location)
+    sync_uri = vars(args)['sync-uri']
+    if os.path.isdir(sync_uri) and not args.location:
+        logger.info("Detecting {} as a local library".format(sync_uri))
+        library['location'] = os.path.abspath(sync_uri)
+    else:
+        library['sync-uri'] = sync_uri
+        if args.location:
+            library['location'] = os.path.abspath(args.location)
     if args.no_auto_sync:
         library['auto-sync'] = False
 
@@ -328,7 +333,9 @@ def update(cm, args):
                 pass
 
     for (name, library) in cm.config.libraries.items():
+        # TODO I don't like this huge "if", get rid of it
         if os.path.exists(library['location']) and \
+                not library['sync-uri'] is None and \
                 (name in libraries or \
                 library['location'] in libraries or \
                 library['auto-sync']):
@@ -439,7 +446,7 @@ def parse_args():
     # library add subparser
     parser_library_add = library_subparsers.add_parser('add', help='Add new library to fusesoc.conf')
     parser_library_add.add_argument('name', help='A friendly name  for the library')
-    parser_library_add.add_argument('sync-uri', help='The URI source for the library')
+    parser_library_add.add_argument('sync-uri', help='The URI source for the library (can be a file system path)')
     parser_library_add.add_argument('--location', help='The location to store the library into (defaults to $XDG_DATA_HOME/[name])')
     parser_library_add.add_argument('--no-auto-sync', action='store_true', help='Disable automatic updates of the library')
     parser_library_add.set_defaults(func=add_library)
