@@ -96,8 +96,11 @@ class Config(object):
                 logger.warn(_s.format(str(e), library))
                 continue
 
-            # sync-uri is non-optional
-            sync_uri = config.get(section, 'sync-uri')
+            try:
+                sync_uri = config.get(section, 'sync-uri')
+            except configparser.NoOptionError:
+                # sync-uri is absent for local libraries
+                sync_uri = None
 
             self.libraries[library] = {
                     'location': location,
@@ -124,7 +127,13 @@ class Config(object):
         if not section_name in config.sections():
             config.add_section(section_name)
 
-        config.set(section_name, 'sync-uri', library['sync-uri'])
+        # This is not user-controlled at all so an assert is OK
+        assert('location' in library or 'sync-uri' in library);
+
+        # sync-uri is absent for local libraries
+        if 'sync-uri' in library:
+            config.set(section_name, 'sync-uri', library['sync-uri'])
+
         if 'auto-sync' in library:
             if library['auto-sync']:
                 config.set(section_name, 'auto-sync', 'true')
