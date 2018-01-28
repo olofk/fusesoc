@@ -210,7 +210,7 @@ class Core:
             self._debug(" Matched tool {}".format(tool))
         else:
             self._debug(" Matched no tool")
-        return tool
+        return str(tool)
 
     def get_tool_options(self, flags):
         _flags = flags.copy()
@@ -229,7 +229,7 @@ class Core:
                 if hasattr(section, member):
                     _member = getattr(section, member)
                     if _member:
-                        options[member] = _member
+                        options[member] = str(_member)
             for member in section.lists:
                 if hasattr(section, member):
                     _member = getattr(section, member)

@@ -44,6 +44,21 @@ def test_capi2_get_files():
     result = [vars(x) for x in core.get_files(flags)]
     assert expected == result
 
+def test_capi2_get_tool_options():
+    from fusesoc.core import Core
+
+    core_file = os.path.join(tests_dir,
+                             "capi2_cores",
+                             "misc",
+                             "targets.core")
+    core = Core(core_file, None, None)
+
+    with pytest.raises(KeyError):
+        core.get_tool_options({})
+
+    assert {} == core.get_tool_options({'tool' : 'icarus'})
+    assert {'iverilog_options' : ['a', 'few', 'options']} == core.get_tool_options({'tool' : 'icarus', 'is_toplevel' : True, 'target' : 'target_with_tool_options'})
+
 def test_capi2_get_work_root():
     from fusesoc.core import Core
 

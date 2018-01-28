@@ -3,3 +3,7 @@ name: ::targets:0
 targets:
   default: {}
   empty_target: {}
+  target_with_tool_options:
+    tools:
+      icarus:
+        iverilog_options : ['a','few','options']
