@@ -7,6 +7,7 @@ else:
     import configparser
 
 import os
+import importlib
 
 logger = logging.getLogger(__name__)
 
@@ -102,10 +103,17 @@ class Config(object):
                 # sync-uri is absent for local libraries
                 sync_uri = None
 
+            try:
+                sync_type = config.get(section, 'sync-type')
+            except configparser.NoOptionError:
+                # sync-uri is absent for local libraries
+                sync_type = None
+
             self.libraries[library] = {
                     'location': location,
                     'auto-sync': auto_sync,
-                    'sync-uri': sync_uri
+                    'sync-uri': sync_uri,
+                    'sync-type': sync_type
                 }
 
         logger.debug('build_root='+self.build_root)
@@ -117,8 +125,7 @@ class Config(object):
     def add_library(self, name, library):
         from fusesoc.utils import Launcher
         if not hasattr(self, '_path'):
-            logger.error("No FuseSoC config file found - can't add library")
-            exit(1)
+            raise RuntimeError("No FuseSoC config file found - can't add library")
         section_name = 'library.' + name
 
         config = configparser.SafeConfigParser()
@@ -133,6 +140,11 @@ class Config(object):
         # sync-uri is absent for local libraries
         if 'sync-uri' in library:
             config.set(section_name, 'sync-uri', library['sync-uri'])
+
+        if 'sync-type' in library:
+            config.set(section_name, 'sync-type', library['sync-type'])
+        else:
+            library['sync-type'] = 'git'
 
         if 'auto-sync' in library:
             if library['auto-sync']:
@@ -149,13 +161,13 @@ class Config(object):
 
         self.libraries[name] = library
 
-        if not os.path.isdir(library['location']):
-            logger.info("Cloning library {}".format(name))
-            git_args = ['clone', library['sync-uri'], library['location']]
-            try:
-                Launcher('git', git_args).run()
-            except RuntimeError as e:
-                logger.error("`library add` failed: " + str(e))
+        try:
+            provider_module = importlib.import_module(
+                'fusesoc.provider.%s' % library['sync-type'])
+        except ImportError as e:
+            raise RuntimeError("Invalid sync-type '{}'".format(library['sync-type']))
+
+        provider_module.PROVIDER_CLASS.init_library(library)
 
         with open(self._path, 'w') as conf_file:
             config.write(conf_file)
