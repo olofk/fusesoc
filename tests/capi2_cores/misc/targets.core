@@ -7,3 +7,5 @@ targets:
     tools:
       icarus:
         iverilog_options : ['a','few','options']
+      vivado:
+        part: xc7a35tcsg324-1

@@ -493,6 +493,7 @@ Tools:
     modelsim  : Modelsim
     quartus   : Quartus
     verilator : Verilator
+    vivado    : Vivado
 
 Parameter:
   members:
@@ -524,6 +525,10 @@ Verilator:
   lists:
     libs              : String
     verilator_options : String
+
+Vivado:
+  members:
+    part              : String
 
 Scripts:
   lists:

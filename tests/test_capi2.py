@@ -57,7 +57,16 @@ def test_capi2_get_tool_options():
         core.get_tool_options({})
 
     assert {} == core.get_tool_options({'tool' : 'icarus'})
-    assert {'iverilog_options' : ['a', 'few', 'options']} == core.get_tool_options({'tool' : 'icarus', 'is_toplevel' : True, 'target' : 'target_with_tool_options'})
+    flags = {'target'      : 'target_with_tool_options',
+             'is_toplevel' : True}
+
+    flags['tool'] = 'icarus'
+    expected = {'iverilog_options' : ['a', 'few', 'options']}
+    assert expected == core.get_tool_options(flags)
+
+    flags['tool'] = 'vivado'
+    expected = {'part' : 'xc7a35tcsg324-1'}
+    assert expected == core.get_tool_options(flags)
 
 def test_capi2_get_work_root():
     from fusesoc.core import Core
