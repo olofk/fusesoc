@@ -105,10 +105,10 @@ class Rivierapro(Simulator):
         tcl_build_vpi = open(os.path.join(self.work_root, "fusesoc_build_vpi.tcl"), 'w')
         for vpi_module in self.vpi_modules:
             _name = vpi_module['name']
-            _incs = ' '.join(['-I'+os.path.relpath(d, self.work_root) for d in vpi_module['include_dirs']])
+            _incs = ' '.join(['-I'+d for d in vpi_module['include_dirs']])
             _libs = ' '.join(['-l'+l for l in vpi_module['libs']])
             _options = "-std=c99"
-            _srcs = ' '.join([os.path.relpath(f, self.work_root) for f in vpi_module['src_files']])
+            _srcs = ' '.join(vpi_module['src_files'])
             _s = 'ccomp -pli -o {}.so {} {} {} {}\n'.format(vpi_module['name'],
                                                       _incs,
                                                       _libs,

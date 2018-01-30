@@ -259,9 +259,10 @@ class CoreManager(object):
                     'logical_name'    : file.logical_name})
             #Extract VPI modules
             for _vpi in core.get_vpi(_flags):
+                rel_root = os.path.relpath(files_root, work_root)
                 vpi.append({'name'         : _vpi['name'],
-                            'src_files'    : [os.path.join(files_root, f.name) for f in _vpi['src_files']],
-                            'include_dirs' : [os.path.join(files_root, i) for i in _vpi['include_dirs']],
+                            'src_files'    : [os.path.join(rel_root, f.name) for f in _vpi['src_files']],
+                            'include_dirs' : [os.path.join(rel_root, i) for i in _vpi['include_dirs']],
                             'libs'         : _vpi['libs']})
 
         top_core = cores[-1]

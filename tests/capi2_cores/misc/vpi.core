@@ -1,0 +1,30 @@
+CAPI=2:
+name: ::vpi:0
+filesets:
+  vpi_fs1:
+    files:
+      - f1
+      - f2 : {is_include_file : true}
+    file_type : CSource
+  vpi_fs2:
+    files: [f3]
+    file_type : CppSource
+
+  vpi_fs3:
+    files: [f4]
+    file_type : CSource
+
+targets:
+  default:
+    toplevel : [not_used]
+    vpi: [vpi1, vpi2]
+
+vpi:
+  vpi1:
+    filesets:
+      - vpi_fs1
+      - vpi_fs2
+    libs:
+      - some_lib
+  vpi2:
+    filesets: [vpi_fs3]
