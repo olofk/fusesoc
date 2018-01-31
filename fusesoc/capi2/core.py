@@ -327,35 +327,16 @@ class Core:
 
     def info(self):
         s = """CORE INFO
-Name:                   {}
-Core root:              {}
+Name:      {}
+Core root: {}
 
-File sets:
+Targets:
 {}
 """
+        targets = '\n'.join(sorted(self.targets))
         return s.format(str(self.name),
                         str(self.core_root),
-                        "FIXME")
-        #FIXME: Start from root and recursively go down the tree
-        filesets = ""
-        for k,v in self.filesets.items():
-            print("""
- Name  : {}
- Files :""".format(k))
-            if not v.files:
-                print(" <No files>")
-            else:
-                _longest_name = max([len(x.name) for x in v.files])
-                _longest_type = max([len(x.file_type) for x in v.files])
-                for f in v.files:
-                    print("  {} {} {}".format(f.name.ljust(_longest_name),
-                                              f.file_type.ljust(_longest_type),
-                                              "(include file)" if f.is_include_file else ""))
-        print("Targets")
-        print("=======")
-        for target in self.targets:
-            print(target)
-        print("=======")
+                        targets)
 
     def patch(self, dst_dir):
         #FIXME: Use native python patch instead

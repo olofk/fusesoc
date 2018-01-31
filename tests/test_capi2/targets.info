@@ -1,0 +1,7 @@
+CORE INFO
+Name:      ::targets:0
+
+Targets:
+default
+empty_target
+target_with_tool_options

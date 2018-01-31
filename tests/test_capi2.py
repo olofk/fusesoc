@@ -84,3 +84,16 @@ def test_capi2_get_work_root():
     with pytest.raises(SyntaxError):
         core.get_work_root({'tool' : 'icarus', 'target' : 'invalid_target'})
     assert 'empty_target-icarus' == core.get_work_root({'tool' : 'icarus', 'target' : 'empty_target'})
+
+def test_capi2_info():
+    from fusesoc.core import Core
+    for core_name in ['targets']:
+        core_file = os.path.join(tests_dir,
+                                 "capi2_cores",
+                                 "misc",
+                                 core_name+'.core')
+        core = Core(core_file, None, None)
+
+        gen_info = '\n'.join([x for x in core.info().split('\n') if not 'Core root' in x])
+        with open(os.path.join(tests_dir, __name__, core_name+".info")) as f:
+            assert f.read() == gen_info, core_name
