@@ -57,7 +57,7 @@ def get_backend(core, flags, export):
     import os.path
     import tempfile
     import yaml
-    from fusesoc.main import _import
+    from fusesoc.utils import _import
 
     if export:
         export_root = os.path.join(build_root, core.name.sanitized_name, 'src')
@@ -72,7 +72,7 @@ def get_backend(core, flags, export):
     with open(eda_api_file,'w') as f:
         f.write(yaml.dump(eda_api))
 
-    return _import(flags['tool'])(eda_api_file=eda_api_file, work_root=work_root)
+    return _import(flags['tool'], 'edatools')(eda_api_file=eda_api_file, work_root=work_root)
 
 cmdlineargs = ' --cmdlinearg_bool --cmdlinearg_int=42 --cmdlinearg_str=hello'.split()
 plusargs    = ' --plusarg_bool --plusarg_int=42 --plusarg_str=hello'.split()

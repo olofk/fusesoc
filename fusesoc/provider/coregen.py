@@ -33,5 +33,3 @@ class Coregen(Provider):
                 '-b', script_file,
                 '-p', project_file]
         Launcher('coregen', args, cwd=local_dir).run()
-
-PROVIDER_CLASS = Coregen

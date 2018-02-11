@@ -1,6 +1,5 @@
 #!/usr/bin/env python
 import argparse
-import importlib
 import os
 import platform
 import shutil
@@ -19,7 +18,7 @@ if os.path.exists(os.path.join(fusesocdir, "fusesoc")):
 from fusesoc.config import Config
 from fusesoc.coremanager import CoreManager, DependencyError
 from fusesoc.vlnv import Vlnv
-from fusesoc.utils import Launcher, setup_logging
+from fusesoc.utils import Launcher, setup_logging, _import
 
 import logging
 
@@ -43,10 +42,6 @@ def _get_core(cm, name):
         logger.error("'" + name + "' or any of its dependencies requires '" + e.value + "', but this core was not found")
         exit(1)
     return core
-
-def _import(name):
-    module = importlib.import_module('fusesoc.edatools.{}'.format(name))
-    return getattr(module, name.capitalize())
 
 def abort_handler(signal, frame):
         print('');
@@ -278,7 +273,7 @@ def run_backend(cm, export, do_configure, do_build, do_run, flags, system, backe
     #Frontend/backend separation
 
     try:
-        backend = _import(tool)(eda_api_file=eda_api_file)
+        backend = _import(tool, "edatools")(eda_api_file=eda_api_file)
     except ImportError:
         logger.error('Backend "{}" not found'.format(tool))
         exit(1)
@@ -356,13 +351,12 @@ def update(cm, args):
                 library['auto-sync']):
             logger.info("Updating '{}'".format(name))
             try:
-                provider_module = importlib.import_module(
-                    'fusesoc.provider.%s' % library['sync-type'])
+                provider = _import(library['sync-type'], 'provider')
             except ImportError as e:
                 logger.error("Invalid sync-type '{}' for library '{}' - skipping".format(library['sync-type'], name))
                 continue
             try:
-                provider_module.PROVIDER_CLASS.update_library(library)
+                provider.update_library(library)
             except RuntimeError as e:
                 logger.error("Failed to update library: " + str(e) + ". Continuing...")
 

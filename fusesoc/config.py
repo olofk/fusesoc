@@ -123,7 +123,7 @@ class Config(object):
         logger.debug('library_root='+self.library_root)
 
     def add_library(self, name, library):
-        from fusesoc.utils import Launcher
+        from fusesoc.utils import Launcher, _import
         if not hasattr(self, '_path'):
             raise RuntimeError("No FuseSoC config file found - can't add library")
         section_name = 'library.' + name
@@ -162,12 +162,11 @@ class Config(object):
         self.libraries[name] = library
 
         try:
-            provider_module = importlib.import_module(
-                'fusesoc.provider.%s' % library['sync-type'])
+            provider = _import(library['sync-type'], 'provider')
         except ImportError as e:
             raise RuntimeError("Invalid sync-type '{}'".format(library['sync-type']))
 
-        provider_module.PROVIDER_CLASS.init_library(library)
+        provider.init_library(library)
 
         with open(self._path, 'w') as conf_file:
             config.write(conf_file)
