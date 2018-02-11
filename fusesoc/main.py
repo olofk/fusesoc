@@ -1,6 +1,5 @@
 #!/usr/bin/env python
 import argparse
-import importlib
 import os
 import platform
 import shutil
@@ -19,7 +18,7 @@ if os.path.exists(os.path.join(fusesocdir, "fusesoc")):
 from fusesoc.config import Config
 from fusesoc.coremanager import CoreManager, DependencyError
 from fusesoc.vlnv import Vlnv
-from fusesoc.utils import Launcher, setup_logging
+from fusesoc.utils import Launcher, setup_logging, _import
 
 import logging
 
@@ -43,10 +42,6 @@ def _get_core(cm, name):
         logger.error("'" + name + "' or any of its dependencies requires '" + e.value + "', but this core was not found")
         exit(1)
     return core
-
-def _import(name):
-    module = importlib.import_module('fusesoc.edatools.{}'.format(name))
-    return getattr(module, name.capitalize())
 
 def abort_handler(signal, frame):
         print('');
@@ -122,7 +117,8 @@ def init(cm, args):
     for repo in REPOS:
         name = repo[0]
         library = {
-                'sync-uri': repo[1]
+                'sync-uri': repo[1],
+                'sync-type': 'git'
                 }
 
         default_dir = os.path.join(xdg_data_home, name)
@@ -155,9 +151,19 @@ def add_library(cm, args):
     library = {}
     name = args.name
     sync_uri = vars(args)['sync-uri']
-    if os.path.isdir(sync_uri) and not args.location:
-        logger.info("Detecting {} as a local library".format(sync_uri))
+    if 'sync-type' in vars(args):
+        provider = vars(args)['sync-type']
+        library['sync-type'] = provider
+    else:
+        provider = 'git'
+
+    if provider == 'local' and not args.location:
+        logger.info("Interpreting sync-uri '{}' as location for local provider.".format(sync_uri))
         library['location'] = os.path.abspath(sync_uri)
+        library['sync-type'] = 'local'
+    elif provider == 'local' and os.path.abspath(args.location) != os.path.abspath(sync_uri):
+        logger.error("Location '{}' does not match sync-uri '{}' for local provider. Consider specifying only sync-uri.".format(args.location, sync_uri))
+        exit(1)
     else:
         library['sync-uri'] = sync_uri
         if args.location:
@@ -170,7 +176,11 @@ def add_library(cm, args):
     else:
         config = Config()
 
-    config.add_library(name, library)
+    try:
+        config.add_library(name, library)
+    except RuntimeError as e:
+        logger.error("`add library` failed: " + str(e))
+        exit(1)
 
 
 def list_cores(cm, args):
@@ -263,7 +273,7 @@ def run_backend(cm, export, do_configure, do_build, do_run, flags, system, backe
     #Frontend/backend separation
 
     try:
-        backend = _import(tool)(eda_api_file=eda_api_file)
+        backend = _import(tool, "edatools")(eda_api_file=eda_api_file)
     except ImportError:
         logger.error('Backend "{}" not found'.format(tool))
         exit(1)
@@ -340,11 +350,15 @@ def update(cm, args):
                 library['location'] in libraries or \
                 library['auto-sync']):
             logger.info("Updating '{}'".format(name))
-            args = ['-C', library['location'], 'pull']
             try:
-                Launcher('git', args).run()
-            except subprocess.CalledProcessError:
-                pass
+                provider = _import(library['sync-type'], 'provider')
+            except ImportError as e:
+                logger.error("Invalid sync-type '{}' for library '{}' - skipping".format(library['sync-type'], name))
+                continue
+            try:
+                provider.update_library(library)
+            except RuntimeError as e:
+                logger.error("Failed to update library: " + str(e) + ". Continuing...")
 
 def init_logging(verbose, monochrome):
     level = logging.DEBUG if verbose else logging.INFO
@@ -448,6 +462,7 @@ def parse_args():
     parser_library_add.add_argument('name', help='A friendly name  for the library')
     parser_library_add.add_argument('sync-uri', help='The URI source for the library (can be a file system path)')
     parser_library_add.add_argument('--location', help='The location to store the library into (defaults to $XDG_DATA_HOME/[name])')
+    parser_library_add.add_argument('--sync-type', help="The provider type for the library. Defaults to 'git'.", choices=['git', 'local'])
     parser_library_add.add_argument('--no-auto-sync', action='store_true', help='Disable automatic updates of the library')
     parser_library_add.set_defaults(func=add_library)
 

@@ -18,7 +18,7 @@ else:
 
 from fusesoc.provider.provider import Provider
 
-class ProviderURL(Provider):
+class Url(Provider):
 
     def _checkout(self, local_dir):
         url = self.config.get('url')
@@ -52,5 +52,3 @@ class ProviderURL(Provider):
             shutil.copy2(filename, self.path)
         else:
             raise RuntimeError("Unknown file type '" + filetype + "' in [provider] section")
-
-PROVIDER_CLASS = ProviderURL

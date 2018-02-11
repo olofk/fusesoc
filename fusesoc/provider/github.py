@@ -15,7 +15,7 @@ else:
 
 URL = 'https://github.com/{user}/{repo}/archive/{version}.tar.gz'
 
-class GitHub(Provider):
+class Github(Provider):
 
     def _checkout(self, local_dir):
         user   = self.config.get('user')
@@ -44,5 +44,3 @@ class GitHub(Provider):
         t.extractall(cache_root)
         os.rename(os.path.join(cache_root, tmp),
                   os.path.join(cache_root, core))
-
-PROVIDER_CLASS = GitHub

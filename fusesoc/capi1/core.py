@@ -120,9 +120,7 @@ class Core:
             provider_name = items.get('name')
             if provider_name is None:
                 raise RuntimeError('Missing "name" in section [provider]')
-            provider_module = importlib.import_module(
-                'fusesoc.provider.%s' % provider_name)
-            self.provider = provider_module.PROVIDER_CLASS(
+            self.provider = utils._import(provider_name, 'provider')(
                 items, self.core_root, cache_root)
         if self.provider:
             self.files_root = self.provider.files_root

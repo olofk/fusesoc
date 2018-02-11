@@ -28,5 +28,3 @@ class Opencores(Provider):
                          '--password', 'orpsoc',
                          repo_path,
                          local_dir]).run()
-
-PROVIDER_CLASS = Opencores
