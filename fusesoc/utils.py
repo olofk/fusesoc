@@ -1,6 +1,7 @@
 import subprocess
 import logging
 import sys
+import importlib
 
 if sys.version[0] == '2':
     FileNotFoundError = OSError
@@ -177,3 +178,8 @@ def setup_logging(level, monchrome=False):
         logger.addHandler(ch)
         logger.setLevel(logging.WARNING)
     logger.debug('Setup logging at level {}.'.format(level))
+
+def _import(name, package):
+    module = importlib.import_module('fusesoc.{}.{}'.format(package, name))
+    return getattr(module, name.capitalize())
+

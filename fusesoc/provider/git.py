@@ -40,5 +40,3 @@ class Git(Provider):
         if version:
             args = ['-C', local_dir, 'checkout', '-q', version]
             Launcher('git', args).run()
-
-PROVIDER_CLASS = Git

@@ -17,5 +17,3 @@ class Local(Provider):
     @staticmethod
     def update_library(library):
         pass
-
-PROVIDER_CLASS = Local

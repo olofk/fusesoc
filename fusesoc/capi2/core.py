@@ -94,9 +94,7 @@ class Provider(object):
         provider_name = args[0]['name']
         if provider_name is None:
             raise RuntimeError('Missing "name" in section [provider]')
-        provider_module = importlib.import_module(
-            'fusesoc.provider.%s' % provider_name)
-        return provider_module.PROVIDER_CLASS(args[0],
+        return utils._import(provider_name, 'provider')(args[0],
                                               "FIXME: core_root is used by local providers",
                                              "FIXME: cache_root can be set in fetch call")
 

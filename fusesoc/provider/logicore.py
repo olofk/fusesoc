@@ -32,5 +32,3 @@ class Logicore(Provider):
         args = ['-mode', 'batch',
                 '-source', script_file]
         Launcher('vivado', args, cwd=local_dir).run()
-
-PROVIDER_CLASS = Logicore
