@@ -470,6 +470,7 @@ Tools:
   members:
     icarus    : Icarus
     icestorm  : Icestorm
+    ise       : Ise
     modelsim  : Modelsim
     quartus   : Quartus
     verilator : Verilator
@@ -490,6 +491,13 @@ Icarus:
 Icestorm:
   lists:
     arachne_pnr_options : String
+
+Ise:
+  members:
+    family  : String
+    device  : String
+    package : String
+    speed   : String
 
 Quartus:
   members:
