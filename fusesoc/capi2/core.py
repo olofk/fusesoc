@@ -469,6 +469,7 @@ Target:
 Tools:
   members:
     icarus    : Icarus
+    icestorm  : Icestorm
     modelsim  : Modelsim
     quartus   : Quartus
     verilator : Verilator
@@ -485,6 +486,10 @@ Parameter:
 Icarus:
   lists:
     iverilog_options : String
+
+Icestorm:
+  lists:
+    arachne_pnr_options : String
 
 Quartus:
   members:
