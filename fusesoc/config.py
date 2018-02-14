@@ -1,3 +1,4 @@
+from collections import OrderedDict
 import logging
 
 import sys
@@ -19,7 +20,7 @@ class Config(object):
         self.cores_root = []
         self.systems_root = None
         self.library_root = None
-        self.libraries = {}
+        self.libraries = OrderedDict()
 
         config = configparser.SafeConfigParser()
         if file is None:
