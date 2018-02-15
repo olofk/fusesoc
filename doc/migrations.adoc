@@ -162,3 +162,36 @@ The following stand-alone Python script will perform the same function. It can a
     import sys
     if __name__ == "__main__":
         convert_V2H(sys.argv[1], sys.argv[2])
+
+Migrating to core libraries
+---------------------------
+
+Why
+~~~
+
+FuseSoC already has the ability to define directory paths which contain core files, either by specifying them with the cores_root option in fusesoc.conf, on the command-line with `--cores-root=` or through the `FUSESOC_CORES` environment variable. If no cores root was specified with any of the aforemented methods, FuseSoC whill also look for a directory named `cores` in the current working directory and add that if it exists. There is also an even older `systems_root` option in fusesoc.conf that has been deprecated since FuseSoC 1.2 since it serves no purpose over cores_root. Just having a list of paths has turned out to have limitations and makes some library management features hard to implement. With FuseSoC 1.8 comes support for core libraries where each library is specified in fusesoc.conf as a separate section. The library feature obsoletes the list of core directories
+
+When
+~~~~
+
+Core libraries were introduced in FuseSoC 1.8.
+
+Support for the `cores_root` and `systems_root` options in fusesoc.conf, the command-line switch `--cores-root=` and the `FUSESOC_CORES` environment variable will remain for some time to allow for migrations.
+
+How
+~~~
+
+Each entry in the `cores_root` option in fusesoc.conf will have to be migrated to their own library section. A fusesoc.conf looking like this
+
+    [main]
+    cores_root = /home/user/.local/share/fusesoc/orpsoc-cores /home/user/cores/fusesoc-cores
+
+will now look like this
+
+
+    [library.orpsoc-cores]
+    
+    [library.fusesoc-cores]
+    location = /home/user/cores/fusesoc-cores
+
+One thing to notice is that if the location option is missing, it will default to $XDG_DATA_HOME/fusesoc/<library name>
