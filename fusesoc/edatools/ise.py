@@ -3,6 +3,11 @@ from fusesoc import utils
 
 from fusesoc.edatool import EdaTool
 
+tool_options = {'members' : {'family'  : 'String',
+                             'device'  : 'String',
+                             'package' : 'String',
+                             'speed'   : 'String'}}
+
 class Ise(EdaTool):
 
     argtypes = ['vlogdefine', 'vlogparam']

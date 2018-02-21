@@ -6,6 +6,8 @@ from fusesoc.utils import Launcher
 
 logger = logging.getLogger(__name__)
 
+tool_options = {'lists' : {'iverilog_options' : 'String'}}
+
 class Icarus(EdaTool):
 
     argtypes = ['plusarg', 'vlogdefine', 'vlogparam']

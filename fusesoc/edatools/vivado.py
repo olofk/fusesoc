@@ -4,6 +4,8 @@ from fusesoc import utils
 
 from fusesoc.edatool import EdaTool
 
+tool_options = {'members' : {'part' : 'String'}}
+
 """ Vivado Backend
 
 The Vivado backend executes Xilinx Vivado to build systems and program the FPGA.

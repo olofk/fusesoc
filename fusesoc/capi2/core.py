@@ -2,13 +2,16 @@
 import importlib
 import logging
 import os
+from pkgutil import walk_packages
 from pyparsing import Forward, OneOrMore, Optional, Suppress, Word, alphanums
 import shutil
+import sys
 import yaml
 
 from ipyxact.ipyxact import Component
 from fusesoc import utils
 from fusesoc.vlnv import Vlnv
+import fusesoc.edatools
 
 logger = logging.getLogger(__name__)
 
@@ -466,16 +469,6 @@ Target:
     toplevel   : String
     vpi        : String
 
-Tools:
-  members:
-    icarus    : Icarus
-    icestorm  : Icestorm
-    ise       : Ise
-    modelsim  : Modelsim
-    quartus   : Quartus
-    verilator : Verilator
-    vivado    : Vivado
-
 Parameter:
   members:
     datatype : String
@@ -483,44 +476,6 @@ Parameter:
     description : String
     paramtype   : String
     scope       : String
-
-Icarus:
-  lists:
-    iverilog_options : String
-
-Icestorm:
-  lists:
-    arachne_pnr_options : String
-
-Ise:
-  members:
-    family  : String
-    device  : String
-    package : String
-    speed   : String
-
-Quartus:
-  members:
-    family          : String
-    device          : String
-  lists:
-    quartus_options : String
-
-Modelsim:
-  lists:
-    vlog_options    : String
-    vsim_options    : String
-
-Verilator:
-  members:
-    mode              : String
-  lists:
-    libs              : String
-    verilator_options : String
-
-Vivado:
-  members:
-    part              : String
 
 Scripts:
   lists:
@@ -554,4 +509,17 @@ def _generate_classes(j, base_class):
         generatedClass = type(cls, (base_class,), class_members)
         globals()[generatedClass.__name__] = generatedClass
 
-_generate_classes(yaml.load(description), Section)
+capi2_data = yaml.load(description)
+
+capi2_data['Tools'] = {'members' : {}}
+
+for pkg in walk_packages([os.path.dirname(sys.modules['fusesoc.edatools'].__file__)]):
+    module_name = pkg[1]
+    module = importlib.import_module('fusesoc.edatools.'+module_name)
+    if hasattr(module, 'tool_options'):
+        backend_name = module_name.split('.')[-1]
+        tool_options = getattr(module, 'tool_options')
+        capi2_data['Tools']['members'][backend_name] = backend_name.capitalize()
+        capi2_data[backend_name.capitalize()] = tool_options
+
+_generate_classes(capi2_data, Section)

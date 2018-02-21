@@ -36,6 +36,9 @@ clean_{name}:
 	$(RM) $({name}_OBJS) {name}
 """
 
+tool_options = {'lists' : {'vlog_options' : 'String',
+                           'vsim_options' : 'String'}}
+
 class Modelsim(EdaTool):
 
     argtypes = ['plusarg', 'vlogdefine', 'vlogparam']
