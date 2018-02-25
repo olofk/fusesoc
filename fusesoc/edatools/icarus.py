@@ -7,6 +7,8 @@ logger = logging.getLogger(__name__)
 
 class Icarus(Simulator):
 
+    argtypes = ['plusarg', 'vlogdefine', 'vlogparam']
+
     MAKEFILE_TEMPLATE = """
 all: $(VPI_MODULES) $(TARGET)
 

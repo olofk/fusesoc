@@ -25,6 +25,9 @@ A core (usually the system core) can add the following files:
       as file_type=data
 """
 class Vivado(Backend):
+
+    argtypes = ['vlogdefine', 'vlogparam']
+
     """ Configuration is the first phase of the build
 
     In the vivado backend the project TCL is written and all files are copied

@@ -7,6 +7,8 @@ logger = logging.getLogger(__name__)
 
 class Isim(Simulator):
 
+    argtypes = ['plusarg', 'vlogparam']
+
     def configure(self, args):
         super(Isim, self).configure(args)
         self._write_config_files()

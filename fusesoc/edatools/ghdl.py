@@ -7,6 +7,8 @@ logger = logging.getLogger(__name__)
 
 class Ghdl(Simulator):
 
+    argtypes = ['vlogparam']
+
     def configure(self, args):
         super(Ghdl, self).configure(args)
         self._write_config_files()

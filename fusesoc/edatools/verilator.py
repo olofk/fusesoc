@@ -34,13 +34,16 @@ V$(TOP_MODULE).mk:
 
 class Verilator(Simulator):
 
+    argtypes = ['cmdlinearg', 'vlogdefine', 'vlogparam']
+
     def configure(self, args):
 
         if not self.toplevel:
             raise RuntimeError("'" + self.name + "' miss a mandatory parameter 'top_module'")
 
-        skip = not ('cli_parser' in self.tool_options and self.tool_options['cli_parser'] == 'fusesoc')
-        super(Verilator, self).configure(args, skip_params = skip)
+        if 'cli_parser' in self.tool_options and self.tool_options['cli_parser'] == 'fusesoc':
+            super(Verilator, self).configure(args)
+
         self._write_config_files()
 
     def _write_config_files(self):

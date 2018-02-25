@@ -1,7 +1,7 @@
 import os
 import pytest
 
-from test_common import compare_files, get_core, get_sim, sim_params
+from test_common import compare_files, get_core, get_sim, vlogparams
 
 tests_dir = os.path.dirname(__file__)
 core      = get_core("ghdltest")
@@ -11,7 +11,7 @@ work_root = backend.work_root
 
 def test_ghdl_configure():
 
-    backend.configure(sim_params)
+    backend.configure(vlogparams)
 
     compare_files(ref_dir, work_root, ['Makefile'])
 
@@ -25,7 +25,7 @@ def test_ghdl_build():
 def test_ghdl_run():
 
     os.environ['PATH'] = os.path.join(tests_dir, 'mock_commands')+':'+os.environ['PATH']
-    backend.run(sim_params)
+    backend.run(vlogparams)
 
     compare_files(ref_dir, work_root, ['run.cmd'])
     assert os.path.isfile(os.path.join(work_root, 'pre_run_script_executed'))

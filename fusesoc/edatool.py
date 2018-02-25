@@ -71,6 +71,20 @@ class EdaTool(object):
         self.cmdlinearg  = OrderedDict()
         self.parsed_args = False
 
+    def configure(self, args):
+        logger.info("Setting up project")
+        self.configure_pre(args)
+        self.configure_main()
+        self.configure_post()
+
+    def configure_pre(self, args):
+        self.parse_args(args, self.argtypes)
+
+    def configure_main(self):
+        pass
+
+    def configure_post(self):
+        pass
 
     def build(self):
         self.build_pre()
@@ -89,7 +103,7 @@ class EdaTool(object):
         if 'post_build_scripts' in self.fusesoc_options:
             self._run_scripts(self.fusesoc_options['post_build_scripts'])
 
-    def parse_args(self, args, prog, paramtypes):
+    def parse_args(self, args, paramtypes):
         if self.parsed_args:
             return
         typedict = {'bool' : {'action' : 'store_true'},
@@ -97,8 +111,8 @@ class EdaTool(object):
                     'int'  : {'type' : int , 'nargs' : 1},
                     'str'  : {'type' : str , 'nargs' : 1},
                     }
-        progname = 'fusesoc {} {}'.format(prog,
-                                          self.name)
+        progname = 'fusesoc run {}'.format(self.name)
+
         parser = argparse.ArgumentParser(prog = progname,
                                          conflict_handler='resolve')
         param_groups = {}

@@ -11,6 +11,8 @@ exit
 """
 class Rivierapro(Simulator):
 
+    argtypes = ['plusarg', 'vlogdefine', 'vlogparam']
+
     def _write_build_rtl_tcl_file(self, tcl_main):
         tcl_build_rtl  = open(os.path.join(self.work_root, "fusesoc_build_rtl.tcl"), 'w')
 
