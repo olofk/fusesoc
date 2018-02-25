@@ -1,6 +1,7 @@
 import os
 import logging
-from .simulator import Simulator
+
+from fusesoc.edatool import EdaTool
 from fusesoc.utils import Launcher
 
 logger = logging.getLogger(__name__)
@@ -35,7 +36,7 @@ clean_{name}:
 	$(RM) $({name}_OBJS) {name}
 """
 
-class Modelsim(Simulator):
+class Modelsim(EdaTool):
 
     argtypes = ['plusarg', 'vlogdefine', 'vlogparam']
 
@@ -138,8 +139,7 @@ class Modelsim(Simulator):
 
         vpi_make.close()
 
-    def configure(self, args):
-        super(Modelsim, self).configure(args)
+    def configure_main(self):
         tcl_main = open(os.path.join(self.work_root, "fusesoc_main.tcl"), 'w')
         tcl_main.write("do fusesoc_build_rtl.tcl\n")
 
@@ -170,15 +170,12 @@ class Modelsim(Simulator):
                      errormsg = " vpi build failed. log is available in '{}'".format(os.path.join(self.work_root, 'vpi_build.log'))).run()
             f.close()
 
-    def run(self, args):
+    def run_main(self):
         self.model_tech = os.getenv('MODEL_TECH')
         if not self.model_tech:
             raise RuntimeError("Environment variable MODEL_TECH was not found. It should be set to <modelsim install path>/bin")
-        super(Modelsim, self).run(args)
 
         args = ['-c', '-quiet', '-do', 'fusesoc_run.tcl']
         Launcher(self.model_tech+'/vsim', args,
                  cwd      = self.work_root,
                  errormsg = "Simulation failed. Simulation log is available in '{}'".format(os.path.join(self.work_root, 'transcript'))).run()
-
-        super(Modelsim, self).done(args)

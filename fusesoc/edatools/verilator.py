@@ -2,8 +2,8 @@ import multiprocessing
 import os
 import logging
 
+from fusesoc.edatool import EdaTool
 from fusesoc import utils
-from .simulator import Simulator
 
 logger = logging.getLogger(__name__)
 
@@ -32,17 +32,20 @@ V$(TOP_MODULE).mk:
 	$(VERILATOR) -f $(VC_FILE) $(VERILATOR_OPTIONS)
 """
 
-class Verilator(Simulator):
+class Verilator(EdaTool):
 
     argtypes = ['cmdlinearg', 'vlogdefine', 'vlogparam']
 
-    def configure(self, args):
+    def _fusesoc_parser(self):
+        return 'cli_parser' in self.tool_options and self.tool_options['cli_parser'] == 'fusesoc'
 
+    def configure_pre(self, args):
+        if self._fusesoc_parser():
+            self.parse_args(args, self.argtypes)
+
+    def configure_main(self):
         if not self.toplevel:
             raise RuntimeError("'" + self.name + "' miss a mandatory parameter 'top_module'")
-
-        if 'cli_parser' in self.tool_options and self.tool_options['cli_parser'] == 'fusesoc':
-            super(Verilator, self).configure(args)
 
         self._write_config_files()
 
@@ -115,11 +118,9 @@ class Verilator(Simulator):
                            stdout = open(_s.format('out'),'w')).run()
 
     def run(self, args):
-        fusesoc_cli_parser = ('cli_parser' in self.tool_options and self.tool_options['cli_parser'] == 'fusesoc')
+        if self._fusesoc_parser():
+            self.parse_args(args, self.argtypes)
 
-        super(Verilator, self).run(args)
-
-        if fusesoc_cli_parser:
             _args = []
             for key, value in self.plusarg.items():
                 _args += ['+{}={}'.format(key, self._param_value_str(value))]
@@ -127,8 +128,14 @@ class Verilator(Simulator):
                 _args += ['--{}={}'.format(key, self._param_value_str(value))]
         else:
             _args = args
+
+        if 'pre_run_scripts' in self.fusesoc_options:
+            self._run_scripts(self.fusesoc_options['pre_run_scripts'])
+
         logger.info("Running simulation")
         utils.Launcher('./V' + self.toplevel,
                        _args,
                        cwd=self.work_root,
                        env = self.env).run()
+
+        self.run_post()

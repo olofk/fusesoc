@@ -32,9 +32,7 @@ class Vivado(EdaTool):
 
     In the vivado backend the project TCL is written and all files are copied
     """
-    def configure(self, args):
-        super(Vivado, self).configure(args)
-
+    def configure_main(self):
         if not 'part' in self.tool_options:
             raise RuntimeError("Missing required option '{}'".format('part'))
         self._write_project_tcl_file()

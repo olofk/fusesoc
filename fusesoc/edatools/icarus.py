@@ -1,11 +1,12 @@
 import os
-from .simulator import Simulator
 import logging
+
+from fusesoc.edatool import EdaTool
 from fusesoc.utils import Launcher
 
 logger = logging.getLogger(__name__)
 
-class Icarus(Simulator):
+class Icarus(EdaTool):
 
     argtypes = ['plusarg', 'vlogdefine', 'vlogparam']
 
@@ -31,11 +32,7 @@ clean_{name}:
 	$(RM) {name}.vpi
 """
 
-    def configure(self, args):
-        super(Icarus, self).configure(args)
-        self._write_config_files()
-
-    def _write_config_files(self):
+    def configure_main(self):
         f = open(os.path.join(self.work_root, self.name+'.scr'),'w')
 
         (src_files, incdirs) = self._get_fileset_files()
@@ -85,9 +82,7 @@ clean_{name}:
                                                      incs = ' '.join(_incs),
                                                      srcs = ' '.join(_srcs)))
 
-    def run(self, args):
-        super(Icarus, self).run(args)
-
+    def run_main(self):
         #FIXME: Handle failures. Save stdout/stderr.
         args = []
         args += ['-n']                                     # Non-interactive ($stop = $finish)
@@ -104,5 +99,3 @@ clean_{name}:
         Launcher('vvp', args,
                  cwd = self.work_root,
                  errormsg = "Failed to run Icarus Simulation").run()
-
-        super(Icarus, self).done(args)

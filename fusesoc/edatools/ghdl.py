@@ -1,19 +1,15 @@
 import logging
 import os.path
-from .simulator import Simulator
+from fusesoc.edatool import EdaTool
 from fusesoc.utils import Launcher
 
 logger = logging.getLogger(__name__)
 
-class Ghdl(Simulator):
+class Ghdl(EdaTool):
 
     argtypes = ['vlogparam']
 
-    def configure(self, args):
-        super(Ghdl, self).configure(args)
-        self._write_config_files()
-
-    def _write_config_files(self):
+    def configure_main(self):
         (src_files, incdirs) = self._get_fileset_files()
         # ghdl does not support mixing incompatible versions
         # specifying 93c as std should allow 87 syntax
@@ -77,9 +73,7 @@ analyze:
                 logger.warning(_s.format(f.name, f.file_type))
         makefile.close()
 
-    def run(self, args):
-        super(Ghdl, self).run(args)
-
+    def run_main(self):
         cmd = 'make'
         args = ['run']
 
@@ -91,5 +85,3 @@ analyze:
         Launcher(cmd, args,
                  cwd      = self.work_root,
                  errormsg = "Simulation failed").run()
-
-        super(Ghdl, self).done(args)

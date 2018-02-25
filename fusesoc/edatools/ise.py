@@ -33,8 +33,7 @@ saveCDF -file {cdf_file}
 quit
 """
 
-    def configure(self, args):
-        super(Ise, self).configure(args)
+    def configure_main(self):
         for i in ['family', 'device', 'package', 'speed']:
             if not i in self.tool_options:
                 raise RuntimeError("Missing required option '{}'".format(i))

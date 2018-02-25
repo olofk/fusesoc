@@ -28,11 +28,7 @@ PCF_FILE := {pcf_file}
 ARACHNE_PNR_OPTIONS := {arachne_pnr_options}
 """
 
-    def configure(self, args):
-        super(Icestorm, self).configure(args)
-        self._write_config_files()
-
-    def _write_config_files(self):
+    def configure_main(self):
         # Write Makefile
         with open(os.path.join(self.work_root, 'Makefile'), 'w') as makefile:
             makefile.write(self.MAKEFILE_TEMPLATE)

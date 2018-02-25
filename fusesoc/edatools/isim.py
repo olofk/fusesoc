@@ -1,19 +1,16 @@
 import os
-from .simulator import Simulator
 import logging
+
+from fusesoc.edatool import EdaTool
 from fusesoc.utils import Launcher
 
 logger = logging.getLogger(__name__)
 
-class Isim(Simulator):
+class Isim(EdaTool):
 
     argtypes = ['plusarg', 'vlogparam']
 
-    def configure(self, args):
-        super(Isim, self).configure(args)
-        self._write_config_files()
-
-    def _write_config_files(self):
+    def configure_main(self):
         isim_file = 'isim.prj'
         f1 = open(os.path.join(self.work_root,isim_file),'w')
         self.incdirs = set()
@@ -72,9 +69,7 @@ class Isim(Simulator):
                  cwd      = self.work_root,
                  errormsg = "Failed to compile Isim simulation model").run()
 
-    def run(self, args):
-        super(Isim, self).run(args)
-
+    def run_main(self):
         #FIXME: Handle failures. Save stdout/stderr.
         args = []
         #args += ['-gui']                                  # Interactive
@@ -89,5 +84,3 @@ class Isim(Simulator):
         Launcher('./fusesoc.elf', args,
                  cwd = self.work_root,
                  errormsg = "Failed to run Isim simulation").run()
-
-        super(Isim, self).done(args)

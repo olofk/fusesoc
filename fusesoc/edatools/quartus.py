@@ -64,8 +64,7 @@ qsys:"""
 --language=VERILOG
 """
 
-    def configure(self, args):
-        super(Quartus, self).configure(args)
+    def configure_main(self):
         for i in ['family', 'device']:
             if not i in self.tool_options:
                 raise RuntimeError("Missing required option '{}'".format(i))

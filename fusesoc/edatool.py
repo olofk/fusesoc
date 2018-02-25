@@ -103,6 +103,24 @@ class EdaTool(object):
         if 'post_build_scripts' in self.fusesoc_options:
             self._run_scripts(self.fusesoc_options['post_build_scripts'])
 
+    def run(self, args):
+        logger.info("Running")
+        self.run_pre(args)
+        self.run_main()
+        self.run_post()
+
+    def run_pre(self, args):
+        self.parse_args(args, self.argtypes)
+        if 'pre_run_scripts' in self.fusesoc_options:
+            self._run_scripts(self.fusesoc_options['pre_run_scripts'])
+
+    def run_main(self):
+        pass
+
+    def run_post(self):
+        if 'post_run_scripts' in self.fusesoc_options:
+            self._run_scripts(self.fusesoc_options['post_run_scripts'])
+
     def parse_args(self, args, paramtypes):
         if self.parsed_args:
             return

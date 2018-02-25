@@ -1,11 +1,12 @@
 import os
-from .simulator import Simulator
 import logging
+
+from fusesoc.edatool import EdaTool
 from fusesoc.utils import Launcher
 
 logger = logging.getLogger(__name__)
 
-class Xsim(Simulator):
+class Xsim(EdaTool):
 
     argtypes = ['plusarg', 'vlogdefine', 'vlogparam']
 
@@ -45,8 +46,7 @@ add_wave -radix hex /
 run all
 """
 
-    def configure(self, args):
-        super(Xsim, self).configure(args)
+    def configure_main(self):
         self._write_config_files()
 
         #Check if any VPI modules are present and display warning
@@ -101,9 +101,7 @@ run all
         with open(os.path.join(self.work_root, 'Makefile'), 'w') as f:
             f.write(self.MAKEFILE_TEMPLATE)
 
-    def run(self, args):
-        super(Xsim, self).run(args)
-
+    def run_main(self):
         args = ['run']
         # Plusargs
         if self.plusarg:
@@ -113,5 +111,3 @@ run all
         Launcher('make', args,
                  cwd = self.work_root,
                  errormsg = "Failed to run Xsim simulation").run()
-
-        super(Xsim, self).done(args)
