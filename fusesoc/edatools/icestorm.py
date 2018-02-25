@@ -1,7 +1,8 @@
 import os.path
 
-from .backend import Backend
-class Icestorm(Backend):
+from fusesoc.edatool import EdaTool
+
+class Icestorm(EdaTool):
 
     argtypes = ['vlogdefine', 'vlogparam']
 

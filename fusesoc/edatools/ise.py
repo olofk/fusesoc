@@ -1,8 +1,9 @@
 import os.path
 from fusesoc import utils
 
-from .backend import Backend
-class Ise(Backend):
+from fusesoc.edatool import EdaTool
+
+class Ise(EdaTool):
 
     argtypes = ['vlogdefine', 'vlogparam']
 

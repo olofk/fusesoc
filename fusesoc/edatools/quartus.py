@@ -2,11 +2,11 @@ import os.path
 from fusesoc import utils
 import logging
 
-from .backend import Backend
+from fusesoc.edatool import EdaTool
 
 logger = logging.getLogger(__name__)
 
-class Quartus(Backend):
+class Quartus(EdaTool):
 
     argtypes = ['vlogdefine', 'vlogparam']
 

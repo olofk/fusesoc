@@ -2,7 +2,7 @@ import os.path
 import platform
 from fusesoc import utils
 
-from .backend import Backend
+from fusesoc.edatool import EdaTool
 
 """ Vivado Backend
 
@@ -24,7 +24,7 @@ A core (usually the system core) can add the following files:
 - IP: Supply the IP core xci file with file_type=xci and other files (like .prj)
       as file_type=data
 """
-class Vivado(Backend):
+class Vivado(EdaTool):
 
     argtypes = ['vlogdefine', 'vlogparam']
 
