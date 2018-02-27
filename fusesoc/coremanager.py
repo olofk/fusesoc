@@ -167,8 +167,12 @@ class CoreManager(object):
         return self._cores_root
 
     def get_depends(self, core, flags):
+        logger.debug("Calculating dependencies for {}{} with flags {}".format(core.relation,str(core), str(flags)))
         resolved_core = self.db.find(core)
-        return self.db.solve(resolved_core.name, flags)
+        deps = self.db.solve(resolved_core.name, flags)
+        logger.debug(" Resolved core to {}".format(str(resolved_core.name)))
+        logger.debug(" with dependencies " + ', '.join([str(c.name) for c in deps]))
+        return deps
 
     def get_cores(self):
         return {str(x.name) : x for x in self.db.find()}
