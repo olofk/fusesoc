@@ -1,0 +1,28 @@
+# Auto-generated program tcl file
+
+open_hw
+connect_hw_server
+
+set board ""
+
+foreach {{ target }} [get_hw_targets] {{ '{{' }}
+    puts "$target"
+    current_hw_target $target
+    open_hw_target
+    if {{ '{{' }} [get_hw_devices] == "{{ hw_device }}" }} {{ '{{' }}
+        set board [current_hw_target]
+        break
+    }}
+    close_hw_target
+}}
+
+{% raw %}
+if {{ $board == "" }} {{
+    puts "Did not find board"
+    exit 1
+}}
+{% endraw %}
+
+current_hw_device {{ hw_device }}
+set_property PROGRAM.FILE "{{ bitstream }}" [current_hw_device]
+program_hw_devices [current_hw_device]

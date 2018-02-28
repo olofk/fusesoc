@@ -10,8 +10,11 @@ read_ip ../../../cores/misc/xci_file.xci
 upgrade_ip [get_ips]
 generate_target all [get_ips]
 
-
+read_verilog -sv ../../../cores/misc/sv_file.sv
 read_verilog ../../../cores/misc/vlog_file.v
+read_vhdl../../../cores/misc/vhdl_file.vhd
+read_vhdl -library libx ../../../cores/misc/vhdl_lib_file.vhd
+read_vhdl -vhdl2008 ../../../cores/misc/vhdl2008_file.vhd
 read_verilog ../../../cache/mor1kx_3.1/rtl/verilog/mor1kx_branch_prediction.v
 read_verilog ../../../cache/mor1kx_3.1/rtl/verilog/mor1kx_bus_if_avalon.v
 read_verilog ../../../cache/mor1kx_3.1/rtl/verilog/mor1kx_bus_if_wb32.v
@@ -49,28 +52,15 @@ read_verilog ../../../cache/mor1kx_3.1/rtl/verilog/mor1kx.v
 read_verilog ../../../cache/mor1kx_3.1/rtl/verilog/mor1kx_wb_mux_cappuccino.v
 read_verilog ../../../cache/mor1kx_3.1/rtl/verilog/mor1kx_wb_mux_espresso.v
 read_verilog ../../../cores/mor1kx-arty/rtl/verilog/mor1kx_arty.sv
-read_verilog -sv ../../../cores/misc/sv_file.sv
-read_vhdl ../../../cores/misc/vhdl_file.vhd
-read_vhdl -library libx ../../../cores/misc/vhdl_lib_file.vhd
-read_vhdl -vhdl2008 ../../../cores/misc/vhdl2008_file.vhd
 
-set_property generic {vlogparam_bool=1 vlogparam_int=42 vlogparam_str=hello} [get_filesets sources_1]
-set_property verilog_define "vlogdefine_bool=1 vlogdefine_int=42 vlogdefine_str=hello" [get_filesets sources_1]
-
-
+set_property generic {vlogparam_bool=1 vlogparam_int=42 vlogparam_str=hello } [get_filesets sources_1]
+set_property verilog_define {vlogdefine_bool=1 vlogdefine_int=42 vlogdefine_str=hello } [get_filesets sources_1]
 set_property include_dirs [list ../../../cache/mor1kx_3.1/rtl/verilog] [get_filesets sources_1]
 
 read_xdc ../../../cores/misc/xdc_file
 
 set_param project.enableVHDL2008 1
 set_property top mor1kx_arty_top [current_fileset]
-
-# By default create_project creates the synth_1 and impl_1 runs.
-# To explicitly create customized runs, uncomment the code below.
-#regexp -- {Vivado v([0-9]{4})\.[0-9]} [version] -> year
-#create_run synth_1 -quiet -flow "Vivado Synthesis $year" -strategy "Vivado Synthesis Defaults"
-#create_run impl_1 -quiet -flow "Vivado Implementation $year" -strategy "Vivado Implementation Defaults" -parent_run synth_1
-#current_run [get_runs synth_1]
 
 launch_runs impl_1
 wait_on_run impl_1
