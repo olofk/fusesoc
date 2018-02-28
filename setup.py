@@ -11,6 +11,9 @@ setup(
               'fusesoc.capi2',
               'fusesoc.edatools',
               'fusesoc.provider'],
+    package_data = {'fusesoc' : ['templates/vivado/vivado-program.tcl.j2',
+                                 'templates/vivado/vivado-project.tcl.j2',
+    ]},
     use_scm_version = {
         "relative_to": __file__,
         "write_to": "fusesoc/version.py",
