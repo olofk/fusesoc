@@ -360,10 +360,10 @@ def update(cm, args):
             except RuntimeError as e:
                 logger.error("Failed to update library: " + str(e) + ". Continuing...")
 
-def init_logging(verbose, monochrome):
+def init_logging(verbose, monochrome, log_file=None):
     level = logging.DEBUG if verbose else logging.INFO
 
-    setup_logging(level=level, monchrome=monochrome)
+    setup_logging(level, monochrome, log_file)
 
     if verbose:
         logger.debug("Verbose output")
@@ -413,6 +413,7 @@ def parse_args():
     parser.add_argument('--config', help='Specify the config file to use', type=argparse.FileType('r'))
     parser.add_argument('--monochrome', help='Don\'t use color for messages', action='store_true')
     parser.add_argument('--verbose', help='More info messages', action='store_true')
+    parser.add_argument('--log-file', help='Write log messages to file')
 
     # build subparser
     parser_build = subparsers.add_parser('build', help='Build an FPGA load module')
@@ -511,7 +512,7 @@ def main():
     if not args:
         exit(0)
 
-    init_logging(args.verbose, args.monochrome)
+    init_logging(args.verbose, args.monochrome, args.log_file)
     config = Config(file=args.config)
     cm = init_coremanager(config, args.cores_root)
 
