@@ -154,16 +154,19 @@ class ColoredFormatter(logging.Formatter):
         return formatted
 
 
-def setup_logging(level, monchrome=False):
+def setup_logging(level, monchrome=False, log_file=None):
     '''
     Utility function for setting up logging.
     '''
     # Logging to file
-    logging.basicConfig(filename='fusesoc.log', filemode='w', level=logging.DEBUG)
+    if log_file:
+        logging.basicConfig(filename=log_file, filemode='w',
+                            level=logging.DEBUG)
+
     # Pretty color terminal logging
     ch = logging.StreamHandler()
     ch.setLevel(logging.DEBUG)
-    formatter = ColoredFormatter("%(levelname)s: %(message)s", monochrome=monchrome)
+    formatter = ColoredFormatter("%(levelname)s: %(message)s", monchrome)
     ch.setFormatter(formatter)
     # Which packages do we want to log from.
     packages = ('__main__', 'fusesoc',)
