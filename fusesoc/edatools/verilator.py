@@ -139,8 +139,8 @@ class Verilator(EdaTool):
         else:
             _args = args
 
-        if 'pre_run_scripts' in self.fusesoc_options:
-            self._run_scripts(self.fusesoc_options['pre_run_scripts'])
+        if 'pre_run' in self.hooks:
+            self._run_scripts(self.hooks['pre_run'])
 
         logger.info("Running simulation")
         utils.Launcher('./V' + self.toplevel,

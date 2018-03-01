@@ -43,7 +43,6 @@ def test_core_parsing():
         assert "option 'file_type' in section 'fileset dummy' already exists" in str(e.value)
 
 def test_get_scripts():
-    import pprint
     flag_combos = [{'target' : 'sim'  , 'is_toplevel' : False},
                    {'target' : 'sim'  , 'is_toplevel' : True},
                    {'target' : 'synth', 'is_toplevel' : False},
@@ -53,19 +52,22 @@ def test_get_scripts():
 
     for flags in flag_combos:
         env = {'BUILD_ROOT' : os.path.join(os.path.dirname(__file__), 'build')}
-        result = core.get_scripts(flags)
+        result = core.get_scripts("dummyroot", flags)
         expected = {}
         if flags['target'] == 'sim':
-            sections = ['post_run_scripts', 'pre_build_scripts', 'pre_run_scripts']
+            sections = ['post_run', 'pre_build', 'pre_run']
         else:
             if flags['is_toplevel']:
                 env['SYSTEM_ROOT'] = core.files_root
-                sections = ['pre_build_scripts', 'post_build_scripts']
+                sections = ['pre_build', 'post_build']
             else:
                 sections = []
         for section in sections:
-            expected[section] = [{flags['target'] + section + str(i) : {'env' : env}} for i in range(2)]
-        assert pprint.pformat(expected) == pprint.pformat(result)
+            _name = flags['target']+section+'_scripts{}'
+            expected[section] = [{'cmd' : ['sh', os.path.join('dummyroot', _name.format(i))],
+                                  'name' : _name.format(i),
+                                  'env' : env} for i in range(2)]
+        assert expected == result
 
 def test_get_tool():
     core = get_core("atlys")

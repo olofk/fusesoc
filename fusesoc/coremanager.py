@@ -236,13 +236,13 @@ class CoreManager(object):
             else:
                 files_root = core.files_root
 
+            rel_root = os.path.relpath(files_root, work_root)
             #Extract scripts
-            _scripts = core.get_scripts(_flags)
+            _scripts = core.get_scripts(rel_root, _flags)
             for section in _scripts.values():
                 for script in section:
-                    for name in script.keys():
-                        script[name]['env']['FILES_ROOT'] = files_root
-                        script[os.path.join(files_root, name)] = script.pop(name)
+                    script['env']['FILES_ROOT'] = rel_root
+
             merge_dict(scripts, _scripts)
 
             for file in core.get_files(_flags):
@@ -255,7 +255,7 @@ class CoreManager(object):
                     shutil.copy2(os.path.join(files_root, file.name),
                                  dst)
                 else:
-                    _name = os.path.relpath(os.path.join(files_root, file.name), work_root)
+                    _name = os.path.join(rel_root, file.name)
                 files.append({
                     'name'            : _name,
                     'file_type'       : file.file_type,
@@ -263,7 +263,6 @@ class CoreManager(object):
                     'logical_name'    : file.logical_name})
             #Extract VPI modules
             for _vpi in core.get_vpi(_flags):
-                rel_root = os.path.relpath(files_root, work_root)
                 vpi.append({'name'         : _vpi['name'],
                             'src_files'    : [os.path.join(rel_root, f.name) for f in _vpi['src_files']],
                             'include_dirs' : [os.path.join(rel_root, i) for i in _vpi['include_dirs']],
@@ -271,12 +270,12 @@ class CoreManager(object):
 
         top_core = cores[-1]
         return {
-            'version'      : '0.1.1',
+            'version'      : '0.1.2',
             'files'        : files,
+            'hooks'        : scripts,
             'name'         : top_core.sanitized_name,
             'parameters'   : parameters,
-            'tool_options' : {flags['tool'] : tool_options,
-                              'fusesoc' : scripts},
+            'tool_options' : {flags['tool'] : tool_options},
             'toplevel'     : top_core.get_toplevel(flags),
             'vpi'          : vpi,
         }

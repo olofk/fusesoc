@@ -33,10 +33,8 @@ class EdaTool(object):
 
         if 'tool_options' in eda_api:
             self.tool_options = eda_api['tool_options'][_tool_name]
-            self.fusesoc_options = eda_api['tool_options']['fusesoc']
         else:
             self.tool_options = {}
-            self.fusesoc_options = {}
 
         if 'files' in eda_api:
             self.files = eda_api['files']
@@ -46,6 +44,11 @@ class EdaTool(object):
             self.parameters = eda_api['parameters']
         else:
             self.parameters = []
+
+        if 'hooks' in eda_api:
+            self.hooks = eda_api['hooks']
+        else:
+            self.hooks = {}
 
         if 'toplevel' in eda_api:
             self.toplevel = eda_api['toplevel']
@@ -92,16 +95,16 @@ class EdaTool(object):
         self.build_post()
 
     def build_pre(self):
-        if 'pre_build_scripts' in self.fusesoc_options:
-            self._run_scripts(self.fusesoc_options['pre_build_scripts'])
+        if 'pre_build' in self.hooks:
+            self._run_scripts(self.hooks['pre_build'])
 
     def build_main(self):
         logger.info("Building");
         Launcher('make', cwd=self.work_root).run()
 
     def build_post(self):
-        if 'post_build_scripts' in self.fusesoc_options:
-            self._run_scripts(self.fusesoc_options['post_build_scripts'])
+        if 'post_build' in self.hooks:
+            self._run_scripts(self.hooks['post_build'])
 
     def run(self, args):
         logger.info("Running")
@@ -111,15 +114,15 @@ class EdaTool(object):
 
     def run_pre(self, args):
         self.parse_args(args, self.argtypes)
-        if 'pre_run_scripts' in self.fusesoc_options:
-            self._run_scripts(self.fusesoc_options['pre_run_scripts'])
+        if 'pre_run' in self.hooks:
+            self._run_scripts(self.hooks['pre_run'])
 
     def run_main(self):
         pass
 
     def run_post(self):
-        if 'post_run_scripts' in self.fusesoc_options:
-            self._run_scripts(self.fusesoc_options['post_run_scripts'])
+        if 'post_run' in self.hooks:
+            self._run_scripts(self.hooks['post_run'])
 
     def parse_args(self, args, paramtypes):
         if self.parsed_args:
@@ -225,18 +228,14 @@ class EdaTool(object):
 
     def _run_scripts(self, scripts):
         for script in scripts:
-            for cmd, options in script.items():
-                if not (os.path.isfile(cmd) and os.access(cmd, os.X_OK)):
-                    raise RuntimeError("'{}' is not an executable file".format(cmd))
-                _env = self.env.copy()
-                if 'env' in options:
-                    _env.update(options['env'])
-                logger.info("Running " + cmd);
-                try:
-                    subprocess.check_call([cmd],
-                                          cwd = self.work_root,
-                                          env = _env,
-                                          shell=True)
-                except subprocess.CalledProcessError as e:
-                    msg = "'{}' exited with error code {}"
-                    raise RuntimeError(msg.format(cmd, e.returncode))
+            _env = self.env.copy()
+            if 'env' in script:
+                _env.update(script['env'])
+            logger.info("Running " + script['name'])
+            try:
+                subprocess.check_call(script['cmd'],
+                                      cwd = self.work_root,
+                                      env = _env)
+            except subprocess.CalledProcessError as e:
+                msg = "'{}' exited with error code {}"
+                raise RuntimeError(msg.format(script['name'], e.returncode))

@@ -169,7 +169,9 @@ class Core:
         self._debug("Found parameters {}".format(parameters))
         return parameters
 
-    def get_scripts(self, flags):
+    def get_scripts(self, files_root, flags):
+        def _build_dict(v, env):
+            return [{'name' : x, 'cmd' : ['sh', os.path.join(files_root, x)], 'env' : env} for x in v]
         scripts = {}
         if self.scripts:
             env = {'BUILD_ROOT' : self.build_root}
@@ -178,7 +180,7 @@ class Core:
                 for s in ['pre_build_scripts', 'pre_run_scripts', 'post_run_scripts']:
                     v = getattr(self.scripts, s)
                     if v:
-                        scripts[s] = [{x : {'env' : env}} for x in v]
+                        scripts[s[0:-8]] = _build_dict(v, env)
             #For backwards compatibility we only use the script from the
             #top-level core in synth flows. We also rename them here to match
             #the backend stages and set the SYSTEM_ROOT env var
@@ -186,10 +188,10 @@ class Core:
                 env['SYSTEM_ROOT'] = self.files_root
                 v = self.scripts.pre_synth_scripts
                 if v:
-                    scripts['pre_build_scripts'] = [{x : {'env' : env}} for x in v]
+                    scripts['pre_build'] = _build_dict(v, env)
                 v = self.scripts.post_impl_scripts
                 if v:
-                    scripts['post_build_scripts'] = [{x : {'env' : env}} for x in v]
+                    scripts['post_build'] = _build_dict(v, env)
         return scripts
 
     def get_toplevel(self, flags={}):
@@ -283,9 +285,9 @@ class Core:
         src_files = [f.name for f in self.get_files(flags)]
         if self.vpi and flags['tool'] in ['icarus', 'modelsim', 'rivierapro']:
             src_files += [f.name for f in self.vpi.src_files + self.vpi.include_files]
-        for section in self.get_scripts(flags).values():
+        for section in self.get_scripts(dst_dir, flags).values():
             for script in section:
-                src_files += script.keys()
+                src_files.append(script['name'])
 
         self._debug("Exporting {}".format(str(src_files)))
 

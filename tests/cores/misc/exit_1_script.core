@@ -1,6 +1,0 @@
-CAPI=1
-[main]
-
-[scripts]
-pre_build_scripts = scripts/exit_1_script
-

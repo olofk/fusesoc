@@ -30,19 +30,3 @@ def test_edatool():
             'wb_common_0/wb_common_params.v',
             'wb_common_0/wb_common.v']:
         assert os.path.isfile(os.path.join(export_root, f))
-
-def test_run_scripts():
-    core = get_core("no_exe_script")
-    backend   = get_sim('icarus', core)
-    backend.configure([])
-    with pytest.raises(RuntimeError):
-        os.environ['PATH'] = os.path.join(tests_dir, 'mock_commands')+':'+os.environ['PATH']
-        backend.build()
-
-    core = get_core("exit_1_script")
-    backend   = get_sim('icarus', core)
-    backend.configure([])
-    with pytest.raises(RuntimeError):
-        os.environ['PATH'] = os.path.join(tests_dir, 'mock_commands')+':'+os.environ['PATH']
-        backend.build()
-

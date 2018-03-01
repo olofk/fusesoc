@@ -189,7 +189,7 @@ class Core:
                     raise RuntimeError('Cannot find %s in :\n\t%s\n\t%s'
                                   % (f, self.files_root, self.core_root))
 
-    def get_scripts(self, flags):
+    def get_scripts(self, files_root, flags):
         return {} #FIXME
 
     def get_tool(self, flags):
