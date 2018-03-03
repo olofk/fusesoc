@@ -31,6 +31,10 @@ class Config(object):
                         os.path.join(xdg_config_home, 'fusesoc','fusesoc.conf'),
                         'fusesoc.conf']
             else:
+                logger.debug("Using config file '{}'".format(path))
+                if not os.path.isfile(path):
+                    with open(path, 'a'):
+                        pass
                 config_files = [path]
 
             logger.debug('Looking for config files from ' + ':'.join(config_files))
