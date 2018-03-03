@@ -154,6 +154,9 @@ def add_library(cm, args):
     if 'sync-type' in vars(args):
         provider = vars(args)['sync-type']
         library['sync-type'] = provider
+    elif os.path.isdir(sync_uri):
+        provider = 'local'
+        library['sync-type'] = provider
     else:
         provider = 'git'
 
