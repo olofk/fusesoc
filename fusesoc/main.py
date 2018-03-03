@@ -176,8 +176,13 @@ def add_library(cm, args):
 
     if args.config:
         config = Config(file=args.config)
+    elif vars(args)['global']:
+        xdg_config_home = os.environ.get('XDG_CONFIG_HOME') or \
+                          os.path.join(os.path.expanduser('~'), '.config')
+        config_file = os.path.join(xdg_config_home, 'fusesoc', 'fusesoc.conf')
+        config = Config(path=config_file)
     else:
-        config = Config()
+        config = Config(path="fusesoc.conf")
 
     try:
         config.add_library(name, library)
@@ -468,6 +473,7 @@ def parse_args():
     parser_library_add.add_argument('--location', help='The location to store the library into (defaults to $XDG_DATA_HOME/[name])')
     parser_library_add.add_argument('--sync-type', help="The provider type for the library. Defaults to 'git'.", choices=['git', 'local'])
     parser_library_add.add_argument('--no-auto-sync', action='store_true', help='Disable automatic updates of the library')
+    parser_library_add.add_argument('--global', action='store_true', help='Use the global FuseSoc config file in $XDG_CONFIG_HOME/fusesoc/fusesoc.conf')
     parser_library_add.set_defaults(func=add_library)
 
     # run subparser
