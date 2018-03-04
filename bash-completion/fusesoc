@@ -1,0 +1,30 @@
+# fusesoc completion                                      -*- shell-script -*-
+
+_fusesoc()
+{
+    local cur prev words cword
+    _init_completion || return
+
+    COMPREPLY=()
+
+    case $prev in
+	system-info)
+	    COMPREPLY=( $( compgen -W "$( $1 list-systems |
+		grep -v 'Available systems' )" -- $cur ) )
+	    ;;
+	build|sim|pgm|fetch|core-info)
+	    COMPREPLY=( $( compgen -W "$( $1 list-cores | awk 'NR > 5' |
+		awk '{print $1}' )" -- $cur ) )
+	    ;;
+    esac
+
+    if [[ $cword -eq 1 ]]; then
+	COMPREPLY=( $( compgen -W 'build pgm fetch list-systems system-info
+		list-cores core-info sim' -- "$cur" ) )
+    fi
+    return 0
+
+} &&
+complete -F _fusesoc fusesoc
+
+# ex: ts=4 sw=4 et filetype=sh
