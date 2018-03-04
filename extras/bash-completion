@@ -1,0 +1,25 @@
+# Copy this script to /etc/bash_completion.d/fusesoc to enjoy bash completion
+# for fusesoc.
+
+_fusesoc()
+{
+    local cur prev words cword
+    _init_completion || return
+
+    COMPREPLY=()
+
+    case $prev in
+        run|build|sim|pgm|fetch|core-info)
+            COMPREPLY=( $( compgen -W "$( $1 list-cores | awk 'NR > 5' |
+                awk '{print $1}' )" -- $cur ) )
+            ;;
+    esac
+
+    if [[ $cword -eq 1 ]]; then
+        COMPREPLY=( $( compgen -W 'build init pgm fetch list-cores core-info
+                list-paths library run sim update' -- "$cur" ) )
+    fi
+    return 0
+
+} &&
+complete -F _fusesoc fusesoc
