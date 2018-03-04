@@ -32,13 +32,14 @@ V$(TOP_MODULE).mk:
 	$(VERILATOR) -f $(VC_FILE) $(VERILATOR_OPTIONS)
 """
 
-tool_options = {'members' : {'mode' : 'String'},
+tool_options = {'members' : {'mode' : 'String',
+                             'cli_parser' : 'String'},
                 'lists'   : {'libs' : 'String',
                              'verilator_options' : 'String'}}
 
 class Verilator(EdaTool):
 
-    argtypes = ['cmdlinearg', 'vlogdefine', 'vlogparam']
+    argtypes = ['cmdlinearg', 'plusarg', 'vlogdefine', 'vlogparam']
 
     def _fusesoc_parser(self):
         return 'cli_parser' in self.tool_options and self.tool_options['cli_parser'] == 'fusesoc'
@@ -65,6 +66,11 @@ class Verilator(EdaTool):
         with open(os.path.join(self.work_root,self.verilator_file),'w') as f:
             f.write('--Mdir .\n')
             modes = ['sc', 'cc', 'lint-only']
+
+            #Default to cc mode if not specified
+            if not 'mode' in self.tool_options:
+                self.tool_options['mode'] = 'cc'
+
             if self.tool_options['mode'] in modes:
                 f.write('--'+self.tool_options['mode']+'\n')
             else:
