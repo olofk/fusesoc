@@ -59,10 +59,10 @@ class EdaTool(object):
         if work_root:
             self.work_root = work_root
         else:
-            self.work_root = os.path.dirname(eda_api_file)
+            self.work_root = os.path.abspath(os.path.dirname(eda_api_file))
         self.env = os.environ.copy()
 
-        self.env['WORK_ROOT'] = os.path.abspath(self.work_root)
+        self.env['WORK_ROOT'] = self.work_root
 
         self.plusarg     = OrderedDict()
         self.vlogparam   = OrderedDict()
