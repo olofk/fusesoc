@@ -44,6 +44,73 @@ def test_capi2_get_files():
     result = [vars(x) for x in core.get_files(flags)]
     assert expected == result
 
+def test_capi2_get_scripts():
+    from fusesoc.core import Core
+
+    core_file = os.path.join(tests_dir,
+                             "capi2_cores",
+                             "misc",
+                             "hooks.core")
+    core = Core(core_file, None, None)
+
+    flags    = {'is_toplevel' : True}
+    expected = {'pre_build' : [{'cmd' : ['simple_cmd1'],
+                                'env' : {},
+                                'name' : 'simple1'}]}
+    assert expected == core.get_scripts("", flags)
+
+    flags['target'] = 'nohooks'
+    expected = {}
+    assert expected == core.get_scripts("", flags)
+
+    flags['target'] = 'nonexistant'
+    with pytest.raises(SyntaxError) as excinfo:
+        core.get_scripts("", flags)
+    assert "Script 'idontexist', requested by target 'nonexistant', was not found" in str(excinfo.value)
+
+    flags['target'] = 'allhooks'
+    expected = {
+        'pre_build'  : [{'cmd'  : ['simple_cmd1'],
+                         'env'  : {},
+                         'name' : 'simple1'}],
+        'post_build' : [{'cmd'  : ['simple_cmd2'],
+                         'env'  : {},
+                         'name' : 'simple2'}],
+        'pre_run'    : [{'cmd'  : ['simple_cmd3'],
+                         'env'  : {},
+                         'name' : 'simple3'}],
+        'post_run'   : [{'cmd'  : ['simple_cmd4'],
+                         'env'  : {},
+                         'name' : 'simple4'}],
+        }
+    assert expected == core.get_scripts("", flags)
+
+    flags['target'] = 'multihooks'
+    expected = {
+        'pre_run'  : [{'cmd'  : ['simple_cmd1'],
+                       'env'  : {},
+                       'name' : 'simple1'},
+                      {'cmd'  : ['simple5'],
+                       'env'  : {'TESTENV' : 'testvalue'},
+                       'name' : 'with_env'},
+                      {'cmd'  : ['command', 'with', 'args'],
+                       'env'  : {},
+                       'name' : 'multi_cmd'}]
+        }
+    assert expected == core.get_scripts("", flags)
+
+    flags['target'] = 'use_flags'
+    expected = {'post_run' : [{'cmd' : ['simple_cmd2'],
+                               'env' : {},
+                               'name' : 'simple2'}]}
+    assert expected == core.get_scripts("", flags)
+
+    flags['tool'] = 'icarus'
+    expected = {'post_run' : [{'cmd' : ['simple_cmd1'],
+                               'env' : {},
+                               'name' : 'simple1'}]}
+    assert expected == core.get_scripts("", flags)
+
 def test_capi2_get_tool_options():
     from fusesoc.core import Core
 

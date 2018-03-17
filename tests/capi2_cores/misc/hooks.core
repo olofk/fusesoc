@@ -1,0 +1,41 @@
+CAPI=2:
+name: ::hookscore:0
+scripts:
+  simple1:
+    cmd : [simple_cmd1]
+  simple2:
+    cmd : [simple_cmd2]
+  simple3:
+    cmd : [simple_cmd3]
+  simple4:
+    cmd : [simple_cmd4]
+  with_env:
+    cmd : [simple5]
+    env : {TESTENV : testvalue}
+  multi_cmd:
+    cmd : ['command','with','args']
+
+targets:
+  default:
+    hooks:
+      pre_build: [simple1]
+  nohooks: {}
+  nonexistant:
+    hooks:
+      post_build: [idontexist]
+  
+  allhooks:
+    hooks:
+      pre_build  : [simple1]
+      post_build : [simple2]
+      pre_run    : [simple3]
+      post_run   : [simple4]
+  multihooks:
+    hooks:
+      pre_run : [simple1, with_env, multi_cmd]
+    
+  use_flags:
+    hooks:
+      post_run:
+        - "tool_icarus? (simple1)"
+        - "!tool_icarus? (simple2)"

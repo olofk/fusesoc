@@ -151,8 +151,6 @@ class Core:
         else:
             self.files_root = self.core_root
 
-        self.scripts = [] #FIXME
-
     def cache_status(self):
         if self.provider:
             return self.provider.status()
@@ -170,8 +168,11 @@ class Core:
             src_files += [f.name for f in v['src_files'] + v['inc_files']] #FIXME include files
         self._debug("Exporting {}".format(str(src_files)))
 
-        #for fs in self._get_filesets(flags):
-        #    src_files += [f.name for f in fs.files]
+        for scripts in self._get_script_names(flags).values():
+            for script in scripts:
+                for fs in script.filesets:
+                    src_files += [f.name for f in self.filesets[fs].files]
+
         dirs = list(set(map(os.path.dirname,src_files)))
         for d in dirs:
             if not os.path.exists(os.path.join(dst_dir, d)):
@@ -189,8 +190,36 @@ class Core:
                     raise RuntimeError('Cannot find %s in :\n\t%s\n\t%s'
                                   % (f, self.files_root, self.core_root))
 
+    def _get_script_names(self, flags):
+        target = self._get_target(flags)
+        hooks = {}
+
+        if target and target.hooks:
+            for hook in ['pre_build', 'post_build', 'pre_run', 'post_run']:
+                scripts = getattr(target.hooks, hook)
+                if scripts:
+                    hooks[hook] = []
+                    for script in self._parse_list(flags, scripts):
+                        if not script in self.scripts:
+                            raise SyntaxError("Script '{}', requested by target '{}', was not found".format(script, target.name))
+                        hooks[hook].append(self.scripts[script])
+
+        return hooks
+
     def get_scripts(self, files_root, flags):
-        return {} #FIXME
+        self._debug("Getting hooks for flags '{}'".format(str(flags)))
+        hooks = {}
+
+        for hook, scripts in self._get_script_names(flags).items():
+            hooks[hook] = []
+            for script in scripts:
+                _script = {'name' : script.name,
+                           'cmd'  : [str(x) for x in script.cmd],
+                           'env'  : script.env}
+                hooks[hook].append(_script)
+                _s = " Matched {} hook {}"
+                self._debug(_s.format(hook, str(_script)))
+        return hooks
 
     def get_tool(self, flags):
         self._debug("Getting tool for flags {}".format(str(flags)))
@@ -438,9 +467,9 @@ Root:
     description : String
     provider    : Provider
     CAPI=2      : String
-    scripts     : Scripts
   dicts:
     filesets   : Fileset
+    scripts    : Script
     targets    : Target
     parameters : Parameter
     vpi        : Vpi
@@ -456,6 +485,7 @@ Fileset:
 Target:
   members:
     default_tool : String
+    hooks      : Hooks
     tools    : Tools
   lists:
     filesets   : String
@@ -463,6 +493,13 @@ Target:
     parameters : String
     toplevel   : String
     vpi        : String
+
+Hooks:
+  lists:
+    pre_build  : String
+    post_build : String
+    pre_run    : String
+    post_run   : String
 
 Parameter:
   members:
@@ -472,12 +509,13 @@ Parameter:
     paramtype   : String
     scope       : String
 
-Scripts:
+Script:
   lists:
-    pre_build  : String
-    post_build : String
-    pre_run    : String
-    post_run   : String
+    cmd      : String
+    filesets : String
+  dicts:
+    env : String
+
 Vpi:
   lists:
     libs         : String
