@@ -88,6 +88,7 @@ class Section(object):
                         _d[_name] = globals()[self.dicts[k]](_items)
                     except AttributeError as e:
                         raise SyntaxError("Bad option '{}' in section '{}'".format(_name, k))
+                    setattr(_d[_name], 'name', _name)
                 setattr(self, k, _d)
             else:
                 raise KeyError(k + " in section " + self.__class__.__name__)
@@ -139,10 +140,6 @@ class Core:
             p.default     = str(p.default) if p.default else ''
             p.description = str(p.description)
             p.paramtype   = str(p.paramtype)
-
-        for k, v in self.targets.items():
-            setattr(v, 'name', k)
-
 
         if self.provider:
             self.files_root = os.path.join(cache_root,
@@ -259,9 +256,7 @@ class Core:
 
         if target:
             for p in self._parse_list(flags, target.parameters):
-                _p = self.parameters[p]
-                _p.name = p
-                parameters.append(_p)
+                parameters.append(self.parameters[p])
         self._debug("Found parameters {}".format(parameters))
         return parameters
 
