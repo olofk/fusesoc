@@ -20,7 +20,19 @@ filesets:
   dontpickme:
     files:
       - dontpickthisfile: {file_type : user}
+  script_fileset:
+    files:
+      - scriptfile : {file_type : user}
 
+  fileset_in_files_root:
+    files: [targets.info]
+  vpi_fileset:
+    files:
+      - vpifile : {file_type : CSource}
+
+scripts:
+  script_with_fileset:
+    filesets : [script_fileset]
 targets:
   default:
     filesets: [
@@ -28,3 +40,14 @@ targets:
     miscfiles,
     "tool_icarus? (pickme)",
     "!tool_icarus? (dontpickme)"]
+    hooks:
+      pre_build: [script_with_fileset]
+    vpi : [vpi_with_fileset]
+  will_fail:
+    filesets : [unusedfiles]
+  files_root_test:
+    filesets: [fileset_in_files_root]
+
+vpi:
+  vpi_with_fileset:
+    filesets : [vpi_fileset]

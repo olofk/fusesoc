@@ -2,6 +2,50 @@ import pytest
 import os.path
 tests_dir = os.path.dirname(__file__)
 
+def test_capi2_export():
+    import os
+    import tempfile
+    from fusesoc.core import Core
+
+    core_file = os.path.join(tests_dir,
+                             "capi2_cores",
+                             "misc",
+                             "files.core")
+    core = Core(core_file, None, None)
+
+    export_root  = tempfile.mkdtemp(prefix='capi2_export_')
+
+    core.export(export_root)
+
+    expected = [
+        'dontpickthisfile',
+        'dummy.tcl',
+        'scriptfile',
+        'subdir/dummy.extra',
+        'vhdlfile',
+        'vlogfile',
+        'vpifile']
+    result = []
+
+    for root, dirs, files in os.walk(export_root):
+        result += [os.path.relpath(os.path.join(root, f), export_root) for f in files]
+
+    assert expected == sorted(result)
+
+    with pytest.raises(RuntimeError) as excinfo:
+        core.export(export_root, {'target' : 'will_fail', 'is_toplevel' : True})
+    assert "Cannot find idontexist in" in str(excinfo.value)
+
+    core.files_root = os.path.join(tests_dir, __name__)
+    core.export(export_root, {'target' : 'files_root_test', 'is_toplevel' : True})
+    expected = ['targets.info']
+
+    result = []
+
+    for root, dirs, files in os.walk(export_root):
+        result += [os.path.relpath(os.path.join(root, f), export_root) for f in files]
+    assert expected == sorted(result)
+
 def test_capi2_get_files():
     from fusesoc.core import Core
 
