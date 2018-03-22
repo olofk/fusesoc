@@ -1,3 +1,20 @@
+1.8.1 2018-03-22 Olof Kindgren <olof.kindgren@gmail.com>
+======================================================
+* Implement sync-type to determine library provider
+* Add support for all tools in CAPI2
+* Disable logfile by default
+* Add bash completion script
+* Add --global flag to select fusesoc.conf file
+* Redefine script (hooks) section in EDA API
+* Add hooks support for CAPI2
+
+* + improved error handling, bug fixes and refactoring
+
+Contributors:
+Andrew Wygle <awygle@gmail.com>
+Olof Kindgren <olof.kindgren@gmail.com>
+Philipp Wagner <philipp.wagner@tum.de>
+
 1.8 2018-01-31 Olof Kindgren <olof.kindgren@gmail.com>
 ======================================================
 * Add BMM and PCF as valid file types
