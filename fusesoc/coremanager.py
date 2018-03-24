@@ -143,6 +143,9 @@ class CoreManager(object):
         if os.path.isdir(path) == False:
             raise IOError(path + " is not a directory")
         for root, dirs, files in os.walk(path, followlinks=True):
+            if 'FUSESOC_IGNORE' in files:
+                del dirs[:]
+                continue
             for f in files:
                 if f.endswith('.core'):
                     d = os.path.basename(root)
