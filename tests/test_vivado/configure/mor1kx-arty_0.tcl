@@ -61,6 +61,7 @@ read_xdc ../../../cores/misc/xdc_file
 
 set_param project.enableVHDL2008 1
 set_property top mor1kx_arty_top [current_fileset]
+set_property source_mgmt_mode None [current_project]
 
 launch_runs impl_1
 wait_on_run impl_1

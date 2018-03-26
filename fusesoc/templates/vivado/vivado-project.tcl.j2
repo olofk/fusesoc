@@ -50,9 +50,11 @@ set_param project.enableVHDL2008 1
 {% endif %}
 {% if toplevel %}
 set_property top {{ toplevel }} [current_fileset]
+set_property source_mgmt_mode None [current_project]
 {% endif %}
 
 launch_runs impl_1
 wait_on_run impl_1
 open_run impl_1
 write_bitstream {{ bitstream_name }}
+
