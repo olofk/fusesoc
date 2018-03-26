@@ -102,7 +102,8 @@ class Vivado(EdaTool):
             parameters += "set_property verilog_define \""+defines+"\" [get_filesets sources_1]\n"
 
         if self.toplevel:
-            extras += "set_property top "+self.toplevel+" [current_fileset]"
+            extras += "set_property top "+self.toplevel+" [current_fileset]\n"
+            extras += "set_property source_mgmt_mode None [current_project]\n"
 
         # Write the formatted string to the tcl file
         tcl_file.write(PROJECT_TCL_TEMPLATE.format(
