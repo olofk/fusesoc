@@ -64,6 +64,8 @@ read_xdc ../../../cores/misc/xdc_file
 
 set_param project.enableVHDL2008 1
 set_property top mor1kx_arty_top [current_fileset]
+set_property source_mgmt_mode None [current_project]
+
 
 # By default create_project creates the synth_1 and impl_1 runs.
 # To explicitly create customized runs, uncomment the code below.
