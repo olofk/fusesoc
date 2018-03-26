@@ -1,0 +1,3 @@
+fusesoc/templates/vivado/vivado-program.tcl.j2
+fusesoc/templates/vivado/vivado-project.tcl.j2
+
