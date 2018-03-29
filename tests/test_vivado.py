@@ -33,7 +33,7 @@ def test_vivado_minimal():
     import tempfile
     import yaml
 
-    from fusesoc.edatools import get_edatool
+    from edalize import get_edatool
 
     from edalize_common import compare_files, tests_dir
 

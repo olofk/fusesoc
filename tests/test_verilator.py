@@ -18,7 +18,7 @@ params    = vlogparams + vlogdefines + cmdlineargs
 def test_verilator_configure():
     import os.path
     import tempfile
-    from fusesoc.edatools import get_edatool
+    from edalize import get_edatool
 
     for mode in ['cc', 'sc', 'lint-only']:
         work_root    = tempfile.mkdtemp()
@@ -41,7 +41,7 @@ def test_verilator_configure():
 def test_verilator_run():
     import os.path
     import tempfile
-    from fusesoc.edatools import get_edatool
+    from edalize import get_edatool
     ref_dir_cc = os.path.join(ref_dir, 'cc')
 
     work_root    = tempfile.mkdtemp()

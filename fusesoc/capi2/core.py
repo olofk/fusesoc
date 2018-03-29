@@ -12,7 +12,7 @@ from ipyxact.ipyxact import Component
 from fusesoc import utils
 from fusesoc.provider import get_provider
 from fusesoc.vlnv import Vlnv
-from fusesoc.edatools import get_edatools
+from edalize import get_edatools
 
 logger = logging.getLogger(__name__)
 

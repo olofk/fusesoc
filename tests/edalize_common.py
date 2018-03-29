@@ -2,7 +2,7 @@ import os.path
 import tempfile
 import yaml
 
-from fusesoc.edatools import get_edatool
+from edalize import get_edatool
 
 tests_dir = os.path.dirname(__file__)
 

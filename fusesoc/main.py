@@ -17,7 +17,7 @@ if os.path.exists(os.path.join(fusesocdir, "fusesoc")):
 
 from fusesoc.config import Config
 from fusesoc.coremanager import CoreManager, DependencyError
-from fusesoc.edatools import get_edatool
+from edalize import get_edatool
 from fusesoc.provider import get_provider
 from fusesoc.vlnv import Vlnv
 from fusesoc.utils import Launcher, setup_logging

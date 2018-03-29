@@ -3,7 +3,7 @@ import shutil
 
 def test_empty_eda_api():
     import tempfile
-    from fusesoc.edatools import get_edatool
+    from edalize import get_edatool
 
     (h, eda_api_file) = tempfile.mkstemp()
 
@@ -13,7 +13,7 @@ def test_empty_eda_api():
 def test_incomplete_eda_api():
     import tempfile
     import yaml
-    from fusesoc.edatools import get_edatool
+    from edalize import get_edatool
 
     (h, eda_api_file) = tempfile.mkstemp()
     contents = []
@@ -35,7 +35,7 @@ def test_eda_api_files():
     import tempfile
     import yaml
 
-    from fusesoc.edatools import get_edatool
+    from edalize import get_edatool
     files = [{'name' : 'plain_file'},
              {'name' : 'subdir/plain_include_file',
               'is_include_file' : True},
@@ -68,7 +68,7 @@ def test_eda_api_hooks():
     import os.path
     import tempfile
     import yaml
-    from fusesoc.edatools import get_edatool
+    from edalize import get_edatool
 
     tests_dir = os.path.dirname(__file__)
     ref_dir   = os.path.join(tests_dir, __name__)

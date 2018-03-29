@@ -9,7 +9,7 @@ setup(
     packages=['fusesoc',
               'fusesoc.capi1',
               'fusesoc.capi2',
-              'fusesoc.edatools',
+              'edalize',
               'fusesoc.provider'],
     package_data = {'fusesoc' : [
         'templates/vivado/vivado-makefile.j2',
