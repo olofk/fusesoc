@@ -119,15 +119,20 @@ class Verilator(EdaTool):
 
         # Do parallel builds with <number of cpus> * 2 jobs.
         make_job_count = multiprocessing.cpu_count() * 2
+        args = ['-j', str(make_job_count)]
 
+        if self.tool_options['mode'] == 'lint-only':
+            args.append('V'+self.toplevel+'.mk')
         _s = os.path.join(self.work_root, 'verilator.{}.log')
         l = utils.Launcher('make',
-                           ['-j', str(make_job_count)],
+                           args,
                            cwd=self.work_root,
                            stderr = open(_s.format('err'),'w'),
                            stdout = open(_s.format('out'),'w')).run()
 
     def run(self, args):
+        if self.tool_options['mode'] == 'lint-only':
+            return
         if self._fusesoc_parser():
             self.parse_args(args, self.argtypes)
 
