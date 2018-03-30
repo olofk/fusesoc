@@ -3,17 +3,17 @@ import shutil
 
 def test_empty_eda_api():
     import tempfile
-    from fusesoc.utils import _import
+    from fusesoc.edatools import get_edatool
 
     (h, eda_api_file) = tempfile.mkstemp()
 
     with pytest.raises(RuntimeError):
-        backend = _import('icarus', 'edatools')(eda_api_file=eda_api_file)
+        backend = get_edatool('icarus')(eda_api_file=eda_api_file)
 
 def test_incomplete_eda_api():
     import tempfile
     import yaml
-    from fusesoc.utils import _import
+    from fusesoc.edatools import get_edatool
 
     (h, eda_api_file) = tempfile.mkstemp()
     contents = []
@@ -22,20 +22,20 @@ def test_incomplete_eda_api():
         f.write(yaml.dump({'version' : '0.1.2'}))
 
     with pytest.raises(RuntimeError) as excinfo:
-        backend = _import('icarus', 'edatools')(eda_api_file=eda_api_file)
+        backend = get_edatool('icarus')(eda_api_file=eda_api_file)
     assert "Missing required parameter 'name'" in str(excinfo.value)
 
     with open(eda_api_file,'w') as f:
         f.write(yaml.dump({'version' : '0.1.2',
                            'name' : 'corename'}))
 
-    backend = _import('icarus', 'edatools')(eda_api_file=eda_api_file)
+    backend = get_edatool('icarus')(eda_api_file=eda_api_file)
 
 def test_eda_api_hooks():
     import os.path
     import tempfile
     import yaml
-    from fusesoc.main import _import
+    from fusesoc.edatools import get_edatool
 
     tests_dir = os.path.dirname(__file__)
     ref_dir   = os.path.join(tests_dir, __name__)
@@ -50,7 +50,7 @@ def test_eda_api_hooks():
         f.write(yaml.dump({'hooks' : hooks,
                            'name' : script}))
 
-    backend = _import('icarus', 'edatools')(eda_api_file=eda_api_file)
+    backend = get_edatool('icarus')(eda_api_file=eda_api_file)
     with pytest.raises(RuntimeError):
         backend.build()
 

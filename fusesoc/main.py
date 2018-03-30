@@ -17,6 +17,7 @@ if os.path.exists(os.path.join(fusesocdir, "fusesoc")):
 
 from fusesoc.config import Config
 from fusesoc.coremanager import CoreManager, DependencyError
+from fusesoc.edatools import get_edatool
 from fusesoc.vlnv import Vlnv
 from fusesoc.utils import Launcher, setup_logging, _import
 
@@ -281,7 +282,7 @@ def run_backend(cm, export, do_configure, do_build, do_run, flags, system, backe
     #Frontend/backend separation
 
     try:
-        backend = _import(tool, "edatools")(eda_api_file=eda_api_file)
+        backend = get_edatool(tool)(eda_api_file=eda_api_file)
     except ImportError:
         logger.error('Backend "{}" not found'.format(tool))
         exit(1)

@@ -14,13 +14,13 @@ ref_dir   = os.path.join(tests_dir, __name__)
 def test_verilator_configure():
     import os.path
     import tempfile
-    from fusesoc.utils import _import
+    from fusesoc.edatools import get_edatool
 
     for mode in ['cc', 'sc', 'lint-only']:
         work_root    = tempfile.mkdtemp()
         eda_api_file = os.path.join(ref_dir, mode, core.name.sanitized_name) + '.eda.yml'
 
-        backend = _import(tool, 'edatools')(eda_api_file=eda_api_file, work_root=work_root)
+        backend = get_edatool(tool)(eda_api_file=eda_api_file, work_root=work_root)
 
         if mode is 'cc':
             _params = params
@@ -37,13 +37,13 @@ def test_verilator_configure():
 def test_verilator_run():
     import os.path
     import tempfile
-    from fusesoc.utils import _import
+    from fusesoc.edatools import get_edatool
     ref_dir_cc = os.path.join(ref_dir, 'cc')
     dummy_exe = 'V'+core.verilator.top_module
 
     work_root    = tempfile.mkdtemp()
     eda_api_file = os.path.join(ref_dir_cc, core.name.sanitized_name)+ '.eda.yml'
-    backend = _import(tool, 'edatools')(eda_api_file=eda_api_file, work_root=work_root)
+    backend = get_edatool(tool)(eda_api_file=eda_api_file, work_root=work_root)
     shutil.copy(os.path.join(ref_dir, dummy_exe),
                 os.path.join(work_root, dummy_exe))
 
