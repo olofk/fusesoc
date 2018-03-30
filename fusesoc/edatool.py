@@ -3,6 +3,7 @@ from collections import OrderedDict
 import os
 import subprocess
 import logging
+import sys
 import yaml
 
 from fusesoc.utils import Launcher
@@ -132,7 +133,7 @@ class EdaTool(object):
                     'int'  : {'type' : int , 'nargs' : 1},
                     'str'  : {'type' : str , 'nargs' : 1},
                     }
-        progname = 'fusesoc run {}'.format(self.name)
+        progname = os.path.basename(sys.argv[0]) + ' run {}'.format(self.name)
 
         parser = argparse.ArgumentParser(prog = progname,
                                          conflict_handler='resolve')
