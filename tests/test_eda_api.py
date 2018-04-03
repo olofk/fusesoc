@@ -31,6 +31,39 @@ def test_incomplete_eda_api():
 
     backend = get_edatool('icarus')(eda_api_file=eda_api_file)
 
+def test_eda_api_files():
+    import tempfile
+    import yaml
+
+    from fusesoc.edatools import get_edatool
+    files = [{'name' : 'plain_file'},
+             {'name' : 'subdir/plain_include_file',
+              'is_include_file' : True},
+             {'name' : 'file_with_args',
+              'file_type' : 'verilogSource',
+              'logical_name' : 'libx'},
+             {'name' : 'include_file_with_args',
+              'is_include_file' : True,
+              'file_type' : 'verilogSource',
+              'logical_name' : 'libx'}]
+    (h, eda_api_file) = tempfile.mkstemp(prefix='eda_api_files_')
+    with open(eda_api_file,'w') as f:
+        f.write(yaml.dump({'files' : files,
+                           'name' : 'test_eda_api_files'}))
+
+    backend = get_edatool('icarus')(eda_api_file=eda_api_file)
+    (parsed_files, incdirs) = backend._get_fileset_files()
+
+    assert len(parsed_files) == 2
+    assert parsed_files[0].name         == 'plain_file'
+    assert parsed_files[0].file_type    == ''
+    assert parsed_files[0].logical_name == ''
+    assert parsed_files[1].name         == 'file_with_args'
+    assert parsed_files[1].file_type    == 'verilogSource'
+    assert parsed_files[1].logical_name == 'libx'
+
+    assert incdirs == ['subdir', '.']
+
 def test_eda_api_hooks():
     import os.path
     import tempfile

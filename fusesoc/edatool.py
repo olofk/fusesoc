@@ -191,7 +191,7 @@ class EdaTool(object):
         incdirs = []
         src_files = []
         for f in self.files:
-            if f['is_include_file']:
+            if 'is_include_file' in f and f['is_include_file']:
                 _incdir = os.path.dirname(f['name']) or '.'
                 if force_slash:
                     _incdir = _incdir.replace('\\', '/')
@@ -201,9 +201,15 @@ class EdaTool(object):
                 _name = f['name']
                 if force_slash:
                     _name = _name.replace('\\', '/')
+                file_type = ''
+                if 'file_type' in f:
+                    file_type = f['file_type']
+                logical_name = ''
+                if 'logical_name' in f:
+                    logical_name = f['logical_name']
                 src_files.append(File(_name,
-                                      f['file_type'],
-                                      f['logical_name']))
+                                      file_type,
+                                      logical_name))
         return (src_files, incdirs)
 
     """ Convert a parameter value to string suitable to be passed to an EDA tool
