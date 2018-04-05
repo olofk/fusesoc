@@ -247,9 +247,17 @@ class Core:
 
                 #Special case for isim. isim_options are really fuse_options
                 if flags['tool'] == 'isim':
-                    print(section._members)
                     section._members['fuse_options'] = section._members.pop('isim_options')
                     section.fuse_options = section.isim_options
+
+                #Special case for xsim. xsim_options are really xelab_options
+                #Also add flags that were previously hardcoded in the backend
+                if flags['tool'] == 'xsim':
+                    if 'xsim_options' in section._members:
+                        section._members['xelab_options'] = section._members.pop('xsim_options')
+                        section.xelab_options = ['--timescale 1ps/1ps',
+                                                 '--debug typical']
+                        section.xelab_options += section.xsim_options
                     
                 for member in section._members:
                     if hasattr(section, member) and getattr(section, member) and not member == 'depend':

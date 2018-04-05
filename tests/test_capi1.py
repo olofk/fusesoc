@@ -88,6 +88,9 @@ def test_get_tool_options():
     assert {'iverilog_options' : ['-DSIM']} == core.get_tool_options({'is_toplevel' : True, 'tool' : 'icarus'})
     assert {} == core.get_tool_options({'is_toplevel' : True, 'tool' : 'modelsim'})
     assert {'fuse_options' : ['some','isim','options']} == core.get_tool_options({'is_toplevel' : True, 'tool' : 'isim'})
+    expected = {'xelab_options' : ['--timescale 1ps/1ps', '--debug typical',
+                                   'dummy', 'options', 'for', 'xelab']}
+    assert expected == core.get_tool_options({'is_toplevel' : True, 'tool' : 'xsim'})
     assert {} == core.get_tool_options({'is_toplevel' : False, 'tool' : 'icarus'})
     core = get_core("elf-loader")
     assert {'libs' : ['-lelf']} == core.get_tool_options({'is_toplevel' : False, 'tool' : 'verilator'})
