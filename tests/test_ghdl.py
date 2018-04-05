@@ -9,24 +9,25 @@ backend   = get_sim('ghdl', core)
 ref_dir   = os.path.join(tests_dir, __name__)
 work_root = backend.work_root
 
-def test_ghdl_configure():
+def test_ghdl():
+    import os
+    import shutil
+    from edalize_common import compare_files, setup_backend, tests_dir
 
-    backend.configure(vlogparams)
+    ref_dir      = os.path.join(tests_dir, __name__)
+    paramtypes   = ['vlogparam']
+    name         = 'test_ghdl'
+    tool         = 'ghdl'
+    tool_options = {'analyze_options' : ['some', 'analyze_options'],
+                    'run_options'     : ['a', 'few', 'run_options']}
+
+    (backend, args, work_root) = setup_backend(paramtypes, name, tool, tool_options)
+    backend.configure(args)
 
     compare_files(ref_dir, work_root, ['Makefile'])
 
-def test_ghdl_build():
-
-    os.environ['PATH'] = os.path.join(tests_dir, 'mock_commands')+':'+os.environ['PATH']
-
     backend.build()
-    assert os.path.isfile(os.path.join(work_root, 'pre_build_script_executed'))
+    compare_files(ref_dir, work_root, ['analyze.cmd'])
 
-def test_ghdl_run():
-
-    os.environ['PATH'] = os.path.join(tests_dir, 'mock_commands')+':'+os.environ['PATH']
-    backend.run(vlogparams)
-
-    compare_files(ref_dir, work_root, ['run.cmd'])
-    assert os.path.isfile(os.path.join(work_root, 'pre_run_script_executed'))
-    assert os.path.isfile(os.path.join(work_root, 'post_run_script_executed'))
+    backend.run(args)
+    compare_files(ref_dir, work_root, ['elab-run.cmd'])

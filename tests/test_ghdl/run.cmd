@@ -1,4 +1,0 @@
--a --std=08 dummy_analyze_option ../../../cores/misc/vhdl_file.vhd
--a --std=08 dummy_analyze_option --work=libx ../../../cores/misc/vhdl_lib_file.vhd
--a --std=08 dummy_analyze_option ../../../cores/misc/vhdl2008_file.vhd
---elab-run e dummy_run_option -gvlogparam_bool=1 -gvlogparam_int=42 -gvlogparam_str=hello
