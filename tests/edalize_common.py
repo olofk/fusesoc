@@ -1,4 +1,8 @@
 import os.path
+import tempfile
+import yaml
+
+from fusesoc.edatools import get_edatool
 
 tests_dir = os.path.dirname(__file__)
 
@@ -31,6 +35,22 @@ def param_gen(paramtypes):
                          'name'        : paramtype+'_'+datatype,
                      'paramtype'   : paramtype})
     return (defs, args)
+
+def setup_backend(paramtypes, name, tool, tool_options):
+    os.environ['PATH'] = os.path.join(tests_dir, 'mock_commands')+':'+os.environ['PATH']
+    (parameters, args) = param_gen(paramtypes)
+
+    work_root = tempfile.mkdtemp(prefix=tool+'_')
+    eda_api_file = os.path.join(work_root, name+'.eda.yml')
+    with open(eda_api_file,'w') as f:
+        f.write(yaml.dump({'name'         : name,
+                           'files'        : files,
+                           'parameters'   : parameters,
+                           'tool_options' : {tool : tool_options},
+                           'toplevel'     : 'top_module',
+                           'vpi'          :  vpi}))
+
+    return (get_edatool(tool)(eda_api_file=eda_api_file), args, work_root)
 
 files = [
     {'name' : 'qip_file.qip' , 'file_type' : 'QIP'},

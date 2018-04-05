@@ -1,0 +1,1 @@
+top_module -prj test_xsim_0.prj -snapshot test_xsim_0 --define vlogdefine_bool=True --define vlogdefine_int=42 --define vlogdefine_str=hello -i . --generic_top vlogparam_bool=1 --generic_top vlogparam_int=42 --generic_top vlogparam_str=hello some xelab_options
