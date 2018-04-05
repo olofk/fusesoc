@@ -7,6 +7,9 @@ Common dependencies  : >=::adv_debug_sys:0 >=::filetypes:0 ::jtag_tap:1.13 >=::m
 icarus-specific dependencies : >=::elf-loader:0
 Icarus compile options : -DSIM
 
+== isim ==
+Isim compile options : some isim options
+
 == modelsim ==
 modelsim-specific dependencies : >=::elf-loader:0
 

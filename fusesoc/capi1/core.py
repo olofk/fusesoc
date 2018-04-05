@@ -244,6 +244,13 @@ class Core:
 
             #Otherwise, only care about options from toplevel core
             if flags['is_toplevel']:
+
+                #Special case for isim. isim_options are really fuse_options
+                if flags['tool'] == 'isim':
+                    print(section._members)
+                    section._members['fuse_options'] = section._members.pop('isim_options')
+                    section.fuse_options = section.isim_options
+                    
                 for member in section._members:
                     if hasattr(section, member) and getattr(section, member) and not member == 'depend':
                         #Strip quoted strings

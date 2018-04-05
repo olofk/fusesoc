@@ -33,6 +33,9 @@ usage = icarus
 depend = elf-loader
 iverilog_options = -DSIM
 
+[isim]
+isim_options = some isim options
+
 [modelsim]
 depend = elf-loader
 
