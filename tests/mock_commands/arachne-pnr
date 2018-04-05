@@ -1,0 +1,16 @@
+#!/usr/bin/env python
+import os
+import sys
+
+is_argvalue = False
+for arg in sys.argv[1:]:
+    if not (is_argvalue or arg[0] == '-'):
+        input_file = arg
+    is_argvalue = (arg[0] == '-')
+
+output_file = input_file[0:-4]+'txt'
+with open(output_file, 'a'):
+    os.utime(output_file, None)
+
+with open('arachne-pnr.cmd', 'w') as f:
+    f.write(' '.join(sys.argv) + '\n')

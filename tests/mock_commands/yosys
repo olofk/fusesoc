@@ -1,0 +1,16 @@
+#!/usr/bin/env python
+import os
+import sys
+
+grab_input = False
+for arg in sys.argv:
+    if grab_input:
+        input_file = arg
+    grab_input = (arg == '-s')
+
+output_file = input_file[0:-2]+'blif'
+with open(output_file, 'a'):
+    os.utime(output_file, None)    
+
+with open('yosys.cmd', 'w') as f:
+    f.write(' '.join(sys.argv) + '\n')
