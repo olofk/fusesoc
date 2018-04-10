@@ -1,1 +1,0 @@
--M. -l icarus.log -melf-loader_0 mor1kx-generic_0 -lxt2 +plusarg_bool=1 +plusarg_int=42 +plusarg_str=hello

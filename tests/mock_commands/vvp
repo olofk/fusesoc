@@ -1,2 +1,2 @@
 #!/bin/sh
-echo "$@" > run.cmd
+echo "$@" > vvp.cmd

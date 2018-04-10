@@ -36,11 +36,21 @@ def param_gen(paramtypes):
                      'paramtype'   : paramtype})
     return (defs, args)
 
-def setup_backend(paramtypes, name, tool, tool_options):
+def setup_backend(paramtypes, name, tool, tool_options, use_vpi=False):
     os.environ['PATH'] = os.path.join(tests_dir, 'mock_commands')+':'+os.environ['PATH']
     (parameters, args) = param_gen(paramtypes)
 
     work_root = tempfile.mkdtemp(prefix=tool+'_')
+
+    if use_vpi:
+        for v in vpi:
+            for f in v['src_files']:
+                _f = os.path.join(work_root, f)
+                if not os.path.exists(os.path.dirname(_f)):
+                    os.makedirs(os.path.dirname(_f))
+                with open(_f, 'a'):
+                    os.utime(_f, None)
+
     eda_api_file = os.path.join(work_root, name+'.eda.yml')
     with open(eda_api_file,'w') as f:
         f.write(yaml.dump({'name'         : name,
@@ -70,12 +80,12 @@ files = [
 ]
 
 vpi = [
-    {'src_files': ['../src/vpi_0/f1',
-                   '../src/vpi_0/f3'],
-     'include_dirs': ['../src/vpi_0/'],
+    {'src_files': ['src/vpi_1/f1',
+                   'src/vpi_1/f3'],
+     'include_dirs': ['src/vpi_1/'],
      'libs': ['some_lib'],
      'name': 'vpi1'},
-    {'src_files': ['../src/vpi_0/f4'],
+    {'src_files': ['src/vpi_2/f4'],
      'include_dirs': [],
      'libs': [],
      'name': 'vpi2'}]

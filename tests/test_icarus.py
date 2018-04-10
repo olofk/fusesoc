@@ -1,32 +1,28 @@
-import os
-import shutil
 import pytest
 
-from test_common import compare_file, get_core, get_sim, sim_params
+def test_icarus():
+    import os
+    import shutil
+    from edalize_common import compare_files, setup_backend, tests_dir
 
-tests_dir = os.path.dirname(__file__)
-core      = get_core("mor1kx-generic")
-backend   = get_sim('icarus', core)
-ref_dir   = os.path.join(tests_dir, __name__)
-work_root = backend.work_root
+    ref_dir      = os.path.join(tests_dir, __name__)
+    paramtypes   = ['plusarg', 'vlogdefine', 'vlogparam']
+    name         = 'test_icarus_0'
+    tool         = 'icarus'
+    tool_options = {
+        'iverilog_options' : ['some', 'iverilog_options'],
+    }
 
+    (backend, args, work_root) = setup_backend(paramtypes, name, tool, tool_options, use_vpi=True)
+    backend.configure(args)
 
-def test_icarus_configure():
+    compare_files(ref_dir, work_root, ['Makefile',
+                                       name+'.scr'])
 
-    backend.configure(sim_params)
-
-    assert '' == compare_file(ref_dir, work_root, core.sanitized_name+'.scr')
-
-def test_icarus_build():
-    os.environ['PATH'] = os.path.join(tests_dir, 'mock_commands')+':'+os.environ['PATH']
     backend.build()
-    assert os.path.isfile(os.path.join(work_root, 'pre_build_script_executed'))
-def test_icarus_run():
+    compare_files(ref_dir, work_root, ['iverilog.cmd'])
+    compare_files(ref_dir, work_root, ['iverilog-vpi.cmd'])
 
-    os.environ['PATH'] = os.path.join(tests_dir, 'mock_commands')+':'+os.environ['PATH']
+    backend.run(args)
 
-    backend.run(sim_params)
-
-    assert '' == compare_file(ref_dir, work_root, 'run.cmd')
-    assert os.path.isfile(os.path.join(work_root, 'pre_run_script_executed'))
-    assert os.path.isfile(os.path.join(work_root, 'post_run_script_executed'))
+    compare_files(ref_dir, work_root, ['vvp.cmd'])

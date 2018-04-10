@@ -18,6 +18,9 @@ all: $(VPI_MODULES) $(TARGET)
 $(TARGET):
 	iverilog -s$(TOPLEVEL) -c $(TARGET).scr -o $@ $(IVERILOG_OPTIONS)
 
+run: $(VPI_MODULES) $(TARGET)
+	vvp -n -M. -l icarus.log -lxt2 $(patsubst %.vpi,-m%,$(VPI_MODULES)) $(TARGET) $(EXTRA_OPTIONS)
+
 clean:
 	$(RM) $(VPI_MODULES) $(TARGET)
 """
@@ -72,6 +75,11 @@ clean_{name}:
             f.write("TOPLEVEL         := {}\n".format(self.toplevel))
             if 'iverilog_options' in self.tool_options:
                 f.write("IVERILOG_OPTIONS := {}\n".format(' '.join(self.tool_options['iverilog_options'])))
+            if self.plusarg:
+                plusargs = []
+                for key, value in self.plusarg.items():
+                    plusargs += ['+{}={}'.format(key, self._param_value_str(value))]
+                f.write("EXTRA_OPTIONS    ?= {}\n".format(' '.join(plusargs)))
 
             f.write(self.MAKEFILE_TEMPLATE)
 
@@ -85,19 +93,15 @@ clean_{name}:
                                                      srcs = ' '.join(_srcs)))
 
     def run_main(self):
-        #FIXME: Handle failures. Save stdout/stderr.
-        args = []
-        args += ['-n']                                     # Non-interactive ($stop = $finish)
-        args += ['-M.']                                    # VPI module directory is '.'
-        args += ['-l', 'icarus.log']                       # Log file
-        args += ['-m'+s['name'] for s in self.vpi_modules] # Load VPI modules
-        args += [self.name]                                # Simulation binary file
-        args += ['-lxt2']
+        args = ['run']
 
-        # Plusargs
-        for key, value in self.plusarg.items():
-            args += ['+{}={}'.format(key, self._param_value_str(value))]
+        # Set plusargs
+        if self.plusarg:
+            plusargs = []
+            for key, value in self.plusarg.items():
+                plusargs += ['+{}={}'.format(key, self._param_value_str(value))]
+            args.append('EXTRA_OPTIONS='+' '.join(plusargs))
 
-        Launcher('vvp', args,
+        Launcher('make', args,
                  cwd = self.work_root,
                  errormsg = "Failed to run Icarus Simulation").run()

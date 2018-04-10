@@ -1,2 +1,15 @@
-#!/bin/sh
-echo "$@" >> run.cmd
+#!/usr/bin/env python
+import os
+import sys
+
+grab_input = False
+for arg in sys.argv:
+    if grab_input:
+        output_file = arg
+    grab_input = (arg == '-o')
+
+with open(output_file, 'a'):
+    os.utime(output_file, None)
+
+with open('iverilog.cmd', 'w') as f:
+    f.write(' '.join(sys.argv[1:]) + '\n')
