@@ -77,7 +77,10 @@ ARACHNE_PNR_OPTIONS := {arachne_pnr_options}
             raise RuntimeError("Icestorm backend supports only one PCF file. Found {}".format(', '.join(pcf_files)))
         # Write config.mk
         with open(os.path.join(self.work_root, 'config.mk'), 'w') as config_mk:
+            arachne_pnr_options = ''
+            if 'arachne_pnr_options' in self.tool_options:
+                arachne_pnr_options = ' '.join(self.tool_options['arachne_pnr_options'])
             config_mk.write(self.CONFIG_MK_TEMPLATE.format(
                 target              =  self.name,
                 pcf_file            = pcf_files[0],
-                arachne_pnr_options = ' '.join(self.tool_options['arachne_pnr_options'])))
+                arachne_pnr_options = arachne_pnr_options))

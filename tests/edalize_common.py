@@ -36,6 +36,19 @@ def param_gen(paramtypes):
                      'paramtype'   : paramtype})
     return (defs, args)
 
+def setup_backend_minimal(name, tool, files):
+    os.environ['PATH'] = os.path.join(tests_dir, 'mock_commands')+':'+os.environ['PATH']
+
+    work_root = tempfile.mkdtemp(prefix=tool+'_')
+
+    eda_api_file = os.path.join(work_root, name+'.eda.yml')
+    with open(eda_api_file,'w') as f:
+        f.write(yaml.dump({'name'         : name,
+                           'files'        : files,
+                           'toplevel'     : 'top_module',
+                           }))
+    return (get_edatool(tool)(eda_api_file=eda_api_file), work_root)
+
 def setup_backend(paramtypes, name, tool, tool_options, use_vpi=False):
     os.environ['PATH'] = os.path.join(tests_dir, 'mock_commands')+':'+os.environ['PATH']
     (parameters, args) = param_gen(paramtypes)
@@ -66,6 +79,7 @@ files = [
     {'name' : 'qip_file.qip' , 'file_type' : 'QIP'},
     {'name' : 'bmm_file'     , 'file_type' : 'BMM'},
     {'name' : 'sv_file.sv'   , 'file_type' : 'systemVerilogSource'},
+    {'name' : 'pcf_file.pcf' , 'file_type' : 'PCF'},
     {'name' : 'ucf_file.ucf' , 'file_type' : 'UCF'},
     {'name' : 'user_file'    , 'file_type' : 'user'},
     {'name' : 'tcl_file.tcl' , 'file_type' : 'tclSource'},

@@ -4,7 +4,7 @@ import sys
 
 output_file = sys.argv[2]
 with open(output_file, 'a'):
-    os.utime(output_file, None)    
+    os.utime(output_file, None)
 
 with open('icepack.cmd', 'w') as f:
-    f.write(' '.join(sys.argv) + '\n')
+    f.write(' '.join(sys.argv[1:]) + '\n')
