@@ -1,0 +1,12 @@
+#!/usr/bin/env python
+import os
+import sys
+
+#Pretend xtclsh is called to create the .xise file
+if len(sys.argv) == 2:
+    output_file = sys.argv[1][0:-3]+'xise'
+    with open(output_file, 'a'):
+        os.utime(output_file, None)
+
+with open('xtclsh.cmd', 'a') as f:
+    f.write(' '.join(sys.argv[1:]) + '\n')
