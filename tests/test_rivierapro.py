@@ -1,24 +1,40 @@
-import os
-import shutil
 import pytest
 
-from test_common import compare_file, get_core, get_sim, sim_params
+def test_rivierapro():
+    import os
+    import shutil
+    from edalize_common import compare_files, setup_backend, tests_dir
 
-tests_dir = os.path.dirname(__file__)
-core      = get_core("mor1kx-generic")
-backend   = get_sim('rivierapro', core)
-#backend.toplevel = backend.system.simulator['toplevel']
-ref_dir   = os.path.join(tests_dir, __name__)
-work_root = backend.work_root
+    ref_dir      = os.path.join(tests_dir, __name__)
+    paramtypes   = ['plusarg', 'vlogdefine', 'vlogparam']
+    name         = 'test_rivierapro_0'
+    tool         = 'rivierapro'
+    tool_options = {
+        'vlog_options' : ['some', 'vlog_options'],
+        'vsim_options' : ['a', 'few', 'vsim_options'],
+    }
 
-def test_rivierapro_configure():
+    #FIXME: Add VPI tests
+    (backend, args, work_root) = setup_backend(paramtypes, name, tool, tool_options, use_vpi=False)
+    backend.configure(args)
 
-    backend.configure(sim_params)
+    compare_files(ref_dir, work_root, [
+        'fusesoc_build_rtl.tcl',
+        'fusesoc_launch.tcl',
+        'fusesoc_main.tcl',
+    ])
 
-    for f in ['fusesoc_build_rtl.tcl',
-              'fusesoc_build_vpi.tcl',
-              'fusesoc_launch.tcl',
-              'fusesoc_main.tcl',
-              'fusesoc_run.tcl']:
-        with open(os.path.join(ref_dir, f)) as fref, open(os.path.join(work_root, f)) as fgen:
-            assert fref.read() == fgen.read(), f
+    orig_env = os.environ.copy()
+    os.environ['ALDEC_PATH'] = os.path.join(tests_dir, 'mock_commands')
+
+    backend.build()
+    os.makedirs(os.path.join(work_root, 'work'))
+
+    compare_files(ref_dir, work_root, ['vsim.cmd'])
+
+    backend.run(args)
+
+    with open(os.path.join(ref_dir, 'vsim2.cmd')) as fref, open(os.path.join(work_root, 'vsim.cmd')) as fgen:
+        assert fref.read() == fgen.read()
+
+    os.environ = orig_env
