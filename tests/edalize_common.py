@@ -55,7 +55,9 @@ def setup_backend(paramtypes, name, tool, tool_options, use_vpi=False):
 
     work_root = tempfile.mkdtemp(prefix=tool+'_')
 
+    _vpi = []
     if use_vpi:
+        _vpi = vpi
         for v in vpi:
             for f in v['src_files']:
                 _f = os.path.join(work_root, f)
@@ -71,7 +73,7 @@ def setup_backend(paramtypes, name, tool, tool_options, use_vpi=False):
                            'parameters'   : parameters,
                            'tool_options' : {tool : tool_options},
                            'toplevel'     : 'top_module',
-                           'vpi'          :  vpi}))
+                           'vpi'          :  _vpi}))
 
     return (get_edatool(tool)(eda_api_file=eda_api_file), args, work_root)
 
