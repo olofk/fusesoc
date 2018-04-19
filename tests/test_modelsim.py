@@ -1,28 +1,40 @@
-import os
-import shutil
 import pytest
 
-from test_common import compare_file, get_core, get_sim, sim_params
+def test_modelsim():
+    import os
+    import shutil
+    from edalize_common import compare_files, setup_backend, tests_dir
 
-tests_dir = os.path.dirname(__file__)
-core      = get_core("mor1kx-generic")
-backend   = get_sim('modelsim', core)
-ref_dir   = os.path.join(tests_dir, __name__)
-work_root = backend.work_root
+    ref_dir      = os.path.join(tests_dir, __name__)
+    paramtypes   = ['plusarg', 'vlogdefine', 'vlogparam']
+    name         = 'test_modelsim_0'
+    tool         = 'modelsim'
+    tool_options = {
+        'vlog_options' : ['some', 'vlog_options'],
+        'vsim_options' : ['a', 'few', 'vsim_options'],
+    }
 
-def test_modelsim_configure():
+    #FIXME: Add VPI tests
+    (backend, args, work_root) = setup_backend(paramtypes, name, tool, tool_options, use_vpi=False)
+    backend.configure(args)
 
-    backend.configure(sim_params)
+    compare_files(ref_dir, work_root, [
+        'Makefile',
+        'fusesoc_build_rtl.tcl',
+        'fusesoc_main.tcl',
+    ])
 
-    assert '' == compare_file(ref_dir, work_root, 'fusesoc_build_rtl.tcl')
-    assert '' == compare_file(ref_dir, work_root, 'fusesoc_main.tcl')
-    assert '' == compare_file(ref_dir, work_root, 'fusesoc_run.tcl')
-    assert '' == compare_file(ref_dir, work_root, 'Makefile')
-
-def test_modelsim_run():
-
-    #FIXME: Do something about the path to vsim
+    orig_env = os.environ.copy()
     os.environ['MODEL_TECH'] = os.path.join(tests_dir, 'mock_commands')
-    backend.run(sim_params)
 
-    assert '' == compare_file(ref_dir, work_root, 'run.cmd')
+    backend.build()
+    os.makedirs(os.path.join(work_root, 'work'))
+
+    compare_files(ref_dir, work_root, ['vsim.cmd'])
+
+    backend.run(args)
+
+    with open(os.path.join(ref_dir, 'vsim2.cmd')) as fref, open(os.path.join(work_root, 'vsim.cmd')) as fgen:
+        assert fref.read() == fgen.read()
+
+    os.environ = orig_env

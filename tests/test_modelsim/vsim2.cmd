@@ -1,0 +1,1 @@
+-do run -all -c top_module a few vsim_options -gvlogparam_bool=1 -gvlogparam_int=42 -gvlogparam_str=hello +plusarg_bool=1 +plusarg_int=42 +plusarg_str=hello

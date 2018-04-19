@@ -1,1 +1,0 @@
--c -quiet -do fusesoc_run.tcl

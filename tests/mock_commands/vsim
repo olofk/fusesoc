@@ -1,2 +1,6 @@
-#!/bin/sh
-echo "$@" > run.cmd
+#!/usr/bin/env python
+import os
+import sys
+
+with open('vsim.cmd', 'w') as f:
+    f.write(' '.join(sys.argv[1:]) + '\n')
