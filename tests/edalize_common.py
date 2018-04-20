@@ -79,6 +79,8 @@ def setup_backend(paramtypes, name, tool, tool_options, use_vpi=False):
 
 files = [
     {'name' : 'qip_file.qip' , 'file_type' : 'QIP'},
+    {'name' : 'qsys_file'    , 'file_type' : 'QSYS'},
+    {'name' : 'sdc_file'     , 'file_type' : 'SDC'},
     {'name' : 'bmm_file'     , 'file_type' : 'BMM'},
     {'name' : 'sv_file.sv'   , 'file_type' : 'systemVerilogSource'},
     {'name' : 'pcf_file.pcf' , 'file_type' : 'PCF'},
