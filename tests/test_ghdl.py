@@ -1,13 +1,4 @@
-import os
 import pytest
-
-from test_common import compare_files, get_core, get_sim, vlogparams
-
-tests_dir = os.path.dirname(__file__)
-core      = get_core("ghdltest")
-backend   = get_sim('ghdl', core)
-ref_dir   = os.path.join(tests_dir, __name__)
-work_root = backend.work_root
 
 def test_ghdl():
     import os

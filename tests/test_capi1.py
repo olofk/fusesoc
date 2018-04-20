@@ -10,18 +10,6 @@ def compare_fileset(fileset, name, files):
     for i in range(len(files)):
         assert files[i] == fileset.file[i].name
 
-def compare_file(ref_dir, work_root, name):
-    import difflib
-    import os
-    reference_file = os.path.join(ref_dir, name)
-    generated_file = os.path.join(work_root, name)
-
-    assert os.path.exists(generated_file)
-
-    with open(reference_file) as f1, open(generated_file) as f2:
-        diff = ''.join(difflib.unified_diff(f1.readlines(), f2.readlines()))
-        return diff
-
 def test_core_info():
     tests_dir = os.path.dirname(__file__)
 
