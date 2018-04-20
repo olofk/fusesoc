@@ -1,1 +1,0 @@
--mode batch -source mor1kx-arty_0.tcl

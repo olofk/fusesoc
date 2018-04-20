@@ -1,0 +1,1 @@
+-mode batch -source test_vivado_0.tcl

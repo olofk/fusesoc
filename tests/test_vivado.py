@@ -1,26 +1,26 @@
-import difflib
-import os
 import pytest
 
-from test_common import compare_files, get_core, get_synth, vlogdefines, vlogparams
+def test_vivado():
+    import os
+    import shutil
+    from edalize_common import compare_files, setup_backend, tests_dir
 
-tests_dir = os.path.dirname(__file__)
-params = vlogparams + vlogdefines
-core = get_core("mor1kx-arty")
-backend = get_synth('vivado', core)
-ref_dir = os.path.join(tests_dir, __name__)
-work_root = backend.work_root
+    ref_dir      = os.path.join(tests_dir, __name__)
+    paramtypes   = ['vlogdefine', 'vlogparam']
+    name         = 'test_vivado_0'
+    tool         = 'vivado'
+    tool_options = {
+        'part' : 'xc7a35tcsg324-1',
+    }
 
-def test_vivado_configure():
+    (backend, args, work_root) = setup_backend(paramtypes, name, tool, tool_options)
+    backend.configure(args)
 
-    backend.configure(params)
+    compare_files(ref_dir, work_root, [
+        name+'.tcl',
+    ])
 
-    tcl_file = core.name.sanitized_name + '.tcl'
-
-    compare_files(ref_dir, work_root, [tcl_file])
-
-def test_vivado_build():
-    os.environ['PATH'] = os.path.join(tests_dir, 'mock_commands')+':'+os.environ['PATH']
     backend.build()
-
-    compare_files(ref_dir, work_root, ['run.cmd'])
+    compare_files(ref_dir, work_root, [
+        'vivado.cmd',
+    ])

@@ -68,7 +68,7 @@ def test_logicore_provider():
 	      os.path.join('subdir', 'dummy.extra')]:
         assert(os.path.isfile(os.path.join(core.files_root, f)))
 
-    with open(os.path.join(core.files_root, 'run.cmd')) as f:
+    with open(os.path.join(core.files_root, 'vivado.cmd')) as f:
         assert(f.read() == '-mode batch -source dummy.tcl\n')
 
 def test_opencores_provider():
