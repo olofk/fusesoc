@@ -14,7 +14,7 @@ class Coregen(Provider):
         extra_files  = self.config.get('extra_files')
         logger.info("Using Coregen to generate project " + project_file)
         if not os.path.isdir(local_dir):
-            os.mkdir(local_dir)
+            os.makedirs(local_dir)
         src_files = [script_file, project_file]
         if extra_files:
             src_files += extra_files.split()

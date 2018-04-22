@@ -1,14 +1,18 @@
-import os
-import shutil
 import pytest
 
-from test_common import get_core, build_root
-
-tests_dir = os.path.dirname(__file__)
-core      = get_core("wb_intercon")
-
 def test_export():
+    import os
+    import tempfile
+    from test_common import common_cm, get_core
+
+    tests_dir = os.path.dirname(__file__)
+    core      = get_core("wb_intercon")
+    build_root = tempfile.mkdtemp(prefix='export_')
     export_root = os.path.join(build_root, core.name.sanitized_name, 'src')
+    eda_api = common_cm.setup(core.name,
+                       {'tool' : 'icarus'},
+                       work_root=os.path.join(build_root, 'work'),
+                       export_root=export_root)
 
     for f in [
             'verilog_utils_0/verilog_utils.vh',
