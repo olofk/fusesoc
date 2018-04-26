@@ -181,8 +181,3 @@ def setup_logging(level, monchrome=False, log_file=None):
         logger.addHandler(ch)
         logger.setLevel(logging.WARNING)
     logger.debug('Setup logging at level {}.'.format(level))
-
-def _import(name, package):
-    module = importlib.import_module('fusesoc.{}.{}'.format(package, name))
-    return getattr(module, name.capitalize())
-

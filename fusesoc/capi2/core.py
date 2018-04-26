@@ -10,6 +10,7 @@ import yaml
 
 from ipyxact.ipyxact import Component
 from fusesoc import utils
+from fusesoc.provider import get_provider
 from fusesoc.vlnv import Vlnv
 import fusesoc.edatools
 
@@ -98,9 +99,9 @@ class Provider(object):
         provider_name = args[0]['name']
         if provider_name is None:
             raise RuntimeError('Missing "name" in section [provider]')
-        return utils._import(provider_name, 'provider')(args[0],
-                                              "FIXME: core_root is used by local providers",
-                                             "FIXME: cache_root can be set in fetch call")
+        return get_provider(provider_name)(args[0],
+                                           "FIXME: core_root is used by local providers",
+                                           "FIXME: cache_root can be set in fetch call")
 
 class Core:
     def __init__(self, core_file, cache_root, build_root):

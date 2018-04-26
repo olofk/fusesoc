@@ -18,8 +18,9 @@ if os.path.exists(os.path.join(fusesocdir, "fusesoc")):
 from fusesoc.config import Config
 from fusesoc.coremanager import CoreManager, DependencyError
 from fusesoc.edatools import get_edatool
+from fusesoc.provider import get_provider
 from fusesoc.vlnv import Vlnv
-from fusesoc.utils import Launcher, setup_logging, _import
+from fusesoc.utils import Launcher, setup_logging
 
 import logging
 
@@ -360,7 +361,7 @@ def update(cm, args):
                 library['auto-sync']):
             logger.info("Updating '{}'".format(name))
             try:
-                provider = _import(library['sync-type'], 'provider')
+                provider = get_provider(library['sync-type'])
             except ImportError as e:
                 logger.error("Invalid sync-type '{}' for library '{}' - skipping".format(library['sync-type'], name))
                 continue

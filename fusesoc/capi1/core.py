@@ -6,6 +6,7 @@ import shutil
 
 from ipyxact.ipyxact import Component
 from fusesoc import utils
+from fusesoc.provider import get_provider
 from fusesoc.vlnv import Vlnv
 from fusesoc.capi1 import section
 from fusesoc.capi1.fusesocconfigparser import FusesocConfigParser
@@ -120,7 +121,7 @@ class Core:
             provider_name = items.get('name')
             if provider_name is None:
                 raise RuntimeError('Missing "name" in section [provider]')
-            self.provider = utils._import(provider_name, 'provider')(
+            self.provider = get_provider(provider_name)(
                 items, self.core_root, cache_root)
         if self.provider:
             self.files_root = self.provider.files_root
