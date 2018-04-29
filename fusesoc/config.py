@@ -53,7 +53,7 @@ class Config(object):
 
         for item in ['build_root', 'cache_root', 'systems_root', 'library_root']:
             try:
-                setattr(self, item, config.get('main', item))
+                setattr(self, item, os.path.expanduser(config.get('main', item)))
             except configparser.NoOptionError:
                 pass
             except configparser.NoSectionError:
