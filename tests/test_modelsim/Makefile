@@ -26,6 +26,9 @@ all: work $(VPI_MODULES)
 run: work $(VPI_MODULES)
 	$(VSIM) -do "run -all" -c $(addprefix -pli ,$(VPI_MODULES)) $(TOPLEVEL) $(EXTRA_OPTIONS)
 
+run-gui: work $(VPI_MODULES)
+	$(VSIM) -gui $(addprefix -pli ,$(VPI_MODULES)) $(TOPLEVEL) $(EXTRA_OPTIONS)
+
 work:
 	$(VSIM) -c -do "do fusesoc_main.tcl; exit"
 
