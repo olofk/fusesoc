@@ -1,8 +1,11 @@
+import logging
 import os.path
 import platform
 from fusesoc import utils
 
 from fusesoc.edatool import EdaTool
+
+logger = logging.getLogger(__name__)
 
 tool_options = {'members' : {'part' : 'String'}}
 
@@ -32,46 +35,72 @@ class Vivado(EdaTool):
 
     """ Configuration is the first phase of the build
 
-    In the vivado backend the project TCL is written and all files are copied
+    This writes the project TCL files and Makefile. It first collects all
+    sources, IPs and contraints and then writes them to the TCL file along
+     with the build steps.
     """
     def configure_main(self):
-        if not 'part' in self.tool_options:
-            raise RuntimeError("Missing required option '{}'".format('part'))
-        self._write_project_tcl_file()
-
-    """ Write the project TCL file
-
-    This writes the project TCL file. It first collects all sources, IPs and
-    contraints and then writes them to the TCL file along with the build steps.
-    """
-    def _write_project_tcl_file(self):
         (src_files, incdirs) = self._get_fileset_files(force_slash=True)
 
-        template_vars = {}
-        template_vars['name'] = self.name
-        template_vars['src_files'] = src_files
-        template_vars['incdirs'] = incdirs
-        template_vars['tool_options'] = self.tool_options
-        template_vars['bitstream_name'] = self.name+'.bit'
-        template_vars['toplevel'] = self.toplevel
-        template_vars['vlogparam'] = self.vlogparam
-        template_vars['vlogdefine'] = self.vlogdefine
-        prj_file_path = os.path.join(self.work_root, self.name+".tcl")
-        template = self.jinja_env.get_template('vivado/vivado-project.tcl.j2')
-        with open(prj_file_path, 'w') as prj_file:
-            prj_file.write(template.render(template_vars))
+        self.jinja_env.filters['src_file_filter'] = self.src_file_filter
 
-    """ Execute the build
+        has_vhdl2008 = 'vhdlSource-2008' in [x.file_type for x in src_files]
 
-    This launches the actual build of the vivado project by executing the project
-    tcl file in batch mode.
-    """
-    def build_main(self):
-        utils.Launcher('vivado', ['-mode', 'batch', '-source',
-                                  self.name+'.tcl'],
-                       cwd = self.work_root,
-                       shell=platform.system() == 'Windows',
-                       errormsg = "Failed to build FPGA bitstream").run()
+        template_vars = {
+            'name'         : self.name,
+            'src_files'    : src_files,
+            'incdirs'      : incdirs,
+            'tool_options' : self.tool_options,
+            'toplevel'     : self.toplevel,
+            'vlogparam'    : self.vlogparam,
+            'vlogdefine'   : self.vlogdefine,
+            'has_vhdl2008' : has_vhdl2008,
+        }
+
+        self.render_template('vivado-project.tcl.j2',
+                             self.name+'.tcl',
+                             template_vars)
+
+        self.render_template('vivado-makefile.j2',
+                             'Makefile',
+                             {'name' : self.name})
+
+        self.render_template('vivado-run.tcl.j2',
+                             self.name+"_run.tcl")
+
+    def render_template(self, template_file, target_file, template_vars = {}):
+        template = self.jinja_env.get_template(os.path.join('vivado', template_file))
+        file_path = os.path.join(self.work_root, target_file)
+        with open(file_path, 'w') as f:
+            f.write(template.render(template_vars))
+
+    def src_file_filter(self, f):
+        def _vhdl_source(f):
+            s = 'read_vhdl'
+            if f.file_type == 'vhdlSource-2008':
+                s += ' -vhdl2008'
+            if f.logical_name:
+                s += ' -library '+f.logical_name
+            return s
+
+        file_types = {
+            'verilogSource'       : 'read_verilog',
+            'systemVerilogSource' : 'read_verilog -sv',
+            'vhdlSource'          : _vhdl_source(f),
+            'xci'                 : 'read_ip',
+            'xdc'                 : 'read_xdc',
+            'tclSource'           : 'source',
+        }
+        _file_type = f.file_type.split('-')[0]
+        if _file_type in file_types:
+            return file_types[_file_type] + ' ' + f.name
+        elif _file_type == 'user':
+            return ''
+        else:
+            _s = "{} has unknown file type '{}'"
+            logger.warning(_s.format(f.name,
+                                     f.file_type))
+        return ''
 
     """ Program the FPGA
 
@@ -92,7 +121,7 @@ class Vivado(EdaTool):
         template_vars['bitstream_name'] = self.name+'.bit'
         template_vars['hw_device'] = self.tool_options['hw_device']
 
-        template = self.jinja_env.get_template('vivado/vivado-program.tcl.j2')  
-        tcl_file_path = os.path.join(self.work_root, program_tcl_filename)    
+        template = self.jinja_env.get_template('vivado/vivado-program.tcl.j2')
+        tcl_file_path = os.path.join(self.work_root, program_tcl_filename)
         with open(tcl_file_path, 'w') as program_tcl_file:
             program_tcl_file.write(template.render(template_vars))

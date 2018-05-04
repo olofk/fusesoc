@@ -94,7 +94,7 @@ files = [
     {'name' : 'vhdl_lfile'   , 'file_type' : 'vhdlSource', 'logical_name' : 'libx'},
     {'name' : 'vhdl2008_file', 'file_type' : 'vhdlSource-2008'},
     {'name' : 'xci_file.xci' , 'file_type' : 'xci'},
-    {'name' : 'xcd_file.xcd' , 'file_type' : 'xcd'}
+    {'name' : 'xdc_file.xdc' , 'file_type' : 'xdc'}
 ]
 
 vpi = [

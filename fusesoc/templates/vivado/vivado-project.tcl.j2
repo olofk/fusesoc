@@ -1,30 +1,15 @@
 # Auto-generated project tcl file
 
-create_project -part "{{ tool_options.part }}" {{ name }}
+create_project {{ name }}
 
-set_property "simulator_language" "Mixed" [current_project]
+{% if tool_options.part -%}
+set_property part {{ tool_options.part }} [current_project]
+{%- endif %}
 
-{% for src_file in src_files|selectattr('file_type', 'equalto', 'tclSource') %}
-source {{ src_file.name }}
-{% endfor %}
-
-{% for src_file in src_files|selectattr('file_type', 'equalto', 'xci') %}
-read_ip {{ src_file.name }}
-{% endfor %}
-upgrade_ip [get_ips]
-generate_target all [get_ips]
-
-{% for src_file in src_files %}
-{% if src_file is vhdl_file -%}
-  read_vhdl
-  {%- if src_file.file_type == 'vhdlSource-2008' %} -vhdl2008{% endif %}
-  {%- if src_file.logical_name %} -library {{ src_file.logical_name }}{% endif %} {{ src_file.name }}
-{% elif src_file is system_verilog_file -%}
-read_verilog -sv {{ src_file.name }}
-{% elif src_file is verilog_file -%}
-read_verilog {{ src_file.name }}
-{% endif %}
-{% endfor %}
+{% if has_vhdl2008 -%}
+#Default since Vivado 2016.1
+set_param project.enableVHDL2008 1
+{%- endif %}
 
 {% if vlogparam -%}
 set_property generic {
@@ -38,22 +23,19 @@ set_property verilog_define {
   } [get_filesets sources_1]
 {%- endif %}
 
-set_property include_dirs [list {{ incdirs|join(' ') }}] [get_filesets sources_1]
-
-{% for src_file in src_files|selectattr('file_type', 'equalto', 'xdc') %}
-read_xdc {{ src_file.name }}
+{% for src_file in src_files if src_file|src_file_filter%}
+{{ src_file|src_file_filter }}
 {% endfor %}
 
-{% if src_files|selectattr('file_type', 'equalto', 'vhdlSource-2008') %}
-set_param project.enableVHDL2008 1
-{% endif %}
-{% if toplevel %}
+{% if incdirs -%}
+set_property include_dirs [list {{ incdirs|join(' ') }}] [get_filesets sources_1]
+{%- endif %}
+
+{% if toplevel -%}
 set_property top {{ toplevel }} [current_fileset]
 set_property source_mgmt_mode None [current_project]
-{% endif %}
 
-launch_runs impl_1
-wait_on_run impl_1
-open_run impl_1
-write_bitstream {{ bitstream_name }}
+{%- endif %}
 
+upgrade_ip [get_ips]
+generate_target all [get_ips]

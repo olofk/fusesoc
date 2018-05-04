@@ -11,8 +11,11 @@ setup(
               'fusesoc.capi2',
               'fusesoc.edatools',
               'fusesoc.provider'],
-    package_data = {'fusesoc' : ['templates/vivado/vivado-program.tcl.j2',
-                                 'templates/vivado/vivado-project.tcl.j2',
+    package_data = {'fusesoc' : [
+        'templates/vivado/vivado-makefile.j2',
+        'templates/vivado/vivado-program.tcl.j2',
+        'templates/vivado/vivado-project.tcl.j2',
+        'templates/vivado/vivado-run.tcl.j2',
     ]},
     use_scm_version = {
         "relative_to": __file__,

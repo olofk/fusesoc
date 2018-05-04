@@ -17,7 +17,43 @@ def test_vivado():
     backend.configure(args)
 
     compare_files(ref_dir, work_root, [
+        'Makefile',
         name+'.tcl',
+        name+'_run.tcl',
+    ])
+
+    backend.build()
+    compare_files(ref_dir, work_root, [
+        'vivado.cmd',
+    ])
+
+def test_vivado_minimal():
+    import os
+    import shutil
+    import tempfile
+    import yaml
+
+    from fusesoc.edatools import get_edatool
+
+    from edalize_common import compare_files, tests_dir
+
+    ref_dir      = os.path.join(tests_dir, __name__, 'minimal')
+    os.environ['PATH'] = os.path.join(tests_dir, 'mock_commands')+':'+os.environ['PATH']
+    tool = 'vivado'
+    name = 'test_vivado_minimal_0'
+    work_root = tempfile.mkdtemp(prefix=tool+'_')
+
+    eda_api_file = os.path.join(work_root, name+'.eda.yml')
+    with open(eda_api_file,'w') as f:
+        f.write(yaml.dump({'name'         : name}))
+
+    backend = get_edatool(tool)(eda_api_file=eda_api_file)
+    backend.configure([])
+
+    compare_files(ref_dir, work_root, [
+        'Makefile',
+        name+'.tcl',
+        name+'_run.tcl',
     ])
 
     backend.build()
