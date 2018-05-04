@@ -1,8 +1,33 @@
 # Auto-generated program tcl file
 
+set bit "{{ bitstream_name }}"
+set device "{{ hw_device }}"
+
+puts "BITSTREAM: $bit"
+puts "DEVICE: $device"
+
 open_hw
 connect_hw_server
-open_hw_target
-current_hw_device [get_hw_devices {{ hw_device }}]
-set_property PROGRAM.FILE { {{ bitstream_name }} } [get_hw_devices {{ hw_device }}]
-program_hw_devices [get_hw_devices {{ hw_device }}]
+
+# Open all hardware targets to find one that contains the 
+# device we're looking for.
+set board ""
+foreach { target } [get_hw_targets] {
+    current_hw_target $target
+    open_hw_target
+    if { [get_hw_devices] == $device } {
+        puts "Found hardware target with a ${device} device."
+        set board [current_hw_target]
+        break
+    }
+    close_hw_target
+}
+if { $board == "" } {
+    puts "Did not find board with a ${device} device."
+    exit 1
+}
+
+current_hw_device $device
+set_property PROGRAM.FILE $bit [current_hw_device]
+program_hw_devices [current_hw_device]
+disconnect_hw_server
