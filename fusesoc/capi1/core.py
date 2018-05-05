@@ -226,7 +226,11 @@ class Core:
     def get_tool_options(self, flags):
         self._debug("Getting tool options for flags {}".format(str(flags)))
         options = {}
-        section = getattr(self, flags['tool'])
+        if hasattr(self, flags['tool']):
+            section = getattr(self, flags['tool'])
+        else:
+            self._debug("CAPI1 does not support tool '{}'".format(flags['tool']))
+            section = None
 
         if section:
 

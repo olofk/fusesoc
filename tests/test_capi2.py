@@ -179,6 +179,10 @@ def test_capi2_get_tool_options():
     expected = {'part' : 'xc7a35tcsg324-1'}
     assert expected == core.get_tool_options(flags)
 
+    flags['tool'] = 'invalid'
+    expected = {}
+    assert expected == core.get_tool_options(flags)
+
 def test_capi2_get_work_root():
     from fusesoc.core import Core
 

@@ -82,6 +82,8 @@ def test_get_tool_options():
     assert {} == core.get_tool_options({'is_toplevel' : False, 'tool' : 'icarus'})
     core = get_core("elf-loader")
     assert {'libs' : ['-lelf']} == core.get_tool_options({'is_toplevel' : False, 'tool' : 'verilator'})
+    assert {} == core.get_tool_options({'is_toplevel' : True, 'tool' : 'invalid'})
+
 def test_get_toplevel():
     filename = os.path.join(os.path.dirname(__file__),
                             __name__,
