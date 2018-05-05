@@ -2,7 +2,6 @@ import os
 import logging
 
 from fusesoc.edatool import EdaTool
-from fusesoc.utils import Launcher
 
 logger = logging.getLogger(__name__)
 
@@ -171,6 +170,4 @@ class Modelsim(EdaTool):
                 plusargs += ['{}={}'.format(key, self._param_value_str(value))]
             args.append('PLUSARGS='+' '.join(plusargs))
 
-        Launcher('make', args,
-                 cwd = self.work_root,
-                 errormsg = "Failed to run ModelSim Simulation").run()
+        self._run_tool('make', args)

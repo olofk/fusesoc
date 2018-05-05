@@ -1,7 +1,6 @@
 import logging
 import os.path
 from fusesoc.edatool import EdaTool
-from fusesoc.utils import Launcher
 
 logger = logging.getLogger(__name__)
 
@@ -82,6 +81,4 @@ analyze:
             for k,v in self.vlogparam.items():
                 extra_options += ' -g{}={}'.format(k,self._param_value_str(v,'"'))
             args.append(extra_options)
-        Launcher(cmd, args,
-                 cwd      = self.work_root,
-                 errormsg = "Simulation failed").run()
+        self._run_tool(cmd, args)

@@ -2,7 +2,6 @@ import os
 import logging
 
 from fusesoc.edatool import EdaTool
-from fusesoc.utils import Launcher
 
 logger = logging.getLogger(__name__)
 
@@ -139,15 +138,11 @@ class Rivierapro(EdaTool):
 
     def build_main(self):
         args = ['-c', '-do', 'do fusesoc_main.tcl; exit']
-        Launcher('vsim', args,
-                 cwd      = self.work_root,
-                 errormsg = "Failed to build simulation model. Log is available in '{}'".format(os.path.join(self.work_root, 'transcript'))).run()
+        self._run_tool('vsim', args)
 
     def run_main(self):
         if not os.getenv('ALDEC_PATH'):
             raise RuntimeError("Environment variable ALDEC_PATH was not found. It should be set to Riviera Pro install path. Please source <Riviera Pro install path>/etc/setenv to set it")
 
         args = ['-c', '-quiet', '-do', 'fusesoc_run.tcl']
-        Launcher('vsim', args,
-                 cwd      = self.work_root,
-                 errormsg = "Simulation failed. Simulation log is available in '{}'".format(os.path.join(self.work_root, 'transcript'))).run()
+        self._run_tool('vsim', args)

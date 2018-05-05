@@ -2,7 +2,6 @@ import os
 import logging
 
 from fusesoc.edatool import EdaTool
-from fusesoc.utils import Launcher
 
 logger = logging.getLogger(__name__)
 
@@ -116,5 +115,4 @@ quit
         if self.plusarg:
             _s = '-testplusarg {}={}'
             args.append('EXTRA_OPTIONS='+' '.join([_s.format(k, self._param_value_str(v)) for k,v in self.plusarg.items()]))
-        Launcher('make', args,
-                 cwd = self.work_root).run()
+        self._run_tool('make', args)

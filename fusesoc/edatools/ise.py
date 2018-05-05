@@ -1,5 +1,4 @@
 import os.path
-from fusesoc import utils
 
 from fusesoc.edatool import EdaTool
 
@@ -116,9 +115,7 @@ quit
     def run(self, remaining):
         pgm_file_name = os.path.join(self.work_root, self.name+'.pgm')
         self._write_pgm_file(pgm_file_name)
-        utils.Launcher('impact', ['-batch', pgm_file_name],
-                           cwd = self.work_root,
-                           errormsg = "impact tool returned an error").run()
+        self._run_tool('impact', ['-batch', pgm_file_name])
 
     def _write_pgm_file(self, pgm_file_name):
         pgm_file = open(pgm_file_name,'w')

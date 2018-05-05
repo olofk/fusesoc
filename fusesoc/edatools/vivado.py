@@ -1,7 +1,6 @@
 import logging
 import os.path
 import platform
-from fusesoc import utils
 
 from fusesoc.edatool import EdaTool
 
@@ -111,9 +110,7 @@ class Vivado(EdaTool):
     def run(self, remaining):
         tcl_file_name = self.name+"_pgm.tcl"
         self._write_program_tcl_file(tcl_file_name)
-        utils.Launcher('vivado', ['-mode', 'batch', '-source', tcl_file_name ],
-                       cwd = self.work_root,
-                       errormsg = "Failed to program the FPGA").run()
+        self._run_tool('vivado', ['-mode', 'batch', '-source', tcl_file_name ])
 
     """ Write the programming TCL file """
     def _write_program_tcl_file(self, program_tcl_filename):

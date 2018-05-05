@@ -2,7 +2,6 @@ import os
 import logging
 
 from fusesoc.edatool import EdaTool
-from fusesoc.utils import Launcher
 
 logger = logging.getLogger(__name__)
 
@@ -117,6 +116,4 @@ run all
             _s = '--testplusarg {}={}'
             args.append('EXTRA_OPTIONS='+' '.join([_s.format(k, v) for k,v in self.plusarg.items()]))
 
-        Launcher('make', args,
-                 cwd = self.work_root,
-                 errormsg = "Failed to run Xsim simulation").run()
+        self._run_tool('make', args)

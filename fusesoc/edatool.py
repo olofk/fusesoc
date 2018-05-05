@@ -7,7 +7,6 @@ import sys
 import yaml
 from jinja2 import Environment, PackageLoader
 
-from fusesoc.utils import Launcher
 logger = logging.getLogger(__name__)
 
 # Jinja2 tests and filters, available in all templates
@@ -144,7 +143,7 @@ class EdaTool(object):
 
     def build_main(self):
         logger.info("Building");
-        Launcher('make', cwd=self.work_root).run()
+        self._run_tool('make')
 
     def build_post(self):
         if 'post_build' in self.hooks:
@@ -271,3 +270,18 @@ class EdaTool(object):
             except subprocess.CalledProcessError as e:
                 msg = "'{}' exited with error code {}"
                 raise RuntimeError(msg.format(script['name'], e.returncode))
+
+    def _run_tool(self, cmd, args=[]):
+        logger.debug("Running " + cmd)
+        logger.debug("args  : " + ' '.join(args))
+
+        try:
+            subprocess.check_call([cmd] + args,
+                                  cwd = self.work_root,
+                                  stdin=subprocess.PIPE),
+        except FileNotFoundError:
+            _s = "Command '{}' not found. Make sure it is in $PATH"
+            raise RuntimeError(_s.format(cmd))
+        except subprocess.CalledProcessError:
+            _s = "'{}' exited with an error code"
+            raise RuntimeError(_s.format(cmd))

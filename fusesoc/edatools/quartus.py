@@ -1,5 +1,4 @@
 import os.path
-from fusesoc import utils
 import logging
 
 from fusesoc.edatool import EdaTool
@@ -168,4 +167,4 @@ set_global_assignment -name TOP_LEVEL_ENTITY {}
         args += remaining
         args += ['-o']
         args += ['p;' + self.name.replace('.', '_') + '.sof']
-        utils.Launcher('quartus_pgm', args, cwd=self.work_root).run()
+        self._run_tool('quartus_pgm', args)

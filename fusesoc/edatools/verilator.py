@@ -124,11 +124,7 @@ class Verilator(EdaTool):
         if self.tool_options['mode'] == 'lint-only':
             args.append('V'+self.toplevel+'.mk')
         _s = os.path.join(self.work_root, 'verilator.{}.log')
-        l = utils.Launcher('make',
-                           args,
-                           cwd=self.work_root,
-                           stderr = open(_s.format('err'),'w'),
-                           stdout = open(_s.format('out'),'w')).run()
+        self._run_tool('make', args)
 
     def run(self, args):
         if self.tool_options['mode'] == 'lint-only':
@@ -148,9 +144,6 @@ class Verilator(EdaTool):
             self._run_scripts(self.hooks['pre_run'])
 
         logger.info("Running simulation")
-        utils.Launcher('./V' + self.toplevel,
-                       _args,
-                       cwd=self.work_root,
-                       env = self.env).run()
+        self._run_tool('./V' + self.toplevel, _args)
 
         self.run_post()

@@ -2,7 +2,6 @@ import os
 import logging
 
 from fusesoc.edatool import EdaTool
-from fusesoc.utils import Launcher
 
 logger = logging.getLogger(__name__)
 
@@ -102,6 +101,4 @@ clean_{name}:
                 plusargs += ['+{}={}'.format(key, self._param_value_str(value))]
             args.append('EXTRA_OPTIONS='+' '.join(plusargs))
 
-        Launcher('make', args,
-                 cwd = self.work_root,
-                 errormsg = "Failed to run Icarus Simulation").run()
+        self._run_tool('make', args)
