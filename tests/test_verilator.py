@@ -3,13 +3,17 @@ import os
 import shutil
 import pytest
 
-from test_common import cmdlineargs, compare_files, get_core, vlogdefines, vlogparams
+from edalize_common import compare_files
 
 tool      = 'verilator'
-params    = vlogparams + vlogdefines + cmdlineargs
 tests_dir = os.path.dirname(__file__)
-core      = get_core("mor1kx-generic")
 ref_dir   = os.path.join(tests_dir, __name__)
+core_name = 'mor1kx-generic_0'
+
+cmdlineargs = ' --cmdlinearg_bool --cmdlinearg_int=42 --cmdlinearg_str=hello'.split()
+vlogdefines = ' --vlogdefine_bool --vlogdefine_int=42 --vlogdefine_str=hello'.split()
+vlogparams  = '--vlogparam_bool --vlogparam_int=42 --vlogparam_str=hello'.split()
+params    = vlogparams + vlogdefines + cmdlineargs
 
 def test_verilator_configure():
     import os.path
@@ -18,7 +22,7 @@ def test_verilator_configure():
 
     for mode in ['cc', 'sc', 'lint-only']:
         work_root    = tempfile.mkdtemp()
-        eda_api_file = os.path.join(ref_dir, mode, core.name.sanitized_name) + '.eda.yml'
+        eda_api_file = os.path.join(ref_dir, mode, core_name) + '.eda.yml'
 
         backend = get_edatool(tool)(eda_api_file=eda_api_file, work_root=work_root)
 
@@ -32,18 +36,18 @@ def test_verilator_configure():
 
         compare_files(os.path.join(ref_dir, mode),
                       work_root,
-                      ['config.mk', core.sanitized_name+'.vc'])
+                      ['config.mk', core_name+'.vc'])
 
 def test_verilator_run():
     import os.path
     import tempfile
     from fusesoc.edatools import get_edatool
     ref_dir_cc = os.path.join(ref_dir, 'cc')
-    dummy_exe = 'V'+core.verilator.top_module
 
     work_root    = tempfile.mkdtemp()
-    eda_api_file = os.path.join(ref_dir_cc, core.name.sanitized_name)+ '.eda.yml'
+    eda_api_file = os.path.join(ref_dir_cc, core_name)+ '.eda.yml'
     backend = get_edatool(tool)(eda_api_file=eda_api_file, work_root=work_root)
+    dummy_exe = 'V'+backend.tool_options['top_module']
     shutil.copy(os.path.join(ref_dir, dummy_exe),
                 os.path.join(work_root, dummy_exe))
 

@@ -4,7 +4,11 @@ import pytest
 
 from fusesoc.core import Core
 
-from test_common import get_core, cache_root, build_root
+from test_common import get_core
+
+build_root = ''
+cache_root = ''
+
 def compare_fileset(fileset, name, files):
     assert name == fileset.name
     for i in range(len(files)):

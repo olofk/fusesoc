@@ -8,7 +8,9 @@ from argparse import Namespace
 
 from fusesoc.config import Config
 
-from test_common import cores_root, build_root, cache_root, library_root
+from test_common import cores_root, cache_root, library_root
+
+build_root = 'test_build_root'
 
 EXAMPLE_CONFIG = """
 [main]
