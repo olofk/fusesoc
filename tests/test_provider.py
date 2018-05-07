@@ -1,32 +1,34 @@
 import os
 import pytest
 import shutil
+import tempfile
 
-from test_common import get_core
+from fusesoc.core import Core
+
+from test_common import tests_dir
+
+cores_root = os.path.join(tests_dir, 'cores')
 
 def test_coregen_provider():
-    core = get_core("coregencore")
 
-    if core.cache_status() is "downloaded":
-        shutil.rmtree(core.files_root)
-    tests_dir = os.path.dirname(__file__)
+    cache_root = tempfile.mkdtemp('coregen_')
+    core = Core(os.path.join(cores_root, 'misc', 'coregencore.core'), cache_root)
+
     os.environ['PATH'] = os.path.join(tests_dir, 'mock_commands')+':'+os.environ['PATH']
     core.setup()
 
     for f in ['dummy.cgp',
 	      'dummy.xco',
 	      os.path.join('subdir', 'dummy.extra')]:
-        print(f)
         assert(os.path.isfile(os.path.join(core.files_root, f)))
 
     with open(os.path.join(core.files_root, 'run.cmd')) as f:
         assert(f.read() == '-r -b dummy.xco -p dummy.cgp\n')
     
 def test_git_provider():
-    core = get_core("gitcore")
+    cache_root = tempfile.mkdtemp('git_')
+    core = Core(os.path.join(cores_root, 'misc', 'gitcore.core'), cache_root)
     
-    if core.cache_status() is "downloaded":
-        shutil.rmtree(core.files_root)
     core.setup()
 
     for f in ['LICENSE',
@@ -37,10 +39,9 @@ def test_git_provider():
         assert(os.path.isfile(os.path.join(core.files_root, f)))
 
 def test_github_provider():
-    core = get_core("vlog_tb_utils")
+    cache_root = tempfile.mkdtemp('github_')
+    core = Core(os.path.join(cores_root, 'vlog_tb_utils', 'vlog_tb_utils-1.1.core'), cache_root)
     
-    if core.cache_status() is "downloaded":
-        shutil.rmtree(core.files_root)
     core.setup()
     
     for f in ['LICENSE',
@@ -55,11 +56,10 @@ def test_github_provider():
             assert fref.read() == fgen.read(), f
 
 def test_logicore_provider():
-    core = get_core("logicorecore")
 
-    if core.cache_status() is "downloaded":
-        shutil.rmtree(core.files_root)
-    tests_dir = os.path.dirname(__file__)
+    cache_root = tempfile.mkdtemp('logicore_')
+    core = Core(os.path.join(cores_root, 'misc', 'logicorecore.core'), cache_root)
+
     os.environ['PATH'] = os.path.join(tests_dir, 'mock_commands')+':'+os.environ['PATH']
     core.setup()
 
@@ -72,20 +72,18 @@ def test_logicore_provider():
         assert(f.read() == '-mode batch -source dummy.tcl\n')
 
 def test_opencores_provider():
-    core = get_core("opencorescore")
+    cache_root = tempfile.mkdtemp('opencores_')
+    core = Core(os.path.join(cores_root, 'misc', 'opencorescore.core'), cache_root)
 
-    if core.cache_status() is "downloaded":
-        shutil.rmtree(core.files_root)
     core.setup()
 
     assert(os.path.isfile(os.path.join(core.files_root, 'tap_defines.v')))
     assert(os.path.isfile(os.path.join(core.files_root, 'tap_top.v')))
 
 def test_url_provider():
-    core = get_core("mmuart")
+    cache_root = tempfile.mkdtemp('url_')
+    core = Core(os.path.join(cores_root, 'mmuart', 'mmuart.core'), cache_root)
 
-    if core.cache_status() is "downloaded":
-        shutil.rmtree(core.files_root)
     core.setup()
 
     assert(os.path.isfile(os.path.join(core.files_root, 'uart_transceiver.v')))

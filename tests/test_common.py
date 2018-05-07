@@ -14,8 +14,3 @@ config.build_root = build_root
 config.cache_root = cache_root
 common_cm = CoreManager(config)
 common_cm.add_cores_root(cores_root)
-
-def get_core(core):
-    from fusesoc.main import _get_core
-    
-    return _get_core(common_cm, core)
