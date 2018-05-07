@@ -4,8 +4,6 @@ import pytest
 
 from fusesoc.core import Core
 
-from test_common import get_core
-
 build_root = ''
 cache_root = ''
 
@@ -16,16 +14,18 @@ def compare_fileset(fileset, name, files):
 
 def test_core_info():
     tests_dir = os.path.dirname(__file__)
-
+    cores_root = os.path.join(tests_dir, 'cores')
     for core_name in ['sockit', 'mor1kx-generic']:
-        core = get_core(core_name)
+        core = Core(os.path.join(cores_root, core_name, core_name+'.core'), '', '')
         gen_info = '\n'.join([x for x in core.info().split('\n') if not 'Core root' in x])
         with open(os.path.join(tests_dir, __name__, core_name+".info")) as f:
             assert f.read() == gen_info, core_name
 
 def test_core_parsing():
     from fusesoc.vlnv import Vlnv
-    core = get_core("nomain")
+
+    filename = os.path.join(os.path.dirname(__file__), 'cores', 'misc', 'nomain.core')
+    core = Core(filename, '', '')
     assert core.name == Vlnv("::nomain:0")
 
     import sys
@@ -40,10 +40,11 @@ def test_get_scripts():
                    {'target' : 'synth', 'is_toplevel' : False},
                    {'target' : 'synth', 'is_toplevel' : True},
     ]
-    core = get_core("scriptscore")
+    filename = os.path.join(os.path.dirname(__file__), 'cores', 'misc', 'scriptscore.core')
+    core = Core(filename, '', 'dummy_build_root')
 
     for flags in flag_combos:
-        env = {'BUILD_ROOT' : os.path.join(os.path.dirname(__file__), 'build')}
+        env = {'BUILD_ROOT' : 'dummy_build_root'}
         result = core.get_scripts("dummyroot", flags)
         expected = {}
         if flags['target'] == 'sim':
@@ -62,12 +63,17 @@ def test_get_scripts():
         assert expected == result
 
 def test_get_tool():
-    core = get_core("atlys")
+    cores_root = os.path.join(os.path.dirname(__file__), 'cores')
+
+    filename = os.path.join(cores_root, 'atlys', 'atlys.core')
+    core = Core(filename, '', '')
     assert None     == core.get_tool({'target' : 'sim', 'tool' : None})
     assert 'icarus' == core.get_tool({'target' : 'sim', 'tool' : 'icarus'})
     assert 'ise'    == core.get_tool({'target' : 'synth', 'tool' : None})
     assert 'vivado' == core.get_tool({'target' : 'synth', 'tool' : 'vivado'})
-    core = get_core("sockit")
+
+    filename = os.path.join(cores_root, 'sockit', 'sockit.core')
+    core = Core(filename, '', '')
     assert 'icarus' == core.get_tool({'target' : 'sim', 'tool' : None})
     assert 'icarus' == core.get_tool({'target' : 'sim', 'tool' : 'icarus'})
     del core.main.backend
@@ -76,7 +82,10 @@ def test_get_tool():
     core.main.backend = 'quartus'
 
 def test_get_tool_options():
-    core = get_core("mor1kx-generic")
+    cores_root = os.path.join(os.path.dirname(__file__), 'cores')
+
+    filename = os.path.join(cores_root, 'mor1kx-generic', 'mor1kx-generic.core')
+    core = Core(filename, '', '')
     assert {'iverilog_options' : ['-DSIM']} == core.get_tool_options({'is_toplevel' : True, 'tool' : 'icarus'})
     assert {} == core.get_tool_options({'is_toplevel' : True, 'tool' : 'modelsim'})
     assert {'fuse_options' : ['some','isim','options']} == core.get_tool_options({'is_toplevel' : True, 'tool' : 'isim'})
@@ -84,7 +93,9 @@ def test_get_tool_options():
                                    'dummy', 'options', 'for', 'xelab']}
     assert expected == core.get_tool_options({'is_toplevel' : True, 'tool' : 'xsim'})
     assert {} == core.get_tool_options({'is_toplevel' : False, 'tool' : 'icarus'})
-    core = get_core("elf-loader")
+
+    filename = os.path.join(cores_root, 'elf-loader', 'elf-loader.core')
+    core = Core(filename, '', '')
     assert {'libs' : ['-lelf']} == core.get_tool_options({'is_toplevel' : False, 'tool' : 'verilator'})
     assert {} == core.get_tool_options({'is_toplevel' : True, 'tool' : 'invalid'})
 
