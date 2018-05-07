@@ -41,7 +41,7 @@ class FileSet(object):
         return s
 
 class Core:
-    def __init__(self, core_file, cache_root, build_root):
+    def __init__(self, core_file, cache_root='', build_root=''):
         basename = os.path.basename(core_file)
         self.depend = []
         self.simulators = []
