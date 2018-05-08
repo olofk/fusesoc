@@ -129,7 +129,6 @@ class Config(object):
 
     def add_library(self, name, library):
         from fusesoc.provider import get_provider
-        from fusesoc.utils import Launcher
         if not hasattr(self, '_path'):
             raise RuntimeError("No FuseSoC config file found - can't add library")
         section_name = 'library.' + name

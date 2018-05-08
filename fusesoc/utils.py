@@ -9,15 +9,10 @@ if sys.version[0] == '2':
 logger = logging.getLogger(__name__)
 
 class Launcher:
-    def __init__(self, cmd, args=[], shell=False, cwd=None, stderr=None, stdout=None, errormsg=None, env=None):
+    def __init__(self, cmd, args=[], cwd=None):
         self.cmd      = cmd
         self.args     = args
-        self.shell    = shell
         self.cwd      = cwd
-        self.stderr   = stderr
-        self.stdout   = stdout
-        self.errormsg = errormsg
-        self.env      = env
 
     def run(self):
         logger.debug(self.cwd)
@@ -25,24 +20,12 @@ class Launcher:
         try:
             subprocess.check_call([self.cmd] + self.args,
                                   cwd = self.cwd,
-                                  env = self.env,
-                                  shell = self.shell,
-                                  stderr = self.stderr,
-                                  stdout = self.stdout,
                                   stdin=subprocess.PIPE),
         except FileNotFoundError:
             raise RuntimeError("Command '" + self.cmd + "' not found. Make sure it is in $PATH")
         except subprocess.CalledProcessError:
-            if self.stderr is None:
-                output = "stderr"
-            else:
-                output = self.stderr.name
-                with open(self.stderr.name, 'r') as f:
-                    logger.error(f.read())
-
-            if self.errormsg is None:
-                self.errormsg = '"' + str(self) + '" exited with an error code.\nERROR: See ' + output + ' for details.'
-            raise RuntimeError(self.errormsg)
+            self.errormsg = '"{}" exited with an error code. See stderr for details.'
+            raise RuntimeError(self.errormsg.format(str(self)))
 
     def __str__(self):
         return ' '.join([self.cmd] + self.args)
