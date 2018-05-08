@@ -247,6 +247,11 @@ class Core:
                         options['mode'] = 'cc'
                     del(self.verilator.source_type)
 
+                if self.verilator.cli_parser == 'fusesoc':
+                    self.verilator.cli_parser = 'managed'
+                elif self.verilator.cli_parser == '':
+                    self.verilator.cli_parser = 'passthrough'
+
             #Otherwise, only care about options from toplevel core
             if flags['is_toplevel']:
 
@@ -447,6 +452,7 @@ class Core:
                 raise RuntimeError("Invalid verilator file type '{}'".format(self.verilator.source_type))
             _files  = _append_files(self.verilator.src_files, _file_type)
             _files += _append_files(self.verilator.include_files, _file_type, True)
+            del(self.verilator.src_files)
             self.file_sets.append(FileSet(name = "verilator_src_files",
                                           file = _files,
                                           usage = ['verilator']))

@@ -4,9 +4,6 @@ import pytest
 
 from fusesoc.core import Core
 
-build_root = ''
-cache_root = ''
-
 def compare_fileset(fileset, name, files):
     assert name == fileset.name
     for i in range(len(files)):
@@ -16,7 +13,7 @@ def test_core_info():
     tests_dir = os.path.dirname(__file__)
     cores_root = os.path.join(tests_dir, 'cores')
     for core_name in ['sockit', 'mor1kx-generic']:
-        core = Core(os.path.join(cores_root, core_name, core_name+'.core'), '', '')
+        core = Core(os.path.join(cores_root, core_name, core_name+'.core'))
         gen_info = '\n'.join([x for x in core.info().split('\n') if not 'Core root' in x])
         with open(os.path.join(tests_dir, __name__, core_name+".info")) as f:
             assert f.read() == gen_info, core_name
@@ -24,14 +21,13 @@ def test_core_info():
 def test_core_parsing():
     from fusesoc.vlnv import Vlnv
 
-    filename = os.path.join(os.path.dirname(__file__), 'cores', 'misc', 'nomain.core')
-    core = Core(filename, '', '')
+    core = Core(os.path.join(os.path.dirname(__file__), 'cores', 'misc', 'nomain.core'))
     assert core.name == Vlnv("::nomain:0")
 
     import sys
     if sys.version_info[0] > 2:
         with pytest.raises(SyntaxError) as e:
-            core = Core("tests/cores/misc/duplicateoptions.core", cache_root, build_root)
+            core = Core("tests/cores/misc/duplicateoptions.core")
         assert "option 'file_type' in section 'fileset dummy' already exists" in str(e.value)
 
 def test_get_scripts():
@@ -65,15 +61,13 @@ def test_get_scripts():
 def test_get_tool():
     cores_root = os.path.join(os.path.dirname(__file__), 'cores')
 
-    filename = os.path.join(cores_root, 'atlys', 'atlys.core')
-    core = Core(filename, '', '')
+    core = Core(os.path.join(cores_root, 'atlys', 'atlys.core'))
     assert None     == core.get_tool({'target' : 'sim', 'tool' : None})
     assert 'icarus' == core.get_tool({'target' : 'sim', 'tool' : 'icarus'})
     assert 'ise'    == core.get_tool({'target' : 'synth', 'tool' : None})
     assert 'vivado' == core.get_tool({'target' : 'synth', 'tool' : 'vivado'})
 
-    filename = os.path.join(cores_root, 'sockit', 'sockit.core')
-    core = Core(filename, '', '')
+    core = Core(os.path.join(cores_root, 'sockit', 'sockit.core'))
     assert 'icarus' == core.get_tool({'target' : 'sim', 'tool' : None})
     assert 'icarus' == core.get_tool({'target' : 'sim', 'tool' : 'icarus'})
     del core.main.backend
@@ -84,8 +78,7 @@ def test_get_tool():
 def test_get_tool_options():
     cores_root = os.path.join(os.path.dirname(__file__), 'cores')
 
-    filename = os.path.join(cores_root, 'mor1kx-generic', 'mor1kx-generic.core')
-    core = Core(filename, '', '')
+    core = Core(os.path.join(cores_root, 'mor1kx-generic', 'mor1kx-generic.core'))
     assert {'iverilog_options' : ['-DSIM']} == core.get_tool_options({'is_toplevel' : True, 'tool' : 'icarus'})
     assert {} == core.get_tool_options({'is_toplevel' : True, 'tool' : 'modelsim'})
     assert {'fuse_options' : ['some','isim','options']} == core.get_tool_options({'is_toplevel' : True, 'tool' : 'isim'})
@@ -94,8 +87,7 @@ def test_get_tool_options():
     assert expected == core.get_tool_options({'is_toplevel' : True, 'tool' : 'xsim'})
     assert {} == core.get_tool_options({'is_toplevel' : False, 'tool' : 'icarus'})
 
-    filename = os.path.join(cores_root, 'elf-loader', 'elf-loader.core')
-    core = Core(filename, '', '')
+    core = Core(os.path.join(cores_root, 'elf-loader', 'elf-loader.core'))
     assert {'libs' : ['-lelf']} == core.get_tool_options({'is_toplevel' : False, 'tool' : 'verilator'})
     assert {} == core.get_tool_options({'is_toplevel' : True, 'tool' : 'invalid'})
 
@@ -103,7 +95,7 @@ def test_get_toplevel():
     filename = os.path.join(os.path.dirname(__file__),
                             __name__,
                             "atlys.core")
-    core = Core(filename, cache_root, build_root)
+    core = Core(filename)
     assert 'orpsoc_tb'  == core.get_toplevel({'tool' : 'icarus'})
     assert 'orpsoc_tb'  == core.get_toplevel({'tool' : 'icarus', 'testbench' : None})
     assert 'tb'         == core.get_toplevel({'tool' : 'icarus', 'testbench' : 'tb'})
@@ -111,7 +103,7 @@ def test_get_toplevel():
     filename = os.path.join(os.path.dirname(__file__),
                             __name__,
                             "sockit.core")
-    core = Core(filename, cache_root, build_root)
+    core = Core(filename)
     assert 'dummy_tb'   == core.get_toplevel({'tool' : 'icarus'})
     assert 'dummy_tb'   == core.get_toplevel({'tool' : 'icarus', 'testbench' : None})
     assert 'tb'         == core.get_toplevel({'tool' : 'icarus', 'testbench' : 'tb'})
@@ -121,7 +113,7 @@ def test_icestorm():
     filename = os.path.join(os.path.dirname(__file__),
                             __name__,
                             "c3demo.core")
-    core = Core(filename, cache_root, build_root)
+    core = Core(filename)
     assert len(core.file_sets) == 3
     compare_fileset(core.file_sets[0], 'rtl_files', ['c3demo.v', 'ledpanel.v','picorv32.v'])
     compare_fileset(core.file_sets[1], 'tb_files' , ['firmware.hex', '$YOSYS_DAT_DIR/ice40/cells_sim.v', 'testbench.v'])
@@ -139,7 +131,7 @@ def test_ise():
     filename = os.path.join(os.path.dirname(__file__),
                             __name__,
                             "atlys.core")
-    core = Core(filename, cache_root, build_root)
+    core = Core(filename)
 
     #Check filesets
     assert len(core.file_sets) == 4
@@ -165,7 +157,7 @@ def test_quartus():
     filename = os.path.join(os.path.dirname(__file__),
                             __name__,
                             "sockit.core")
-    core = Core(filename, cache_root, build_root)
+    core = Core(filename)
 
     #Check filesets
     assert len(core.file_sets) == 4
@@ -193,12 +185,26 @@ def test_simulator():
     filename = os.path.join(os.path.dirname(__file__),
                             __name__,
                             "c3demo.core")
-    core = Core(filename, cache_root, build_root)
+    core = Core(filename)
     assert core.simulator['toplevel'] == 'testbench'
 
     #Implicit toplevel
     filename = os.path.join(os.path.dirname(__file__),
                             __name__,
                             "atlys.core")
-    core = Core(filename, cache_root, build_root)
+    core = Core(filename)
     assert core.simulator['toplevel'] == 'orpsoc_tb'
+
+def test_verilator():
+    cores_root = os.path.join(os.path.dirname(__file__), __name__)
+
+    core = Core(os.path.join(cores_root, "verilator_managed_systemc.core"))
+    expected = {'cli_parser' : 'managed', 'libs' : [], 'mode' : 'sc'}
+    assert expected == core.get_tool_options({'is_toplevel' : True, 'tool' : 'verilator'})
+
+    assert len(core.file_sets) == 2
+    compare_fileset(core.file_sets[0], 'verilator_src_files', ['file1.sc', 'file2.sc'])
+    assert core.file_sets[0].file[0].file_type == 'systemCSource'
+    assert core.file_sets[0].file[1].file_type == 'systemCSource'
+
+    compare_fileset(core.file_sets[1], 'verilator_tb_toplevel', [])

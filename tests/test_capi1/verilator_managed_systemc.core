@@ -1,0 +1,8 @@
+CAPI=1
+[main]
+
+[verilator]
+cli_parser = fusesoc
+source_type = systemC
+src_files = file1.sc file2.sc
+tb_toplevel = top.sc

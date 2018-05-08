@@ -41,11 +41,11 @@ class Verilator(EdaTool):
 
     argtypes = ['cmdlinearg', 'plusarg', 'vlogdefine', 'vlogparam']
 
-    def _fusesoc_parser(self):
-        return 'cli_parser' in self.tool_options and self.tool_options['cli_parser'] == 'fusesoc'
+    def _managed_parser(self):
+        return not 'cli_parser' in self.tool_options or self.tool_options['cli_parser'] == 'managed'
 
     def configure_pre(self, args):
-        if self._fusesoc_parser():
+        if self._managed_parser():
             self.parse_args(args, self.argtypes)
 
     def configure_main(self):
@@ -129,7 +129,7 @@ class Verilator(EdaTool):
     def run(self, args):
         if self.tool_options['mode'] == 'lint-only':
             return
-        if self._fusesoc_parser():
+        if self._managed_parser():
             self.parse_args(args, self.argtypes)
 
             _args = []

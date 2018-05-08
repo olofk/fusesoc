@@ -129,7 +129,7 @@ parameters:
 tool_options:
   fusesoc: {}
   verilator:
-    cli_parser: fusesoc
+    cli_parser: managed
     libs: [-lelf]
     mode: cc
     top_module: orpsoc_top
