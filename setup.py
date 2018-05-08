@@ -11,7 +11,7 @@ setup(
               'fusesoc.capi2',
               'edalize',
               'fusesoc.provider'],
-    package_data = {'fusesoc' : [
+    package_data = {'edalize' : [
         'templates/vivado/vivado-makefile.j2',
         'templates/vivado/vivado-program.tcl.j2',
         'templates/vivado/vivado-project.tcl.j2',

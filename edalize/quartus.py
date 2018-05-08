@@ -1,11 +1,11 @@
 import os.path
 import logging
 
-from fusesoc.edatool import EdaTool
+from edalize.edatool import Edatool
 
 logger = logging.getLogger(__name__)
 
-class Quartus(EdaTool):
+class Quartus(Edatool):
 
     tool_options = {'members' : {'family' : 'String',
                                  'device' : 'String'},

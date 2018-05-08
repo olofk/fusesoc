@@ -2,7 +2,7 @@ import multiprocessing
 import os
 import logging
 
-from fusesoc.edatool import EdaTool
+from edalize.edatool import Edatool
 
 logger = logging.getLogger(__name__)
 
@@ -31,7 +31,7 @@ V$(TOP_MODULE).mk:
 	$(VERILATOR) -f $(VC_FILE) $(VERILATOR_OPTIONS)
 """
 
-class Verilator(EdaTool):
+class Verilator(Edatool):
 
     tool_options = {'members' : {'mode' : 'String',
                                  'cli_parser' : 'String'},

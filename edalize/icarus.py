@@ -1,11 +1,11 @@
 import os
 import logging
 
-from fusesoc.edatool import EdaTool
+from edalize.edatool import Edatool
 
 logger = logging.getLogger(__name__)
 
-class Icarus(EdaTool):
+class Icarus(Edatool):
 
     tool_options = {'lists' : {'iverilog_options' : 'String'}}
 

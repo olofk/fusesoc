@@ -1,10 +1,10 @@
 import logging
 import os.path
-from fusesoc.edatool import EdaTool
+from edalize.edatool import Edatool
 
 logger = logging.getLogger(__name__)
 
-class Ghdl(EdaTool):
+class Ghdl(Edatool):
 
     tool_options = {'lists' : {'analyze_options' : 'String',
                                'run_options'     : 'String'}}

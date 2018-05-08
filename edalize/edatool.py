@@ -47,7 +47,7 @@ class FileAction(argparse.Action):
         path = os.path.abspath(path)
         setattr(namespace, self.dest, [path])
 
-class EdaTool(object):
+class Edatool(object):
 
     def __init__(self, eda_api_file, work_root=None):
         _tool_name = self.__class__.__name__.lower()

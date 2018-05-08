@@ -1,11 +1,11 @@
 import os
 import logging
 
-from fusesoc.edatool import EdaTool
+from edalize.edatool import Edatool
 
 logger = logging.getLogger(__name__)
 
-class Isim(EdaTool):
+class Isim(Edatool):
 
     tool_options = {'lists' : {'fuse_options' : 'String',
                                'isim_options' : 'String'}}

@@ -2,7 +2,7 @@ import logging
 import os.path
 import platform
 
-from fusesoc.edatool import EdaTool
+from edalize.edatool import Edatool
 
 logger = logging.getLogger(__name__)
 
@@ -26,7 +26,7 @@ A core (usually the system core) can add the following files:
 - IP: Supply the IP core xci file with file_type=xci and other files (like .prj)
       as file_type=data
 """
-class Vivado(EdaTool):
+class Vivado(Edatool):
 
     tool_options = {'members' : {'part' : 'String'}}
 

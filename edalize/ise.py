@@ -1,8 +1,8 @@
 import os.path
 
-from fusesoc.edatool import EdaTool
+from edalize.edatool import Edatool
 
-class Ise(EdaTool):
+class Ise(Edatool):
 
     tool_options = {'members' : {'family'  : 'String',
                                  'device'  : 'String',

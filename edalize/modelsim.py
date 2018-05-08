@@ -1,7 +1,7 @@
 import os
 import logging
 
-from fusesoc.edatool import EdaTool
+from edalize.edatool import Edatool
 
 logger = logging.getLogger(__name__)
 
@@ -57,7 +57,7 @@ clean_{name}:
 	$(RM) $({name}_OBJS) {name}
 """
 
-class Modelsim(EdaTool):
+class Modelsim(Edatool):
 
     tool_options = {'lists' : {'vlog_options' : 'String',
                                'vsim_options' : 'String'}}

@@ -1,11 +1,11 @@
 import os
 import logging
 
-from fusesoc.edatool import EdaTool
+from edalize.edatool import Edatool
 
 logger = logging.getLogger(__name__)
 
-class Xsim(EdaTool):
+class Xsim(Edatool):
 
     tool_options = {'lists' : {'xelab_options' : 'String',
                                'xsim_options'  : 'String'}}

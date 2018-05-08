@@ -1,8 +1,8 @@
 import os.path
 
-from fusesoc.edatool import EdaTool
+from edalize.edatool import Edatool
 
-class Icestorm(EdaTool):
+class Icestorm(Edatool):
 
     tool_options = {'lists' : {'arachne_pnr_options' : 'String'}}
 
