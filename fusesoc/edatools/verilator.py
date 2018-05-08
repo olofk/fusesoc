@@ -3,7 +3,6 @@ import os
 import logging
 
 from fusesoc.edatool import EdaTool
-from fusesoc import utils
 
 logger = logging.getLogger(__name__)
 
@@ -113,9 +112,6 @@ class Verilator(EdaTool):
 
     def build_main(self):
         logger.info("Building simulation model")
-
-        if not os.getenv('VERILATOR_ROOT') and not utils.which('verilator'):
-            raise RuntimeError("VERILATOR_ROOT not set and there is no verilator program in your PATH")
 
         # Do parallel builds with <number of cpus> * 2 jobs.
         make_job_count = multiprocessing.cpu_count() * 2
