@@ -12,7 +12,7 @@ from ipyxact.ipyxact import Component
 from fusesoc import utils
 from fusesoc.provider import get_provider
 from fusesoc.vlnv import Vlnv
-import fusesoc.edatools
+from fusesoc.edatools import get_edatools
 
 logger = logging.getLogger(__name__)
 
@@ -495,6 +495,8 @@ Target:
     toplevel   : String
     vpi        : String
 
+Tools:
+  members : {}
 Hooks:
   lists:
     pre_build  : String
@@ -545,15 +547,11 @@ def _generate_classes(j, base_class):
 
 capi2_data = yaml.load(description)
 
-capi2_data['Tools'] = {'members' : {}}
-
-for pkg in walk_packages([os.path.dirname(sys.modules['fusesoc.edatools'].__file__)]):
-    module_name = pkg[1]
-    module = importlib.import_module('fusesoc.edatools.'+module_name)
-    if hasattr(module, 'tool_options'):
-        backend_name = module_name.split('.')[-1]
-        tool_options = getattr(module, 'tool_options')
-        capi2_data['Tools']['members'][backend_name] = backend_name.capitalize()
-        capi2_data[backend_name.capitalize()] = tool_options
+for backend in get_edatools():
+    if hasattr(backend, 'tool_options'):
+        backend_name = backend.__name__
+        tool_options = getattr(backend, 'tool_options')
+        capi2_data['Tools']['members'][backend_name.lower()] = backend_name
+        capi2_data[backend_name] = tool_options
 
 _generate_classes(capi2_data, Section)

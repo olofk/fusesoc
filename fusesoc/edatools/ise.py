@@ -2,12 +2,12 @@ import os.path
 
 from fusesoc.edatool import EdaTool
 
-tool_options = {'members' : {'family'  : 'String',
-                             'device'  : 'String',
-                             'package' : 'String',
-                             'speed'   : 'String'}}
-
 class Ise(EdaTool):
+
+    tool_options = {'members' : {'family'  : 'String',
+                                 'device'  : 'String',
+                                 'package' : 'String',
+                                 'speed'   : 'String'}}
 
     argtypes = ['vlogdefine', 'vlogparam']
 

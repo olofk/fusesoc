@@ -11,6 +11,9 @@ exit
 """
 class Rivierapro(EdaTool):
 
+    tool_options = {'lists' : {'vlog_options' : 'String',
+                               'vsim_options' : 'String'}}
+
     argtypes = ['plusarg', 'vlogdefine', 'vlogparam']
 
     def _write_build_rtl_tcl_file(self, tcl_main):

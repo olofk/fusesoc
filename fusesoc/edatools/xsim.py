@@ -5,10 +5,10 @@ from fusesoc.edatool import EdaTool
 
 logger = logging.getLogger(__name__)
 
-tool_options = {'lists' : {'xelab_options' : 'String',
-                           'xsim_options'  : 'String'}}
-
 class Xsim(EdaTool):
+
+    tool_options = {'lists' : {'xelab_options' : 'String',
+                               'xsim_options'  : 'String'}}
 
     argtypes = ['plusarg', 'vlogdefine', 'vlogparam']
 

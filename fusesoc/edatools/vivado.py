@@ -6,8 +6,6 @@ from fusesoc.edatool import EdaTool
 
 logger = logging.getLogger(__name__)
 
-tool_options = {'members' : {'part' : 'String'}}
-
 """ Vivado Backend
 
 The Vivado backend executes Xilinx Vivado to build systems and program the FPGA.
@@ -29,6 +27,8 @@ A core (usually the system core) can add the following files:
       as file_type=data
 """
 class Vivado(EdaTool):
+
+    tool_options = {'members' : {'part' : 'String'}}
 
     argtypes = ['vlogdefine', 'vlogparam']
 

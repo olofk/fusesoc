@@ -31,12 +31,12 @@ V$(TOP_MODULE).mk:
 	$(VERILATOR) -f $(VC_FILE) $(VERILATOR_OPTIONS)
 """
 
-tool_options = {'members' : {'mode' : 'String',
-                             'cli_parser' : 'String'},
-                'lists'   : {'libs' : 'String',
-                             'verilator_options' : 'String'}}
-
 class Verilator(EdaTool):
+
+    tool_options = {'members' : {'mode' : 'String',
+                                 'cli_parser' : 'String'},
+                    'lists'   : {'libs' : 'String',
+                                 'verilator_options' : 'String'}}
 
     argtypes = ['cmdlinearg', 'plusarg', 'vlogdefine', 'vlogparam']
 

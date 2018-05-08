@@ -5,11 +5,11 @@ from fusesoc.edatool import EdaTool
 
 logger = logging.getLogger(__name__)
 
-tool_options = {'members' : {'family' : 'String',
-                             'device' : 'String'},
-                'lists'   : {'quartus_options' : 'String'}}
-
 class Quartus(EdaTool):
+
+    tool_options = {'members' : {'family' : 'String',
+                                 'device' : 'String'},
+                    'lists'   : {'quartus_options' : 'String'}}
 
     argtypes = ['vlogdefine', 'vlogparam']
 

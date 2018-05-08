@@ -6,6 +6,8 @@ logger = logging.getLogger(__name__)
 
 class Ghdl(EdaTool):
 
+    tool_options = {'lists' : {'analyze_options' : 'String',
+                               'run_options'     : 'String'}}
     argtypes = ['vlogparam']
 
     def configure_main(self):

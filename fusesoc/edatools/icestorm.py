@@ -2,9 +2,9 @@ import os.path
 
 from fusesoc.edatool import EdaTool
 
-tool_options = {'lists' : {'arachne_pnr_options' : 'String'}}
-
 class Icestorm(EdaTool):
+
+    tool_options = {'lists' : {'arachne_pnr_options' : 'String'}}
 
     argtypes = ['vlogdefine', 'vlogparam']
 
