@@ -284,7 +284,7 @@ class Core:
         vpi = []
         if self.vpi:
             vpi.append({'name'         : self.sanitized_name,
-                        'src_files'    : self.vpi.src_files,
+                        'src_files'    : [f.name for f in self.vpi.src_files],
                         'include_dirs' : self.vpi.include_dirs,
                         'libs'         : [l[2:] for l in self.vpi.libs],
             })

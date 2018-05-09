@@ -267,7 +267,7 @@ class CoreManager(object):
             #Extract VPI modules
             for _vpi in core.get_vpi(_flags):
                 vpi.append({'name'         : _vpi['name'],
-                            'src_files'    : [os.path.join(rel_root, f.name) for f in _vpi['src_files']],
+                            'src_files'    : [os.path.join(rel_root, f) for f in _vpi['src_files']],
                             'include_dirs' : [os.path.join(rel_root, i) for i in _vpi['include_dirs']],
                             'libs'         : _vpi['libs']})
 

@@ -345,7 +345,7 @@ class Core:
         self._debug(" Matched VPI libraries {}".format([v for v in _vpi]))
         for k, v in sorted(_vpi.items()):
             vpi.append({'name'         : k,
-                        'src_files'    : v['src_files'],
+                        'src_files'    : [f.name for f in v['src_files']],
                         'include_dirs' : utils.unique_dirs(v['inc_files']),
                         'libs'         : v['libs'],
             })

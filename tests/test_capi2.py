@@ -183,6 +183,31 @@ def test_capi2_get_tool_options():
     expected = {}
     assert expected == core.get_tool_options(flags)
 
+def test_capi2_get_vpi():
+    from fusesoc.core import Core
+
+    core_file = os.path.join(tests_dir,
+                             "capi2_cores",
+                             "misc",
+                             "vpi.core")
+    core = Core(core_file)
+
+    expected = [
+        {'src_files': ['f1',
+                       'f3'],
+         'include_dirs': [''],
+         'libs': ['some_lib'],
+         'name': 'vpi1'},
+        {'src_files': ['f4'],
+         'include_dirs': [],
+         'libs': [],
+         'name': 'vpi2'}
+    ]
+
+    assert [] == core.get_vpi({'is_toplevel' : True, 'target' : 'invalid'})
+    assert expected == core.get_vpi({'is_toplevel' : True})
+    assert expected == core.get_vpi({'is_toplevel' : False})
+
 def test_capi2_get_work_root():
     from fusesoc.core import Core
 
