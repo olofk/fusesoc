@@ -1,1 +1,1 @@
--c -do do fusesoc_main.tcl; exit
+-c -do do edalize_main.tcl; exit

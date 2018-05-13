@@ -1,1 +1,1 @@
--c -quiet -do fusesoc_run.tcl
+-c -quiet -do edalize_run.tcl

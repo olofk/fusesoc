@@ -19,9 +19,9 @@ def test_rivierapro():
     backend.configure(args)
 
     compare_files(ref_dir, work_root, [
-        'fusesoc_build_rtl.tcl',
-        'fusesoc_launch.tcl',
-        'fusesoc_main.tcl',
+        'edalize_build_rtl.tcl',
+        'edalize_launch.tcl',
+        'edalize_main.tcl',
     ])
 
     orig_env = os.environ.copy()

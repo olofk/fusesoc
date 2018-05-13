@@ -20,8 +20,8 @@ def test_modelsim():
 
     compare_files(ref_dir, work_root, [
         'Makefile',
-        'fusesoc_build_rtl.tcl',
-        'fusesoc_main.tcl',
+        'edalize_build_rtl.tcl',
+        'edalize_main.tcl',
     ])
 
     orig_env = os.environ.copy()
