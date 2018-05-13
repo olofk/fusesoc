@@ -44,6 +44,7 @@ class Vivado(Edatool):
         self.jinja_env.filters['src_file_filter'] = self.src_file_filter
 
         has_vhdl2008 = 'vhdlSource-2008' in [x.file_type for x in src_files]
+        has_xci      = 'xci'             in [x.file_type for x in src_files]
 
         template_vars = {
             'name'         : self.name,
@@ -54,6 +55,7 @@ class Vivado(Edatool):
             'vlogparam'    : self.vlogparam,
             'vlogdefine'   : self.vlogdefine,
             'has_vhdl2008' : has_vhdl2008,
+            'has_xci'      : has_xci,
         }
 
         self.render_template('vivado-project.tcl.j2',

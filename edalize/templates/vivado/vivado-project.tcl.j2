@@ -37,5 +37,7 @@ set_property source_mgmt_mode None [current_project]
 
 {%- endif %}
 
+{% if has_xci -%}
 upgrade_ip [get_ips]
 generate_target all [get_ips]
+{%- endif %}
