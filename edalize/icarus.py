@@ -41,7 +41,7 @@ clean_{name}:
 
         (src_files, incdirs) = self._get_fileset_files()
         for key, value in self.vlogdefine.items():
-            f.write('+define+{}={}\n'.format(key, self._param_value_str(value, '"')))
+            f.write('+define+{}={}\n'.format(key, self._param_value_str(value, '')))
 
         for key, value in self.vlogparam.items():
             f.write('+parameter+{}.{}={}\n'.format(self.toplevel, key, self._param_value_str(value, '"')))

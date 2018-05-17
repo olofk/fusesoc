@@ -1,6 +1,6 @@
 +define+vlogdefine_bool=1
 +define+vlogdefine_int=42
-+define+vlogdefine_str="hello"
++define+vlogdefine_str=hello
 +parameter+top_module.vlogparam_bool=1
 +parameter+top_module.vlogparam_int=42
 +parameter+top_module.vlogparam_str="hello"
