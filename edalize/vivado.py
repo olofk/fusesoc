@@ -69,12 +69,6 @@ class Vivado(Edatool):
         self.render_template('vivado-run.tcl.j2',
                              self.name+"_run.tcl")
 
-    def render_template(self, template_file, target_file, template_vars = {}):
-        template = self.jinja_env.get_template(os.path.join('vivado', template_file))
-        file_path = os.path.join(self.work_root, target_file)
-        with open(file_path, 'w') as f:
-            f.write(template.render(template_vars))
-
     def src_file_filter(self, f):
         def _vhdl_source(f):
             s = 'read_vhdl'
