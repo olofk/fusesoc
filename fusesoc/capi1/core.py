@@ -338,7 +338,7 @@ class Core:
         if 'tool' in flags:
             if flags['tool'] in ['ghdl', 'icarus', 'isim', 'modelsim', 'rivierapro', 'xsim']:
                 flow = 'sim'
-            elif flags['tool'] in ['icestorm', 'ise', 'quartus', 'verilator', 'vivado']:
+            elif flags['tool'] in ['icestorm', 'ise', 'quartus', 'verilator', 'vivado', 'spyglass']:
                 flow = 'synth'
         elif 'target' in flags:
             if flags['target'] is 'synth':
