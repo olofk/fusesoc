@@ -62,6 +62,13 @@ class String(str):
                                                                str(_flags),s))
         return s
 
+class StringOrList(object):
+    def __new__(cls, *args, **kwargs):
+        if type(args[0]) == list:
+            return [String(s) for s in args[0]]
+        elif type(args[0]) == str:
+            return [String(args[0])]
+
 class Section(object):
     members = {}
     lists   = {}
@@ -488,11 +495,11 @@ Target:
     default_tool : String
     hooks      : Hooks
     tools    : Tools
+    toplevel   : StringOrList
   lists:
     filesets   : String
     flags      : String #FIXME
     parameters : String
-    toplevel   : String
     vpi        : String
 
 Tools:

@@ -1,0 +1,9 @@
+CAPI=2:
+name : ::toplevel:0
+
+targets:
+  no_toplevel: {}
+  str_toplevel:
+    toplevel : toplevel_as_string
+  list_toplevel:
+    toplevel : [toplevel, as, list]

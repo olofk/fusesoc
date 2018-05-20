@@ -183,6 +183,25 @@ def test_capi2_get_tool_options():
     expected = {}
     assert expected == core.get_tool_options(flags)
 
+def test_capi2_get_toplevel():
+    from fusesoc.core import Core
+
+    core_file = os.path.join(tests_dir,
+                             "capi2_cores",
+                             "misc",
+                             "toplevel.core")
+    core = Core(core_file)
+
+    flags = {'target' : 'no_toplevel'}
+    with pytest.raises(SyntaxError):
+        core.get_toplevel(flags)
+
+    flags = {'target' : 'str_toplevel'}
+    assert 'toplevel_as_string'  == core.get_toplevel(flags)
+
+    flags = {'target' : 'list_toplevel'}
+    assert 'toplevel as list'  == core.get_toplevel(flags)
+
 def test_capi2_get_vpi():
     from fusesoc.core import Core
 
