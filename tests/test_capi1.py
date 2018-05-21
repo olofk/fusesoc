@@ -21,13 +21,14 @@ def test_core_info():
 def test_core_parsing():
     from fusesoc.vlnv import Vlnv
 
-    core = Core(os.path.join(os.path.dirname(__file__), 'cores', 'misc', 'nomain.core'))
+    cores_root = os.path.join(os.path.dirname(__file__), 'cores', 'misc')
+    core = Core(os.path.join(cores_root, 'nomain.core'))
     assert core.name == Vlnv("::nomain:0")
 
     import sys
     if sys.version_info[0] > 2:
         with pytest.raises(SyntaxError) as e:
-            core = Core("tests/cores/misc/duplicateoptions.core")
+            core = Core(os.path.join(cores_root, "duplicateoptions.core"))
         assert "option 'file_type' in section 'fileset dummy' already exists" in str(e.value)
 
 def test_get_scripts():
