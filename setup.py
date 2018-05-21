@@ -12,6 +12,9 @@ setup(
               'edalize',
               'fusesoc.provider'],
     package_data = {'edalize' : [
+        'templates/spyglass/Makefile.j2',
+        'templates/spyglass/spyglass-project.prj.j2',
+        'templates/spyglass/spyglass-run-goal.tcl.j2',
         'templates/vivado/vivado-makefile.j2',
         'templates/vivado/vivado-program.tcl.j2',
         'templates/vivado/vivado-project.tcl.j2',
