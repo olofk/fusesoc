@@ -4,12 +4,8 @@ python:
   - "2.7"
   - "3.4"
   - "3.5"
+  - "3.6"
 install:
-  - "pip install ."
-env:
-  - MODEL_TECH=dummy_value
+  - pip install tox-travis
 script:
-  - "fusesoc init -y"
-  - "fusesoc list-cores"
-  - "fusesoc update"
-  - "py.test"
+  - tox
