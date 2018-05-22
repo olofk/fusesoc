@@ -1,0 +1,33 @@
+#!SPYGLASS_PROJECT_FILE
+#!VERSION 3.0
+#  -------------------------------------------------------------------
+#  This is a automatically generated project file by fusesoc.
+#  -------------------------------------------------------------------
+
+
+set_option projectwdir .
+set_option language_mode mixed
+set_option designread_enable_synthesis yes
+set_option designread_disable_flatten no
+
+# Make no only FATAL messages return a non-zero exit code, but also ERRORs and
+# WARNINGs
+set_option enable_pass_exit_codes yes
+
+
+read_file -type verilog sv_file.sv
+source tcl_file.tcl
+read_file -type verilog vlog_file.v
+read_file -type verilog vlog05_file.v
+read_file -type vhdl vhdl_file.vhd
+read_file -type vhdl -library libx vhdl_lfile
+read_file -type vhdl vhdl2008_file
+
+set_option param {vlogparam_bool=1 vlogparam_int=42 vlogparam_str=hello }
+set_option define {vlogdefine_bool=1 vlogdefine_int=42 vlogdefine_str=hello }
+set_option incdir [list .]
+set_option top top_module
+set_option enableSV09 yes
+set_option active_methodology $SPYGLASS_HOME/GuideWare/latest/block/rtl_handoff
+
+current_methodology $SPYGLASS_HOME/GuideWare/latest/block/rtl_handoff

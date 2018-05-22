@@ -1,0 +1,6 @@
+#!/usr/bin/env python
+import os
+import sys
+
+with open('spyglass.cmd', 'a') as f:
+    f.write(' '.join(sys.argv[1:]) + '\n')
