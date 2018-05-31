@@ -219,6 +219,16 @@ class CoreManager(object):
             logger.debug("Collecting EDA API parameters from {}".format(str(core.name)))
             _flags['is_toplevel'] = (core.name == vlnv)
 
+            #Extract files
+            if export_root:
+                files_root = os.path.join(export_root, core.sanitized_name)
+                dst_dir = os.path.join(export_root, core.sanitized_name)
+                core.export(dst_dir, _flags)
+            else:
+                files_root = core.files_root
+
+            rel_root = os.path.relpath(files_root, work_root)
+
             #Extract parameters
             for param in core.get_parameters(_flags):
                 parameters.append ({
@@ -231,15 +241,6 @@ class CoreManager(object):
             #Extract tool options
             merge_dict(tool_options, core.get_tool_options(_flags))
 
-            #Extract files
-            if export_root:
-                files_root = os.path.join(export_root, core.sanitized_name)
-                dst_dir = os.path.join(export_root, core.sanitized_name)
-                core.export(dst_dir, _flags)
-            else:
-                files_root = core.files_root
-
-            rel_root = os.path.relpath(files_root, work_root)
             #Extract scripts
             _scripts = core.get_scripts(rel_root, _flags)
             for section in _scripts.values():
