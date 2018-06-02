@@ -140,11 +140,6 @@ class Core:
                 for f in fs.files:
                     if not f.logical_name:
                         f.logical_name = str(fs.logical_name)
-        for p in self.parameters.values():
-            p.datatype    = str(p.datatype)
-            p.default     = str(p.default) if p.default else ''
-            p.description = str(p.description)
-            p.paramtype   = str(p.paramtype)
 
         if self.provider:
             self.files_root = os.path.join(cache_root,
@@ -286,11 +281,14 @@ class Core:
     def get_parameters(self, flags={}):
         self._debug("Getting parameters for flags '{}'".format(str(flags)))
         target = self._get_target(flags)
-        parameters = []
+        parameters = {}
 
         if target:
             for p in self._parse_list(flags, target.parameters):
-                parameters.append(self.parameters[p])
+                parameters[p] = {}
+                for field in ['datatype','default','description','paramtype']:
+                    if getattr(self.parameters[p], field):
+                        parameters[p][field] = str(getattr(self.parameters[p], field))
         self._debug("Found parameters {}".format(parameters))
         return parameters
 

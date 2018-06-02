@@ -20,7 +20,7 @@ def compare_files(ref_dir, work_root, files):
 
 def param_gen(paramtypes):
     args = []
-    defs = []
+    defs = {}
     for paramtype in paramtypes:
         for datatype in ['bool', 'int', 'str']:
             _arg = '--{}_{}'.format(paramtype, datatype)
@@ -29,11 +29,11 @@ def param_gen(paramtypes):
             elif datatype == 'str':
                 _arg += '=hello'
             args.append(_arg)
-            defs.append({'datatype'    : datatype,
-                         'default'     : '',
-                         'description' : '',
-                         'name'        : paramtype+'_'+datatype,
-                     'paramtype'   : paramtype})
+            defs[paramtype+'_'+datatype] = {
+                'datatype'    : datatype,
+                'default'     : '',
+                'description' : '',
+                'paramtype'   : paramtype}
     return (defs, args)
 
 def setup_backend_minimal(name, tool, files):

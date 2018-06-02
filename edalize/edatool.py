@@ -65,11 +65,11 @@ class Edatool(object):
         self.tool_options = eda_api.get('tool_options', {}).get(_tool_name, {})
 
         self.files       = eda_api.get('files', [])
-        self.parameters  = eda_api.get('parameters', [])
         self.toplevel    = eda_api.get('toplevel', [])
         self.vpi_modules = eda_api.get('vpi', [])
 
-        self.hooks = eda_api.get('hooks', {})
+        self.hooks       = eda_api.get('hooks', {})
+        self.parameters  = eda_api.get('parameters', {})
 
         self.work_root = work_root or os.path.abspath(os.path.dirname(eda_api_file))
         self.env = os.environ.copy()
@@ -164,7 +164,8 @@ class Edatool(object):
                   'cmdlinearg' : 'Command-line arguments (Run-time option)'}
         param_type_map = {}
 
-        for param in self.parameters:
+        for name, param in self.parameters.items():
+            _description = param.get('description', "No description")
             _paramtype = param['paramtype']
             if _paramtype in paramtypes:
                 if not _paramtype in param_groups:
@@ -172,20 +173,20 @@ class Edatool(object):
                     parser.add_argument_group(_descr[_paramtype])
 
                 default = None
-                if param['default']:
+                if param.get('default'):
                     try:
                         default = [typedict[param['datatype']]['type'](param['default'])]
                     except KeyError as e:
                         pass
                 try:
-                    param_groups[_paramtype].add_argument('--'+param['name'],
-                                                               help=param['description'],
+                    param_groups[_paramtype].add_argument('--'+name,
+                                                               help=_description,
                                                                default=default,
                                                                **typedict[param['datatype']])
                 except KeyError as e:
                     raise RuntimeError("Invalid data type {} for parameter '{}'".format(str(e),
-                                                                                        param['name']))
-                param_type_map[param['name'].replace('-','_')] = _paramtype
+                                                                                        name))
+                param_type_map[name.replace('-','_')] = _paramtype
         #Parse arguments
         for key,value in sorted(vars(parser.parse_args(args)).items()):
 

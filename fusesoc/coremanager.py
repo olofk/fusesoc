@@ -198,13 +198,16 @@ class CoreManager(object):
         logger.debug("Building EDA API")
         def merge_dict(d1, d2):
             for key, value in d2.items():
-                if key in d1:
-                    d1[key] += value
+                if isinstance(value, dict):
+                    d1[key] = merge_dict(d1.get(key, {}), value)
+                elif isinstance(value, list):
+                    d1[key] = d1.get(key, []) + value
                 else:
                     d1[key] = value
+            return d1
 
         files        = []
-        parameters   = []
+        parameters   = {}
         scripts      = {}
         tool_options = {}
         vpi          = []
@@ -230,13 +233,7 @@ class CoreManager(object):
             rel_root = os.path.relpath(files_root, work_root)
 
             #Extract parameters
-            for param in core.get_parameters(_flags):
-                parameters.append ({
-                    'datatype'    : param.datatype,
-                    'default'     : param.default,
-                    'description' : param.description,
-                    'name'        : param.name,
-                    'paramtype'   : param.paramtype})
+            merge_dict(parameters, core.get_parameters(_flags))
 
             #Extract tool options
             merge_dict(tool_options, core.get_tool_options(_flags))
@@ -274,7 +271,7 @@ class CoreManager(object):
 
         top_core = cores[-1]
         return {
-            'version'      : '0.1.2',
+            'version'      : '0.2.0',
             'files'        : files,
             'hooks'        : scripts,
             'name'         : top_core.sanitized_name,

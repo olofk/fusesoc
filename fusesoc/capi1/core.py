@@ -162,11 +162,14 @@ class Core:
 
     def get_parameters(self, flags={}):
         self._debug("Getting parameters for flags '{}'".format(str(flags)))
-        parameters = []
+        parameters = {}
         for k, v in self.parameter.items():
             if (v.scope == 'public') or flags['is_toplevel']:
-                v.name = k
-                parameters.append(v)
+                parameters[k] = {}
+                for field in ['datatype','default','description','paramtype']:
+                    if getattr(v, field):
+                        parameters[k][field] = str(getattr(v, field))
+                parameters[k] = v
         self._debug("Found parameters {}".format(parameters))
         return parameters
 

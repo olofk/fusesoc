@@ -86,46 +86,28 @@ files:
 - {file_type: cSource, is_include_file: false, logical_name: '', name: ../../../cores/mor1kx-generic/bench/verilator/tb.cpp}
 name: mor1kx-generic_0
 parameters:
-- {datatype: file, default: '', description: ELF file to preload to memory, name: elf-load,
-  paramtype: plusarg}
-- {datatype: bool, default: '', description: Enable mor1kx instruction trace, name: trace_enable,
-  paramtype: plusarg}
-- {datatype: bool, default: '', description: Output mor1kx instruction trace to screen,
-  name: trace_to_screen, paramtype: plusarg}
-- {datatype: bool, default: '', description: boolean verilog parameter, name: vlogparam_bool,
-  paramtype: vlogparam}
-- {datatype: int, default: '', description: integer verilog parameter, name: vlogparam_int,
-  paramtype: vlogparam}
-- {datatype: str, default: '', description: string verilog parameter, name: vlogparam_str,
-  paramtype: vlogparam}
-- {datatype: bool, default: '', description: boolean verilog define, name: vlogdefine_bool,
-  paramtype: vlogdefine}
-- {datatype: int, default: '', description: integer verilog define, name: vlogdefine_int,
-  paramtype: vlogdefine}
-- {datatype: str, default: '', description: string verilog define, name: vlogdefine_str,
-  paramtype: vlogdefine}
-- {datatype: bool, default: '', description: boolean verilog plusarg, name: plusarg_bool,
-  paramtype: plusarg}
-- {datatype: int, default: '', description: integer verilog plusarg, name: plusarg_int,
-  paramtype: plusarg}
-- {datatype: str, default: '', description: string verilog plusarg, name: plusarg_str,
-  paramtype: plusarg}
-- {datatype: bool, default: '', description: boolean verilog cmdlinearg, name: cmdlinearg_bool,
-  paramtype: cmdlinearg}
-- {datatype: int, default: '', description: integer verilog cmdlinearg, name: cmdlinearg_int,
-  paramtype: cmdlinearg}
-- {datatype: str, default: '', description: string verilog cmdlinearg, name: cmdlinearg_str,
-  paramtype: cmdlinearg}
-- {datatype: int, default: '', description: Display a heartbeat message every n*heartbeat
-    time unit, name: heartbeat, paramtype: plusarg}
-- {datatype: str, default: '', description: Name of TAP file, name: tapfile, paramtype: plusarg}
-- {datatype: str, default: '', description: Name of testcase (Used for VCD filename),
-  name: testcase, paramtype: plusarg}
-- {datatype: int, default: '', description: Abort test case after n cycles, name: timeout,
-  paramtype: plusarg}
-- {datatype: bool, default: '', description: Enable VCD logging, name: vcd, paramtype: plusarg}
-- {datatype: bool, default: '', description: Preset RAM to a known value (0), name: clear_ram,
-  paramtype: plusarg}
+  elf-load: {datatype: file, default: '', description: ELF file to preload to memory, paramtype: plusarg}
+  trace_enable: {datatype: bool, default: '', description: Enable mor1kx instruction trace, paramtype: plusarg}
+  trace_to_screen: {datatype: bool, default: '', description: Output mor1kx instruction trace to screen, paramtype: plusarg}
+  vlogparam_bool: {datatype: bool, default: '', description: boolean verilog parameter, paramtype: vlogparam}
+  vlogparam_int: {datatype: int, default: '', description: integer verilog parameter, paramtype: vlogparam}
+  vlogparam_str: {datatype: str, default: '', description: string verilog parameter, paramtype: vlogparam}
+  vlogdefine_bool: {datatype: bool, default: '', description: boolean verilog define, paramtype: vlogdefine}
+  vlogdefine_int: {datatype: int, default: '', description: integer verilog define, paramtype: vlogdefine}
+  vlogdefine_str: {datatype: str, default: '', description: string verilog define, paramtype: vlogdefine}
+  plusarg_bool: {datatype: bool, default: '', description: boolean verilog plusarg, paramtype: plusarg}
+  plusarg_int: {datatype: int, default: '', description: integer verilog plusarg, paramtype: plusarg}
+  plusarg_str: {datatype: str, default: '', description: string verilog plusarg, paramtype: plusarg}
+  cmdlinearg_bool: {datatype: bool, default: '', description: boolean verilog cmdlinearg, paramtype: cmdlinearg}
+  cmdlinearg_int: {datatype: int, default: '', description: integer verilog cmdlinearg, paramtype: cmdlinearg}
+  cmdlinearg_str: {datatype: str, default: '', description: string verilog cmdlinearg, paramtype: cmdlinearg}
+  heartbeat: {datatype: int, default: '', description: Display a heartbeat message every n*heartbeat
+    time unit, paramtype: plusarg}
+  tapfile: {datatype: str, default: '', description: Name of TAP file, paramtype: plusarg}
+  testcase: {datatype: str, default: '', description: Name of testcase (Used for VCD filename), paramtype: plusarg}
+  timeout: {datatype: int, default: '', description: Abort test case after n cycles, paramtype: plusarg}
+  vcd: {datatype: bool, default: '', description: Enable VCD logging, paramtype: plusarg}
+  clear_ram: {datatype: bool, default: '', description: Preset RAM to a known value (0), paramtype: plusarg}
 tool_options:
   fusesoc: {}
   verilator:
