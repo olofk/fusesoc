@@ -27,10 +27,7 @@ class Git(Provider):
             raise RuntimeError(str(e))
 
     def _checkout(self, local_dir):
-        if 'version' in self.config:
-            version = self.config.get('version')
-        else:
-            version = None
+        version = self.config.get('version', None)
 
         #TODO : Sanitize URL
         repo   = self.config.get('repo')

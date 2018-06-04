@@ -147,10 +147,7 @@ set_global_assignment -name TOP_LEVEL_ENTITY {}
             makefile.write(self.MAKEFILE_TEMPLATE)
 
         with open(os.path.join(self.work_root, 'config.mk'), 'w') as config_mk:
-            if 'quartus_options' in self.tool_options:
-                quartus_options = ' '.join(self.tool_options['quartus_options'])
-            else:
-                quartus_options = ""
+            quartus_options = ' '.join(self.tool_options.get('quartus_options', []))
             config_mk.write(self.CONFIG_MK_TEMPLATE.format(
                 design_name     = self.name.replace('.', '_'),
                 quartus_options = quartus_options))

@@ -72,8 +72,7 @@ clean_{name}:
             if _vpi_modules:
                 f.write("VPI_MODULES      := {}\n".format(_vpi_modules))
             f.write("TOPLEVEL         := {}\n".format(self.toplevel))
-            if 'iverilog_options' in self.tool_options:
-                f.write("IVERILOG_OPTIONS := {}\n".format(' '.join(self.tool_options['iverilog_options'])))
+            f.write("IVERILOG_OPTIONS := {}\n".format(' '.join(self.tool_options.get('iverilog_options', []))))
             if self.plusarg:
                 plusargs = []
                 for key, value in self.plusarg.items():

@@ -62,39 +62,16 @@ class Edatool(object):
         except KeyError:
             raise RuntimeError("Missing required parameter 'name'")
 
+        self.tool_options = eda_api.get('tool_options', {}).get(_tool_name, {})
 
-        if 'tool_options' in eda_api:
-            self.tool_options = eda_api['tool_options'][_tool_name]
-        else:
-            self.tool_options = {}
+        self.files       = eda_api.get('files', [])
+        self.parameters  = eda_api.get('parameters', [])
+        self.toplevel    = eda_api.get('toplevel', [])
+        self.vpi_modules = eda_api.get('vpi', [])
 
-        if 'files' in eda_api:
-            self.files = eda_api['files']
-        else:
-            self.files = []
-        if 'parameters' in eda_api:
-            self.parameters = eda_api['parameters']
-        else:
-            self.parameters = []
+        self.hooks = eda_api.get('hooks', {})
 
-        if 'hooks' in eda_api:
-            self.hooks = eda_api['hooks']
-        else:
-            self.hooks = {}
-
-        if 'toplevel' in eda_api:
-            self.toplevel = eda_api['toplevel']
-        else:
-            self.toplevel = []
-        if 'vpi' in eda_api:
-            self.vpi_modules = eda_api['vpi']
-        else:
-            self.vpi_modules = []
-
-        if work_root:
-            self.work_root = work_root
-        else:
-            self.work_root = os.path.abspath(os.path.dirname(eda_api_file))
+        self.work_root = work_root or os.path.abspath(os.path.dirname(eda_api_file))
         self.env = os.environ.copy()
 
         self.env['WORK_ROOT'] = self.work_root
@@ -255,12 +232,8 @@ class Edatool(object):
                 _name = f['name']
                 if force_slash:
                     _name = _name.replace('\\', '/')
-                file_type = ''
-                if 'file_type' in f:
-                    file_type = f['file_type']
-                logical_name = ''
-                if 'logical_name' in f:
-                    logical_name = f['logical_name']
+                file_type = f.get('file_type', '')
+                logical_name = f.get('logical_name', '')
                 src_files.append(File(_name,
                                       file_type,
                                       logical_name))

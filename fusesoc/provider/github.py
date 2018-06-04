@@ -21,10 +21,7 @@ class Github(Provider):
         user   = self.config.get('user')
         repo   = self.config.get('repo')
 
-        if 'version' in self.config:
-            version = self.config.get('version')
-        else:
-            version = 'master'
+        version = self.config.get('version', 'master')
 
         #TODO : Sanitize URL
         url = URL.format(user=user,

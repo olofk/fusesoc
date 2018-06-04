@@ -82,8 +82,7 @@ class Modelsim(Edatool):
                 cmd = 'vlog'
                 args = []
 
-                if 'vlog_options' in self.tool_options:
-                    args += self.tool_options['vlog_options']
+                args += self.tool_options.get('vlog_options', [])
 
                 for k, v in self.vlogdefine.items():
                     args += ['+define+{}={}'.format(k,self._param_value_str(v))]
@@ -125,9 +124,7 @@ class Modelsim(Edatool):
         for key, value in self.plusarg.items():
             _plusargs += ['{}={}'.format(key, self._param_value_str(value))]
 
-        _vsim_options = []
-        if 'vsim_options' in self.tool_options:
-            _vsim_options = self.tool_options['vsim_options']
+        _vsim_options = self.tool_options.get('vsim_options', [])
 
         _modules = [m['name'] for m in self.vpi_modules]
         _clean_targets = ' '.join(["clean_"+m for m in _modules])

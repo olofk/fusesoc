@@ -93,13 +93,8 @@ quit
             vlog_defines  = ' '.join(['--define {}={}'.format(k, self._param_value_str(v)) for k,v, in self.vlogdefine.items()])
             vlog_includes = ' '.join(['-i '+k for k in self.incdirs])
             vlog_params   = ' '.join(['--generic_top {}={}'.format(k, self._param_value_str(v)) for k,v, in self.vlogparam.items()])
-            fuse_options = ''
-            if 'fuse_options' in self.tool_options:
-                fuse_options = ' '.join(self.tool_options['fuse_options'])
-
-            isim_options = ''
-            if 'isim_options' in self.tool_options:
-                isim_options = ' '.join(self.tool_options['isim_options'])
+            fuse_options = ' '.join(self.tool_options.get('fuse_options', []))
+            isim_options = ' '.join(self.tool_options.get('isim_options', []))
 
             _s = '-testplusarg {}={}'
             extra_options = ' '.join([_s.format(k, self._param_value_str(v)) for k,v in self.plusarg.items()])

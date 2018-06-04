@@ -25,12 +25,9 @@ class File(object):
         if type(tree) is dict:
             for k, v in tree.items():
                 self.name = k
-                if 'file_type' in v:
-                    self.file_type = v['file_type']
-                if 'is_include_file' in v:
-                    self.is_include_file = v['is_include_file']
-                if 'copyto' in v:
-                    self.copyto = v['copyto']
+                self.file_type       = v.get('file_type', '')
+                self.is_include_file = v.get('is_include_file', False)
+                self.copyto          = v.get('copyto', '')
         else:
             self.name = tree
             self.is_include_file = False #"FIXME"
@@ -400,11 +397,8 @@ Targets:
         self._debug(" Resolving target for flags '{}'".format(str(flags)))
 
         target_name = None
-        if 'is_toplevel' in flags and flags['is_toplevel']:
-            if 'target' in flags and flags['target']:
-                target_name = flags['target']
-            else:
-                target_name = "default"
+        if flags.get('is_toplevel'):
+            target_name = flags.get('target', 'default')
         else:
             target_name = "default"
 

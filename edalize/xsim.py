@@ -86,13 +86,8 @@ run all
             vlog_defines  = ' '.join(['--define {}={}'.format(k,v) for k,v, in self.vlogdefine.items()])
             vlog_includes = ' '.join(['-i '+k for k in self.incdirs])
             vlog_params   = ' '.join(['--generic_top {}={}'.format(k, self._param_value_str(v)) for k,v, in self.vlogparam.items()])
-            xelab_options = ''
-            if 'xelab_options' in self.tool_options:
-                xelab_options = ' '.join(self.tool_options['xelab_options'])
-
-            xsim_options = ''
-            if 'xsim_options' in self.tool_options:
-                xsim_options = ' '.join(self.tool_options['xsim_options'])
+            xelab_options = ' '.join(self.tool_options.get('xelab_options', []))
+            xsim_options  = ' '.join(self.tool_options.get('xsim_options' , []))
 
             f.write(self.CONFIG_MK_TEMPLATE.format(target=self.name,
                                                    toplevel=self.toplevel,

@@ -9,13 +9,8 @@ class Provider(object):
         self.core_root = core_root
         self.files_root = files_root
 
-        self.cachable = True
-        if 'cachable' in config:
-            self.cachable = not (config.get('cachable') == 'false')
-        if 'patches' in config:
-            self.patches = config['patches']
-        else:
-            self.patches = []
+        self.cachable = not (config.get('cachable', '') == 'false')
+        self.patches = config.get('patches', [])
 
     def clean_cache(self):
         if os.path.exists(self.files_root):
