@@ -1,0 +1,24 @@
+CAPI=2:
+name: ::parametersscore:0
+parameters:
+  param1 : {}
+  param2:
+    datatype: str
+    default: default_value
+    description: This is a parameter
+    paramtype: vlogparam
+
+targets:
+  default:
+    parameters: [param1]
+  noparameters: {}
+  nonexistant:
+    parameters: [idontexist]
+  
+  multiparameters:
+    parameters : [param1, param2]
+    
+  use_flags:
+    parameters:
+      - "tool_icarus? (param1)"
+      - "!tool_icarus? (param2)"

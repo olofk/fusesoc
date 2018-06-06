@@ -285,6 +285,9 @@ class Core:
 
         if target:
             for p in self._parse_list(flags, target.parameters):
+                if not p in self.parameters:
+                    raise SyntaxError("Parameter '{}', requested by target '{}', was not found".format(p, target.name))
+
                 parameters[p] = {}
                 for field in ['datatype','default','description','paramtype']:
                     if getattr(self.parameters[p], field):

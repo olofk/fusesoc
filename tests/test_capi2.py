@@ -88,6 +88,48 @@ def test_capi2_get_files():
     result = [vars(x) for x in core.get_files(flags)]
     assert expected == result
 
+def test_capi2_get_parameters():
+    from fusesoc.core import Core
+
+    core_file = os.path.join(tests_dir,
+                             "capi2_cores",
+                             "misc",
+                             "parameters.core")
+    core = Core(core_file)
+
+    param1 = {}
+    param2 = {
+        'datatype'    : 'str',
+        'default'     : 'default_value',
+        'description' : 'This is a parameter',
+        'paramtype'   : 'vlogparam',
+        }
+    flags    = {'is_toplevel' : True}
+    expected = {'param1' : param1}
+
+    assert expected == core.get_parameters(flags)
+
+    flags['target'] = 'noparameters'
+    expected = {}
+    assert expected == core.get_parameters(flags)
+
+    flags['target'] = 'nonexistant'
+    with pytest.raises(SyntaxError) as excinfo:
+        core.get_parameters(flags)
+    assert "Parameter 'idontexist', requested by target 'nonexistant', was not found" in str(excinfo.value)
+
+    flags['target'] = 'multiparameters'
+    expected = {'param1' : param1, 'param2' : param2}
+    assert expected == core.get_parameters(flags)
+
+    flags['target'] = 'use_flags'
+    expected = {'param2' : param2}
+    assert expected == core.get_parameters(flags)
+
+    flags['tool'] = 'icarus'
+    expected = {'param1' : param1}
+    assert expected == core.get_parameters(flags)
+
 def test_capi2_get_scripts():
     from fusesoc.core import Core
 
