@@ -213,9 +213,11 @@ class Core:
         for hook, scripts in self._get_script_names(flags).items():
             hooks[hook] = []
             for script in scripts:
+                env = script.env
+                env['FILES_ROOT'] = files_root
                 _script = {'name' : script.name,
                            'cmd'  : [str(x) for x in script.cmd],
-                           'env'  : script.env}
+                           'env'  : env}
                 hooks[hook].append(_script)
                 _s = " Matched {} hook {}"
                 self._debug(_s.format(hook, str(_script)))

@@ -178,7 +178,9 @@ class Core:
             return [{'name' : x, 'cmd' : ['sh', os.path.join(files_root, x)], 'env' : env} for x in v]
         scripts = {}
         if self.scripts:
-            env = {'BUILD_ROOT' : self.build_root}
+            env = {'BUILD_ROOT' : self.build_root,
+                   'FILES_ROOT' : files_root,
+            }
             flow = self._get_flow(flags)
             if flow is 'sim':
                 for s in ['pre_build_scripts', 'pre_run_scripts', 'post_run_scripts']:

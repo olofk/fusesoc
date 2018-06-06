@@ -225,8 +225,7 @@ class CoreManager(object):
             #Extract files
             if export_root:
                 files_root = os.path.join(export_root, core.sanitized_name)
-                dst_dir = os.path.join(export_root, core.sanitized_name)
-                core.export(dst_dir, _flags)
+                core.export(files_root, _flags)
             else:
                 files_root = core.files_root
 
@@ -239,12 +238,7 @@ class CoreManager(object):
             merge_dict(tool_options, core.get_tool_options(_flags))
 
             #Extract scripts
-            _scripts = core.get_scripts(rel_root, _flags)
-            for section in _scripts.values():
-                for script in section:
-                    script['env']['FILES_ROOT'] = rel_root
-
-            merge_dict(scripts, _scripts)
+            merge_dict(scripts, core.get_scripts(rel_root, _flags))
 
             for file in core.get_files(_flags):
                 if file.copyto:

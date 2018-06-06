@@ -41,7 +41,10 @@ def test_get_scripts():
     core = Core(filename, '', 'dummy_build_root')
 
     for flags in flag_combos:
-        env = {'BUILD_ROOT' : 'dummy_build_root'}
+        env = {
+            'BUILD_ROOT' : 'dummy_build_root',
+            'FILES_ROOT' : 'dummyroot'
+        }
         result = core.get_scripts("dummyroot", flags)
         expected = {}
         if flags['target'] == 'sim':
