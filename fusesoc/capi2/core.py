@@ -424,36 +424,6 @@ Targets:
         self._debug(" Matched filesets {}".format(target.filesets))
         return filesets
 
-    def _parse_component(self, component_file):
-        component = Component()
-        component.load(component_file)
-
-        if not self.main.description:
-            self.main.description = component.description
-
-        _file_sets = []
-        for file_set in component.fileSets.fileSet:
-            _name = file_set.name
-            for f in file_set.file:
-                self.export_files.append(f.name)
-                #FIXME: Harmonize underscore vs camelcase
-                f.file_type = f.fileType
-                if f.isIncludeFile == 'true':
-                    f.is_include_file = True
-                else:
-                    f.is_include_file = False
-                f.logical_name = f.logicalName
-            #FIXME: Handle duplicates. Resolution function? (merge/replace, prio ipxact/core)
-            _taken = False
-            for fs in self.file_sets:
-                if fs.name == file_set.name:
-                    _taken = True
-            if not _taken:
-                _file_sets.append(FileSet(name = file_set.name,
-                                          file = file_set.file[:],
-                                          usage = ['sim', 'synth']))
-        self.file_sets += _file_sets
-
     def _parse_list(self, flags, l):
         r = []
         for x in l:
