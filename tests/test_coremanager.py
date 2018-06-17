@@ -4,15 +4,15 @@ def test_copyto():
     import os
     import tempfile
 
-    from fusesoc.vlnv import Vlnv
+    from fusesoc.edalizer import Edalizer
+    from fusesoc.core import Core
 
-    from test_common import common_cm
-
+    core = Core(os.path.join(os.path.dirname(__file__), 'cores', 'misc', 'copytocore.core'))
     flags = {'tool' : 'icarus'}
 
     work_root = tempfile.mkdtemp(prefix='copyto_')
 
-    eda_api = common_cm.setup(Vlnv("copytocore"), flags, work_root, None)
+    eda_api = Edalizer(core.name, flags, [core], work_root, None).edalize
 
     assert eda_api['files'] == [{'file_type': 'user',
                                  'logical_name': '',
@@ -29,23 +29,20 @@ def test_export():
     import os
     import tempfile
 
-    from fusesoc.vlnv import Vlnv
+    from fusesoc.edalizer import Edalizer
+    from fusesoc.core import Core
 
-    from test_common import common_cm
+    core = Core(os.path.join(os.path.dirname(__file__), 'cores', 'wb_intercon', 'wb_intercon-1.0.core'))
 
-    tests_dir = os.path.dirname(__file__)
     build_root = tempfile.mkdtemp(prefix='export_')
     export_root = os.path.join(build_root, 'exported_files')
-    eda_api = common_cm.setup(Vlnv("::wb_intercon:1.0"),
+    eda_api = Edalizer(core.name,
                        {'tool' : 'icarus'},
+                       [core],
                        work_root=os.path.join(build_root, 'work'),
-                       export_root=export_root)
+                       export_root=export_root).edalize
 
     for f in [
-            'verilog_utils_0/verilog_utils.vh',
-            'vlog_tb_utils_1.1/vlog_tap_generator.v',
-            'vlog_tb_utils_1.1/vlog_tb_utils.v',
-            'vlog_tb_utils_1.1/vlog_functions.v',
             'wb_intercon_1.0/dummy_icarus.v',
             'wb_intercon_1.0/bench/wb_mux_tb.v',
             'wb_intercon_1.0/bench/wb_upsizer_tb.v',
@@ -55,7 +52,5 @@ def test_export():
             'wb_intercon_1.0/rtl/verilog/wb_mux.v',
             'wb_intercon_1.0/rtl/verilog/wb_arbiter.v',
             'wb_intercon_1.0/rtl/verilog/wb_upsizer.v',
-            'verilog-arbiter_0-r1/src/arbiter.v',
-            'wb_common_0/wb_common_params.v',
-            'wb_common_0/wb_common.v']:
+    ]:
         assert os.path.isfile(os.path.join(export_root, f))

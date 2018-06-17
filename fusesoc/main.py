@@ -1,12 +1,9 @@
 #!/usr/bin/env python
 import argparse
 import os
-import platform
-import shutil
 import subprocess
 import sys
 import signal
-import yaml
 
 from fusesoc import __version__
 
@@ -17,6 +14,7 @@ if os.path.exists(os.path.join(fusesocdir, "fusesoc")):
 
 from fusesoc.config import Config
 from fusesoc.coremanager import CoreManager, DependencyError
+from fusesoc.edalizer import Edalizer
 from edalize import get_edatool
 from fusesoc.provider import get_provider
 from fusesoc.vlnv import Vlnv
@@ -264,21 +262,23 @@ def run_backend(cm, export, do_configure, do_build, do_run, flags, system, backe
                                 core.name.sanitized_name+'.eda.yml')
     if do_configure:
         try:
-            eda_api = cm.setup(core.name,
-                               flags,
-                               work_root=work_root,
-                               export_root=export_root)
+            cores = cm.get_depends(core.name, flags)
         except DependencyError as e:
             logger.error(e.msg + "\nFailed to resolve dependencies for {}".format(system))
             exit(1)
+        try:
+            edalizer = Edalizer(core.name,
+                                flags,
+                                cores,
+                                work_root=work_root,
+                                export_root=export_root)
         except SyntaxError as e:
             logger.error(e.msg)
             exit(1)
         except RuntimeError as e:
             logger.error("Setup failed : {}".format(str(e)))
             exit(1)
-        with open(eda_api_file,'w') as f:
-            f.write(yaml.dump(eda_api))
+        edalizer.to_yaml(eda_api_file)
 
     #Frontend/backend separation
 
