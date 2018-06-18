@@ -24,12 +24,12 @@ class File(object):
         self.logical_name = ''
         if type(tree) is dict:
             for k, v in tree.items():
-                self.name = k
+                self.name = os.path.expandvars(k)
                 self.file_type       = v.get('file_type', '')
                 self.is_include_file = v.get('is_include_file', False)
                 self.copyto          = v.get('copyto', '')
         else:
-            self.name = tree
+            self.name = os.path.expandvars(tree)
             self.is_include_file = False #"FIXME"
 
 class String(str):
