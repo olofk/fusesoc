@@ -169,7 +169,6 @@ class Core:
                 for field in ['datatype','default','description','paramtype']:
                     if getattr(v, field):
                         parameters[k][field] = str(getattr(v, field))
-                parameters[k] = v
         self._debug("Found parameters {}".format(parameters))
         return parameters
 
