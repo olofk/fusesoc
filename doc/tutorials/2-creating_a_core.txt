@@ -45,7 +45,7 @@ module pps
 
 endmodule
 
-Save it as `rtl/pps.v` in the core directory.
+Save it as `pps.v` in the core directory.
 
 Before testing this in hardware we should run a simulation. Therefore we need a testbench. This will serve as our initial tetsbench. We will gradually improve the design of the testbench to showcase some FuseSoC features.
 
@@ -89,7 +89,7 @@ module pps_tb;
 
 endmodule
 
-The code will create a 50MHz clock and check that the pps pulse changes every second (1000000000 ns) for ten pulses. Also note that as the testbench will take forever to execute with a simulated 50MHz clock, we have changed the default clock frequency to 50KHz for now.
+The code will create a 50MHz clock and check that the pps pulse changes every second (1000000000 ns) for ten pulses. Also note that as the testbench will take forever to execute with a simulated 50MHz clock, we have changed the default clock frequency to 50KHz for now. Save it as pps_tb.v in the core directory.
 
 In order to let FuseSoC run a simulation, we need to add the files to our .core file. As pps.v and pps_tb.v has different purposes, with one being the RTL code and one being a testbench we will put them in different filesets. At this point it's not really necessary, but it will become apparent later why we choose to do this. Also note that the names of the filesets have no meaning. Just choose names that describe the intent. Add the following snippet to the .core file to create two new filesets.
 
@@ -124,7 +124,7 @@ filesets:
       - pps_tb.v : {file_type : verilogSource}
 
 targets:
-  default:
+  sim:
     filesets : [rtl, tb]
     toplevel: pps_tb
 
