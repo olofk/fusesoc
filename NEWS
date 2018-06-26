@@ -1,3 +1,18 @@
+1.8.2 2018-06-27 Olof Kindgren <olof.kindgren@gmail.com>
+======================================================
+* Ignore directory tree with a FUSESOC_IGNORE file
+* Add lint mode for verilator backend
+* Split out backends to separate edalize module
+* Add spyglass backend
+* CAPI2: Allow toplevel to be specified as string
+* CAPI2: Expand environment variables in file names
+
+* + improved error handling, bug fixes and refactoring
+
+Contributors:
+Olof Kindgren <olof.kindgren@gmail.com>
+Philipp Wagner <philipp.wagner@tum.de>
+
 1.8.1 2018-03-22 Olof Kindgren <olof.kindgren@gmail.com>
 ======================================================
 * Implement sync-type to determine library provider
