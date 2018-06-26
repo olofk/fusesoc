@@ -105,9 +105,9 @@ filesets:
 Next, we need to create a target that uses the filesets and also tell the simulation tool which module is our toplevel. We will use `sim` (for simulation) as the name of the target. Target names can also be chosen mostly arbitrarily, but there are some rules that we will come back to later. This snippet will set up our new target
 
 targets:
-  default:
+  sim:
     filesets : [rtl, tb]
-    toplevel: pps_tb
+    toplevel: [pps_tb]
 
 With the complete core file looking like
 
@@ -126,7 +126,7 @@ filesets:
 targets:
   sim:
     filesets : [rtl, tb]
-    toplevel: pps_tb
+    toplevel: [pps_tb]
 
 we are ready to go. Run `fusesoc run --target=sim --tool=icarus blinky` to build the simulation model and run it with Icarus Verilog.
 
