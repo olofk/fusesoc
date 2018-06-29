@@ -1,10 +1,10 @@
 Some time ago I neeeded to build an emulated GPS device for a project. I reckoned it was easiest to do so with an old FPGA board and since this is turned out to be a pretty straight-forward SoC I also realized it would serve well as a tutorial. So here it is, the first tutorial on getting started with building systems using FuseSoC.
 
-To my help I got my trusty old DE0 Nano board, but most of the tutorial requires no hardware at all, and some parts will work on other hardware with slight modifications.
+To help with the project I got my trusty old DE0 Nano board, but most of the tutorial requires no hardware at all, and some parts will work on other hardware with only minor modifications.
 
 Background
 
-The GPS I intend to emulate has two outputs. First is a signal that changes polarity once a second, like a 0.5Hz clock signal. This is called a PPS (Pulse Per Second) signal in GPS parlour. Some variants of the PPS scheme exists, like doing a short pulse every second instead of just changing polarity, but we ignore those for now.
+The GPS I intend to emulate has two outputs. One is a signal that changes polarity once a second emulating a 0.5Hz clock signal. This is called a PPS (Pulse Per Second) signal in GPS parlour. There are multiple variants of the PPS scheme, in some cases it is a short pulse every second instead of just changing polarity, but we ignore those for now.
 
 The second signal is a serial UART data signal that transmits an ASCII message at 4800 baud rate every second. The data sent on the serial link uses the NMEA protocol http://www.gpsinformation.org/dale/nmea.htm. While many messages are defined in the NMEA protocol, this particular device emulator will only implement the $GPGGA message. Each message is sent some time (e.g. 200ms) after the positive edge on the PPS signal.
 
@@ -20,7 +20,7 @@ Alright, shouldn't be too hard. Let's get started with the coding.
 
 Preparations
 
-Before we do anything, we need to install the required tools. First on the list is of course FuseSoC.
+Before we do anything, we need to install the required tools. First on the list is of course FuseSoC. This is pretty easy using the python pip package manager.
 
 pip install fusesoc
 
@@ -28,7 +28,7 @@ FuseSoC is now installed, but as with all package managers, they are not all tha
 
 fusesoc list-cores
 
-which will result in an empty list if you never had FuseSoC on your system before.
+This should result in an empty list if you never had FuseSoC on your system before.
 
 Luckily FuseSoC comes with two standard libraries (It should really only be one, but the transition has taken a bit longer than expected).
 
@@ -95,7 +95,7 @@ The information in the core description file is stored in the yaml format with a
 
 Next line is the name. Names are specified in the VLNV (Vendor Library Name Version) format with : to separate the fields. FuseSoC allows vendor and library to be left empty, which is why many core names start with ::. The VLNV format comes from IP-XACT, a standard that we hopefully will revisit in later tutorials. For now we can happily ignore that.
 
-description should be pretty self-explanatory.
+Description should be pretty self-explanatory.
 
 Next up is the filesets section. Related source files are lumped together in filesets. There can for example be one fileset for the testbench and another one for the RTL implementation. This example only has a single fileset that is called rtl. The file uart_defines.v is noted to be an include file, i.e. a file that is included in other verilog files with the `include statement. All files in the fileset are of the type verilogSource.
 
@@ -150,7 +150,6 @@ In the target section there is also a new target called sim. This one has two op
 A third difference is that patches option in the provider section. Sometimes when packaging third-party cores there might be aspects of the original code that does not work well with FuseSoC. By specifying diff files in the patches option, it is possible to apply patches to cores after they have been downloaded before they are stored in the FuseSoC cache. Common uses for this is to remove hard-coded file paths that clashes with FuseSoC directory layout or add useful features. In this case the patch adds support for functionality from the vlog_tb_utils core.
 
 We are now almost ready to write our own core, but let's begin with running some examples related to the core we just looked at. Start by running `fusesoc core-info`. There's not much information here, but we should be able to verify that it's indeed the core we looked at by checking the line starting with `Core root`. We can also see that the FuseSoC core parser has found two targets, default and sim.
-
 
 Next up we can run the testbench of the i2c core. Before doing this, create an empty directory that will be used as the workspace. For this tutorial we will use `~/fusesoc_tutorial/workspace`. Enter the newly created workspace directory, make sure Icarus Verilog is installed and run `fusesoc run --target=sim i2c`. This should run the testbench and finally output `Testbench done`. 
 
