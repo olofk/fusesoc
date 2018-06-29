@@ -1,4 +1,4 @@
-# FuseSOC Getting Started
+# FuseSOC: Getting Started
 
 Some time ago I neeeded to build an emulated GPS device for a project. I reckoned it was easiest to do so with an old FPGA board and since this is turned out to be a pretty straight-forward SoC I also realized it would serve well as a tutorial. So here it is, the first tutorial on getting started with building systems using FuseSoC.
 
@@ -190,4 +190,4 @@ Let's run another simulation, but this time we want to generated a VCD waveform 
 
 Running `fusesoc run --help` instead will reveal the options available for the run command and running `fusesoc --help` will show available commands and global options.
 
-####[Next tutorial: Writing a new core file](2-creating_a_core.md)
+[Next tutorial: Writing a new core file](2-creating_a_core.md)
