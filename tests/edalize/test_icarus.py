@@ -11,18 +11,56 @@ def test_icarus():
     tool         = 'icarus'
     tool_options = {
         'iverilog_options' : ['some', 'iverilog_options'],
+        'timescale'        : '1ns/1ns',
     }
 
     (backend, args, work_root) = setup_backend(paramtypes, name, tool, tool_options, use_vpi=True)
     backend.configure(args)
 
     compare_files(ref_dir, work_root, ['Makefile',
-                                       name+'.scr'])
+                                       name+'.scr',
+                                       'timescale.v',
+    ])
 
     backend.build()
     compare_files(ref_dir, work_root, ['iverilog.cmd'])
     compare_files(ref_dir, work_root, ['iverilog-vpi.cmd'])
 
     backend.run(args)
+
+    compare_files(ref_dir, work_root, ['vvp.cmd'])
+
+def test_icarus_minimal():
+    import os
+    import shutil
+    import tempfile
+    import yaml
+
+    from edalize import get_edatool
+
+    from edalize_common import compare_files, tests_dir
+
+    ref_dir      = os.path.join(tests_dir, __name__, 'minimal')
+    os.environ['PATH'] = os.path.join(tests_dir, 'mock_commands')+':'+os.environ['PATH']
+    tool = 'icarus'
+    name = 'test_'+tool+'_minimal_0'
+    work_root = tempfile.mkdtemp(prefix=tool+'_')
+
+    eda_api_file = os.path.join(work_root, name+'.eda.yml')
+    with open(eda_api_file,'w') as f:
+        f.write(yaml.dump({'name'         : name,
+                           'toplevel' : 'top'}))
+
+    backend = get_edatool(tool)(eda_api_file=eda_api_file)
+    backend.configure([])
+
+    compare_files(ref_dir, work_root, ['Makefile',
+                                       name+'.scr',
+    ])
+
+    backend.build()
+    compare_files(ref_dir, work_root, ['iverilog.cmd'])
+
+    backend.run([])
 
     compare_files(ref_dir, work_root, ['vvp.cmd'])

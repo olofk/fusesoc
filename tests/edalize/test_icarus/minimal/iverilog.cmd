@@ -1,0 +1,1 @@
+-stop -c test_icarus_minimal_0.scr -o test_icarus_minimal_0
