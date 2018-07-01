@@ -144,7 +144,6 @@ class CoreManager(object):
                     except ImportError as e:
                         w = 'Failed to register "{}" due to unknown provider: {}'
                         logger.warning(w.format(core_file, str(e)))
-                    del dirs[:]
 
     def add_cores_root(self, path):
         if not path:
