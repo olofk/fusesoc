@@ -118,52 +118,44 @@ class CoreDB(object):
         return [op.package.core for op in transaction.operations]
 
 class CoreManager(object):
-    _instance = None
 
     def __init__(self, config):
         self.config = config
         self._cores_root = []
         self.db = CoreDB()
 
-    def load_core(self, file):
-        if os.path.exists(file):
-            try:
-                core = Core(file, self.config.cache_root, self.config.build_root)
-                self.db.add(core)
-            except SyntaxError as e:
-                w = "Parse error. Ignoring file " + file + ": " + e.msg
-                logger.warning(w)
-            except ImportError as e:
-                logger.warning('Failed to register "{}" due to unknown provider: {}'.format(file, str(e)))
-
     def load_cores(self, path):
-        if path:
-            logger.debug("Checking for cores in " + path)
         if os.path.isdir(path) == False:
             raise IOError(path + " is not a directory")
+        logger.debug("Checking for cores in " + path)
         for root, dirs, files in os.walk(path, followlinks=True):
             if 'FUSESOC_IGNORE' in files:
                 del dirs[:]
                 continue
             for f in files:
                 if f.endswith('.core'):
-                    d = os.path.basename(root)
-                    self.load_core(os.path.join(root, f))
+                    core_file = os.path.join(root, f)
+                    try:
+                        core = Core(core_file, self.config.cache_root, self.config.build_root)
+                        self.db.add(core)
+                    except SyntaxError as e:
+                        w = "Parse error. Ignoring file " + core_file + ": " + e.msg
+                        logger.warning(w)
+                    except ImportError as e:
+                        w = 'Failed to register "{}" due to unknown provider: {}'
+                        logger.warning(w.format(core_file, str(e)))
                     del dirs[:]
 
     def add_cores_root(self, path):
-        if path is None:
+        if not path:
             return
-        elif not isinstance(path, list):
-            path = [path]
-        for p in path:
-            if not p:
-                # skip empty entries
-                continue
-            abspath = os.path.abspath(os.path.expanduser(p))
-            if not abspath in self._cores_root:
-                self.load_cores(os.path.expanduser(p))
-                self._cores_root += [abspath]
+
+        abspath = os.path.abspath(os.path.expanduser(path))
+        if abspath in self._cores_root:
+            return
+
+        self.load_cores(os.path.expanduser(path))
+        self._cores_root += [abspath]
 
     def get_cores_root(self):
         return self._cores_root

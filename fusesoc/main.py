@@ -399,11 +399,11 @@ def init_coremanager(config, args_cores_root):
     env_cores_root.reverse()
 
     core_libraries = [l['location'] for l in config.libraries.values()]
-    for cores_root in [config.cores_root,
-                       config.systems_root,
-                       env_cores_root,
-                       core_libraries,
-                       args_cores_root]:
+    for cores_root in config.cores_root + \
+                       [config.systems_root] + \
+                       env_cores_root + \
+                       core_libraries + \
+                       args_cores_root:
         try:
             cm.add_cores_root(cores_root)
         except (RuntimeError, IOError) as e:
@@ -419,7 +419,7 @@ def parse_args():
     parser.add_argument('--version', help='Display the FuseSoC version', action='version', version=__version__)
 
     # Global options
-    parser.add_argument('--cores-root', help='Add additional directories containing cores', action='append')
+    parser.add_argument('--cores-root', help='Add additional directories containing cores', default=[], action='append')
     parser.add_argument('--config', help='Specify the config file to use', type=argparse.FileType('r'))
     parser.add_argument('--monochrome', help='Don\'t use color for messages', action='store_true')
     parser.add_argument('--verbose', help='More info messages', action='store_true')
