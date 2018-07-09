@@ -135,10 +135,17 @@ set_global_assignment -name TOP_LEVEL_ENTITY {}
                     _s = "{} has unknown file type '{}'"
                     logger.warning(_s.format(f.name,
                                              f.file_type))
+ 
                 if _type:
-                    _s = "set_global_assignment -name {} {}\n"
-                    tcl_file.write(_s.format(_type,
-                                             f.name.replace('\\', '/')))
+                    if f.logical_name != "":            
+                        _s = "set_global_assignment -name {} -library {} {}\n"
+                        tcl_file.write(_s.format(_type,
+                                                 f.logical_name,
+                                                 f.name.replace('\\', '/')))
+                    else:
+                        _s = "set_global_assignment -name {} {}\n"
+                        tcl_file.write(_s.format(_type,
+                                                 f.name.replace('\\', '/')))                         
 
             for include_dir in incdirs:
                 tcl_file.write("set_global_assignment -name SEARCH_PATH " + include_dir.replace('\\', '/') + '\n')
