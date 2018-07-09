@@ -16,6 +16,6 @@ source tcl_file.tcl
 set_global_assignment -name VERILOG_FILE vlog_file.v
 set_global_assignment -name VERILOG_FILE vlog05_file.v
 set_global_assignment -name VHDL_FILE vhdl_file.vhd
-set_global_assignment -name VHDL_FILE vhdl_lfile
+set_global_assignment -name VHDL_FILE -library libx vhdl_lfile
 set_global_assignment -name VHDL_FILE vhdl2008_file
 set_global_assignment -name SEARCH_PATH .
