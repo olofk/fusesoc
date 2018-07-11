@@ -48,7 +48,7 @@ class String(str):
                 return t.expr
             else:
                 return []
-        word = Word(alphanums+':>.[]_-,=~/')
+        word = Word(alphanums+':<>.[]_-,=~/')
         conditional = Forward()
         conditional << (Optional("!")("negate") + word("cond") + Suppress('?') + Suppress('(') + OneOrMore(conditional ^ word)("expr") + Suppress(')')).setParseAction(cb_conditional)
         #string = (function ^ word)
