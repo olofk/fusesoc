@@ -1,0 +1,4 @@
+CAPI=1
+
+[parameter minimal]
+datatype = str

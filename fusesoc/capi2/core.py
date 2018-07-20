@@ -290,10 +290,43 @@ class Core:
                 if not p in self.parameters:
                     raise SyntaxError("Parameter '{}', requested by target '{}', was not found".format(p, target.name))
 
-                parameters[p] = {}
-                for field in ['datatype','default','description','paramtype']:
-                    if getattr(self.parameters[p], field):
-                        parameters[p][field] = str(getattr(self.parameters[p], field))
+                datatype    = self.parameters[p].datatype
+                default     = self.parameters[p].default
+                description = self.parameters[p].description
+                paramtype   = self.parameters[p].paramtype
+
+                if not datatype in ['bool', 'file', 'int', 'str']:
+                    _s = "{} : Invalid datatype '{}' for parameter {}"
+                    raise SyntaxError(_s.format(self.name, datatype, p))
+
+                if not paramtype in ['cmdlinearg', 'generic', 'plusarg',
+                                     'vlogdefine', 'vlogparam']:
+                    _s = "{} : Invalid paramtype '{}' for parameter {}"
+                    raise SyntaxError(_s.format(self.name, paramtype, p))
+                parameters[p] = {
+                    'datatype'  : self.parameters[p].datatype,
+                    'paramtype' : self.parameters[p].paramtype,
+                }
+
+                if description:
+                    parameters[p]['description'] = str(description)
+
+                if default:
+                    if datatype == 'bool':
+                        if default.lower() ==  'true':
+                            parameters[p]['default'] = True
+                        elif default.lower() == 'false':
+                            parameters[p]['default'] = False
+                        else:
+                            _s = "{}: Invalid default value '{}' for bool parameter {}"
+                            raise SyntaxError(_s.format(self.name, default, p))
+                    elif datatype == 'int':
+                        if type(default) == int:
+                            parameters[p]['default'] = default
+                        else:
+                            parameters[p]['default'] = int(default,0)
+                    else:
+                        parameters[p]['default'] = str(default)
         self._debug("Found parameters {}".format(parameters))
         return parameters
 

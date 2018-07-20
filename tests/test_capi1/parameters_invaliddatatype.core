@@ -1,0 +1,4 @@
+CAPI=1
+
+[parameter nodatatype]
+datatype = badtype

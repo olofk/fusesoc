@@ -1,12 +1,30 @@
 CAPI=2:
 name: ::parametersscore:0
 parameters:
-  param1 : {}
+  param1:
+    datatype  : str
+    paramtype : vlogparam
+
   param2:
     datatype: str
     default: default_value
     description: This is a parameter
     paramtype: vlogparam
+
+  intparam:
+    datatype  : int
+    default   : 5446
+    paramtype : vlogparam
+
+  boolfalse:
+    datatype  : bool
+    default   : false
+    paramtype : vlogparam
+
+  booltrue:
+    datatype  : bool
+    default   : true
+    paramtype : vlogparam
 
 targets:
   default:
@@ -17,7 +35,10 @@ targets:
   
   multiparameters:
     parameters : [param1, param2]
-    
+
+  types:
+    parameters : [param2, intparam, boolfalse, booltrue]
+
   use_flags:
     parameters:
       - "tool_icarus? (param1)"

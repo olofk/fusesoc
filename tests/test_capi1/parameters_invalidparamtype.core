@@ -1,0 +1,5 @@
+CAPI=1
+
+[parameter badparamtype]
+datatype = str
+paramtype = badtype

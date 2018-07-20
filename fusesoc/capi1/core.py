@@ -165,10 +165,11 @@ class Core:
         parameters = {}
         for k, v in self.parameter.items():
             if (v.scope == 'public') or flags['is_toplevel']:
-                parameters[k] = {}
-                for field in ['datatype','default','description','paramtype']:
+                parameters[k] = {'datatype'  : v.datatype,
+                                 'paramtype' : v.paramtype}
+                for field in ['default','description']:
                     if getattr(v, field):
-                        parameters[k][field] = str(getattr(v, field))
+                        parameters[k][field] = getattr(v, field)
         self._debug("Found parameters {}".format(parameters))
         return parameters
 

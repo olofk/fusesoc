@@ -130,13 +130,31 @@ def test_capi2_get_parameters():
                              "parameters.core")
     core = Core(core_file)
 
-    param1 = {}
+    param1 = {
+        'datatype'  : 'str',
+        'paramtype' : 'vlogparam',
+    }
     param2 = {
         'datatype'    : 'str',
         'default'     : 'default_value',
         'description' : 'This is a parameter',
         'paramtype'   : 'vlogparam',
         }
+    intparam = {
+        'datatype'  : 'int',
+        'default'   : 5446,
+        'paramtype' : 'vlogparam',
+    }
+    boolfalse = {
+        'datatype'  : 'bool',
+        'paramtype' : 'vlogparam',
+    }
+
+    booltrue = {
+        'datatype'  : 'bool',
+        'default'   : True,
+        'paramtype' : 'vlogparam',
+    }
     flags    = {'is_toplevel' : True}
     expected = {'param1' : param1}
 
@@ -161,6 +179,14 @@ def test_capi2_get_parameters():
 
     flags['tool'] = 'icarus'
     expected = {'param1' : param1}
+    assert expected == core.get_parameters(flags)
+
+    flags['target'] = 'types'
+    expected = {'param2'    : param2,
+                'intparam'  : intparam,
+                'boolfalse' : boolfalse,
+                'booltrue'  : booltrue,
+    }
     assert expected == core.get_parameters(flags)
 
 def test_capi2_get_scripts():

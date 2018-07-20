@@ -31,6 +31,27 @@ def test_core_parsing():
             core = Core(os.path.join(cores_root, "duplicateoptions.core"))
         assert "option 'file_type' in section 'fileset dummy' already exists" in str(e.value)
 
+def test_capi1_get_parameters():
+    tests_dir = os.path.join(os.path.dirname(__file__),
+                             __name__)
+
+    with pytest.raises(SyntaxError) as e:
+        core = Core(os.path.join(tests_dir, 'parameters_nodatatype.core'))
+    assert "Invalid datatype '' for parameter" in str(e.value)
+
+    with pytest.raises(SyntaxError) as e:
+        core = Core(os.path.join(tests_dir, 'parameters_invaliddatatype.core'))
+    assert "Invalid datatype 'badtype' for parameter" in str(e.value)
+
+    with pytest.raises(SyntaxError) as e:
+        core = Core(os.path.join(tests_dir, 'parameters_noparamtype.core'))
+    assert "Invalid paramtype '' for parameter" in str(e.value)
+
+    with pytest.raises(SyntaxError) as e:
+        core = Core(os.path.join(tests_dir, 'parameters_invalidparamtype.core'))
+    assert "Invalid paramtype 'badtype' for parameter" in str(e.value)
+    
+                
 def test_get_scripts():
     flag_combos = [{'target' : 'sim'  , 'is_toplevel' : False},
                    {'target' : 'sim'  , 'is_toplevel' : True},

@@ -562,6 +562,25 @@ class ParameterSection(Section):
 
         if items:
             self.load_dict(items)
+            if not self.datatype in ['bool', 'file', 'int', 'str']:
+                _s = "Invalid datatype '{}' for parameter"
+                raise SyntaxError(_s.format(self.datatype))
+            if not self.paramtype in ['cmdlinearg', 'generic', 'plusarg',
+                                      'vlogdefine', 'vlogparam']:
+                _s = "Invalid paramtype '{}' for parameter"
+                raise SyntaxError(_s.format(self.paramtype))
+            if self.default:
+                if self.datatype == 'bool':
+                    if self.default == 'true':
+                        self.default = True
+                    elif self.default == 'false':
+                        self.default = False
+                    else:
+                        _s = "Invalid default value '{}' for bool parameter"
+                        raise SyntaxError(_s.format(self.default))
+                elif self.datatype == 'int':
+                    self.default = int(self.default)
+                
     def __str__(self):
         return """Data type      : {}
 Default value  : {}
