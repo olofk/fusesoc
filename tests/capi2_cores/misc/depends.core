@@ -1,0 +1,28 @@
+CAPI=2:
+name : ::dependscore:0
+
+filesets:
+  legacy:
+    depend:
+      - unversioned
+      - versioned-1.0
+      - <lt-1.0
+      - <=lte-1.0
+      - =eq-1.0
+      - ">gt-1.0"
+      - ">=gte-1.0"
+  vlnv:
+    depend:
+      - ::n
+      - ::nv:1.0
+      - :l:nv:1.0
+      - v:l:nv:1.0
+      - <::vlnvlt:1.0
+      - <=::vlnvlte:1.0
+      - =::vlnveq:1.0
+      - ">::vlnvgt:1.0"
+      - ">=::vlnvgte:1.0"
+
+targets:
+  default:
+    filesets: [legacy, vlnv]

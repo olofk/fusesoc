@@ -46,6 +46,39 @@ def test_capi2_export():
         result += [os.path.relpath(os.path.join(root, f), export_root) for f in files]
     assert expected == sorted(result)
 
+def test_capi2_get_depends():
+    from fusesoc.core import Core
+    from fusesoc.vlnv import Vlnv
+
+    core = Core(os.path.join(tests_dir,
+                             "capi2_cores",
+                             "misc",
+                             "depends.core"))
+    flags = {}
+    result = core.get_depends(flags)
+
+    expected = [
+        Vlnv('unversioned'),
+        Vlnv('versioned-1.0'),
+        Vlnv('<lt-1.0'),
+        Vlnv('<=lte-1.0'),
+        Vlnv('=eq-1.0'),
+        Vlnv('>gt-1.0'),
+        Vlnv('>=gte-1.0'),
+        Vlnv('::n'),
+        Vlnv('::nv:1.0'),
+        Vlnv(':l:nv:1.0'),
+        Vlnv('v:l:nv:1.0'),
+        Vlnv('<::vlnvlt:1.0'),
+        Vlnv('<=::vlnvlte:1.0'),
+        Vlnv('=::vlnveq:1.0'),
+        Vlnv('>::vlnvgt:1.0'),
+        Vlnv('>=::vlnvgte:1.0'),
+    ]
+    assert len(result) == len(expected)
+    for i in range(len(result)):
+        assert result[i] == expected[i]
+
 def test_capi2_get_files():
     from fusesoc.core import Core
 
