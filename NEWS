@@ -1,3 +1,18 @@
+1.8.3 2018-07-24 Olof Kindgren <olof.kindgren@gmail.com>
+======================================================
+* Allow setting default timescale for Icarus
+* Support VHDL libraries in Quartus backend
+* Search for cores in subdirectories of other cores
+* Allow overriding parameter default values per target
+
+* + improved error handling, bug fixes and refactoring
+
+Contributors:
+Anonymous
+Olof Kindgren <olof.kindgren@gmail.com>
+Philipp Wagner <philipp.wagner@tum.de>
+Piotr Esden-Tempski <piotr@esden.net>
+
 1.8.2 2018-06-27 Olof Kindgren <olof.kindgren@gmail.com>
 ======================================================
 * Ignore directory tree with a FUSESOC_IGNORE file
