@@ -286,12 +286,22 @@ class Core:
         parameters = {}
 
         if target:
-            for p in self._parse_list(flags, target.parameters):
+            for _param in target.parameters:
+                plist = _param.parse(flags).split('=', 1)
+
+                p = plist[0]
+
+                if not p:
+                    continue
+
                 if not p in self.parameters:
                     raise SyntaxError("Parameter '{}', requested by target '{}', was not found".format(p, target.name))
 
                 datatype    = self.parameters[p].datatype
-                default     = self.parameters[p].default
+                if len(plist) > 1:
+                    default = plist[1]
+                else:
+                    default     = self.parameters[p].default
                 description = self.parameters[p].description
                 paramtype   = self.parameters[p].paramtype
 

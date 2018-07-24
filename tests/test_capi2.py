@@ -189,6 +189,19 @@ def test_capi2_get_parameters():
     }
     assert expected == core.get_parameters(flags)
 
+    flags['target'] = 'override'
+    param1['default'] = 'def'
+    param2['default'] = 'new_def'
+    intparam['default'] = 0xdeadbeef
+    boolfalse['default'] = True
+    booltrue['default'] = False
+    expected = {'param1'    : param1,
+                'param2'    : param2,
+                'intparam'  : intparam,
+                'boolfalse' : boolfalse,
+                'booltrue'  : booltrue,
+    }
+    assert expected == core.get_parameters(flags)
 def test_capi2_get_scripts():
     from fusesoc.core import Core
 

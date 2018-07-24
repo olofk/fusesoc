@@ -36,6 +36,8 @@ targets:
   multiparameters:
     parameters : [param1, param2]
 
+  override:
+    parameters : [param1=def, param2=new_def, intparam=0xdeadbeef, boolfalse=true, booltrue=false]
   types:
     parameters : [param2, intparam, boolfalse, booltrue]
 
