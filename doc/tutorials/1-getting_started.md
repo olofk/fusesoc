@@ -37,7 +37,7 @@ FuseSoC is now installed, but as with all package managers, they are not all tha
 fusesoc list-cores
 ```
 
-This should result in an empty list if you never had FuseSoC on your system before.
+This should result in an empty list and a message saying `ERROR: cores_root is not defined` if you never had FuseSoC on your system before.
 
 Luckily FuseSoC comes with two standard libraries (It should really only be one, but the transition has taken a bit longer than expected).
 
