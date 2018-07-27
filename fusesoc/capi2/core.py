@@ -443,8 +443,8 @@ Targets:
         self._debug(" Resolving target for flags '{}'".format(str(flags)))
 
         target_name = None
-        if flags.get('is_toplevel'):
-            target_name = flags.get('target', 'default')
+        if flags.get('is_toplevel') and flags.get('target'):
+            target_name = flags.get('target')
         else:
             target_name = "default"
 

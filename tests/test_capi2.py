@@ -353,6 +353,8 @@ def test_capi2_get_work_root():
         core.get_work_root({})
     assert 'default-icarus'      == core.get_work_root({'tool' : 'icarus'})
     assert 'default-vivado'      == core.get_work_root({'tool' : 'vivado'})
+    assert 'default-icarus'      == core.get_work_root({'tool' : 'icarus',
+                                                        'target' : None})
     with pytest.raises(SyntaxError):
         core.get_work_root({'tool' : 'icarus', 'target' : 'invalid_target'})
     assert 'empty_target-icarus' == core.get_work_root({'tool' : 'icarus', 'target' : 'empty_target'})
