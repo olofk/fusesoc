@@ -37,7 +37,7 @@ class Ghdl(Edatool):
         elif has93:
             stdarg = ['--std=93']
 
-        stdarg += self.tool_options.get('analyze_options', '')
+        analyze_options = self.tool_options.get('analyze_options', '')
 
         run_options = self.tool_options.get('run_options', [])
 
@@ -55,7 +55,7 @@ run:
 analyze:
 """.format(std=' '.join(stdarg),
            toplevel=self.toplevel,
-           analyze_options=' '.join(stdarg),
+           analyze_options=' '.join(analyze_options),
            run_options=' '.join(run_options)))
 
         _vhdltypes = ("vhdlSource", "vhdlSource-87", "vhdlSource-93", "vhdlSource-2008")
@@ -64,7 +64,7 @@ analyze:
                 lib = ""
                 if f.logical_name:
                     lib = ' --work='+f.logical_name
-                makefile.write("\tghdl -a $(ANALYZE_OPTIONS){lib} {file}\n".format(lib=lib, file=f.name))
+                makefile.write("\tghdl -a $(STD) $(ANALYZE_OPTIONS){lib} {file}\n".format(lib=lib, file=f.name))
             elif f.file_type in ["user"]:
                 pass
             else:
