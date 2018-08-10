@@ -2,3 +2,4 @@ verilog_defaults -push
 verilog_defaults -add -defer
 verilog_defaults -pop
 synth_ice40 -blif test_icestorm_0.blif -top top_module
+write_json test_icestorm_0.json

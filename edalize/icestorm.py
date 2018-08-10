@@ -70,6 +70,7 @@ ARACHNE_PNR_OPTIONS := {arachne_pnr_options}
             if self.toplevel:
                 yosys_file.write(" -top " + self.toplevel)
             yosys_file.write("\n")
+            yosys_file.write("write_json {}.json\n".format(self.name))
 
         if not pcf_files:
             raise RuntimeError("Icestorm backend requires a PCF file")
