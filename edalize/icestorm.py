@@ -4,7 +4,9 @@ from edalize.edatool import Edatool
 
 class Icestorm(Edatool):
 
-    tool_options = {'lists' : {'arachne_pnr_options' : 'String'}}
+    tool_options = {'lists' : {'arachne_pnr_options' : 'String',
+                               'yosys_synth_options' : 'String',
+    }}
 
     argtypes = ['vlogdefine', 'vlogparam']
 
