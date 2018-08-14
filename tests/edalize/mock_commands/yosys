@@ -12,5 +12,9 @@ output_file = input_file[0:-2]+'blif'
 with open(output_file, 'a'):
     os.utime(output_file, None)    
 
+output_file = input_file[0:-2]+'json'
+with open(output_file, 'a'):
+    os.utime(output_file, None)    
+
 with open('yosys.cmd', 'w') as f:
     f.write(' '.join(sys.argv[1:]) + '\n')

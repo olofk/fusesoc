@@ -18,7 +18,6 @@ def test_icestorm():
     backend.configure(args)
 
     compare_files(ref_dir, work_root, ['Makefile',
-                                       'config.mk',
                                        name+'.ys'])
 
     f = os.path.join(work_root, 'pcf_file.pcf')
@@ -43,7 +42,6 @@ def test_icestorm_minimal():
     backend.configure('')
 
     compare_files(ref_dir, work_root, ['Makefile',
-                                       'config.mk',
                                        name+'.ys'])
 
     f = os.path.join(work_root, 'pcf_file.pcf')
