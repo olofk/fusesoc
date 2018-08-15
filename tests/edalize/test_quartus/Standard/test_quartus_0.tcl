@@ -2,6 +2,7 @@ project_new test_quartus_0 -overwrite
 set_global_assignment -name FAMILY "Cyclone V"
 set_global_assignment -name DEVICE 5CSXFC6D6F31C8ES
 set_global_assignment -name TOP_LEVEL_ENTITY top_module
+set_global_assignment -name VHDL_INPUT_VERSION VHDL_2008
 set_parameter -name vlogparam_bool 1
 set_parameter -name vlogparam_int 42
 set_parameter -name vlogparam_str hello
