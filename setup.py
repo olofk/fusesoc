@@ -55,5 +55,6 @@ setup(
         'pyyaml',
         'simplesat>=0.8.0',
         'Jinja2>=2.8',
+        'jsonschema<3.0.0',
     ],
 )
