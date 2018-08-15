@@ -1,0 +1,25 @@
+project_new {{ name }} -overwrite
+set_global_assignment -name FAMILY "{{ tool_options.family }}"
+set_global_assignment -name DEVICE {{ tool_options.device }}
+{% if toplevel %}
+set_global_assignment -name TOP_LEVEL_ENTITY {{ toplevel }}
+{% endif %}
+{% if has_vhdl2008 %}
+set_global_assignment -name VHDL_INPUT_VERSION VHDL_2008
+{% endif %}
+{% if vlogparam %}
+{% for k, v in vlogparam.items() %}
+set_parameter -name {{k}} {{v|param_value_str}}
+{% endfor %}
+{% endif %}
+{% if vlogdefine %}
+{% for k, v in vlogdefine.items() %}
+set_global_assignment -name VERILOG_MACRO "{{ k }}={{ v|param_value_str }}"
+{% endfor %}
+{% endif %}
+{% for src_file in src_files if src_file|src_file_filter %}
+{{ src_file|src_file_filter }}
+{% endfor %}
+{% for incdir in incdirs %}
+set_global_assignment -name SEARCH_PATH {{ incdir|replace('\\', '/') }}
+{% endfor %}
