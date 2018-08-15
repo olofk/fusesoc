@@ -1,0 +1,11 @@
+#!/usr/bin/env python
+import os
+import sys
+
+output_file = sys.argv[sys.argv.index('--asc')+1]
+
+with open(output_file, 'a'):
+    os.utime(output_file, None)
+
+with open('nextpnr-ice40.cmd', 'w') as f:
+    f.write(' '.join(sys.argv[1:]) + '\n')

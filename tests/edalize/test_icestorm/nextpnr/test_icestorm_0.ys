@@ -1,0 +1,13 @@
+verilog_defines -Dvlogdefine_bool=1
+verilog_defines -Dvlogdefine_int=42
+verilog_defines -Dvlogdefine_str=hello
+verilog_defaults -push
+verilog_defaults -add -defer
+verilog_defaults -add -I.
+read_verilog vlog_file.v
+chparam -set vlogparam_bool 1 $abstract\top_module
+chparam -set vlogparam_int 42 $abstract\top_module
+chparam -set vlogparam_str "hello" $abstract\top_module
+verilog_defaults -pop
+synth_ice40 some yosys_synth_options -blif test_icestorm_0.blif -top top_module
+write_json test_icestorm_0.json

@@ -4,6 +4,7 @@ TARGET   := test_icestorm_0
 PCF_FILE := pcf_file.pcf
 PNR      ?= arachne
 ARACHNE_PNR_OPTIONS := a few arachne_pnr_options
+NEXTPNR_OPTIONS     := 
 
 all: $(TARGET).bin
 
@@ -11,8 +12,15 @@ all: $(TARGET).bin
 	yosys -q -s $?
 %_arachne.asc: $(PCF_FILE) %.blif
 	arachne-pnr $(ARACHNE_PNR_OPTIONS) -q -p $? -o $@
+%.json: %.ys
+	yosys -q -s $?
+%_next.asc: %.json
+	nextpnr-ice40 -q $(NEXTPNR_OPTIONS) --pcf $(PCF_FILE) --json $? --asc $@
 %.bin: %_$(PNR).asc
 	icepack $< $@
 
+build-gui: $(TARGET).json
+	nextpnr-ice40 -q $(NEXTPNR_OPTIONS) --pcf $(PCF_FILE) --json $? --asc $@ --gui
+
 clean:
-	rm -f $(TARGET).blif $(TARGET).asc $(TARGET).bin
+	rm -f $(TARGET).blif $(TARGET).json $(TARGET)_arachne.asc $(TARGET)_next.asc $(TARGET).bin

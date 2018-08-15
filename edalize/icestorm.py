@@ -4,9 +4,16 @@ from edalize.edatool import Edatool
 
 class Icestorm(Edatool):
 
-    tool_options = {'lists' : {'arachne_pnr_options' : 'String',
-                               'yosys_synth_options' : 'String',
-    }}
+    tool_options = {
+        'lists' : {
+            'arachne_pnr_options' : 'String',
+            'nextpnr_options'     : 'String',
+            'yosys_synth_options' : 'String',
+        },
+        'members': {
+            'pnr' : 'String',
+        }
+    }
 
     argtypes = ['vlogdefine', 'vlogparam']
 
@@ -52,12 +59,18 @@ class Icestorm(Edatool):
         elif len(pcf_files) > 1:
             raise RuntimeError("Icestorm backend supports only one PCF file. Found {}".format(', '.join(pcf_files)))
 
+        pnr = self.tool_options.get('pnr', 'arachne')
+        if not pnr in ['arachne', 'next']:
+            raise RuntimeError("Invalid pnr option '{}'. Valid values are 'arachne' for Arachne-pnr or 'next' for nextpnr".format(pnr))
         # Write Makefile
         arachne_pnr_options = self.tool_options.get('arachne_pnr_options', [])
+        nextpnr_options     = self.tool_options.get('nextpnr_options', [])
         template_vars = {
             'name'                : self.name,
             'pcf_file'            : pcf_files[0],
+            'pnr'                 : pnr,
             'arachne_pnr_options' : arachne_pnr_options,
+            'nextpnr_options'     : nextpnr_options,
         }
         self.render_template('icestorm-makefile.j2',
                              'Makefile',
