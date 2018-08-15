@@ -20,6 +20,9 @@ setup(
         'templates/vivado/vivado-program.tcl.j2',
         'templates/vivado/vivado-project.tcl.j2',
         'templates/vivado/vivado-run.tcl.j2',
+        'templates/quartus/quartus-project.tcl.j2',
+        'templates/quartus/quartus-std-makefile.j2',
+        'templates/quartus/quartus-pro-makefile.j2',
     ]},
     use_scm_version = {
         "relative_to": __file__,
