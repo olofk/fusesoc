@@ -1,0 +1,6 @@
+#!/usr/bin/env python
+import os
+import sys
+
+with open('qsys-generate.cmd', 'w') as f:
+    f.write(' '.join(sys.argv[1:]) + '\n')
