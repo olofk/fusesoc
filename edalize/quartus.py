@@ -41,7 +41,7 @@ class Quartus(Edatool):
         # possible. We always default to Standard if a problem is encountered
         selected = "Standard"
         try:
-            qsh_text = subprocess.Popen(["quartus_sh", "--version"], stdout=subprocess.PIPE).communicate()[0]
+            qsh_text = subprocess.Popen(["quartus_sh", "--version"], stdout=subprocess.PIPE, env=os.environ).communicate()[0]
 
             # Attempt to pattern match the output. Examples include
             # Version 16.1.2 Build 203 01/18/2017 SJ Standard Edition
