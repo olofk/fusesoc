@@ -24,7 +24,7 @@ class Url(Provider):
         url = self.config.get('url')
         logger.info("Downloading...")
         user_agent = self.config.get('user-agent')
-        if user_agent:
+        if user_agent and sys.version_info[0] >= 3:
             opener = urllib.build_opener()
             opener.addheaders = [('User-agent', user_agent)]
             urllib.install_opener(opener)
