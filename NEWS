@@ -1,3 +1,16 @@
+1.8.4 2018-08-18 Olof Kindgren <olof.kindgren@gmail.com>
+======================================================
+* Fix matching of default target for CAPI2 cores
+* Fix VHDL 2008 usage for GHDL
+* Add support for nextpnr in the icestorm backend
+* Allow setting user-agent in url provider
+
+* + improved error handling, bug fixes and refactoring
+
+Contributors:
+Euripedes Rocha <rocha.euripedes@gmail.com>
+Olof Kindgren <olof.kindgren@gmail.com>
+
 1.8.3 2018-07-24 Olof Kindgren <olof.kindgren@gmail.com>
 ======================================================
 * Allow setting default timescale for Icarus
