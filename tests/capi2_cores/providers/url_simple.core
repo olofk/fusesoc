@@ -1,0 +1,8 @@
+CAPI=2:
+
+name : ::url_simple:0
+
+provider:
+  name       : url
+  filetype   : simple
+  url        : https://github.com/olofk/fusesoc/raw/master/tests/test_provider/file.v

@@ -81,9 +81,13 @@ def test_opencores_provider():
     assert(os.path.isfile(os.path.join(core.files_root, 'tap_top.v')))
 
 def test_url_provider():
-    cache_root = tempfile.mkdtemp('url_')
-    core = Core(os.path.join(cores_root, 'mmuart', 'mmuart.core'), cache_root)
+    cores_root = os.path.join(tests_dir, 'capi2_cores', 'providers')
 
-    core.setup()
-
-    assert(os.path.isfile(os.path.join(core.files_root, 'uart_transceiver.v')))
+    for corename in ['url_simple',
+                     'url_simple_with_user_agent',
+                     'url_tar',
+                     'url_zip']:
+        cache_root = tempfile.mkdtemp(prefix='url_')
+        core = Core(os.path.join(cores_root, corename+'.core'), cache_root)
+        core.setup()
+        assert(os.path.isfile(os.path.join(core.files_root, 'file.v')))
