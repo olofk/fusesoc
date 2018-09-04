@@ -421,7 +421,7 @@ def parse_args():
     # Global options
     parser.add_argument('--cores-root', help='Add additional directories containing cores', default=[], action='append')
     parser.add_argument('--config', help='Specify the config file to use', type=argparse.FileType('r'))
-    parser.add_argument('--monochrome', help='Don\'t use color for messages', action='store_true')
+    parser.add_argument('--monochrome', help='Don\'t use color for messages', action='store_true', default=not sys.stdout.isatty())
     parser.add_argument('--verbose', help='More info messages', action='store_true')
     parser.add_argument('--log-file', help='Write log messages to file')
 
