@@ -187,7 +187,14 @@ def test_capi2_get_parameters():
                 'boolfalse' : boolfalse,
                 'booltrue'  : booltrue,
     }
-    assert expected == core.get_parameters(flags)
+    result = core.get_parameters(flags)
+    assert expected == result
+    assert str == type(result['param2']['datatype'])
+    assert str == type(result['param2']['default'])
+    assert str == type(result['param2']['description'])
+    assert str == type(result['param2']['paramtype'])
+    assert int == type(result['intparam']['default'])
+    assert bool == type(result['booltrue']['default'])
 
     flags['target'] = 'override'
     param1['default'] = 'def'

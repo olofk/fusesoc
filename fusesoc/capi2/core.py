@@ -314,8 +314,8 @@ class Core:
                     _s = "{} : Invalid paramtype '{}' for parameter {}"
                     raise SyntaxError(_s.format(self.name, paramtype, p))
                 parameters[p] = {
-                    'datatype'  : self.parameters[p].datatype,
-                    'paramtype' : self.parameters[p].paramtype,
+                    'datatype'  : str(self.parameters[p].datatype),
+                    'paramtype' : str(self.parameters[p].paramtype),
                 }
 
                 if description:
