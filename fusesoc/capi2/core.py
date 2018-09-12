@@ -72,7 +72,7 @@ class Section(object):
     dicts   = {}
     def __init__(self, tree):
         for k, v in tree.items():
-            if not v:
+            if v is None:
                 continue
             if k in self.members:
                 setattr(self, k, globals()[self.members[k]](v))

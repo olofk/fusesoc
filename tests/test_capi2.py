@@ -147,6 +147,7 @@ def test_capi2_get_parameters():
     }
     boolfalse = {
         'datatype'  : 'bool',
+        'default'   : False,
         'paramtype' : 'vlogparam',
     }
 
@@ -155,6 +156,16 @@ def test_capi2_get_parameters():
         'default'   : True,
         'paramtype' : 'vlogparam',
     }
+    int0 = {
+        'datatype'  : 'int',
+        'default'   : 0,
+        'paramtype' : 'vlogparam',
+    }
+    emptystr = {
+        'datatype'  : 'str',
+        'paramtype' : 'vlogparam',
+    }
+
     flags    = {'is_toplevel' : True}
     expected = {'param1' : param1}
 
@@ -194,7 +205,14 @@ def test_capi2_get_parameters():
     assert str == type(result['param2']['description'])
     assert str == type(result['param2']['paramtype'])
     assert int == type(result['intparam']['default'])
+    assert bool == type(result['boolfalse']['default'])
     assert bool == type(result['booltrue']['default'])
+
+    flags['target'] = 'empty'
+    expected = {'int0' : int0,
+                'emptystr' : emptystr}
+
+    assert expected == core.get_parameters(flags)
 
     flags['target'] = 'override'
     param1['default'] = 'def'
