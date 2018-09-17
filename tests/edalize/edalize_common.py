@@ -31,7 +31,6 @@ def param_gen(paramtypes):
             args.append(_arg)
             defs[paramtype+'_'+datatype] = {
                 'datatype'    : datatype,
-                'default'     : '',
                 'description' : '',
                 'paramtype'   : paramtype}
     return (defs, args)

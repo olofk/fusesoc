@@ -173,7 +173,7 @@ class Edatool(object):
                     parser.add_argument_group(_descr[_paramtype])
 
                 default = None
-                if param.get('default'):
+                if not param.get('default') is None:
                     try:
                         default = [typedict[param['datatype']]['type'](param['default'])]
                     except KeyError as e:
