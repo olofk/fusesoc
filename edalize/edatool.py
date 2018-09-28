@@ -10,15 +10,6 @@ from jinja2 import Environment, PackageLoader
 logger = logging.getLogger(__name__)
 
 # Jinja2 tests and filters, available in all templates
-def jinja_is_verilog_file(f):
-    return f.file_type.startswith('verilogSource')
-
-def jinja_is_system_verilog_file(f):
-    return f.file_type.startswith('systemVerilogSource')
-
-def jinja_is_vhdl_file(f):
-    return f.file_type.startswith('vhdlSource')
-
 def jinja_filter_param_value_str(value, str_quote_style=""):
     """ Convert a parameter value to string suitable to be passed to an EDA tool
 
@@ -88,9 +79,6 @@ class Edatool(object):
             trim_blocks = True,
             lstrip_blocks = True,
         )
-        self.jinja_env.tests['verilog_file'] = jinja_is_verilog_file
-        self.jinja_env.tests['system_verilog_file'] = jinja_is_system_verilog_file
-        self.jinja_env.tests['vhdl_file'] = jinja_is_vhdl_file
         self.jinja_env.filters['param_value_str'] = jinja_filter_param_value_str
 
 
