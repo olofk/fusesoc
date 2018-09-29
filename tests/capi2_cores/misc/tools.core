@@ -1,0 +1,5 @@
+CAPI=2:
+name: ::tools:0
+targets:
+  default: {}
+  with_tool: {default_tool : icarus}

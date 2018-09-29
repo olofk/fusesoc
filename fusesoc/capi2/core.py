@@ -226,20 +226,20 @@ class Core:
     def get_tool(self, flags):
         self._debug("Getting tool for flags {}".format(str(flags)))
         tool = None
-        if flags['tool']:
+        if flags.get('tool'):
             tool = flags['tool']
         else:
             _flags = flags.copy()
             _flags['is_toplevel'] = True
             target = self._get_target(_flags)
             if target and target.default_tool:
-                tool = target.default_tool
+                tool = str(target.default_tool)
 
         if tool:
             self._debug(" Matched tool {}".format(tool))
         else:
             self._debug(" Matched no tool")
-        return str(tool)
+        return tool
 
     def get_tool_options(self, flags):
         _flags = flags.copy()
