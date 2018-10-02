@@ -163,7 +163,10 @@ class Edatool(object):
                 default = None
                 if not param.get('default') is None:
                     try:
-                        default = [typedict[param['datatype']]['type'](param['default'])]
+                        if param['datatype'] == 'bool':
+                            default = param['default']
+                        else:
+                            default = [typedict[param['datatype']]['type'](param['default'])]
                     except KeyError as e:
                         pass
                 try:
