@@ -1,6 +1,7 @@
 import pytest
 import os.path
 tests_dir = os.path.dirname(__file__)
+cores_dir = os.path.join(tests_dir, "capi2_cores", "misc")
 
 def test_capi2_export():
     import os
@@ -121,8 +122,18 @@ def test_capi2_get_files():
     result = [vars(x) for x in core.get_files(flags)]
     assert expected == result
 
+def test_capi2_get_generators():
+    from fusesoc.core import Core
+
+    core = Core(os.path.join(cores_dir, "generators.core"))
+
+    generators = core.get_generators({})
+    assert len(generators) == 1
+    assert generators['generator1'].command == 'testgen.py'
+
 def test_capi2_get_parameters():
     from fusesoc.core import Core
+    from fusesoc.capi2.core import Generators
 
     core_file = os.path.join(tests_dir,
                              "capi2_cores",
@@ -354,6 +365,30 @@ def test_capi2_get_toplevel():
 
     flags = {'target' : 'list_toplevel'}
     assert 'toplevel as list'  == core.get_toplevel(flags)
+
+def test_capi2_get_ttptttg():
+    from fusesoc.core import Core
+
+    core = Core(os.path.join(cores_dir, "generate.core"))
+
+    flags = {'is_toplevel' : True}
+    expected = [
+        ('testgenerate_without_params', 'generator1', {}),
+        ('testgenerate_with_params', 'generator1', {'param1' : 'a param',
+                                                    'param2' : ['list', 'of', 'stuff']}),
+        ]
+    assert expected == core.get_ttptttg(flags)
+
+    flags['target'] = 'nogenerate'
+    assert [] == core.get_ttptttg(flags)
+
+    flags['target'] = 'invalid_generate'
+    with pytest.raises(SyntaxError) as excinfo:
+        core.get_ttptttg(flags)
+    assert "Generator instance 'idontexist', requested by target 'invalid_generate', was not found" in str(excinfo.value)
+
+    flags['target'] = 'invalid_target'
+    assert [] == core.get_ttptttg(flags)
 
 def test_capi2_get_vpi():
     from fusesoc.core import Core

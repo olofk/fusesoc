@@ -1,0 +1,22 @@
+CAPI=2:
+name : ::generate:0
+
+targets:
+  default:
+    generate : [testgenerate_without_params, testgenerate_with_params]
+    toplevel : na
+
+  nogenerate: {generate : []}
+
+  invalid_generate:
+    generate : [idontexist]
+
+generate:
+  testgenerate_without_params:
+    generator: generator1
+
+  testgenerate_with_params:
+    generator: generator1
+    parameters:
+      param1 : a param
+      param2: [list, of, stuff]

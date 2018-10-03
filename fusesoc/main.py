@@ -270,6 +270,7 @@ def run_backend(cm, export, do_configure, do_build, do_run, flags, system, backe
             edalizer = Edalizer(core.name,
                                 flags,
                                 cores,
+                                cache_root=cm.config.cache_root,
                                 work_root=work_root,
                                 export_root=export_root)
         except SyntaxError as e:

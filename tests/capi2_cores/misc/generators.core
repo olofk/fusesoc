@@ -1,0 +1,7 @@
+CAPI=2:
+name: ::generators:0
+
+generators:
+  generator1:
+    interpreter: python
+    command: testgen.py

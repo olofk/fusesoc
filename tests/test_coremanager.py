@@ -12,7 +12,7 @@ def test_copyto():
 
     work_root = tempfile.mkdtemp(prefix='copyto_')
 
-    eda_api = Edalizer(core.name, flags, [core], work_root, None).edalize
+    eda_api = Edalizer(core.name, flags, [core], None, work_root, None).edalize
 
     assert eda_api['files'] == [{'file_type': 'user',
                                  'logical_name': '',
@@ -39,6 +39,7 @@ def test_export():
     eda_api = Edalizer(core.name,
                        {'tool' : 'icarus'},
                        [core],
+                       cache_root=None,
                        work_root=os.path.join(build_root, 'work'),
                        export_root=export_root).edalize
 
