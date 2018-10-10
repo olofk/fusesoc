@@ -32,7 +32,9 @@ class Generator(object):
 
         for target in targets:
             if not target in self.targets:
-                self.targets[target] = {'parameters' : []}
+                self.targets[target] = {}
+            if not 'parameters' in self.targets[target]:
+                self.targets[target]['parameters'] = []
             if not parameter in self.targets[target]['parameters']:
                 self.targets[target]['parameters'].append(parameter)
             
