@@ -542,6 +542,8 @@ Generators:
   members:
     command : String
     interpreter : String
+    description : String
+    usage       : String
 
 Target:
   members:

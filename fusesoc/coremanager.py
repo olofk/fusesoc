@@ -174,3 +174,12 @@ class CoreManager(object):
         c = self.db.find(name)
         c.name.relation = "=="
         return c
+
+    def get_generators(self):
+        generators = {}
+        for core in self.db.find():
+            if hasattr(core, 'get_generators'):
+                _generators = core.get_generators({})
+                if _generators:
+                    generators[str(core.name)] = _generators
+        return generators

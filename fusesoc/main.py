@@ -208,6 +208,29 @@ def list_cores(cm, args):
         core = cores[name]
         print(name.ljust(maxlen) + ' : ' + core.cache_status())
 
+def gen_list(cm, args):
+    cores = cm.get_generators()
+    print("\nAvailable generators:\n")
+    maxlen = max(map(len,cores.keys()))
+    print('Core'.ljust(maxlen) + '   Generator')
+    print("="*(maxlen+12))
+    for core in sorted(cores.keys()):
+        for generator_name, generator_data in cores[core].items():
+            print('{} : {} : {}'.format(core.ljust(maxlen), generator_name, generator_data.description or "<No description>"))
+
+def gen_show(cm, args):
+    cores = cm.get_generators()
+    for core in sorted(cores.keys()):
+        for generator_name, generator_data in cores[core].items():
+            if generator_name == args.generator:
+                print("""
+Core        : {}
+Generator   : {}
+Description : {}
+Usage       :
+
+{}""".format(core, generator_name, generator_data.description or "<No description>", generator_data.usage or ""))
+
 def core_info(cm, args):
     core = _get_core(cm, args.core)
     print(core.info())
@@ -460,6 +483,19 @@ def parse_args():
     parser_core_info = subparsers.add_parser('core-info', help='Display details about a core')
     parser_core_info.add_argument('core')
     parser_core_info.set_defaults(func=core_info)
+
+    # gen subparser
+    parser_gen = subparsers.add_parser('gen', help='Run or show information about generators')
+    gen_subparsers = parser_gen.add_subparsers()
+
+    # gen list subparser
+    parser_gen_list = gen_subparsers.add_parser('list', help='List available generators')
+    parser_gen_list.set_defaults(func=gen_list)
+
+    # gen show subparser
+    parser_gen_show = gen_subparsers.add_parser('show', help='Show information about a generator')
+    parser_gen_show.add_argument('generator', help='Name of the generator to show')
+    parser_gen_show.set_defaults(func=gen_show)
 
     # list-paths subparser
     parser_list_paths = subparsers.add_parser('list-paths', help='Display the search order for core root paths')
