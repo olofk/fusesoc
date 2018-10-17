@@ -490,6 +490,20 @@ class IcestormSection(ToolSection):
         if items:
             self.load_dict(items)
 
+class TrellisSection(ToolSection):
+
+    TAG = 'trellis'
+
+    def __init__(self, items=None):
+        super(TrellisSection, self).__init__()
+
+        self._add_member('nextpnr_options', StringList, "nextpnr options")
+        self._add_member('yosys_synth_options' , StringList, "Additional options for the synth_* commands in yosys")
+        self._add_member('top_module', str, 'RTL top-level module')
+
+        if items:
+            self.load_dict(items)
+
 class VivadoSection(ToolSection):
 
     TAG = 'vivado'

@@ -343,7 +343,7 @@ class Core:
         if 'tool' in flags:
             if flags['tool'] in ['ghdl', 'icarus', 'isim', 'modelsim', 'rivierapro', 'xsim']:
                 flow = 'sim'
-            elif flags['tool'] in ['icestorm', 'ise', 'quartus', 'verilator', 'vivado', 'spyglass']:
+            elif flags['tool'] in ['icestorm', 'ise', 'quartus', 'verilator', 'vivado', 'spyglass', 'trellis']:
                 flow = 'synth'
         elif 'target' in flags:
             if flags['target'] is 'synth':
@@ -377,7 +377,7 @@ class Core:
                     config.set(sec, _dst, system.get(sec, item))
 
         system = FusesocConfigParser(system_file)
-        for section in ['icestorm', 'ise', 'quartus', 'vivado']:
+        for section in ['icestorm', 'ise', 'quartus', 'vivado', 'trellis']:
             _replace(section)
 
         _replace('main', 'backend')
@@ -424,7 +424,7 @@ class Core:
 
         _bname = self.main.backend
         _b = self.backend
-        if _b and _bname in ['icestorm', 'ise', 'quartus']:
+        if _b and _bname in ['icestorm', 'ise', 'quartus', 'trellis']:
             _files = []
             if _bname == 'icestorm':
                 _files += _append_files(_b.pcf_file, 'PCF')
