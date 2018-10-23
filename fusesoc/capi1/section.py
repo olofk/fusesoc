@@ -500,7 +500,6 @@ class TrellisSection(ToolSection):
         self._add_member('nextpnr_options', StringList, "nextpnr options")
         self._add_member('yosys_synth_options' , StringList, "Additional options for the synth_* commands in yosys")
         self._add_member('top_module', str, 'RTL top-level module')
-        self.top_module = 'orpsoc_top'
 
         if items:
             self.load_dict(items)
