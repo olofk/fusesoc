@@ -4,7 +4,6 @@ import os
 import subprocess
 import logging
 import sys
-import yaml
 from jinja2 import Environment, PackageLoader
 
 logger = logging.getLogger(__name__)

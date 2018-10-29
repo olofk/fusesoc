@@ -34,7 +34,6 @@ def param_gen(paramtypes):
                 'paramtype'   : paramtype}
     return (defs, args)
 
-
 def setup_backend_minimal(name, tool, files):
     os.environ['PATH'] = os.path.join(tests_dir, 'mock_commands')+':'+os.environ['PATH']
 
