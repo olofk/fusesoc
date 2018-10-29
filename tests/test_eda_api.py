@@ -7,34 +7,21 @@ def test_empty_eda_api():
 
     (h, eda_api_file) = tempfile.mkstemp()
 
-    with pytest.raises(RuntimeError):
-        backend = get_edatool('icarus')(eda_api_file=eda_api_file)
+    with pytest.raises(TypeError):
+        backend = get_edatool('icarus')(eda_api=None)
 
 def test_incomplete_eda_api():
-    import tempfile
-    import yaml
     from edalize import get_edatool
 
-    (h, eda_api_file) = tempfile.mkstemp()
-    contents = []
-    
-    with open(eda_api_file,'w') as f:
-        f.write(yaml.dump({'version' : '0.1.2'}))
-
     with pytest.raises(RuntimeError) as excinfo:
-        backend = get_edatool('icarus')(eda_api_file=eda_api_file)
+        backend = get_edatool('icarus')(eda_api={'version' : '0.1.2'})
     assert "Missing required parameter 'name'" in str(excinfo.value)
 
-    with open(eda_api_file,'w') as f:
-        f.write(yaml.dump({'version' : '0.1.2',
-                           'name' : 'corename'}))
-
-    backend = get_edatool('icarus')(eda_api_file=eda_api_file)
+    backend = get_edatool('icarus')(eda_api={
+        'version' : '0.1.2',
+        'name' : 'corename'})
 
 def test_eda_api_files():
-    import tempfile
-    import yaml
-
     from edalize import get_edatool
     files = [{'name' : 'plain_file'},
              {'name' : 'subdir/plain_include_file',
@@ -46,12 +33,10 @@ def test_eda_api_files():
               'is_include_file' : True,
               'file_type' : 'verilogSource',
               'logical_name' : 'libx'}]
-    (h, eda_api_file) = tempfile.mkstemp(prefix='eda_api_files_')
-    with open(eda_api_file,'w') as f:
-        f.write(yaml.dump({'files' : files,
-                           'name' : 'test_eda_api_files'}))
+    eda_api = {'files' : files,
+               'name' : 'test_eda_api_files'}
 
-    backend = get_edatool('icarus')(eda_api_file=eda_api_file)
+    backend = get_edatool('icarus')(eda_api=eda_api)
     (parsed_files, incdirs) = backend._get_fileset_files()
 
     assert len(parsed_files) == 2
@@ -67,7 +52,6 @@ def test_eda_api_files():
 def test_eda_api_hooks():
     import os.path
     import tempfile
-    import yaml
     from edalize import get_edatool
 
     tests_dir = os.path.dirname(__file__)
@@ -78,11 +62,11 @@ def test_eda_api_hooks():
         {'cmd' : ['sh', os.path.join(ref_dir, script)],
          'name' : script}]}
 
-    (h, eda_api_file) = tempfile.mkstemp(prefix='eda_api_hooks_')
-    with open(eda_api_file,'w') as f:
-        f.write(yaml.dump({'hooks' : hooks,
-                           'name' : script}))
+    work_root = tempfile.mkdtemp(prefix='eda_api_hooks_')
+    eda_api = {'hooks' : hooks,
+               'name' : script}
 
-    backend = get_edatool('icarus')(eda_api_file=eda_api_file)
+    backend = get_edatool('icarus')(eda_api=eda_api,
+                                    work_root=work_root)
     with pytest.raises(RuntimeError):
         backend.build()

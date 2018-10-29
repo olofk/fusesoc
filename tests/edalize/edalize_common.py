@@ -1,6 +1,5 @@
 import os.path
 import tempfile
-import yaml
 
 from edalize import get_edatool
 
@@ -35,18 +34,19 @@ def param_gen(paramtypes):
                 'paramtype'   : paramtype}
     return (defs, args)
 
+
 def setup_backend_minimal(name, tool, files):
     os.environ['PATH'] = os.path.join(tests_dir, 'mock_commands')+':'+os.environ['PATH']
 
     work_root = tempfile.mkdtemp(prefix=tool+'_')
 
-    eda_api_file = os.path.join(work_root, name+'.eda.yml')
-    with open(eda_api_file,'w') as f:
-        f.write(yaml.dump({'name'         : name,
-                           'files'        : files,
-                           'toplevel'     : 'top_module',
-                           }))
-    return (get_edatool(tool)(eda_api_file=eda_api_file), work_root)
+    eda_api = {'name'         : name,
+               'files'        : files,
+               'toplevel'     : 'top_module',
+    }
+    return (get_edatool(tool)(eda_api=eda_api,
+                              work_root=work_root), work_root)
+
 
 def setup_backend(paramtypes, name, tool, tool_options, use_vpi=False):
     os.environ['PATH'] = os.path.join(tests_dir, 'mock_commands')+':'+os.environ['PATH']
@@ -65,16 +65,15 @@ def setup_backend(paramtypes, name, tool, tool_options, use_vpi=False):
                 with open(_f, 'a'):
                     os.utime(_f, None)
 
-    eda_api_file = os.path.join(work_root, name+'.eda.yml')
-    with open(eda_api_file,'w') as f:
-        f.write(yaml.dump({'name'         : name,
-                           'files'        : files,
-                           'parameters'   : parameters,
-                           'tool_options' : {tool : tool_options},
-                           'toplevel'     : 'top_module',
-                           'vpi'          :  _vpi}))
+    eda_api = {'name'         : name,
+               'files'        : files,
+               'parameters'   : parameters,
+               'tool_options' : {tool : tool_options},
+               'toplevel'     : 'top_module',
+               'vpi'          :  _vpi}
 
-    return (get_edatool(tool)(eda_api_file=eda_api_file), args, work_root)
+    backend = get_edatool(tool)(eda_api=eda_api, work_root=work_root)
+    return (backend, args, work_root)
 
 files = [
     {'name' : 'qip_file.qip' , 'file_type' : 'QIP'},

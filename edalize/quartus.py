@@ -34,8 +34,8 @@ class Quartus(Edatool):
     This calls the parent constructor, but also identifies whether
     the current system is using a Standard or Pro edition of Quartus.
     """
-    def __init__(self, eda_api_file, work_root=None):
-        super(Quartus, self).__init__(eda_api_file, work_root)
+    def __init__(self, eda_api, work_root=None):
+        super(Quartus, self).__init__(eda_api, work_root)
 
         # Acquire quartus_sh identification information from available tool if
         # possible. We always default to Standard if a problem is encountered

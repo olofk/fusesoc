@@ -31,7 +31,6 @@ def test_vivado_minimal():
     import os
     import shutil
     import tempfile
-    import yaml
 
     from edalize import get_edatool
 
@@ -43,11 +42,9 @@ def test_vivado_minimal():
     name = 'test_vivado_minimal_0'
     work_root = tempfile.mkdtemp(prefix=tool+'_')
 
-    eda_api_file = os.path.join(work_root, name+'.eda.yml')
-    with open(eda_api_file,'w') as f:
-        f.write(yaml.dump({'name'         : name}))
+    eda_api = {'name'         : name}
 
-    backend = get_edatool(tool)(eda_api_file=eda_api_file)
+    backend = get_edatool(tool)(eda_api=eda_api, work_root=work_root)
     backend.configure([])
 
     compare_files(ref_dir, work_root, [

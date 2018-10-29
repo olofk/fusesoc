@@ -40,13 +40,8 @@ class FileAction(argparse.Action):
 
 class Edatool(object):
 
-    def __init__(self, eda_api_file, work_root=None):
+    def __init__(self, eda_api, work_root=None):
         _tool_name = self.__class__.__name__.lower()
-
-        eda_api = yaml.load(open(eda_api_file))
-
-        if not eda_api:
-            raise RuntimeError("Failed to parse " + eda_api_file)
 
         try:
             self.name = eda_api['name']
@@ -62,7 +57,7 @@ class Edatool(object):
         self.hooks       = eda_api.get('hooks', {})
         self.parameters  = eda_api.get('parameters', {})
 
-        self.work_root = work_root or os.path.abspath(os.path.dirname(eda_api_file))
+        self.work_root = work_root
         self.env = os.environ.copy()
 
         self.env['WORK_ROOT'] = self.work_root
@@ -80,7 +75,6 @@ class Edatool(object):
             lstrip_blocks = True,
         )
         self.jinja_env.filters['param_value_str'] = jinja_filter_param_value_str
-
 
     def configure(self, args):
         logger.info("Setting up project")

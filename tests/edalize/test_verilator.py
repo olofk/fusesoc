@@ -18,13 +18,14 @@ params    = vlogparams + vlogdefines + cmdlineargs
 def test_verilator_configure():
     import os.path
     import tempfile
+    import yaml
     from edalize import get_edatool
 
     for mode in ['cc', 'sc', 'lint-only']:
         work_root    = tempfile.mkdtemp()
         eda_api_file = os.path.join(ref_dir, mode, core_name) + '.eda.yml'
 
-        backend = get_edatool(tool)(eda_api_file=eda_api_file, work_root=work_root)
+        backend = get_edatool(tool)(eda_api=yaml.load(open(eda_api_file)), work_root=work_root)
 
         if mode is 'cc':
             _params = params
@@ -41,12 +42,13 @@ def test_verilator_configure():
 def test_verilator_run():
     import os.path
     import tempfile
+    import yaml
     from edalize import get_edatool
     ref_dir_cc = os.path.join(ref_dir, 'cc')
 
     work_root    = tempfile.mkdtemp()
     eda_api_file = os.path.join(ref_dir_cc, core_name)+ '.eda.yml'
-    backend = get_edatool(tool)(eda_api_file=eda_api_file, work_root=work_root)
+    backend = get_edatool(tool)(eda_api=yaml.load(open(eda_api_file)), work_root=work_root)
     dummy_exe = 'V'+backend.tool_options['top_module']
     shutil.copy(os.path.join(ref_dir, dummy_exe),
                 os.path.join(work_root, dummy_exe))
