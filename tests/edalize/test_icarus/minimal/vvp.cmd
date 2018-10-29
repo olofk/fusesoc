@@ -1,1 +1,0 @@
--M. -l icarus.log -lxt2 test_icarus_minimal_0

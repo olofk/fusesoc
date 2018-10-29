@@ -9,22 +9,7 @@ setup(
     packages=['fusesoc',
               'fusesoc.capi1',
               'fusesoc.capi2',
-              'edalize',
               'fusesoc.provider'],
-    package_data = {'edalize' : [
-        'templates/icestorm/icestorm-makefile.j2',
-        'templates/spyglass/Makefile.j2',
-        'templates/spyglass/spyglass-project.prj.j2',
-        'templates/spyglass/spyglass-run-goal.tcl.j2',
-        'templates/vivado/vivado-makefile.j2',
-        'templates/vivado/vivado-program.tcl.j2',
-        'templates/vivado/vivado-project.tcl.j2',
-        'templates/vivado/vivado-run.tcl.j2',
-        'templates/quartus/quartus-project.tcl.j2',
-        'templates/quartus/quartus-std-makefile.j2',
-        'templates/quartus/quartus-pro-makefile.j2',
-        'templates/trellis/trellis-makefile.j2'
-    ]},
     use_scm_version = {
         "relative_to": __file__,
         "write_to": "fusesoc/version.py",
@@ -51,12 +36,12 @@ setup(
         'setuptools_scm',
     ],
     install_requires=[
+        'edalize',
         'ipyxact>=0.2.3',
         'pyparsing',
         'pytest>=3.3.0',
         'pyyaml',
         'simplesat>=0.8.0',
-        'Jinja2>=2.8',
         'jsonschema<3.0.0',
     ],
 )

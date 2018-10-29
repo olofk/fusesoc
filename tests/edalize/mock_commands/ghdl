@@ -1,8 +1,0 @@
-#!/usr/bin/env python
-import os
-import sys
-
-cmd_file = 'analyze.cmd' if sys.argv[1] == '-a' else 'elab-run.cmd'
-
-with open(cmd_file, 'a') as f:
-    f.write(' '.join(sys.argv[1:]) + '\n')
