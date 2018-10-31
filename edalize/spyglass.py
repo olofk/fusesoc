@@ -119,6 +119,7 @@ class Spyglass(Edatool):
             'vhdlSource'          : _vhdl_source(f),
             'tclSource'           : 'source',
             'waiver'              : 'read_file -type waiver',
+            'awl'                 : 'read_file -type awl',
         }
         _file_type = f.file_type.split('-')[0]
         if _file_type in file_types:
