@@ -2,6 +2,11 @@ open_project test_spyglass_0.prj
 
 current_goal Design_Read
 
+# Parameters which are not used/defined in a given goal/methodology raise
+# a WARNING, which fails the lint process. That's a bit over the top, we hence
+# disable this warning.
+waive -rule {checkCMD_unknown}
+
 set rc [run_goal]
 close_project -force
 

@@ -44,6 +44,7 @@ def test_spyglass_tooloptions():
         'methodology': 'GuideWare/latest/block/rtl_somethingelse',
         'goals': ['lint/lint_rtl', 'some/othergoal'],
         'spyglass_options': ['handlememory yes'],
+        'rule_parameters': ['handle_static_caselabels yes'],
     }
 
     (backend, args, work_root) = setup_backend(

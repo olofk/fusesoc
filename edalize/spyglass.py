@@ -1,6 +1,4 @@
 import logging
-import os.path
-import platform
 import re
 
 from edalize.edatool import Edatool
@@ -21,6 +19,9 @@ spyglass:
   spyglass_options:
     # prevent error SYNTH_5273 on generic RAM descriptions
     - handlememory yes
+  rule_parameters:
+    # Allow localparam to be used in case labels (e.g. in state machines)
+    - handle_static_caselabels yes
 
 """
 class Spyglass(Edatool):
@@ -32,6 +33,7 @@ class Spyglass(Edatool):
         'lists': {
             'goals': 'String',
             'spyglass_options': 'String',
+            'rule_parameters': 'String',
         },
     }
 
@@ -41,6 +43,7 @@ class Spyglass(Edatool):
          'methodology': 'GuideWare/latest/block/rtl_handoff',
          'goals': [ 'lint/lint_rtl' ],
          'spyglass_options': [],
+         'rule_parameters': [],
     }
 
     def _set_tool_options_defaults(self):
@@ -54,7 +57,7 @@ class Spyglass(Edatool):
     """ Configuration is the first phase of the build
 
     This writes the project TCL files and Makefile. It first collects all
-    sources, IPs and contraints and then writes them to the TCL file along
+    sources, IPs and constraints and then writes them to the TCL file along
     with the build steps.
     """
     def configure_main(self):
