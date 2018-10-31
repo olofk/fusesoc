@@ -1,0 +1,17 @@
+CAPI=1
+[main]
+name = fusesoc:test_coreconverter:ise:0
+description = ISE example, for converter testing only
+
+backend = ise
+
+[ise]
+depend = wb_intercon
+ucf_files = data/nexys4ddr.ucf
+family = artix7
+device = xc7a100t
+package = csg324
+speed = -2
+top_module = orpsoc_top
+tcl_files = pinmap.tcl
+            options.tcl

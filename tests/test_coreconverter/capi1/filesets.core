@@ -1,0 +1,32 @@
+CAPI=1
+[main]
+name = fusesoc:test_coreconverter:filesets:0
+description = All possible CAPI1 filesets
+
+[verilog]
+src_files =
+ verilog1.v
+ verilog2.v
+include_files =
+ verilog3.v
+ verilog4.v
+tb_src_files =
+ verilog5.v
+ verilog6.v
+tb_private_src_files =
+ verilog7.v
+ verilog8.v
+tb_include_files =
+ verilog9.v
+ verilog10.v
+
+[vhdl]
+src_files =
+ vhdl1.v
+ vhdl2.v
+
+[fileset simple_fileset]
+files =
+ verilog11.v
+ verilog12.v
+file_type = verilogSource

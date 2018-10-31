@@ -1,0 +1,29 @@
+CAPI=1
+[main]
+name = ::elf-loader:1.0.2
+description = Generic ELF loader
+
+[vpi]
+src_files = elf-loader.c vpi_wrapper.c
+include_files = elf-loader.h
+libs = -lelf
+
+[verilator]
+src_files     = elf-loader.c
+include_files = elf-loader.h
+libs          = -lelf
+
+[parameter elf-load]
+datatype    = file
+description = ELF file to preload to memory
+paramtype   = plusarg
+scope       = public
+
+[scripts]
+pre_build_scripts = check_libelf.sh
+
+[provider]
+name = github
+user = fusesoc
+repo = elf-loader
+version = v1.0.2

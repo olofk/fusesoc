@@ -1,0 +1,69 @@
+CAPI=2:
+description: All possible CAPI1 simulators, for converter testing only
+filesets:
+  verilog_src_files:
+    file_type: verilogSource
+    files:
+    - system_top.v
+name: fusesoc:test_coreconverter:simulators:0
+targets:
+  default:
+    filesets:
+    - verilog_src_files
+  sim:
+    default_tool: icarus
+    filesets:
+    - verilog_src_files
+    - verilog_tb_src_files
+    - verilog_tb_private_src_files
+    tools:
+      ghdl:
+        analyze_options:
+        - -analyzeoption
+        run_options:
+        - -runoption
+      icarus:
+        iverilog_options:
+        - -DICARUS_SIM
+        - -DSIM
+        - -y
+        - /opt/Xilinx/14.7/ISE_DS/ISE/verilog/src
+        - -y
+        - /opt/Xilinx/14.7/ISE_DS/ISE/verilog/src/unisims
+      isim:
+        isim_options:
+        - work.glbl
+        - -d
+        - ISIM_SIM
+        - -d
+        - SIM
+        - -L
+        - unisims_ver
+        - -L
+        - secureip
+      modelsim:
+        vlog_options:
+        - +define+SIM
+        - +define+MODELSIM_SIM
+        - -timescale
+        - 1ns/1ps
+        vsim_options:
+        - -L
+        - altera_mf_ver
+        - -L
+        - altera_mf
+      xsim:
+        xsim_options:
+        - work.glbl
+        - -d
+        - XSIM_SIM
+        - -d
+        - SIM
+        - -L
+        - unisims_ver
+        - -L
+        - secureip
+    toplevel: sim_tb_top
+  synth:
+    filesets:
+    - verilog_src_files

@@ -1,0 +1,14 @@
+CAPI=2:
+description: Vivado example, for converter testing only
+name: fusesoc:test_coreconverter:vivado:0
+targets:
+  default:
+    filesets: []
+  sim:
+    toplevel: orpsoc_tb
+  synth:
+    default_tool: vivado
+    tools:
+      vivado:
+        part: xcvu095-ffva2104-2-e
+    toplevel: system_2x2_cccc_vcu108

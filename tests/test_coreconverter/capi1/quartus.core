@@ -1,0 +1,17 @@
+CAPI=1
+[main]
+name = fusesoc:test_coreconverter:quartus:0
+description = Quartus example, for converter testing only
+
+backend = quartus
+
+[quartus]
+depend = wb_intercon
+qsys_files = system.qip
+sdc_files = system.sdc
+tcl_files = pinmap.tcl
+            options.tcl
+quartus_options = -o
+family = "Cyclone IV E"
+device = EP4CE22F17C6
+top_module = system_top.v

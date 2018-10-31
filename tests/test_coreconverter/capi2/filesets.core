@@ -1,0 +1,57 @@
+CAPI=2:
+description: All possible CAPI1 filesets
+filesets:
+  simple_fileset:
+    file_type: verilogSource
+    files:
+    - verilog11.v
+    - verilog12.v
+  verilog_src_files:
+    file_type: verilogSource
+    files:
+    - verilog3.v:
+        is_include_file: true
+    - verilog4.v:
+        is_include_file: true
+    - verilog1.v
+    - verilog2.v
+  verilog_tb_private_src_files:
+    file_type: verilogSource
+    files:
+    - verilog7.v
+    - verilog8.v
+  verilog_tb_src_files:
+    file_type: verilogSource
+    files:
+    - verilog9.v:
+        is_include_file: true
+    - verilog10.v:
+        is_include_file: true
+    - verilog5.v
+    - verilog6.v
+  vhdl_src_files:
+    file_type: vhdlSource
+    files:
+    - vhdl1.v
+    - vhdl2.v
+name: fusesoc:test_coreconverter:filesets:0
+targets:
+  default:
+    filesets:
+    - verilog_src_files
+    - verilog_tb_src_files
+    - simple_fileset
+    - vhdl_src_files
+  sim:
+    filesets:
+    - verilog_src_files
+    - verilog_tb_src_files
+    - verilog_tb_private_src_files
+    - simple_fileset
+    - vhdl_src_files
+    toplevel: orpsoc_tb
+  synth:
+    filesets:
+    - verilog_src_files
+    - simple_fileset
+    - vhdl_src_files

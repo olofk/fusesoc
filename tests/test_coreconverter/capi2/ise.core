@@ -1,0 +1,26 @@
+CAPI=2:
+description: ISE example, for converter testing only
+filesets:
+  backend_files:
+    file_type: tclSource
+    files:
+    - pinmap.tcl
+    - options.tcl
+    - data/nexys4ddr.ucf:
+        file_type: UCF
+name: fusesoc:test_coreconverter:ise:0
+targets:
+  default:
+    filesets: []
+  sim:
+    toplevel: orpsoc_tb
+  synth:
+    default_tool: ise
+    filesets:
+    - backend_files
+    tools:
+      ise:
+        device: xc7a100t
+        family: artix7
+        package: csg324
+    toplevel: orpsoc_top
