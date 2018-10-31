@@ -1,0 +1,147 @@
+CAPI=2:
+filesets:
+  backend_files:
+    file_type: tclSource
+    files:
+    - data/de0_nano.sdc:
+        file_type: SDC
+    - data/pinmap.tcl
+    - data/options.tcl
+  pre_build_scripts:
+    file_type: user
+    files:
+    - legacy_symlink.sh
+  verilog_src_files:
+    depend:
+    - '>=::adv_debug_sys:0'
+    - '>=::altera_virtual_jtag:0'
+    - '>=::gpio:0'
+    - ::i2c:1.13
+    - ::jtag_tap:1.13
+    - ::mor1kx:3.1
+    - ::or1k_bootloaders:0.9
+    - ::simple_spi:1.6
+    - ::uart16550:1.5.4
+    - ::wb_intercon:1.0
+    - ::wb_ram:1.0
+    - ::wb_sdram_ctrl:0-r2
+    file_type: verilogSource
+    files:
+    - rtl/verilog/include/or1200_defines.v:
+        is_include_file: true
+    - rtl/verilog/include/orpsoc-defines.v:
+        is_include_file: true
+    - rtl/verilog/wb_intercon.vh:
+        is_include_file: true
+    - rtl/verilog/wb_intercon_dbg.vh:
+        is_include_file: true
+    - sw/clear_r3_and_jump_to_0x100.vh:
+        is_include_file: true
+    - sw/spi_uimage_loader.vh:
+        is_include_file: true
+    - rtl/verilog/clkgen.v
+    - rtl/verilog/orpsoc_top.v
+    - backend/rtl/verilog/pll.v
+    - rtl/verilog/wb_intercon.v
+    - rtl/verilog/wb_intercon_dbg.v
+  verilog_tb_private_src_files:
+    depend:
+    - '>=::elf-loader:0'
+    - ::jtag_vpi:0-r2
+    - '>=::mt48lc16m16a2:0'
+    - ::s25fl064p:1.7
+    - ::vlog_tb_utils:1.0
+    file_type: verilogSource
+    files:
+    - bench/orpsoc_tb.v
+    - bench/uart_decoder.v
+  verilog_tb_src_files:
+    depend:
+    - '>=::elf-loader:0'
+    - ::jtag_vpi:0-r2
+    - '>=::mt48lc16m16a2:0'
+    - ::s25fl064p:1.7
+    - ::vlog_tb_utils:1.0
+    file_type: verilogSource
+    files:
+    - bench/spi_image.vh:
+        is_include_file: true
+    - bench/test-defines.v:
+        is_include_file: true
+name: ::de0_nano:0
+parameters:
+  bootrom_file:
+    datatype: file
+    description: Initial boot ROM contents (in Verilog hex format)
+    paramtype: vlogparam
+    scope: private
+  spi_flash_file:
+    datatype: file
+    description: Initial SPI Flash contents (in Verilog hex format)
+    paramtype: vlogparam
+    scope: private
+scripts:
+  pre_build_scripts:
+    cmd:
+    - sh
+    - ../src/de0_nano_0/legacy_symlink.sh
+targets:
+  default:
+    filesets:
+    - verilog_src_files
+    - verilog_tb_src_files
+    - pre_build_scripts
+    hooks:
+      pre_build:
+      - pre_build_scripts
+    parameters:
+    - bootrom_file
+    - spi_flash_file
+  sim:
+    default_tool: icarus
+    filesets:
+    - verilog_src_files
+    - verilog_tb_src_files
+    - verilog_tb_private_src_files
+    - pre_build_scripts
+    hooks:
+      pre_build:
+      - pre_build_scripts
+    parameters:
+    - bootrom_file
+    - spi_flash_file
+    tools:
+      icarus:
+        iverilog_options:
+        - -DICARUS_SIM
+        - -DSIM
+        - -DSPEEDSIM
+      modelsim:
+        vlog_options:
+        - +define+SIM
+        - +define+MODELSIM_SIM
+        - -timescale
+        - 1ns/1ps
+        vsim_options:
+        - -L
+        - altera_mf_ver
+        - -L
+        - altera_mf
+    toplevel: orpsoc_tb
+  synth:
+    default_tool: quartus
+    filesets:
+    - verilog_src_files
+    - backend_files
+    - pre_build_scripts
+    hooks:
+      pre_build:
+      - pre_build_scripts
+    parameters:
+    - bootrom_file
+    - spi_flash_file
+    tools:
+      quartus:
+        device: EP4CE22F17C6
+        family: Cyclone IV E
+    toplevel: orpsoc_top

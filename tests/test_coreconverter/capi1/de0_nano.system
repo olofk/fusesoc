@@ -1,0 +1,15 @@
+SAPI=1
+[main]
+name = de0_nano
+description = "Altera/Terasic de0 nano board OpenRISC system"
+
+backend = quartus
+
+[quartus]
+family = "Cyclone IV E"
+device = EP4CE22F17C6
+sdc_files = data/de0_nano.sdc
+tcl_files = data/pinmap.tcl
+            data/options.tcl
+[scripts]
+pre_build_scripts = legacy_symlink.sh

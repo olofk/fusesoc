@@ -1,0 +1,24 @@
+CAPI=2:
+description: Simple 8-bit gpio core
+filesets:
+  rtl_files:
+    file_type: verilogSource
+    files:
+    - gpio.v
+name: ::gpio:1.0
+provider:
+  filetype: simple
+  name: url
+  patches: []
+  url: https://raw.githubusercontent.com/fusesoc/tiny-cores/2353a67ee0e51e3d458eb7bc71a8e1d06438a31c/gpio/gpio.v
+targets:
+  default:
+    filesets:
+    - rtl_files
+  sim:
+    filesets:
+    - rtl_files
+    toplevel: orpsoc_tb
+  synth:
+    filesets:
+    - rtl_files

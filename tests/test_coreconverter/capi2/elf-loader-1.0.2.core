@@ -1,0 +1,88 @@
+CAPI=2:
+description: Generic ELF loader
+filesets:
+  pre_build_scripts:
+    file_type: user
+    files:
+    - check_libelf.sh
+  verilator_src_files:
+    file_type: cSource
+    files:
+    - elf-loader.c
+    - elf-loader.h:
+        is_include_file: true
+  vpi_include_files:
+    files:
+    - elf-loader.h:
+        is_include_file: 'true'
+  vpi_src_files:
+    files:
+    - elf-loader.c
+    - vpi_wrapper.c
+name: ::elf-loader:1.0.2
+parameters:
+  elf-load:
+    datatype: file
+    description: ELF file to preload to memory
+    paramtype: plusarg
+    scope: public
+provider:
+  name: github
+  patches: []
+  repo: elf-loader
+  user: fusesoc
+  version: v1.0.2
+scripts:
+  pre_build_scripts:
+    cmd:
+    - sh
+    - ../src/elf-loader_1.0.2/check_libelf.sh
+targets:
+  default:
+    filesets:
+    - verilator_src_files
+    - pre_build_scripts
+    hooks:
+      pre_build:
+      - pre_build_scripts
+    parameters:
+    - elf-load
+    vpi:
+    - vpi
+  sim:
+    filesets:
+    - pre_build_scripts
+    hooks:
+      pre_build:
+      - pre_build_scripts
+    parameters:
+    - elf-load
+    toplevel: orpsoc_tb
+    vpi:
+    - vpi
+  synth:
+    default_tool: verilator
+    filesets:
+    - verilator_src_files
+    - pre_build_scripts
+    hooks:
+      pre_build:
+      - pre_build_scripts
+    parameters:
+    - elf-load
+    tools:
+      verilator:
+        cli_parser: passthrough
+        libs:
+        - -lelf
+        mode: cc
+    toplevel: ''
+    vpi:
+    - vpi
+vpi:
+  vpi:
+    filesets:
+    - vpi_include_files
+    - vpi_src_files
+    libs:
+    - -lelf

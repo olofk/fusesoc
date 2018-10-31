@@ -1,0 +1,28 @@
+CAPI=2:
+description: Quartus example, for converter testing only
+filesets:
+  backend_files:
+    file_type: tclSource
+    files:
+    - system.qip:
+        file_type: QSYS
+    - system.sdc:
+        file_type: SDC
+    - pinmap.tcl
+    - options.tcl
+name: fusesoc:test_coreconverter:quartus:0
+targets:
+  default:
+    filesets: []
+  sim:
+    toplevel: orpsoc_tb
+  synth:
+    default_tool: quartus
+    filesets:
+    - backend_files
+    tools:
+      quartus:
+        device: EP4CE22F17C6
+        family: Cyclone IV E
+        quartus_options: -o
+    toplevel: system_top.v

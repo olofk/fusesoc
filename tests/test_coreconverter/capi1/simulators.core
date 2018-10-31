@@ -1,0 +1,40 @@
+CAPI=1
+[main]
+name = fusesoc:test_coreconverter:simulators:0
+description = All possible CAPI1 simulators, for converter testing only
+
+simulators =
+ icarus modelsim isim xsim ghdl
+
+[verilog]
+src_files = system_top.v
+
+[simulator]
+toplevel = sim_tb_top
+
+[icarus]
+iverilog_options = -DICARUS_SIM -DSIM -y /opt/Xilinx/14.7/ISE_DS/ISE/verilog/src -y /opt/Xilinx/14.7/ISE_DS/ISE/verilog/src/unisims
+depend = wiredelay mt47h64m16hr-25
+
+[modelsim]
+depend = wiredelay mt47h64m16hr-25
+vlog_options = +define+SIM +define+MODELSIM_SIM -timescale 1ns/1ps
+vsim_options = -L altera_mf_ver -L altera_mf
+
+[rivierapro]
+depend = wiredelay mt47h64m16hr-25
+vlog_options = +define+SIM +define+MODELSIM_SIM -timescale 1ns/1ps
+vsim_options = -L altera_mf_ver -L altera_mf
+
+[isim]
+isim_options = work.glbl -d ISIM_SIM -d SIM -L unisims_ver -L secureip
+depend = wiredelay mt47h64m16hr-25
+
+[xsim]
+xsim_options = work.glbl -d XSIM_SIM -d SIM -L unisims_ver -L secureip
+depend = wiredelay mt47h64m16hr-25
+
+[ghdl]
+depend = wiredelay mt47h64m16hr-25
+analyze_options = -analyzeoption
+run_options = -runoption

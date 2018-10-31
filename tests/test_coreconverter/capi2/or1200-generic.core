@@ -1,0 +1,62 @@
+CAPI=2:
+description: Minimal OR1200 simulation environment
+filesets:
+  rtl:
+    depend:
+    - '>=::adv_debug_sys:0'
+    - ::jtag_tap:1.13
+    - ::jtag_vpi:0-r2
+    - ::or1200:0-r2
+    - ::uart16550:1.5.4
+    - '>=::verilator_tb_utils:0'
+    - ::vlog_tb_utils:1.0
+    - ::wb_bfm:1.0
+    - ::wb_intercon:1.0
+    - ::wb_ram:1.0
+    file_type: verilogSource
+    files:
+    - bench/verilog/include/or1200_defines.v:
+        is_include_file: true
+    - bench/verilog/wb_intercon.vh:
+        is_include_file: true
+    - bench/verilog/wb_intercon.v
+    - bench/verilog/orpsoc_top.v
+  tb:
+    file_type: verilogSource
+    files:
+    - bench/verilog/include/timescale.v:
+        is_include_file: true
+    - bench/verilog/orpsoc_tb.v
+  verilator_tb_toplevel:
+    file_type: cSource
+    files:
+    - bench/verilator/tb.cpp
+name: ::or1200-generic:0
+targets:
+  default:
+    filesets:
+    - rtl
+    - tb
+  sim:
+    default_tool: icarus
+    filesets:
+    - rtl
+    - tb
+    tools:
+      icarus:
+        iverilog_options:
+        - -DSIM
+    toplevel: orpsoc_tb
+  synth:
+    default_tool: verilator
+    filesets:
+    - rtl
+    - verilator_tb_toplevel
+    tools:
+      verilator:
+        cli_parser: passthrough
+        mode: cc
+        verilator_options:
+        - -Wno-fatal
+        - --trace
+    toplevel: orpsoc_top

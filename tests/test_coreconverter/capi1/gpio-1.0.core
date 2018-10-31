@@ -1,0 +1,13 @@
+CAPI=1
+[main]
+description = Simple 8-bit gpio core
+
+[fileset rtl_files]
+files =
+ gpio.v
+file_type = verilogSource
+
+[provider]
+name = url
+url = https://raw.githubusercontent.com/fusesoc/tiny-cores/2353a67ee0e51e3d458eb7bc71a8e1d06438a31c/gpio/gpio.v
+filetype = simple
