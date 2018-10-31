@@ -49,3 +49,7 @@ set_option enableSV09 yes
 set_option active_methodology $SPYGLASS_HOME/{{ tool_options.methodology }}
 
 current_methodology $SPYGLASS_HOME/{{ tool_options.methodology }}
+
+{% for rule_param in tool_options.rule_parameters %}
+set_parameter {{ rule_param }}
+{% endfor %}

@@ -2,6 +2,11 @@ open_project {{ name }}.prj
 
 current_goal {{ goal }}
 
+# Parameters which are not used/defined in a given goal/methodology raise
+# a WARNING, which fails the lint process. That's a bit over the top, we hence
+# disable this warning.
+waive -rule {checkCMD_unknown}
+
 set rc [run_goal]
 close_project -force
 

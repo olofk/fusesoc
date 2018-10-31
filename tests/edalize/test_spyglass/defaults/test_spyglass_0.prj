@@ -31,3 +31,4 @@ set_option enableSV09 yes
 set_option active_methodology $SPYGLASS_HOME/GuideWare/latest/block/rtl_handoff
 
 current_methodology $SPYGLASS_HOME/GuideWare/latest/block/rtl_handoff
+
