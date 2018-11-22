@@ -24,7 +24,7 @@ read_file -type vhdl vhdl_file.vhd
 read_file -type vhdl -library libx vhdl_lfile
 read_file -type vhdl vhdl2008_file
 
-set_option param {vlogparam_bool=1 vlogparam_int=42 vlogparam_str=hello }
+set_option param {top_module.vlogparam_bool=1 top_module.vlogparam_int=42 top_module.vlogparam_str=hello }
 set_option define {vlogdefine_bool=1 vlogdefine_int=42 vlogdefine_str=hello }
 set_option incdir [list .]
 set_option top top_module

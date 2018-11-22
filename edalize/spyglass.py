@@ -1,5 +1,6 @@
 import logging
 import re
+from collections import OrderedDict
 
 from edalize.edatool import Edatool
 
@@ -49,7 +50,7 @@ class Spyglass(Edatool):
     def _set_tool_options_defaults(self):
         for key, default_value in self.tool_options_defaults.items():
             if not key in self.tool_options:
-                logger.info("Set Spyglass tool option %s to default value %s" 
+                logger.info("Set Spyglass tool option %s to default value %s"
                     % (key, str(default_value)))
                 self.tool_options[key] = default_value
 
@@ -73,13 +74,18 @@ class Spyglass(Edatool):
                 has_systemVerilog = True
                 break
 
+        # Spyglass expects all parameters in the form module.parameter
+        # Always prepend the toplevel module name to be consistent with all other
+        # backends, which do not require this syntax.
+        vlogparam_spyglass = OrderedDict((self.toplevel + "." + p, v) for (p, v) in self.vlogparam.items())
+
         template_vars = {
             'name'              : self.name,
             'src_files'         : src_files,
             'incdirs'           : incdirs,
             'tool_options'      : self.tool_options,
             'toplevel'          : self.toplevel,
-            'vlogparam'         : self.vlogparam,
+            'vlogparam'         : vlogparam_spyglass,
             'vlogdefine'        : self.vlogdefine,
             'has_systemVerilog' : has_systemVerilog,
             'sanitized_goals'   : [],
