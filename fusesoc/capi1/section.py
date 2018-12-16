@@ -150,9 +150,9 @@ class EnumList(list):
             return _valid
 
 class SimulatorList(EnumList):
-    """List of supported simulators. Allowed values are ghdl, icarus, isim, modelsim, verilator, xsim"""
+    """List of supported simulators. Allowed values are ghdl, icarus, isim, modelsim, vcs, verilator, xsim"""
     def __new__(cls, *args, **kwargs):
-        values = ['ghdl', 'icarus', 'modelsim', 'verilator', 'isim', 'xsim']
+        values = ['ghdl', 'icarus', 'modelsim', 'verilator', 'isim', 'xsim', 'vcs']
         return super(SimulatorList, cls).__new__(cls, *args, values=values)
 
 class SourceType(str):
@@ -437,6 +437,23 @@ class XsimSection(ToolSection):
     def __str__(self):
         s = super(XsimSection, self).__str__()
         if self.xsim_options: s += "Xsim compile options : {}\n".format(' '.join(self.xsim_options))
+        return s
+
+class VcsSection(ToolSection):
+
+    TAG = 'vcs'
+
+    def __init__(self, items=None):
+        super(VcsSection, self).__init__()
+
+        self._add_member('vcs_options', StringList, "Extra vcs compile options")
+
+        if items:
+            self.load_dict(items)
+
+    def __str__(self):
+        s = super(VcsSection, self).__str__()
+        if self.vcs_options: s += "Vcs compile options : {}\n".format(' '.join(self.vcs_options))
         return s
 
 class VerilatorSection(ToolSection):
