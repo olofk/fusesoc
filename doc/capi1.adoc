@@ -90,7 +90,7 @@ Example: librecores.org:peripherals:uart16550:1.5 >=::simple_spi:1.6 mor1kx =::i
 File types
 ----------
 
-The following valid file types are defined: PCF, QIP, SDC, UCF, tclSource, user, verilogSource, verilogSource-95, verilogSource-2001, verilogSource-2005, systemVerilogSource, systemVerilogSource-3.0, systemVerilogSource-3.1, systemVerilogSource-3.1a, vhdlSource, vhdlSource-87, vhdlSource-93, vhdlSource-2008, xci, xdc
+The following valid file types are defined: PCF, QIP, SDC, UCF, BMM, tclSource, user, verilogSource, verilogSource-95, verilogSource-2001, verilogSource-2005, systemVerilogSource, systemVerilogSource-3.0, systemVerilogSource-3.1, systemVerilogSource-3.1a, vhdlSource, vhdlSource-87, vhdlSource-93, vhdlSource-2008, xci, xdc
 
 Sections
 --------
@@ -269,6 +269,20 @@ scripts
 |pre_build_scripts | <<StringList,StringList>> | Scripts to run before building
 |pre_run_scripts | <<StringList,StringList>> | Scripts to run before running simulations
 |pre_synth_scripts | <<StringList,StringList>> | Scripts to run before backend synthesis
+|==============================
+
+
+
+trellis
+~~~~~~~
+
+[cols="2,1,5",options="header"]
+|==============================
+|Name | Type | Description
+|depend | <<VlnvList,VlnvList>> | Tool-specific Dependencies
+|nextpnr_options | <<StringList,StringList>> | nextpnr options
+|top_module | String | RTL top-level module
+|yosys_synth_options | <<StringList,StringList>> | Additional options for the synth_* commands in yosys
 |==============================
 
 
