@@ -341,7 +341,7 @@ class Core:
     def _get_flow(self, flags):
         flow = None
         if 'tool' in flags:
-            if flags['tool'] in ['ghdl', 'icarus', 'isim', 'modelsim', 'rivierapro', 'xsim']:
+            if flags['tool'] in ['ghdl', 'icarus', 'isim', 'modelsim', 'rivierapro', 'xsim', 'vcs']:
                 flow = 'sim'
             elif flags['tool'] in ['icestorm', 'ise', 'quartus', 'verilator', 'vivado', 'spyglass', 'trellis']:
                 flow = 'synth'

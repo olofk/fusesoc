@@ -56,7 +56,7 @@ Each element in the list is subjected to expansion of environment variables and
 [[SimulatorList]]
 SimulatorList
 ~~~~~~~~~~~~~
-List of supported simulators. Allowed values are ghdl, icarus, isim, modelsim, verilator, xsim
+List of supported simulators. Allowed values are ghdl, icarus, isim, modelsim, vcs, verilator, xsim
 
 
 
@@ -283,6 +283,18 @@ trellis
 |nextpnr_options | <<StringList,StringList>> | nextpnr options
 |top_module | String | RTL top-level module
 |yosys_synth_options | <<StringList,StringList>> | Additional options for the synth_* commands in yosys
+|==============================
+
+
+
+vcs
+~~~
+
+[cols="2,1,5",options="header"]
+|==============================
+|Name | Type | Description
+|depend | <<VlnvList,VlnvList>> | Tool-specific Dependencies
+|vcs_options | <<StringList,StringList>> | Extra vcs compile options
 |==============================
 
 
