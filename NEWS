@@ -1,3 +1,21 @@
+1.9 2018-12-17 Olof Kindgren <olof.kindgren@gmail.com>
+======================================================
+* Add generators support
+* Split out edalize to a separate package
+* CAPI1 support for Trellis backend
+* CAPI1 support for VCS backend
+
+* + improved error handling, bug fixes and refactoring
+
+Contributors:
+Anonymous
+David Shah <dave@ds0.me>
+Jonathan Balkind <jbalkind@princeton.edu>
+Olof Kindgren <olof.kindgren@gmail.com>
+Philipp Wagner <philipp.wagner@tum.de>
+
+
+
 1.8.4 2018-08-18 Olof Kindgren <olof.kindgren@gmail.com>
 ======================================================
 * Fix matching of default target for CAPI2 cores
