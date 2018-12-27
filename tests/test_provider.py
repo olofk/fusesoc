@@ -91,3 +91,16 @@ def test_url_provider():
         core = Core(os.path.join(cores_root, corename+'.core'), cache_root)
         core.setup()
         assert(os.path.isfile(os.path.join(core.files_root, 'file.v')))
+
+def test_uncachable():
+    cores_root = os.path.join(tests_dir, 'capi2_cores', 'misc')
+    cache_root = tempfile.mkdtemp('uncachable_')
+    core       = Core(os.path.join(cores_root, 'uncachable.core'), cache_root)
+    assert(core.cache_status() == 'outofdate')
+
+def test_cachable():
+    cache_root = tempfile.mkdtemp('opencores_')
+    core = Core(os.path.join(cores_root, 'misc', 'opencorescore.core'), cache_root)
+    assert(core.cache_status() == 'empty')
+    core.setup()
+    assert(core.cache_status() == 'downloaded')
