@@ -1,0 +1,10 @@
+CAPI=2:
+name: ::uncachable:0
+
+targets:
+  default: {}
+
+provider:
+  name     : local
+  path     : /not/relevant/to/test
+  cachable : False
