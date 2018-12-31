@@ -8,8 +8,7 @@ class Provider(object):
         self.config = config
         self.core_root = core_root
         self.files_root = files_root
-
-        self.cachable = not (config.get('cachable', '') == 'false')
+        self.cachable = not (config.get('cachable', '') == False)
         self.patches = config.get('patches', [])
 
     def clean_cache(self):
