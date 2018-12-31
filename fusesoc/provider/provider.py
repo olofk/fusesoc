@@ -1,5 +1,6 @@
 import logging
 import os
+import shutil
 from fusesoc.utils import Launcher
 logger = logging.getLogger(__name__)
 
