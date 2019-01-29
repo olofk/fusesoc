@@ -373,10 +373,14 @@ def test_capi2_get_ttptttg():
 
     flags = {'is_toplevel' : True}
     expected = [
-        ('testgenerate_without_params', 'generator1', {}),
-        ('testgenerate_with_params', 'generator1', {'param1' : 'a param',
-                                                    'param2' : ['list', 'of', 'stuff']}),
-        ]
+        {'name'      : 'testgenerate_without_params',
+         'generator' : 'generator1',
+         'config'    : {}},
+        {'name'      : 'testgenerate_with_params',
+         'generator' : 'generator1',
+         'config'    : {'param1' : 'a param',
+                        'param2' : ['list', 'of', 'stuff']}},
+    ]
     assert expected == core.get_ttptttg(flags)
 
     flags['target'] = 'nogenerate'

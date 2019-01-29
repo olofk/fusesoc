@@ -380,8 +380,12 @@ class Core:
             if not gen in self.generate:
                 raise SyntaxError("Generator instance '{}', requested by target '{}', was not found".format(gen, target.name))
             params = self.generate[gen].parameters or {}
-            ttptttg.append((gen, str(self.generate[gen].generator),
-                            dict(params)))
+            t = {
+                'name'      : gen,
+                'generator' : str(self.generate[gen].generator),
+                'config'    : dict(params),
+            }
+            ttptttg.append(t)
         return ttptttg
         
     def get_work_root(self, flags):
