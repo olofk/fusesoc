@@ -476,6 +476,19 @@ def parse_args():
     parser_fetch.add_argument('core')
     parser_fetch.set_defaults(func=fetch)
 
+    # core subparser
+    parser_core = subparsers.add_parser('core', help='Subcommands for dealing with cores')
+    core_subparsers = parser_core.add_subparsers()
+
+    # core list subparser
+    parser_core_list = core_subparsers.add_parser('list', help='List available cores')
+    parser_core_list.set_defaults(func=list_cores)
+
+    # core show subparser
+    parser_core_show = core_subparsers.add_parser('show', help='Show information about a core')
+    parser_core_show.add_argument('core', help='Name of the core to show')
+    parser_core_show.set_defaults(func=core_info)
+
     # list-cores subparser
     parser_list_cores = subparsers.add_parser('list-cores', help='List available cores')
     parser_list_cores.set_defaults(func=list_cores)
