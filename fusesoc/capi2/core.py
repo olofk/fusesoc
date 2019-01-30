@@ -384,6 +384,7 @@ class Core:
                 'name'      : gen,
                 'generator' : str(self.generate[gen].generator),
                 'config'    : dict(params),
+                'pos'       : str(self.generate[gen].position or 'append'),
             }
             ttptttg.append(t)
         return ttptttg
@@ -541,6 +542,7 @@ Generate:
   members:
     generator  : String
     parameters : Dict
+    position   : String
 
 Generators:
   members:

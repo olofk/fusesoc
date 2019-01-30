@@ -32,7 +32,9 @@ class Edalizer(object):
 
         generators   = {}
 
+        first_snippets = []
         snippets       = []
+        last_snippets  = []
         _flags = flags.copy()
         core_queue = cores[:]
         core_queue.reverse()
@@ -100,9 +102,18 @@ class Edalizer(object):
                 for ttptttg_data in core.get_ttptttg(_flags):
                     _ttptttg = Ttptttg(ttptttg_data, core, generators)
                     for gen_core in _ttptttg.generate(cache_root):
+                        gen_core.pos = _ttptttg.pos
                         core_queue.append(gen_core)
 
-            snippets.append(snippet)
+            if hasattr(core, 'pos'):
+                if core.pos == 'first':
+                    first_snippets.append(snippet)
+                elif core.pos == 'last':
+                    last_snippets.append(snippet)
+                else:
+                    last_snippets.append(snippet)
+            else:
+                snippets.append(snippet)
 
         top_core = cores[-1]
         self.edalize = {
@@ -116,7 +127,7 @@ class Edalizer(object):
             'vpi'          : [],
         }
 
-        for snippet in snippets:
+        for snippet in first_snippets + snippets + last_snippets:
             merge_dict(self.edalize, snippet)
 
     def to_yaml(self, edalize_file):
@@ -134,6 +145,7 @@ class Ttptttg(object):
         if not generator_name in generators:
             raise RuntimeError("Could not find generator '{}' requested by {}".format(self.generator, core.name))
         self.name = ttptttg['name']
+        self.pos = ttptttg['pos']
         parameters = ttptttg['config']
 
         vlnv_str = ':'.join([core.name.vendor,

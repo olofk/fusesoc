@@ -375,9 +375,11 @@ def test_capi2_get_ttptttg():
     expected = [
         {'name'      : 'testgenerate_without_params',
          'generator' : 'generator1',
+         'pos'        : 'append',
          'config'    : {}},
         {'name'      : 'testgenerate_with_params',
          'generator' : 'generator1',
+         'pos'       : 'append',
          'config'    : {'param1' : 'a param',
                         'param2' : ['list', 'of', 'stuff']}},
     ]
