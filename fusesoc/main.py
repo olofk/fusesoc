@@ -304,6 +304,9 @@ def run_backend(cm, export, do_configure, do_build, do_run, flags, system, backe
             exit(1)
         edalizer.to_yaml(eda_api_file)
 
+    if tool == 'none':
+        return
+
     #Frontend/backend separation
 
     try:
