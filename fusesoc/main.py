@@ -210,13 +210,16 @@ def list_cores(cm, args):
 
 def gen_list(cm, args):
     cores = cm.get_generators()
-    print("\nAvailable generators:\n")
-    maxlen = max(map(len,cores.keys()))
-    print('Core'.ljust(maxlen) + '   Generator')
-    print("="*(maxlen+12))
-    for core in sorted(cores.keys()):
-        for generator_name, generator_data in cores[core].items():
-            print('{} : {} : {}'.format(core.ljust(maxlen), generator_name, generator_data.description or "<No description>"))
+    if not cores:
+        print("\nNo available generators\n")
+    else:
+        print("\nAvailable generators:\n")
+        maxlen = max(map(len,cores.keys()))
+        print('Core'.ljust(maxlen) + '   Generator')
+        print("="*(maxlen+12))
+        for core in sorted(cores.keys()):
+            for generator_name, generator_data in cores[core].items():
+                print('{} : {} : {}'.format(core.ljust(maxlen), generator_name, generator_data.description or "<No description>"))
 
 def gen_show(cm, args):
     cores = cm.get_generators()
