@@ -482,6 +482,7 @@ def parse_args():
     # core subparser
     parser_core = subparsers.add_parser('core', help='Subcommands for dealing with cores')
     core_subparsers = parser_core.add_subparsers()
+    parser_core.set_defaults(subparser=parser_core)
 
     # core list subparser
     parser_core_list = core_subparsers.add_parser('list', help='List available cores')
@@ -503,6 +504,7 @@ def parse_args():
 
     # gen subparser
     parser_gen = subparsers.add_parser('gen', help='Run or show information about generators')
+    parser_gen.set_defaults(subparser=parser_gen)
     gen_subparsers = parser_gen.add_subparsers()
 
     # gen list subparser
@@ -521,6 +523,7 @@ def parse_args():
     # library subparser
     parser_library = subparsers.add_parser('library', help='Subcommands for dealing with library management')
     library_subparsers = parser_library.add_subparsers()
+    parser_library.set_defaults(subparser=parser_library)
 
     # library add subparser
     parser_library_add = library_subparsers.add_parser('add', help='Add new library to fusesoc.conf')
@@ -567,6 +570,8 @@ def parse_args():
 
     if hasattr(args, 'func'):
         return args
+    if hasattr(args, 'subparser'):
+        args.subparser.print_help()
     else:
         parser.print_help()
         return None
