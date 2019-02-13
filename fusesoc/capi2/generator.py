@@ -16,10 +16,11 @@ class Generator(object):
             #Edalize decide core_file dir. generator creates file
             self.core_file = self.vlnv.split(':')[2]+'.core'
 
-    def add_files(self, files, fileset='rtl', targets=['default']):
+    def add_files(self, files, fileset='rtl', targets=['default'], file_type=''):
         if not fileset in self.filesets:
             self.filesets[fileset] = {'files' : []}
         self.filesets[fileset]['files'] = files
+        self.filesets[fileset]['file_type'] = file_type
 
         for target in targets:
             if not target in self.targets:
