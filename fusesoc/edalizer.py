@@ -141,9 +141,9 @@ class Ttptttg(object):
 
     def __init__(self, ttptttg, core, generators):
         generator_name = ttptttg['generator']
-        self.generator = generators[generator_name]
         if not generator_name in generators:
-            raise RuntimeError("Could not find generator '{}' requested by {}".format(self.generator, core.name))
+            raise RuntimeError("Could not find generator '{}' requested by {}".format(generator_name, core.name))
+        self.generator = generators[generator_name]
         self.name = ttptttg['name']
         self.pos = ttptttg['pos']
         parameters = ttptttg['config']
@@ -190,7 +190,7 @@ class Ttptttg(object):
                  cwd=generator_cwd).run()
 
         cores = []
-        logger.debug("Looking for genererated cores in " + generator_cwd)
+        logger.debug("Looking for generated cores in " + generator_cwd)
         for root, dirs, files in os.walk(generator_cwd):
             for f in files:
                 if f.endswith('.core'):
