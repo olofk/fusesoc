@@ -111,7 +111,7 @@ class Edalizer(object):
                 elif core.pos == 'last':
                     last_snippets.append(snippet)
                 else:
-                    last_snippets.append(snippet)
+                    snippets.append(snippet)
             else:
                 snippets.append(snippet)
 
