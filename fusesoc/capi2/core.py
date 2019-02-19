@@ -28,7 +28,7 @@ class File(object):
             self.name = os.path.expandvars(tree)
             self.is_include_file = False #"FIXME"
 
-class Dict(dict):
+class Genparams(dict):
     pass
 
 class String(str):
@@ -384,7 +384,7 @@ class Core:
             }
             ttptttg.append(t)
         return ttptttg
-        
+
     def get_work_root(self, flags):
         _flags = flags.copy()
         _flags['is_toplevel'] = True
@@ -509,103 +509,237 @@ Targets:
                 r.append(_x)
         return r
     #return [x.parse(flags) for x in l if x.parse(flags)]
+
+
 description = """
 ---
 Root:
+  description : Root elements of the CAPI2 structure
   members:
-    name        : Vlnv
-    description : String
-    provider    : Provider
-    CAPI=2      : String
+    - name : name
+      type : Vlnv
+      desc : VLNV identifier for core
+    - name : description
+      type : String
+      desc : Short description of core
+    - name : provider
+      type : Provider
+      desc : Provider of core
+    - name : CAPI=2
+      type : String
+      desc : Technically a header. Must appear as the first line in the core description file
   dicts:
-    filesets   : Fileset
-    generate   : Generate
-    generators : Generators
-    scripts    : Script
-    targets    : Target
-    parameters : Parameter
-    vpi        : Vpi
+    - name : filesets
+      type : Fileset
+      desc : File sets
+    - name : generate
+      type : Generate
+      desc : Parametrized generator configurations
+    - name : generators
+      type : Generators
+      desc : Generator provided by this core
+    - name : scripts
+      type : Script
+      desc : Scripts that are used by the hooks
+    - name : targets
+      type : Target
+      desc : Available targets
+    - name : parameters
+      type : Parameter
+      desc : Available parameters
+    - name : vpi
+      type : Vpi
+      desc : Available VPI modules
 
 Fileset:
+  description : A fileset represents a group of file with a common purpose. Each file in the fileset is required to have a file type and is allowed to have a logical_name which can be set for the whole fileset or individually for each file. A fileset can also have dependencies on other cores, specified in the depend section
   members:
-    file_type    : String
-    logical_name : String
+    - name : file_type
+      type : String
+      desc : Default file_type for files in fileset
+    - name : logical_name
+      type : String
+      desc : Default logical_name (i.e. library) for files in fileset
   lists:
-    files      : File
-    depend     : String
+    - name : files
+      type : File
+      desc : Files in fileset
+    - name : depend
+      type : String
+      desc : Dependencies of fileset
 
 Generate:
+  description : FIXME
   members:
-    generator  : String
-    parameters : Dict
-    position   : String
+    - name : generator
+      type : String
+      desc : FIXME
+    - name : parameters
+      type : Genparams
+      desc : FIXME
+    - name : position
+      type : String
+      desc : FIXME
 
 Generators:
+  description : FIXME
   members:
-    command : String
-    interpreter : String
-    description : String
-    usage       : String
+    - name : command
+      type : String
+      desc : FIXME
+    - name : interpreter
+      type : String
+      desc : FIXME
+    - name : description
+      type : String
+      desc : FIXME
+    - name : usage
+      type : String
+      desc : FIXME
 
 Target:
+  description : FIXME
   members:
-    default_tool : String
-    hooks      : Hooks
-    tools    : Tools
-    toplevel   : StringOrList
+    - name : default_tool
+      type : String
+      desc : FIXME
+    - name : hooks
+      type : Hooks
+      desc : FIXME
+    - name : tools
+      type : Tools
+      desc : FIXME
+    - name : toplevel
+      type : StringOrList
+      desc : FIXME
   lists:
-    filesets   : String
-    flags      : String #FIXME
-    generate   : String
-    parameters : String
-    vpi        : String
+    - name : filesets
+      type : String
+      desc : FIXME
+    - name : flags
+      type : String #FIXME
+      desc : FIXME
+    - name : generate
+      type : String
+      desc : FIXME
+    - name : parameters
+      type : String
+      desc : FIXME
+    - name : vpi
+      type : String
+      desc : FIXME
 
 Tools:
-  members : {}
+  description : The valid subsections of the Tools section and their options are defined by what Edalize backends are available at runtime. The sections listed here are the ones that were available when the documentation was generated.
+  members : []
 Hooks:
+  description : FIXME
   lists:
-    pre_build  : String
-    post_build : String
-    pre_run    : String
-    post_run   : String
+    - name : pre_build
+      type : String
+      desc : FIXME
+    - name : post_build
+      type : String
+      desc : FIXME
+    - name : pre_run
+      type : String
+      desc : FIXME
+    - name : post_run
+      type : String
+      desc : FIXME
 
 Parameter:
+  description : FIXME
   members:
-    datatype : String
-    default  : String
-    description : String
-    paramtype   : String
-    scope       : String
+    - name : datatype
+      type : String
+      desc : FIXME
+    - name : default
+      type : String
+      desc : FIXME
+    - name : description
+      type : String
+      desc : FIXME
+    - name : paramtype
+      type : String
+      desc : FIXME
+    - name : scope
+      type : String
+      desc : FIXME
 
 Script:
+  description : FIXME
   lists:
-    cmd      : String
-    filesets : String
+    - name : cmd
+      type : String
+      desc : FIXME
+    - name : filesets
+      type : String
+      desc : FIXME
   dicts:
-    env : String
+    - name : env
+      type : String
+      desc : FIXME
 
 Vpi:
+  description : FIXME
   lists:
-    libs         : String
-    filesets : String
+    - name : libs
+      type : String
+      desc : FIXME
+    - name : filesets
+      type : String
+      desc : FIXME
 
 """
 
+def _class_doc(items):
+    s = items['description']+'\n\n'
+    lines = []
+    name_len = 10
+    type_len = 4
+    for item in items.get('members',[]):
+        name_len = max(name_len, len(item['name']))
+        type_len = max(type_len, len(item['type'])+3)
+        lines.append((item['name'], '`'+item['type']+'`_', item['desc']))
+    for item in items.get('dicts',[]):
+        name_len = max(name_len, len(item['name']))
+        type_len = max(type_len, len(item['type'])+11)
+        lines.append((item['name'], "Dict of `{}`_".format(item['type']),item['desc']))
+    for item in items.get('lists',{}):
+        name_len = max(name_len, len(item['name']))
+        type_len = max(type_len, len(item['type'])+11)
+        lines.append((item['name'], "List of `{}`_".format(item['type']),item['desc']))
+
+    s += '='*name_len+' '+'='*type_len+' '+'='*11+'\n'
+    s += 'Field Name'.ljust(name_len+1)+'Type'.ljust(type_len+1)+'Description\n'
+    s += '='*name_len+' '+'='*type_len+' '+'='*11+'\n'
+    for line in lines:
+        s += line[0].ljust(name_len+1)
+        s += line[1].ljust(type_len+1)
+        s += line[2]
+        s += '\n'
+    s += '='*name_len+' '+'='*type_len+' '+'='*11+'\n'
+    return s
+
 def _generate_classes(j, base_class):
     for cls, _items in j.items():
-        class_members = {}
+        class_members = {'__doc__' : _class_doc(_items)}
         if 'members' in _items:
+            class_members['members'] = {}
             for key in _items['members']:
-                class_members[key] = None
-            class_members['members'] = _items['members']
+                class_members[key['name']] = None
+                class_members['members'][key['name']] = key['type']
         if 'lists' in _items:
+            class_members['lists'] = {}
             for key in _items['lists']:
-                class_members[key] = []
-            class_members['lists'] = _items['lists']
+                class_members[key['name']] = []
+                class_members['lists'][key['name']] = key['type']
         if 'dicts' in _items:
+            class_members['dicts'] = {}
             for key in _items['dicts']:
-                class_members[key] = {}
-            class_members['dicts'] = _items['dicts']
+                class_members[key['name']] = {}
+                class_members['dicts'][key['name']] = key['type']
 
         generatedClass = type(cls, (base_class,), class_members)
         globals()[generatedClass.__name__] = generatedClass
@@ -613,10 +747,103 @@ def _generate_classes(j, base_class):
 capi2_data = yaml.load(description)
 
 for backend in get_edatools():
-    if hasattr(backend, 'tool_options'):
-        backend_name = backend.__name__
-        tool_options = getattr(backend, 'tool_options')
-        capi2_data['Tools']['members'][backend_name.lower()] = backend_name
-        capi2_data[backend_name] = tool_options
+    backend_name = backend.__name__
+    if hasattr(backend, 'get_doc'):
+        if backend_name == "Edatool":
+            continue
+        tool_options = backend.get_doc(0)
+    elif hasattr(backend, 'tool_options'):
+        _tool_options = getattr(backend, 'tool_options')
+        tool_options = {'description' : 'Options for {} backend'.format(backend_name)}
+        for group in ['members', 'lists', 'dicts']:
+            if group in _tool_options:
+                tool_options[group] = []
+                for _name, _type in _tool_options[group].items():
+                    tool_options[group].append({'name' : _name,
+                                                'type' : _type,
+                                                'desc' : ''})
+    else:
+        continue
+    capi2_data['Tools']['members'].append({'name' : backend_name.lower(),
+                                           'type' : backend_name,
+                                           'desc' : backend_name+'-specific options'})
+    capi2_data[backend_name] = tool_options
 
 _generate_classes(capi2_data, Section)
+
+def gen_doc():
+    c =  capi2_data.copy()
+    s = """CAPI2
+=====
+
+CAPI2 (Core API version 2) describes the properties of a core as a YAML data structure.
+
+Types
+-----
+
+File
+~~~~
+FIXME
+
+Genparams
+~~~~~~~~~
+FIXME
+
+Provider
+~~~~~~~~
+FIXME
+
+String
+~~~~~~
+FIXME
+
+StringOrList
+~~~~~~~~~~~~
+
+Item is allowed to be either a `String`_ or a list of `String`_
+
+Vlnv
+~~~~~~
+:-separated VLNV (Vendor, Library, Name, Vendor) identifier
+
+Sections
+--------
+
+ The first table lists all valid keywords in the document root while the other tables are keywords for subsections of the tree
+
+"""
+    def print_class(items):
+        s = items['description']+'\n\n'
+        lines = []
+        name_len = 10
+        type_len = 4
+        for item in items.get('members',[]):
+            name_len = max(name_len, len(item['name']))
+            type_len = max(type_len, len(item['type'])+3)
+            lines.append((item['name'], '`'+item['type']+'`_', item['desc']))
+        for item in items.get('dicts',[]):
+            name_len = max(name_len, len(item['name']))
+            type_len = max(type_len, len(item['type'])+11)
+            lines.append((item['name'], "Dict of `{}`_".format(item['type']),item['desc']))
+        for item in items.get('lists',{}):
+            name_len = max(name_len, len(item['name']))
+            type_len = max(type_len, len(item['type'])+11)
+            lines.append((item['name'], "List of `{}`_".format(item['type']),item['desc']))
+
+        s += '='*name_len+' '+'='*type_len+' '+'='*11+'\n'
+        s += 'Field Name'.ljust(name_len+1)+'Type'.ljust(type_len+1)+'Description\n'
+        s += '='*name_len+' '+'='*type_len+' '+'='*11+'\n'
+        for line in lines:
+            s += line[0].ljust(name_len+1)
+            s += line[1].ljust(type_len+1)
+            s += line[2]
+            s += '\n'
+        s += '='*name_len+' '+'='*type_len+' '+'='*11+'\n'
+        return s
+
+    s += _class_doc(c.pop('Root'))
+    for k,v in c.items():
+        s += "\n{}\n{}\n\n".format(k, '-'*len(k))
+        s += _class_doc(v)
+
+    return s
