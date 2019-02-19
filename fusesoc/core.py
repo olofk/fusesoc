@@ -11,7 +11,11 @@ class Core(object):
     
     def __new__(cls, *args, **kwargs):
         with open(args[0]) as f:
-            first_line = f.readline().split()[0]
+            l = f.readline().split()
+            if l:
+                first_line = l[0]
+            else:
+                first_line = ''
             if  first_line == 'CAPI=1':
                 return Capi1Core(*args, **kwargs)
             elif first_line == 'CAPI=2:':

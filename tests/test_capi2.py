@@ -3,6 +3,19 @@ import os.path
 tests_dir = os.path.dirname(__file__)
 cores_dir = os.path.join(tests_dir, "capi2_cores", "misc")
 
+def test_empty_core():
+    import os
+    import tempfile
+    from fusesoc.core import Core
+
+    core_file = os.path.join(tests_dir,
+                             "capi2_cores",
+                             "misc",
+                             "empty.core")
+    with pytest.raises(RuntimeError) as excinfo:
+        core = Core(core_file, None, None)
+    assert "Unknown file type" in str(excinfo.value)
+
 def test_capi2_export():
     import os
     import tempfile
