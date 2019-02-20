@@ -6,31 +6,12 @@ FuseSoC is a package manager and a set of build tools for HDL code.
 Its main purpose is to increase reuse of IP cores and be an aid for creating,
 building and simulating SoC solutions.
 
-The package manager part can be seen as an apt, portage, yum, dnf, pacman for
-FPGA/ASIC IP cores. A simple ini file describes mainly which files the IP core
-contains, which other IP cores it depends on and where FuseSoC shall fetch the
-code.
-
-A collection of cores together with a top-level is called a system, and systems
-can be simulated or passed through the FPGA vendor tools to build a loadable
-FPGA image.
-
-Currently FuseSoc supports simulations with ModelSim, Icarus Verilog, Verilator,
-GHDL, Isim and Xsim. It also supports building FPGA images with Project
-Icestorm, Xilinx ISE and Altera Quartus.
-
 Core description files
 ----------------------
 
 capi (Core API) is the format for core description files. Current version is
-version 1.0. A capi 1.0 file is identified by the string “CAPI=1” in the
-beginning of a file. The rest of the file is a standard INI_ file that is
-compatible with Python’s configparser_ module.  The options available for
-``.core`` files are described in the link:capi1{outfilesuffix}[Core API
-definition]
-
-link:createcore{outfilesuffix}[This tutorial] describes how to create your own
-.core files
+version 2.0. A capi 2.0 file is identified by the string “CAPI=2” in the
+beginning of a file. The rest of the file is a standard YAML_ file.
 
 Core naming rules 
 -----------------
@@ -49,11 +30,6 @@ convention. These can either be of the format ``name``, in which case they will
 be translated internally to VLNV tags with the Name field set, and Version set
 to 0, or they can be of the format ``name-version``, which will also set the
 Version field.
-
-FuseSoC will pick up the core identifer from the ``name`` option in the
-``[main]`` section of ``.core`` files. If no identifier is specified there, the
-name of the core file without the ``.core`` suffix will be used and treated as a
-legacy name.
 
 As an extension to the VLNV naming scheme, FuseSoC also support specifying a
 revision of a core file. This is a fifth field that can be added to both legacy
@@ -82,8 +58,13 @@ contents:
 
 ::
 
-   [main]
-   cores_root = ~/.local/share/fusesoc/orpsoc-cores ~/.local/share/fusesoc/fusesoc-cores
+   [library.orpsoc-cores]
+   sync-uri = https://github.com/openrisc/orpsoc-cores
+   sync-type = git
+
+   [library.fusesoc-cores]
+   sync-uri = https://github.com/fusesoc/fusesoc-cores
+   sync-type = git
 
 Core search order 
 ------------------
@@ -100,27 +81,13 @@ For each library location, FuseSoC will recursively search for files
 with a *.core* suffix. Each of these files will be parsed and addded to
 the in-memory FuseSoC database if they are valid ``.core`` files.
 
-Once a ``.core`` file is encountered in a directory and successfully
-parsed, FuseSoC will not search its subdirectories. Several ``.core``
-files can reside in the same directory and they will all be parsed.
-
-**Example.** Locations of core description files
-
-#. library/mor1kx/mor1kx-3.2.core 
-#. library/mor1kx/mor1kx.core 
-#. cores/uart16550/uart16550.core
-#. de0_nano/de0_nano.core 
-#. de0_nano/uart/spi/simple_spi.core 
-
-   *1 and 2 reside in the same directory and are both parsed. 5 is not parsed
-   since it resides in a subdirectory of 4*
+Several ``.core`` files can reside in the same directory and they will all be parsed.
 
 If several cores with the same VLNV identifier are encountered the latter will
 replace the former. This can be used to override cores in a library with an
 alternative core in another library by specifying them in a library that will be
 parsed later, either temporarily by adding ``--cores-root`` to the command-line,
-or permanently by adding the other library at the end of the ``cores_root``
-parameter in the configuration file.
+or permanently by adding the other library at the end of fusesoc.conf
 
 Making changes to cores in a library
 -------------------------------------
@@ -149,84 +116,7 @@ add new functionality. The following steps can be used to achieve this:
 Backends
 --------
 
-FPGA implementation
--------------------
-
-FPGA implementation flows are used to build binary FPGA configuration files
-(bitstreams) to be downloaded to an FPGA target. The FPGA implementation flows
-are uusually tied to a single FPGA vendor’s devices
-
--  link:icestorm{outfilesuffix}[IceStorm]
-
-Running simulations 
---------------------
-
-Simulation flows are used to simulate HDL designs and are generally independent
-of the intended target device. Exceptions to this are when vendor-specific
-modules are instantiated in the source code, which might require vendor-specific
-libraries that are only available for some simulators.
-
-To run a simulation with FuseSoC, the ``sim`` subcommand is used followed by
-general simulator options, the core to simulate and core-specific options.
-
-``fusesoc sim <core> --help`` lists all core-specific options
-
-**Example.**
-
-``fusesoc sim --sim=modelsim de0_nano --vcd --timeout=100000 --bootrom_file=spi_uimage_loader.vh``
-
-The above command would build a simulation model and run a simulation of the
-de0_nano core using the core’s default testbench and explicitly using modelsim.
-If no simulator is selected, FuseSoC will use the default simulator which is
-selected by the core. A different testbench can be selected by setting the
-–testbench option. Use ``fusesoc sim --help`` to list all general simulator
-options
-
-The parameters vcd, timeout and bootrom_file would be passed to the simulator.
-While all three parameters look the same on the CLI (expect for vcd, which has
-no value associated with it), they are handled differently inside of FuseSoC.
-
-``vcd`` and ``timeout`` would be passed as plusargs to the simulator at
-run-time, while ``bootrom_file`` would be passed as a top-level parameter during
-compile-time.
-
-The cores themselves are responsible for describing in the .core file which
-externally accessible parameters they support. This is what the
-corresponding sections in the .core file look like
-
-.. code-block:: none
-
-  [parameter timeout]
-  datatype    = int
-  description = Abort test case after n cycles
-  paramtype   = plusarg
-  scope       = public
-  
-  [parameter vcd]
-  datatype    = bool
-  description = Enable VCD logging
-  paramtype   = plusarg
-  scope       = public
-  
-  [parameter bootrom_file]
-  datatype    = file
-  description = Initial boot ROM contents (in Verilog hex format)
-  paramtype   = vlogparam
-  scope       = private
-
-An observation to make here is that only the last parameter is actually defined
-in de0_nano.core. The first two parameters are specified in the .core file for
-vlog_tb_utils, which is a dependency of de0_nano. By setting their
-``scope=public``, these parameters become available for other cores which depend
-on them.
-
-Backend-specific information
-------------------------------
-
--  :ref:`ghdl`
--  :ref:`modelsim`
--  :ref:`riviera_pro`
--  :ref:`xsim`
+FuseSoC uses the backends available from Edalize
 
 Migration guide
 ---------------
@@ -235,5 +125,5 @@ As new features are added to FuseSoC, some older features become obsolete. Read
 the link:migrations{outfilesuffix}[migration guide] to learn how to keep the
 .core files up-to-date with the latest best practices
 
-.. _INI: http://en.wikipedia.org/wiki/INI_file
+.. _YAML: https://yaml.org
 .. _configparser: http://docs.python.org/2/library/configparser.html

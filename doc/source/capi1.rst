@@ -1,7 +1,6 @@
-CAPI1 Definition
-================
+CAPI1 (deprecated)
+==================
 
-:toc:
 
 Type definitions
 ----------------

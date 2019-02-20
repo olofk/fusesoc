@@ -1,7 +1,13 @@
-Migrating from .system files
-============================
+Migration guide
+===============
 
-Why ~~~
+FuseSoC strives to be backwards-compatible, but as new features are added to FuseSoC, some older features become obsolete. This chapter contains information on how to migrate away from deprecated features to keep the core description files up-to-date with the latest best practices.
+
+Migrating from .system files
+----------------------------
+
+Why
+~~~
 
 The synthesis backends required a separate .system file in addition to
 the .core file. There is however very little information in the .system
@@ -10,13 +16,17 @@ duplicated from the .core file. For these reasons a decision was made to
 drop the .system file and move the relevant information to the .core
 file instead.
 
-When ~~~~ ``.system`` files are no longer needed as of FuseSoC 1.6
+When
+~~~~
+
+``.system`` files are no longer needed as of FuseSoC 1.6
 
 The ``.system`` file will still be supported for some time to allow
 users to perform the migration, but any equivalent options in the
 ``.core`` file will override the ones in ``.system``
 
-How ~~~
+How
+~~~
 
 Perform the following steps to migrate from .system files
 
@@ -35,22 +45,27 @@ Perform the following steps to migrate from .system files
    in the ``.core`` file.
 
 Migrating from plusargs
-=======================
+-----------------------
 
-Why ~~~ Up until FuseSoC 1.3, verilog plusargs were the only way to set
+Why
+~~~
+
+Up until FuseSoC 1.3, verilog plusargs were the only way to set
 external run-time parameters. Cores could register which plusargs they
 supported through the ``plusargs`` section. This mechanism turned out to
 be too limited, and in order to support public/private parameters,
 defines, VHDL generics etc, ``parameter`` sections were introduced to
 replace the ``plusargs`` section.
 
-When ~~~~
+When
+~~~~
 
 ``parameter`` sections were introduced in FuseSoC 1.3
 
 The ``plusargs`` section is still supported to allow time for migrations
 
-How ~~~
+How
+~~~
 
 Entries in the ``plusargs`` section are described as
 ``<name> = <type> <description>``. For each of these entries, create a
@@ -69,9 +84,12 @@ be visible to other cores (``scope=public``) or only when this core is
 used as the toplevel (``scope=private``).
 
 Migrating to filesets
-=====================
+---------------------
 
-Why ~~~ Originally only verilog source files were supported. In order to
+Why
+~~~
+
+Originally only verilog source files were supported. In order to
 make source code handling more generic, filesets were introduced.
 Filesets are modeled after IP-XACT filesets and each fileset lists a
 group of files with similar purpose. Apart from supporting more file
@@ -79,11 +97,15 @@ types, the filesets contain some additional control over when to use the
 files. The verilog section is still supported for some time to allow
 users to perform the migration.
 
-When ~~~~ ``fileset`` sections were introduced in FuseSoC 1.4
+When
+~~~~
+
+``fileset`` sections were introduced in FuseSoC 1.4
 
 The ``verilog`` section is still supported to allow time for migrations
 
-How ~~~
+How
+~~~
 
 Given a ``verilog`` section with the following contents:
 
@@ -159,20 +181,26 @@ attributes
 and usage are set for each fileset.
 
 Migrating from verilator define_files
-=====================================
+-------------------------------------
 
-Why ~~~ Files specified as ``define_files`` in the verilator core
-section were treated as verilog files containing ````\ define\`
+Why
+~~~
+
+Files specified as ``define_files`` in the verilator core
+section were treated as verilog files containing ```define``
 statements to C header files with equivalent #define statements. While
 there are use-cases for this functionality, the actual implementation is
 limited and makes assumptions that makes it difficult to maintain in the
 FuseSoC code base. The decision is therefore made to deprecate this
 functionality and instead require the user to make the conversion.
 
-When ~~~~ ``verilator define_files`` are no longer converted in FuseSoC
-1.7
+When
+~~~~
 
-How ~~~
+``verilator define_files`` are no longer converted in FuseSoC 1.7
+
+How
+~~~
 
 The following stand-alone Python script will perform the same function.
 It can also be executed as a ``pre_build`` script to perform the
