@@ -1,14 +1,10 @@
 #FIXME: Add IP-XACT support
-import importlib
 import logging
 import os
-from pkgutil import walk_packages
 from pyparsing import Forward, OneOrMore, Optional, Suppress, Word, alphanums
 import shutil
-import sys
 import yaml
 
-from ipyxact.ipyxact import Component
 from fusesoc import utils
 from fusesoc.provider import get_provider
 from fusesoc.vlnv import Vlnv
