@@ -12,6 +12,7 @@ Welcome to FuseSoC's documentation!
    
    fusesoc
    capi1
+   capi2
    tutorials/tutorials
    migrations
 

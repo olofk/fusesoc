@@ -12,10 +12,14 @@
 # add these directories to sys.path here. If the directory is relative to the
 # documentation root, use os.path.abspath to make it absolute, like shown here.
 #
-# import os
-# import sys
-# sys.path.insert(0, os.path.abspath('.'))
+import os
+import sys
+sys.path.insert(0, os.path.abspath(os.path.join('..','..')))
 
+from fusesoc.capi2.core import gen_doc
+s = gen_doc()
+with open(os.path.join(os.path.abspath('.'),'capi2.rst'), 'w') as f:
+    f.write(s)
 
 # -- Project information -----------------------------------------------------
 
