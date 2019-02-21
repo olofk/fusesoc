@@ -598,58 +598,55 @@ Generators:
       desc : FIXME
 
 Target:
-  description : FIXME
+  description : A target is the entry point to a core. It describes a single use-case and what resources that are needed from the core such as file sets, generators, parameters and specific tool options. A core can have multiple targets, e.g. for simulation, synthesis or when used as a dependency for another core. When a core is used, only a single target is active. The *default* target is a special target that is always used when the core is being used as a dependency for another core or when no ``--target=`` flag is set.
   members:
     - name : default_tool
       type : String
-      desc : FIXME
+      desc : Default tool to use unless overridden with ``--tool=``
     - name : hooks
       type : Hooks
-      desc : FIXME
+      desc : Script hooks to run when target is used
     - name : tools
       type : Tools
-      desc : FIXME
+      desc : Tool-specific options for target
     - name : toplevel
       type : StringOrList
-      desc : FIXME
+      desc : Top-level module. Normally a single module/entity but can be a list of several items
   lists:
     - name : filesets
       type : String
-      desc : FIXME
-    - name : flags
-      type : String #FIXME
-      desc : FIXME
+      desc : File sets to use in target
     - name : generate
       type : String
-      desc : FIXME
+      desc : Parameterized generators to run for this target
     - name : parameters
       type : String
-      desc : FIXME
+      desc : Parameters to use in target. The parameter default value can be set here with ``param=value``
     - name : vpi
       type : String
-      desc : FIXME
+      desc : VPI modules to build and include for target
 
 Tools:
   description : The valid subsections of the Tools section and their options are defined by what Edalize backends are available at runtime. The sections listed here are the ones that were available when the documentation was generated.
   members : []
 Hooks:
-  description : FIXME
+  description : Hooks are scripts that are run at different points in the build process. They are always launched from the work root
   lists:
     - name : pre_build
       type : String
-      desc : FIXME
+      desc : Scripts executed before the *build* phase
     - name : post_build
       type : String
-      desc : FIXME
+      desc : Scripts executed after the *build* phase
     - name : pre_run
       type : String
-      desc : FIXME
+      desc : Scrips executed before the *run* phase
     - name : post_run
       type : String
-      desc : FIXME
+      desc : Scripts executed after the *run* phase
 
 Parameter:
-  description : FIXME
+  description : A parameter is a compile-time or run-time configuration of a core.
   members:
     - name : datatype
       type : String
