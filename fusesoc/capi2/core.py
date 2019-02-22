@@ -569,33 +569,33 @@ Fileset:
       desc : Dependencies of fileset
 
 Generate:
-  description : FIXME
+  description : The elements in this section each describe a parameterized instance of a generator. They specify which generator to invoke and any generator-specific parameters.
   members:
     - name : generator
       type : String
-      desc : FIXME
+      desc : The generator to use. Note that the generator must be present in the dependencies of the core.
     - name : parameters
       type : Genparams
-      desc : FIXME
+      desc : Generator-specific parameters. ``fusesoc gen show $generator`` might show available parameters
     - name : position
       type : String
-      desc : FIXME
+      desc : Where to insert the generated core. Legal values are *first*, *append* or *last*. *append* will insert core after the core that called the generator
 
 Generators:
-  description : FIXME
+  description : Generators are custom programs that generate FuseSoC cores. They are generally used during the build process, but can be used stand-alone too. This section allows a core to register a generator that can be used by other cores.
   members:
     - name : command
       type : String
-      desc : FIXME
+      desc : The command to run (relative to the core root)
     - name : interpreter
       type : String
-      desc : FIXME
+      desc : If the command needs a custom interpreter (such as python) this will be inserted as the first argument before command when calling the generator. The interpreter needs to be on the system PATH.
     - name : description
       type : String
-      desc : FIXME
+      desc : Short description of the generator, as shown with ``fusesoc gen list``
     - name : usage
       type : String
-      desc : FIXME
+      desc : A longer description of how to use the generator, including which parameters it uses (as shown with ``fusesoc gen show $generator``
 
 Target:
   description : A target is the entry point to a core. It describes a single use-case and what resources that are needed from the core such as file sets, generators, parameters and specific tool options. A core can have multiple targets, e.g. for simulation, synthesis or when used as a dependency for another core. When a core is used, only a single target is active. The *default* target is a special target that is always used when the core is being used as a dependency for another core or when no ``--target=`` flag is set.
@@ -650,43 +650,43 @@ Parameter:
   members:
     - name : datatype
       type : String
-      desc : FIXME
+      desc : Parameter datatype. Legal values are *bool*, *file*, *int*, *str*. *file* is same as *str*, but prefixed with the current directory that FuseSoC runs from
     - name : default
       type : String
-      desc : FIXME
+      desc : Default value
     - name : description
       type : String
-      desc : FIXME
+      desc : Description of the parameter, as can be seen with ``fusesoc run --target=$target $core --help``
     - name : paramtype
       type : String
-      desc : FIXME
+      desc : Specifies type of parameter. Legal values are *cmdlinearg* for command-line arguments directly added when running the core, *generic* for VHDL generics, *plusarg* for verilog plusargs, *vlogdefine* for verilog `define or *vlogparam* for verilog top-level parameters. All paramtypes are not valid for every backend. Consult the backend documentation for details.
     - name : scope
       type : String
-      desc : FIXME
+      desc : "**Not used** : Kept for backwards compatibility"
 
 Script:
-  description : FIXME
+  description : A script specifies how to run an external command that is called by the hooks section together with the actual files needed to run the script. Scripts are alway executed from the work root
   lists:
     - name : cmd
       type : String
-      desc : FIXME
+      desc : List of command-line arguments
     - name : filesets
       type : String
-      desc : FIXME
+      desc : Filesets needed to run the script
   dicts:
     - name : env
       type : String
-      desc : FIXME
+      desc : Map of environment variables to set before launching the script
 
 Vpi:
-  description : FIXME
+  description : A VPI (Verilog Procedural Interface) library is a shared object that is built and loaded by a simulator to provide extra Verilog system calls. This section describes what files and external libraries to use for building a VPI library
   lists:
     - name : libs
       type : String
-      desc : FIXME
+      desc : External libraries to link against
     - name : filesets
       type : String
-      desc : FIXME
+      desc : Filesets containing files to use when compiling the VPI library
 
 """
 
@@ -780,19 +780,33 @@ Types
 
 File
 ~~~~
-FIXME
+A File object represents a physical file. It can be a simple string, with the path to the file relative to the core root (e.g. *path/to/file.v*). It is also possible to assign attributes to a file, by using the file name as a dictionary key and the attributes as a map. (e.g. *path/to/file.v : {is_include_file : true, file_type : systemVerilogSource}*). Valid attributes are
+
+=============== ==== ===========
+Attribute       Type Description
+=============== ==== ===========
+is_include_file bool Treats file as an include file when true
+file_type       str  File type. Overrides the file_type set on the containing fileset
+logical_name    str  Logical name, i.e. library for VHDL/SystemVerilog. Overrides the logical_name set on the containing fileset
+=============== ==== ===========
 
 Genparams
 ~~~~~~~~~
-FIXME
+Genparams are private configuration for a generator. Normally specified as a map of key/value pairs
 
 Provider
 ~~~~~~~~
-FIXME
+Specifies how to fetch the core. The presence of a provider section indicates this is a remote core that has its source code separated from the core description file.
 
 String
 ~~~~~~
-FIXME
+String is a string that can contain CAPI2 expressions that are evaulated during parsing.
+
+CAPI2 expressions are used to evaluate an exprssion only if a flag is set or unset. The general form is *flag_is_set ? ( expression )* to evaluate *expression* if flag is set or *!flag_is_set ? ( expression )* to evaluate *expression* if flag is not set.
+
+**Example** Only include fileset *verilator_tb* when the target is used with verilator
+
+``filesets : [rtl, tb, tool_verilator? (verilator_tb)]``
 
 StringOrList
 ~~~~~~~~~~~~
@@ -840,7 +854,7 @@ Sections
 
     s += _class_doc(c.pop('Root'))
     for k,v in c.items():
-        s += "\n{}\n{}\n\n".format(k, '-'*len(k))
+        s += "\n{}\n{}\n\n".format(k, '~'*len(k))
         s += _class_doc(v)
 
     return s
