@@ -1,15 +1,20 @@
-OBJECTS := $(filter-out capi1.html,$(patsubst %.adoc,%.html,$(wildcard *.adoc)))
-OBJECTS += capi1.html
-all: $(OBJECTS)
+# Minimal makefile for Sphinx documentation
+#
 
-#capi.html: capi1.adoc
+# You can set these variables from the command line.
+SPHINXOPTS    =
+SPHINXBUILD   = sphinx-build
+SPHINXPROJ    = FuseSoC
+SOURCEDIR     = source
+BUILDDIR      = build
 
-capi1.adoc: ../fusesoc/capi1/section.py capi1.adoc.footer
-	PYTHONPATH=.. python $< > $@
-	cat capi1.adoc.footer >> $@
+# Put it first so that "make" without argument is like "make help".
+help:
+	@$(SPHINXBUILD) -M help "$(SOURCEDIR)" "$(BUILDDIR)" $(SPHINXOPTS) $(O)
 
-%.html: %.adoc
-	asciidoc $<
+.PHONY: help Makefile
 
-clean:
-	rm -f $(OBJECTS) capi1.adoc
+# Catch-all target: route all unknown targets to Sphinx using the new
+# "make mode" option.  $(O) is meant as a shortcut for $(SPHINXOPTS).
+%: Makefile
+	@$(SPHINXBUILD) -M $@ "$(SOURCEDIR)" "$(BUILDDIR)" $(SPHINXOPTS) $(O)

@@ -1,14 +1,10 @@
 #FIXME: Add IP-XACT support
-import importlib
 import logging
 import os
-from pkgutil import walk_packages
 from pyparsing import Forward, OneOrMore, Optional, Suppress, Word, alphanums
 import shutil
-import sys
 import yaml
 
-from ipyxact.ipyxact import Component
 from fusesoc import utils
 from fusesoc.provider import get_provider
 from fusesoc.vlnv import Vlnv
@@ -32,7 +28,7 @@ class File(object):
             self.name = os.path.expandvars(tree)
             self.is_include_file = False #"FIXME"
 
-class Dict(dict):
+class Genparams(dict):
     pass
 
 class String(str):
@@ -388,7 +384,7 @@ class Core:
             }
             ttptttg.append(t)
         return ttptttg
-        
+
     def get_work_root(self, flags):
         _flags = flags.copy()
         _flags['is_toplevel'] = True
@@ -513,103 +509,234 @@ Targets:
                 r.append(_x)
         return r
     #return [x.parse(flags) for x in l if x.parse(flags)]
+
+
 description = """
 ---
 Root:
+  description : Root elements of the CAPI2 structure
   members:
-    name        : Vlnv
-    description : String
-    provider    : Provider
-    CAPI=2      : String
+    - name : name
+      type : Vlnv
+      desc : VLNV identifier for core
+    - name : description
+      type : String
+      desc : Short description of core
+    - name : provider
+      type : Provider
+      desc : Provider of core
+    - name : CAPI=2
+      type : String
+      desc : Technically a header. Must appear as the first line in the core description file
   dicts:
-    filesets   : Fileset
-    generate   : Generate
-    generators : Generators
-    scripts    : Script
-    targets    : Target
-    parameters : Parameter
-    vpi        : Vpi
+    - name : filesets
+      type : Fileset
+      desc : File sets
+    - name : generate
+      type : Generate
+      desc : Parametrized generator configurations
+    - name : generators
+      type : Generators
+      desc : Generator provided by this core
+    - name : scripts
+      type : Script
+      desc : Scripts that are used by the hooks
+    - name : targets
+      type : Target
+      desc : Available targets
+    - name : parameters
+      type : Parameter
+      desc : Available parameters
+    - name : vpi
+      type : Vpi
+      desc : Available VPI modules
 
 Fileset:
+  description : A fileset represents a group of file with a common purpose. Each file in the fileset is required to have a file type and is allowed to have a logical_name which can be set for the whole fileset or individually for each file. A fileset can also have dependencies on other cores, specified in the depend section
   members:
-    file_type    : String
-    logical_name : String
+    - name : file_type
+      type : String
+      desc : Default file_type for files in fileset
+    - name : logical_name
+      type : String
+      desc : Default logical_name (i.e. library) for files in fileset
   lists:
-    files      : File
-    depend     : String
+    - name : files
+      type : File
+      desc : Files in fileset
+    - name : depend
+      type : String
+      desc : Dependencies of fileset
 
 Generate:
+  description : The elements in this section each describe a parameterized instance of a generator. They specify which generator to invoke and any generator-specific parameters.
   members:
-    generator  : String
-    parameters : Dict
-    position   : String
+    - name : generator
+      type : String
+      desc : The generator to use. Note that the generator must be present in the dependencies of the core.
+    - name : parameters
+      type : Genparams
+      desc : Generator-specific parameters. ``fusesoc gen show $generator`` might show available parameters
+    - name : position
+      type : String
+      desc : Where to insert the generated core. Legal values are *first*, *append* or *last*. *append* will insert core after the core that called the generator
 
 Generators:
+  description : Generators are custom programs that generate FuseSoC cores. They are generally used during the build process, but can be used stand-alone too. This section allows a core to register a generator that can be used by other cores.
   members:
-    command : String
-    interpreter : String
-    description : String
-    usage       : String
+    - name : command
+      type : String
+      desc : The command to run (relative to the core root)
+    - name : interpreter
+      type : String
+      desc : If the command needs a custom interpreter (such as python) this will be inserted as the first argument before command when calling the generator. The interpreter needs to be on the system PATH.
+    - name : description
+      type : String
+      desc : Short description of the generator, as shown with ``fusesoc gen list``
+    - name : usage
+      type : String
+      desc : A longer description of how to use the generator, including which parameters it uses (as shown with ``fusesoc gen show $generator``
 
 Target:
+  description : A target is the entry point to a core. It describes a single use-case and what resources that are needed from the core such as file sets, generators, parameters and specific tool options. A core can have multiple targets, e.g. for simulation, synthesis or when used as a dependency for another core. When a core is used, only a single target is active. The *default* target is a special target that is always used when the core is being used as a dependency for another core or when no ``--target=`` flag is set.
   members:
-    default_tool : String
-    hooks      : Hooks
-    tools    : Tools
-    toplevel   : StringOrList
+    - name : default_tool
+      type : String
+      desc : Default tool to use unless overridden with ``--tool=``
+    - name : hooks
+      type : Hooks
+      desc : Script hooks to run when target is used
+    - name : tools
+      type : Tools
+      desc : Tool-specific options for target
+    - name : toplevel
+      type : StringOrList
+      desc : Top-level module. Normally a single module/entity but can be a list of several items
   lists:
-    filesets   : String
-    flags      : String #FIXME
-    generate   : String
-    parameters : String
-    vpi        : String
+    - name : filesets
+      type : String
+      desc : File sets to use in target
+    - name : generate
+      type : String
+      desc : Parameterized generators to run for this target
+    - name : parameters
+      type : String
+      desc : Parameters to use in target. The parameter default value can be set here with ``param=value``
+    - name : vpi
+      type : String
+      desc : VPI modules to build and include for target
 
 Tools:
-  members : {}
+  description : The valid subsections of the Tools section and their options are defined by what Edalize backends are available at runtime. The sections listed here are the ones that were available when the documentation was generated.
+  members : []
 Hooks:
+  description : Hooks are scripts that are run at different points in the build process. They are always launched from the work root
   lists:
-    pre_build  : String
-    post_build : String
-    pre_run    : String
-    post_run   : String
+    - name : pre_build
+      type : String
+      desc : Scripts executed before the *build* phase
+    - name : post_build
+      type : String
+      desc : Scripts executed after the *build* phase
+    - name : pre_run
+      type : String
+      desc : Scrips executed before the *run* phase
+    - name : post_run
+      type : String
+      desc : Scripts executed after the *run* phase
 
 Parameter:
+  description : A parameter is a compile-time or run-time configuration of a core.
   members:
-    datatype : String
-    default  : String
-    description : String
-    paramtype   : String
-    scope       : String
+    - name : datatype
+      type : String
+      desc : Parameter datatype. Legal values are *bool*, *file*, *int*, *str*. *file* is same as *str*, but prefixed with the current directory that FuseSoC runs from
+    - name : default
+      type : String
+      desc : Default value
+    - name : description
+      type : String
+      desc : Description of the parameter, as can be seen with ``fusesoc run --target=$target $core --help``
+    - name : paramtype
+      type : String
+      desc : Specifies type of parameter. Legal values are *cmdlinearg* for command-line arguments directly added when running the core, *generic* for VHDL generics, *plusarg* for verilog plusargs, *vlogdefine* for verilog `define or *vlogparam* for verilog top-level parameters. All paramtypes are not valid for every backend. Consult the backend documentation for details.
+    - name : scope
+      type : String
+      desc : "**Not used** : Kept for backwards compatibility"
 
 Script:
+  description : A script specifies how to run an external command that is called by the hooks section together with the actual files needed to run the script. Scripts are alway executed from the work root
   lists:
-    cmd      : String
-    filesets : String
+    - name : cmd
+      type : String
+      desc : List of command-line arguments
+    - name : filesets
+      type : String
+      desc : Filesets needed to run the script
   dicts:
-    env : String
+    - name : env
+      type : String
+      desc : Map of environment variables to set before launching the script
 
 Vpi:
+  description : A VPI (Verilog Procedural Interface) library is a shared object that is built and loaded by a simulator to provide extra Verilog system calls. This section describes what files and external libraries to use for building a VPI library
   lists:
-    libs         : String
-    filesets : String
+    - name : libs
+      type : String
+      desc : External libraries to link against
+    - name : filesets
+      type : String
+      desc : Filesets containing files to use when compiling the VPI library
 
 """
 
+def _class_doc(items):
+    s = items['description']+'\n\n'
+    lines = []
+    name_len = 10
+    type_len = 4
+    for item in items.get('members',[]):
+        name_len = max(name_len, len(item['name']))
+        type_len = max(type_len, len(item['type'])+3)
+        lines.append((item['name'], '`'+item['type']+'`_', item['desc']))
+    for item in items.get('dicts',[]):
+        name_len = max(name_len, len(item['name']))
+        type_len = max(type_len, len(item['type'])+11)
+        lines.append((item['name'], "Dict of `{}`_".format(item['type']),item['desc']))
+    for item in items.get('lists',{}):
+        name_len = max(name_len, len(item['name']))
+        type_len = max(type_len, len(item['type'])+11)
+        lines.append((item['name'], "List of `{}`_".format(item['type']),item['desc']))
+
+    s += '='*name_len+' '+'='*type_len+' '+'='*11+'\n'
+    s += 'Field Name'.ljust(name_len+1)+'Type'.ljust(type_len+1)+'Description\n'
+    s += '='*name_len+' '+'='*type_len+' '+'='*11+'\n'
+    for line in lines:
+        s += line[0].ljust(name_len+1)
+        s += line[1].ljust(type_len+1)
+        s += line[2]
+        s += '\n'
+    s += '='*name_len+' '+'='*type_len+' '+'='*11+'\n'
+    return s
+
 def _generate_classes(j, base_class):
     for cls, _items in j.items():
-        class_members = {}
+        class_members = {'__doc__' : _class_doc(_items)}
         if 'members' in _items:
+            class_members['members'] = {}
             for key in _items['members']:
-                class_members[key] = None
-            class_members['members'] = _items['members']
+                class_members[key['name']] = None
+                class_members['members'][key['name']] = key['type']
         if 'lists' in _items:
+            class_members['lists'] = {}
             for key in _items['lists']:
-                class_members[key] = []
-            class_members['lists'] = _items['lists']
+                class_members[key['name']] = []
+                class_members['lists'][key['name']] = key['type']
         if 'dicts' in _items:
+            class_members['dicts'] = {}
             for key in _items['dicts']:
-                class_members[key] = {}
-            class_members['dicts'] = _items['dicts']
+                class_members[key['name']] = {}
+                class_members['dicts'][key['name']] = key['type']
 
         generatedClass = type(cls, (base_class,), class_members)
         globals()[generatedClass.__name__] = generatedClass
@@ -617,10 +744,117 @@ def _generate_classes(j, base_class):
 capi2_data = yaml.load(description)
 
 for backend in get_edatools():
-    if hasattr(backend, 'tool_options'):
-        backend_name = backend.__name__
-        tool_options = getattr(backend, 'tool_options')
-        capi2_data['Tools']['members'][backend_name.lower()] = backend_name
-        capi2_data[backend_name] = tool_options
+    backend_name = backend.__name__
+    if hasattr(backend, 'get_doc'):
+        if backend_name == "Edatool":
+            continue
+        tool_options = backend.get_doc(0)
+    elif hasattr(backend, 'tool_options'):
+        _tool_options = getattr(backend, 'tool_options')
+        tool_options = {'description' : 'Options for {} backend'.format(backend_name)}
+        for group in ['members', 'lists', 'dicts']:
+            if group in _tool_options:
+                tool_options[group] = []
+                for _name, _type in _tool_options[group].items():
+                    tool_options[group].append({'name' : _name,
+                                                'type' : _type,
+                                                'desc' : ''})
+    else:
+        continue
+    capi2_data['Tools']['members'].append({'name' : backend_name.lower(),
+                                           'type' : backend_name,
+                                           'desc' : backend_name+'-specific options'})
+    capi2_data[backend_name] = tool_options
 
 _generate_classes(capi2_data, Section)
+
+def gen_doc():
+    c =  capi2_data.copy()
+    s = """CAPI2
+=====
+
+CAPI2 (Core API version 2) describes the properties of a core as a YAML data structure.
+
+Types
+-----
+
+File
+~~~~
+A File object represents a physical file. It can be a simple string, with the path to the file relative to the core root (e.g. *path/to/file.v*). It is also possible to assign attributes to a file, by using the file name as a dictionary key and the attributes as a map. (e.g. *path/to/file.v : {is_include_file : true, file_type : systemVerilogSource}*). Valid attributes are
+
+=============== ==== ===========
+Attribute       Type Description
+=============== ==== ===========
+is_include_file bool Treats file as an include file when true
+file_type       str  File type. Overrides the file_type set on the containing fileset
+logical_name    str  Logical name, i.e. library for VHDL/SystemVerilog. Overrides the logical_name set on the containing fileset
+=============== ==== ===========
+
+Genparams
+~~~~~~~~~
+Genparams are private configuration for a generator. Normally specified as a map of key/value pairs
+
+Provider
+~~~~~~~~
+Specifies how to fetch the core. The presence of a provider section indicates this is a remote core that has its source code separated from the core description file.
+
+String
+~~~~~~
+String is a string that can contain CAPI2 expressions that are evaulated during parsing.
+
+CAPI2 expressions are used to evaluate an exprssion only if a flag is set or unset. The general form is *flag_is_set ? ( expression )* to evaluate *expression* if flag is set or *!flag_is_set ? ( expression )* to evaluate *expression* if flag is not set.
+
+**Example** Only include fileset *verilator_tb* when the target is used with verilator
+
+``filesets : [rtl, tb, tool_verilator? (verilator_tb)]``
+
+StringOrList
+~~~~~~~~~~~~
+
+Item is allowed to be either a `String`_ or a list of `String`_
+
+Vlnv
+~~~~~~
+:-separated VLNV (Vendor, Library, Name, Vendor) identifier
+
+Sections
+--------
+
+ The first table lists all valid keywords in the document root while the other tables are keywords for subsections of the tree
+
+"""
+    def print_class(items):
+        s = items['description']+'\n\n'
+        lines = []
+        name_len = 10
+        type_len = 4
+        for item in items.get('members',[]):
+            name_len = max(name_len, len(item['name']))
+            type_len = max(type_len, len(item['type'])+3)
+            lines.append((item['name'], '`'+item['type']+'`_', item['desc']))
+        for item in items.get('dicts',[]):
+            name_len = max(name_len, len(item['name']))
+            type_len = max(type_len, len(item['type'])+11)
+            lines.append((item['name'], "Dict of `{}`_".format(item['type']),item['desc']))
+        for item in items.get('lists',{}):
+            name_len = max(name_len, len(item['name']))
+            type_len = max(type_len, len(item['type'])+11)
+            lines.append((item['name'], "List of `{}`_".format(item['type']),item['desc']))
+
+        s += '='*name_len+' '+'='*type_len+' '+'='*11+'\n'
+        s += 'Field Name'.ljust(name_len+1)+'Type'.ljust(type_len+1)+'Description\n'
+        s += '='*name_len+' '+'='*type_len+' '+'='*11+'\n'
+        for line in lines:
+            s += line[0].ljust(name_len+1)
+            s += line[1].ljust(type_len+1)
+            s += line[2]
+            s += '\n'
+        s += '='*name_len+' '+'='*type_len+' '+'='*11+'\n'
+        return s
+
+    s += _class_doc(c.pop('Root'))
+    for k,v in c.items():
+        s += "\n{}\n{}\n\n".format(k, '~'*len(k))
+        s += _class_doc(v)
+
+    return s
