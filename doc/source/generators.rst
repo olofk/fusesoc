@@ -25,24 +25,27 @@ parameters Everything contained under the parameters key should be treated as in
 
 Example yaml configuration file:
 
-files_root: /home/user/cores/mysoc
-gapi: '1.0'
-parameters:
-  masters:
-    dbus:
-      slaves: [sdram_dbus, uart0, gpio0, gpio1, spi0]
-    or1k_i:
-      slaves: [sdram_ibus, rom0]
-  slaves:
-    gpio0: {datawidth: 8, offset: 2432696320, size: 2}
-    gpio1: {datawidth: 8, offset: 2449473536, size: 2}
-    rom0: {offset: 4026531840, size: 1024}
-    sdram_dbus: {offset: 0, size: 33554432}
-    sdram_ibus: {offset: 0, size: 33554432}
-    spi0: {datawidth: 8, offset: 2952790016, size: 8}
-    uart0: {datawidth: 8, offset: 2415919104, size: 32}
-vlnv: ::mysoc-wb_intercon:0
+.. code:: yaml
 
+    files_root: /home/user/cores/mysoc
+    gapi: '1.0'
+    parameters:
+      masters:
+        dbus:
+          slaves: [sdram_dbus, uart0, gpio0, gpio1, spi0]
+        or1k_i:
+          slaves: [sdram_ibus, rom0]
+      slaves:
+        gpio0: {datawidth: 8, offset: 2432696320, size: 2}
+        gpio1: {datawidth: 8, offset: 2449473536, size: 2}
+        rom0: {offset: 4026531840, size: 1024}
+        sdram_dbus: {offset: 0, size: 33554432}
+        sdram_ibus: {offset: 0, size: 33554432}
+        spi0: {datawidth: 8, offset: 2952790016, size: 8}
+        uart0: {datawidth: 8, offset: 2415919104, size: 32}
+    vlnv: ::mysoc-wb_intercon:0
+
+    
 The above example is for a generator that creates verilog code for a wishbone interconnect.
 
 Registering a generator
@@ -59,10 +62,12 @@ interpreter: If the command requires an interpreter (e.g. python or perl), this 
 
 Example generator section from a CAPI2 core file
 
-generators:
-  wb_intercon_gen:
-    interpreter: python
-    command: sw/wb_intercon_gen
+.. code:: yaml
+
+    generators:
+      wb_intercon_gen:
+        interpreter: python
+        command: sw/wb_intercon_gen
 
 The above snippet will register a generator with the name wb_intercon_gen. This name will be used by cores that wish to invoke the generator. When the generator is invoked it will run `python /path/to/core/sw/wb_intercon_gen` from the sw subdirectory of the core where the generators section is defined.
 
@@ -71,69 +76,68 @@ Calling a generator
 
 The final piece of the generators machinery is to run a generator with some specific parameters. This is done by creating a special section in the core that wishes to use a generator and adding this section to the targets that need it. Using the same example generator as previously, this section could look like the example below:
 
-generate:
-  wb_intercon:
-    generator : wb_intercon_gen
-    parameters:
-      masters:
-        or1k_i:
+.. code:: yaml
+
+    generate:
+      wb_intercon:
+        generator : wb_intercon_gen
+        parameters:
+          masters:
+            or1k_i:
+              slaves:
+                - sdram_ibus
+                - rom0
+            dbus:
+              slaves: [sdram_dbus, uart0, gpio0, gpio1, spi0]
+    
           slaves:
-            - sdram_ibus
-            - rom0
-        dbus:
-          slaves:
-            - sdram_dbus
-            - uart0
-            - gpio0
-            - gpio1
-            - spi0
-
-      slaves:
-        sdram_dbus:
-          offset : 0
-          size : 0x2000000
-
-        sdram_ibus:
-          offset: 0
-          size: 0x2000000
-
-        uart0:
-          datawidth: 8
-          offset: 0x90000000
-          size: 32
-
-        gpio0:
-          datawidth: 8
-          offset: 0x91000000
-          size: 2
-
-        gpio1:
-          datawidth: 8
-          offset: 0x92000000
-          size: 2
-
-        spi0:
-          datawidth: 8
-          offset: 0xb0000000
-          size: 8
-
-        rom0:
-          offset: 0xf0000000
-          size: 1024
+            sdram_dbus:
+              offset : 0
+              size : 0x2000000
+    
+            sdram_ibus:
+              offset: 0
+              size: 0x2000000
+    
+            uart0:
+              datawidth: 8
+              offset: 0x90000000
+              size: 32
+    
+            gpio0:
+              datawidth: 8
+              offset: 0x91000000
+              size: 2
+    
+            gpio1:
+              datawidth: 8
+              offset: 0x92000000
+              size: 2
+    
+            spi0:
+              datawidth: 8
+              offset: 0xb0000000
+              size: 8
+    
+            rom0:
+              offset: 0xf0000000
+              size: 1024
 
 The above core file snippet will register a parametrized generator instance with the name wb_intercon. It will use the generator called `wb_intercon_gen` which FuseSoC has previously found in the depedency tree. Everything listed under the `parameters` key is instance-specific configuration to be sent to the generator.
 
 Just registering a generate section will not cause the generator to be invoked. It must also be listed in the target and the generator to be used must be in the dependency tree. The following snippet adds the parameterized generator to the `default` target and adds an explicit dependency on the core that contains the generator. As CAPI2 cores only allow filesets to have dependencies, an empty fileset for this purpose must be created
 
-filesets:
-  wb_intercon_dep:
-    depend:
-      [wb_intercon]
+.. code:: yaml
 
-targets:
-  default:
-    filesets : [wb_intercon_dep]
-    generate : [wb_intercon]
+    filesets:
+      wb_intercon_dep:
+        depend:
+          [wb_intercon]
+    
+    targets:
+      default:
+        filesets : [wb_intercon_dep]
+        generate : [wb_intercon]
 
 When FuseSoC is launched and a core target using a generator is processed, the following will happen for each entry in the target's `generate` entry.
 
