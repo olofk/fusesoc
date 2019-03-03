@@ -1,3 +1,18 @@
+1.9.1 2019-03-03 Olof Kindgren <olof.kindgren@gmail.com>
+======================================================
+* Fix uncachable cores
+* Add position argument for generators
+* Add fusesoc core sub commands
+* Add sphinx documentation
+
+* + improved error handling, bug fixes and refactoring
+
+Contributors:
+Anonymous
+Ben Reynwar <ben@reynwar.net>
+Euripedes Rocha <rocha.euripedes@gmail.com>
+Olof Kindgren <olof.kindgren@gmail.com>
+
 1.9 2018-12-17 Olof Kindgren <olof.kindgren@gmail.com>
 ======================================================
 * Add generators support
