@@ -13,7 +13,7 @@ def test_empty_core():
                              "misc",
                              "empty.core")
     with pytest.raises(RuntimeError) as excinfo:
-        core = Core(core_file, None, None)
+        core = Core(core_file)
     assert "Unknown file type" in str(excinfo.value)
 
 def test_capi2_export():
@@ -25,7 +25,7 @@ def test_capi2_export():
                              "capi2_cores",
                              "misc",
                              "files.core")
-    core = Core(core_file, None, None)
+    core = Core(core_file)
 
     export_root  = tempfile.mkdtemp(prefix='capi2_export_')
 
@@ -101,7 +101,7 @@ def test_capi2_get_files():
                              "capi2_cores",
                              "misc",
                              "files.core")
-    core = Core(core_file, None, None)
+    core = Core(core_file)
 
     expected =  [
         {'is_include_file' : False,
@@ -277,7 +277,7 @@ def test_capi2_get_scripts():
                              "capi2_cores",
                              "misc",
                              "hooks.core")
-    core = Core(core_file, None, None)
+    core = Core(core_file)
 
     flags    = {'is_toplevel' : True}
     expected = {'pre_build' : [simple1]}
@@ -339,7 +339,7 @@ def test_capi2_get_tool_options():
                              "capi2_cores",
                              "misc",
                              "targets.core")
-    core = Core(core_file, None, None)
+    core = Core(core_file)
 
     with pytest.raises(KeyError):
         core.get_tool_options({})
@@ -441,7 +441,7 @@ def test_capi2_get_work_root():
                              "capi2_cores",
                              "misc",
                              "targets.core")
-    core = Core(core_file, None, None)
+    core = Core(core_file)
 
     with pytest.raises(SyntaxError):
         core.get_work_root({})
@@ -460,7 +460,7 @@ def test_capi2_info():
                                  "capi2_cores",
                                  "misc",
                                  core_name+'.core')
-        core = Core(core_file, None, None)
+        core = Core(core_file)
 
         gen_info = '\n'.join([x for x in core.info().split('\n') if not 'Core root' in x])
         with open(os.path.join(tests_dir, __name__, core_name+".info")) as f:

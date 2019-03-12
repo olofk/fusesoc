@@ -225,3 +225,24 @@ conversion automatically before a build
    import sys
    if __name__ == "__main__":
        convert_V2H(sys.argv[1], sys.argv[2])
+
+Redefining build_root
+---------------------
+
+Why
+~~~
+As an aid for scripts executed during the build process, a number of environment variables were defined. Unfortunately this was done without too much thought and as time moved on, some of these turned out to be a maintenance burden without bringing much benefit, and in some cases without ever being used.
+
+At the same time, the introduction of VLNV and dependency ranges has introduced non-determinism in where the output of a build ends up. For these reasons, it was determined to redefine the rarely used `build_root` variable to point to the the directory containing the work root and exported files. A `--build-root` command-line switch is introduced to explictly set a build_root. Setting `build_root` in `fusesoc.conf` will keep working the same way as before, but the command-line switch takes precedence. CAPI1 cores will no longer export the `BUILD_ROOT` environment variable.
+
+These changes affects the following cases:
+
+* Relying on the `BUILD_ROOT` variable in scripts called from CAPI1 cores.
+
+When
+~~~~
+`build_root` was redefined after the release of FuseSoC 1.9.1
+
+How
+~~~
+Any scripts that previously relied on `$BUILD_ROOT` will have to be updated. Note that due to other changes in FuseSoC most of them were unlikely to work at this point anyway.

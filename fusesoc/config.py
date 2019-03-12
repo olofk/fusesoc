@@ -121,7 +121,6 @@ class Config(object):
                     'sync-type': sync_type
                 }
 
-        logger.debug('build_root='+self.build_root)
         logger.debug('cache_root='+self.cache_root)
         logger.debug('cores_root='+':'.join(self.cores_root))
         logger.debug('systems_root='+self.systems_root if self.systems_root else "Not defined")

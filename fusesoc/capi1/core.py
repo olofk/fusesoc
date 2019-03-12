@@ -41,7 +41,7 @@ class FileSet(object):
         return s
 
 class Core:
-    def __init__(self, core_file, cache_root='', build_root=''):
+    def __init__(self, core_file, cache_root=''):
         basename = os.path.basename(core_file)
         self.depend = []
         self.simulators = []
@@ -59,7 +59,6 @@ class Core:
 
         self.core_root = os.path.dirname(core_file)
         self.files_root = self.core_root
-        self.build_root = build_root
 
         self.export_files = []
 
@@ -178,7 +177,7 @@ class Core:
             return [{'name' : x, 'cmd' : ['sh', os.path.join(files_root, x)], 'env' : env} for x in v]
         scripts = {}
         if self.scripts:
-            env = {'BUILD_ROOT' : self.build_root,
+            env = {
                    'FILES_ROOT' : files_root,
             }
             flow = self._get_flow(flags)

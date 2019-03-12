@@ -107,7 +107,7 @@ class Provider(object):
                                            "FIXME: cache_root can be set in fetch call")
 
 class Core:
-    def __init__(self, core_file, cache_root='', build_root=''):
+    def __init__(self, core_file, cache_root=''):
         basename = os.path.basename(core_file)
 
         self.core_root = os.path.dirname(core_file)

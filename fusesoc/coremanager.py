@@ -136,7 +136,7 @@ class CoreManager(object):
                 if f.endswith('.core'):
                     core_file = os.path.join(root, f)
                     try:
-                        core = Core(core_file, self.config.cache_root, self.config.build_root)
+                        core = Core(core_file, self.config.cache_root)
                         self.db.add(core)
                     except SyntaxError as e:
                         w = "Parse error. Ignoring file " + core_file + ": " + e.msg
