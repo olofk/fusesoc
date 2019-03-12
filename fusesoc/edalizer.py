@@ -9,7 +9,7 @@ logger = logging.getLogger(__name__)
 
 class Edalizer(object):
 
-    def __init__(self, vlnv, flags, cores, cache_root, work_root, export_root=None):
+    def __init__(self, vlnv, flags, cores, cache_root, work_root, export_root=None, system_name=None):
         if os.path.exists(work_root):
             for f in os.listdir(work_root):
                 if os.path.isdir(os.path.join(work_root, f)):
@@ -120,7 +120,7 @@ class Edalizer(object):
             'version'      : '0.2.0',
             'files'        : [],
             'hooks'        : {},
-            'name'         : top_core.sanitized_name,
+            'name'         : system_name or top_core.sanitized_name,
             'parameters'   : {},
             'tool_options' : {},
             'toplevel'     : top_core.get_toplevel(flags),
