@@ -65,7 +65,7 @@ def build(cm, args):
              'tool' : args.tool}
     run_backend(cm, not args.no_export,
                 do_configure, do_build, do_run,
-                flags, args.system, args.backendargs, None)
+                flags, None, args.system, args.backendargs, None)
 
 def pgm(cm, args):
     do_configure = False
@@ -75,7 +75,7 @@ def pgm(cm, args):
              'tool' : None}
     run_backend(cm, 'build',
                 do_configure, do_build, do_run,
-                flags, args.system, args.backendargs, None)
+                flags, None, args.system, args.backendargs, None)
 
 def fetch(cm, args):
     core = _get_core(cm, args.core)
@@ -258,10 +258,10 @@ def run(cm, args):
     run_backend(cm,
                 not args.no_export,
                 do_configure, do_build, do_run,
-                flags, args.system, args.backendargs, args.build_root)
+                flags, args.system_name, args.system, args.backendargs, args.build_root)
 
 
-def run_backend(cm, export, do_configure, do_build, do_run, flags, system, backendargs, build_root_arg):
+def run_backend(cm, export, do_configure, do_build, do_run, flags, system_name, system, backendargs, build_root_arg):
     tool_error = "No tool was supplied on command line or found in '{}' core description"
     core = _get_core(cm, system)
     try:
@@ -302,7 +302,8 @@ def run_backend(cm, export, do_configure, do_build, do_run, flags, system, backe
                                 cores,
                                 cache_root=cm.config.cache_root,
                                 work_root=work_root,
-                                export_root=export_root)
+                                export_root=export_root,
+                                system_name=system_name)
         except SyntaxError as e:
             logger.error(e.msg)
             exit(1)
@@ -369,7 +370,7 @@ def sim(cm, args):
     }
     run_backend(cm, not args.no_export,
                 do_configure, do_build, do_run,
-                flags, args.system, args.backendargs, None)
+                flags, None, args.system, args.backendargs, None)
 
 def update(cm, args):
     libraries = args.libraries
@@ -554,6 +555,7 @@ def parse_args():
     parser_run.add_argument('--run'  ,  action='store_true', help="Execute run stage")
     parser_run.add_argument('--target', help='Override default target')
     parser_run.add_argument('--tool', help="Override default tool for target")
+    parser_run.add_argument('--system-name', help='Override default VLNV name for system')
     parser_run.add_argument('system', help='Select a system to operate on')
     parser_run.add_argument('backendargs', nargs=argparse.REMAINDER, help="arguments to be sent to backend")
     parser_run.set_defaults(func=run)
