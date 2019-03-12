@@ -65,7 +65,7 @@ def build(cm, args):
              'tool' : args.tool}
     run_backend(cm, not args.no_export,
                 do_configure, do_build, do_run,
-                flags, args.system, args.backendargs)
+                flags, args.system, args.backendargs, None)
 
 def pgm(cm, args):
     do_configure = False
@@ -75,7 +75,7 @@ def pgm(cm, args):
              'tool' : None}
     run_backend(cm, 'build',
                 do_configure, do_build, do_run,
-                flags, args.system, args.backendargs)
+                flags, args.system, args.backendargs, None)
 
 def fetch(cm, args):
     core = _get_core(cm, args.core)
@@ -258,10 +258,10 @@ def run(cm, args):
     run_backend(cm,
                 not args.no_export,
                 do_configure, do_build, do_run,
-                flags, args.system, args.backendargs)
+                flags, args.system, args.backendargs, args.build_root)
 
 
-def run_backend(cm, export, do_configure, do_build, do_run, flags, system, backendargs):
+def run_backend(cm, export, do_configure, do_build, do_run, flags, system, backendargs, build_root_arg):
     tool_error = "No tool was supplied on command line or found in '{}' core description"
     core = _get_core(cm, system)
     try:
@@ -273,13 +273,14 @@ def run_backend(cm, export, do_configure, do_build, do_run, flags, system, backe
         logger.error(tool_error.format(system))
         exit(1)
     flags['tool'] = tool
+    build_root = build_root_arg or os.path.join(cm.config.build_root, core.name.sanitized_name)
+    logger.debug('Setting build_root to {}'.format(build_root))
     if export:
-        export_root = os.path.join(cm.config.build_root, core.name.sanitized_name, 'src')
+        export_root = os.path.join(build_root, 'src')
     else:
         export_root = None
     try:
-        work_root   = os.path.join(cm.config.build_root,
-                                   core.name.sanitized_name,
+        work_root   = os.path.join(build_root,
                                    core.get_work_root(flags))
     except SyntaxError as e:
         logger.error(e.msg)
@@ -359,7 +360,7 @@ def sim(cm, args):
     }
     run_backend(cm, not args.no_export,
                 do_configure, do_build, do_run,
-                flags, args.system, args.backendargs)
+                flags, args.system, args.backendargs, None)
 
 def update(cm, args):
     libraries = args.libraries
@@ -538,6 +539,7 @@ def parse_args():
     # run subparser
     parser_run = subparsers.add_parser('run', help="Start a tool flow")
     parser_run.add_argument('--no-export', action='store_true', help='Reference source files from their current location instead of exporting to a build tree')
+    parser_run.add_argument('--build-root', help="Output directory for build. Defaults to build/$VLNV")
     parser_run.add_argument('--setup',  action='store_true', help="Execute setup stage")
     parser_run.add_argument('--build',  action='store_true', help="Execute build stage")
     parser_run.add_argument('--run'  ,  action='store_true', help="Execute run stage")
