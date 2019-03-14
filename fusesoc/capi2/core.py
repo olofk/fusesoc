@@ -113,7 +113,7 @@ class Core:
         self.core_root = os.path.dirname(core_file)
 
         try:
-            _root = Root(yaml.load(open(core_file)))
+            _root = Root(yaml.safe_load(open(core_file)))
         except KeyError as e:
             raise SyntaxError("Unknown item {}".format(e))
         except (yaml.scanner.ScannerError, yaml.constructor.ConstructorError) as e:
@@ -741,7 +741,7 @@ def _generate_classes(j, base_class):
         generatedClass = type(cls, (base_class,), class_members)
         globals()[generatedClass.__name__] = generatedClass
 
-capi2_data = yaml.load(description)
+capi2_data = yaml.safe_load(description)
 
 for backend in get_edatools():
     backend_name = backend.__name__

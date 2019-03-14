@@ -7,7 +7,7 @@ class Generator(object):
     targets    = {}
     def __init__(self):
         with open(sys.argv[1]) as f:
-            data = yaml.load(f)
+            data = yaml.safe_load(f)
 
             self.config     = data.get('parameters')
             self.files_root = data.get('files_root')
