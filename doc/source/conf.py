@@ -14,6 +14,8 @@
 #
 import os
 import sys
+from datetime import datetime
+
 sys.path.insert(0, os.path.abspath(os.path.join('..','..')))
 
 from fusesoc.capi2.core import gen_doc
@@ -24,7 +26,7 @@ with open(os.path.join(os.path.abspath('.'),'capi2.rst'), 'w') as f:
 # -- Project information -----------------------------------------------------
 
 project = 'FuseSoC'
-copyright = '2018, Olof Kindgren'
+copyright = '2018-{}, Olof Kindgren'.format(datetime.now().year)
 author = 'Olof Kindgren'
 
 # The short X.Y version
