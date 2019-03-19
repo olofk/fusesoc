@@ -98,7 +98,7 @@ http://www.rs-online.com/designspark/electronics/eng/blog/booting-linux-on-a-de0
 There is also some FuseSoC-related articles and extended release information on my blog_
 
 .. _blog: https://olofkindgren.blogspot.com/search/label/FuseSoC
-.. _online: doc/fusesoc.adoc
+.. _online: https://fusesoc.readthedocs.io/en/latest/index.html
 .. _orpsoc-cores: https://github.com/openrisc/orpsoc-cores
 .. _fusesoc-cores: https://github.com/fusesoc/fusesoc-cores
 .. _`bug report`: https://github.com/olofk/fusesoc/issues

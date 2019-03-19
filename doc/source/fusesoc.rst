@@ -116,7 +116,7 @@ add new functionality. The following steps can be used to achieve this:
 Backends
 --------
 
-FuseSoC uses the backends available from Edalize
+FuseSoC uses the backends available from edalize_.
 
 Migration guide
 ---------------
@@ -127,3 +127,4 @@ the link:migrations{outfilesuffix}[migration guide] to learn how to keep the
 
 .. _YAML: https://yaml.org
 .. _configparser: http://docs.python.org/2/library/configparser.html
+.. _edalize: https://github.com/olofk/edalize
