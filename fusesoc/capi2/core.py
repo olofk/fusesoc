@@ -741,7 +741,7 @@ def _generate_classes(j, base_class):
         generatedClass = type(cls, (base_class,), class_members)
         globals()[generatedClass.__name__] = generatedClass
 
-capi2_data = yaml.load(description, Loader=yaml.FullLoader)
+capi2_data = yaml.safe_load(description)
 
 for backend in get_edatools():
     backend_name = backend.__name__
