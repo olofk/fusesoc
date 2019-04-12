@@ -287,6 +287,9 @@ def run_backend(cm, export, do_configure, do_build, do_run, flags, system, backe
         exit(1)
     eda_api_file = os.path.join(work_root,
                                 core.name.sanitized_name+'.eda.yml')
+    if not os.path.exists(eda_api_file):
+        do_configure = True
+
     if do_configure:
         try:
             cores = cm.get_depends(core.name, flags)
@@ -311,8 +314,14 @@ def run_backend(cm, export, do_configure, do_build, do_run, flags, system, backe
     #Frontend/backend separation
 
     try:
-        backend = get_edatool(tool)(eda_api=edalizer.edalize,
+        if do_configure:
+            edam = edalizer.edalize
+        else:
+            import yaml
+            edam = yaml.safe_load(open(eda_api_file))
+        backend = get_edatool(tool)(edam=edam,
                                     work_root=work_root)
+
     except ImportError:
         logger.error('Backend "{}" not found'.format(tool))
         exit(1)
