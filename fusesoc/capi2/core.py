@@ -50,7 +50,6 @@ class String(str):
         word = Word(alphanums+':<>.[]_-,=~/')
         conditional = Forward()
         conditional << (Optional("!")("negate") + word("cond") + Suppress('?') + Suppress('(') + OneOrMore(conditional ^ word)("expr") + Suppress(')')).setParseAction(cb_conditional)
-        #string = (function ^ word)
         string = word
         string_list = OneOrMore(conditional ^ string)
         s = ' '.join(string_list.parseString(self.__str__()))
@@ -311,7 +310,7 @@ class Core:
                 else:
                     default     = self.parameters[p].default
                 description = self.parameters[p].description
-                paramtype   = self.parameters[p].paramtype
+                paramtype   = self.parameters[p].paramtype.parse(flags)
 
                 if not datatype in ['bool', 'file', 'int', 'str']:
                     _s = "{} : Invalid datatype '{}' for parameter {}"
@@ -323,7 +322,7 @@ class Core:
                     raise SyntaxError(_s.format(self.name, paramtype, p))
                 parameters[p] = {
                     'datatype'  : str(self.parameters[p].datatype),
-                    'paramtype' : str(self.parameters[p].paramtype),
+                    'paramtype' : paramtype,
                 }
 
                 if description:

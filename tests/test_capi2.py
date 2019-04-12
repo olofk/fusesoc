@@ -209,11 +209,18 @@ def test_capi2_get_parameters():
     assert expected == core.get_parameters(flags)
 
     flags['target'] = 'use_flags'
-    expected = {'param2' : param2}
+    expected = {'param2' : param2,
+                'condparamtype' : {'datatype'  : 'str',
+                                   'paramtype' : 'vlogparam'}
+    }
+
     assert expected == core.get_parameters(flags)
 
     flags['tool'] = 'icarus'
-    expected = {'param1' : param1}
+    expected = {'param1' : param1,
+                'condparamtype' : {'datatype'  : 'str',
+                                   'paramtype' : 'plusarg'}
+    }
     assert expected == core.get_parameters(flags)
 
     flags['target'] = 'types'
