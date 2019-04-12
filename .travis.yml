@@ -1,10 +1,10 @@
 language: python
-dist: trusty
 python:
   - "2.7"
-  - "3.4"
   - "3.5"
+  - "3.6"
 install:
+  - "pip install -U jsonschema"
   - "pip install ."
 env:
   - MODEL_TECH=dummy_value
