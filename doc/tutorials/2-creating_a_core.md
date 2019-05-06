@@ -39,13 +39,14 @@ module pps
   #(parameter clk_freq_hz = 50_000_000)
    (input  clk,
     input  aresetn,
-    output reg pps_o = 1'b0);
+    output reg pps_o);
 
-   reg [$clog2(clk_freq_hz)-1:0] count = 0;
+   reg [$clog2(clk_freq_hz)-1:0] count;
 
    always @(posedge clk) begin
       if (!aresetn) begin
          count <= 0;
+         pps_o <= 0;
       end
       else
       begin
