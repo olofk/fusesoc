@@ -38,15 +38,22 @@ Now we can create the verilog module in `pps.v` within the gpsemulator core dire
 module pps
   #(parameter clk_freq_hz = 50_000_000)
    (input  clk,
+    input  aresetn,
     output reg pps_o = 1'b0);
 
    reg [$clog2(clk_freq_hz)-1:0] count = 0;
 
    always @(posedge clk) begin
-      count <= count + 1;
-      if (count == clk_freq_hz-1) begin
-	 pps_o <= !pps_o;
-	 count <= 0;
+      if (!aresetn) begin
+         count <= 0;
+      end
+      else
+      begin
+         count <= count + 1;
+         if (count == clk_freq_hz-1) begin
+            pps_o <= !pps_o;
+            count <= 0;
+         end
       end
    end
 
@@ -63,6 +70,8 @@ module pps_tb;
    localparam clk_half_period = 1000_000_000/clk_freq_hz/2;
 
    reg clk = 1'b1;
+   // Starting in the reset state ensures consistent simulation when using different simulators
+   reg aresetn = 1'b0;
 
    always #clk_half_period clk <= !clk;
 
@@ -72,13 +81,15 @@ module pps_tb;
    pps
      #(.clk_freq_hz (clk_freq_hz))
    dut
-     (.clk   (clk),
-      .pps_o (pps));
+     (.clk     (clk),
+      .aresetn (aresetn),
+      .pps_o   (pps));
 
    integer i;
    time last_edge = 0;
 
    initial begin
+      #1 aresetn <= 1,
       @(pps);
       last_edge = $time;
       for (i=0; i<10;i=i+1) begin
