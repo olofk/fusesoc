@@ -4,8 +4,10 @@ import logging
 import sys
 if sys.version[0] == '2':
     import ConfigParser as configparser
+    from ConfigParser import SafeConfigParser as CP
 else:
     import configparser
+    from configparser import ConfigParser as CP
 
 import os
 import importlib
@@ -22,7 +24,7 @@ class Config(object):
         self.library_root = None
         self.libraries = OrderedDict()
 
-        config = configparser.SafeConfigParser()
+        config = CP()
         if file is None:
             if path is None:
                 xdg_config_home = os.environ.get('XDG_CONFIG_HOME') or \
@@ -132,7 +134,7 @@ class Config(object):
             raise RuntimeError("No FuseSoC config file found - can't add library")
         section_name = 'library.' + name
 
-        config = configparser.SafeConfigParser()
+        config = CP()
         config.read(self._path)
 
         if not section_name in config.sections():
