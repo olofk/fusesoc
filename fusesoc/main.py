@@ -113,6 +113,7 @@ def init(cm, args):
 
     xdg_data_home = os.environ.get('XDG_DATA_HOME') or \
              os.path.join(os.path.expanduser('~'), '.local/share')
+    library_root = os.path.join(xdg_data_home, 'fusesoc')
     _repo_paths = []
     for repo in REPOS:
         name = repo[0]
@@ -121,7 +122,7 @@ def init(cm, args):
                 'sync-type': 'git'
                 }
 
-        default_dir = os.path.join(xdg_data_home, name)
+        default_dir = os.path.join(library_root, name)
         prompt = 'Directory to use for {} ({}) [{}] : '
         if args.y:
             location = None
