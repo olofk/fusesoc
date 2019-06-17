@@ -1,3 +1,20 @@
+1.9.2 2019-06-17 Olof Kindgren <olof.kindgren@gmail.com>
+======================================================
+* Add --build-root switch to specify build directory
+* Fix yaml deprecation warnings
+* Support conditionals in parameter types
+* Add --system-name flag to set system name
+
+* + improved error handling, bug fixes and refactoring
+
+Contributors:
+Anonymous
+Jan Schiefer
+Jonathan Balkind <jbalkind@princeton.edu>
+Olof Kindgren <olof.kindgren@gmail.com>
+Philipp Wagner <philipp.wagner@tum.de>
+Tobias Woelfel <tobias.woelfel@mailbox.org>
+
 1.9.1 2019-03-03 Olof Kindgren <olof.kindgren@gmail.com>
 ======================================================
 * Fix uncachable cores
