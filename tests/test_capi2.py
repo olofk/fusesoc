@@ -105,6 +105,16 @@ def test_capi2_get_files():
 
     expected =  [
         {'is_include_file' : False,
+         'file_type'       : 'vhdlSource',
+         'copyto'          : '',
+         'logical_name'    : 'overridden_logical_name',
+         'name'            : 'vlogfile'},
+        {'is_include_file' : False,
+         'file_type'       : 'vhdlSource',
+         'copyto'          : '',
+         'logical_name'    : 'default_logical_name',
+         'name'            : 'vhdlfile'},
+        {'is_include_file' : False,
          'file_type'       : 'user',
          'copyto'          : 'copied.file',
          'logical_name'    : '',

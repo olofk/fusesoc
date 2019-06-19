@@ -24,6 +24,7 @@ class File(object):
                 self.file_type       = v.get('file_type', '')
                 self.is_include_file = v.get('is_include_file', False)
                 self.copyto          = v.get('copyto', '')
+                self.logical_name    = v.get('logical_name', '')
         else:
             self.name = os.path.expandvars(tree)
             self.is_include_file = False #"FIXME"

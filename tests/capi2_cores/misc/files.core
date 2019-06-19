@@ -1,6 +1,13 @@
 CAPI=2:
 name: ::copytocore:0
 filesets:
+  logical_name:
+    files:
+      - vlogfile : {logical_name : overridden_logical_name}
+      - vhdlfile
+    file_type : vhdlSource
+    logical_name : default_logical_name
+
   copyfiles:
     files:
       - subdir/dummy.extra: {copyto : copied.file, file_type : user}
@@ -36,6 +43,7 @@ scripts:
 targets:
   default:
     filesets: [
+    logical_name,
     copyfiles,
     miscfiles,
     "tool_icarus? (pickme)",
