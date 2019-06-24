@@ -13,7 +13,7 @@ parameters:
 """
 
 with open(sys.argv[1]) as fin:
-    data = yaml.load(fin)
+    data = yaml.safe_load(fin)
     config     = data.get('parameters')
     files_root = data.get('files_root')
     vlnv       = data.get('vlnv')
