@@ -2,6 +2,6 @@ CORE INFO
 Name:      ::targets:0
 
 Targets:
-default
-empty_target
-target_with_tool_options
+default                  : <No description>
+empty_target             : <No description>
+target_with_tool_options : <No description>

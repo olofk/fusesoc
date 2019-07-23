@@ -439,9 +439,12 @@ Name:      {}
 Core root: {}
 
 Targets:
-{}
-"""
-        targets = '\n'.join(sorted(self.targets))
+{}"""
+        l = max(len(x) for x in self.targets)
+        targets = ""
+
+        for t in sorted(self.targets):
+            targets += "{} : {}\n".format(t.ljust(l), self.targets[t].description or "<No description>")
         return s.format(str(self.name),
                         str(self.core_root),
                         targets)
@@ -603,6 +606,9 @@ Target:
     - name : default_tool
       type : String
       desc : Default tool to use unless overridden with ``--tool=``
+    - name : description
+      type : String
+      desc : Description of the target
     - name : hooks
       type : Hooks
       desc : Script hooks to run when target is used
