@@ -54,6 +54,9 @@ def abort_handler(signal, frame):
 signal.signal(signal.SIGINT, abort_handler)
 
 def build(cm, args):
+    logger.warning("''build'' command is deprecated as it was intended to be used with CAPI1 format.\n"
+                   "         It will be removed soon, so please use ''run'' command instead.")
+
     do_configure = True
     do_build = not args.setup
     do_run = False
@@ -364,6 +367,9 @@ def run_backend(cm, export, do_configure, do_build, do_run, flags, system_name, 
             exit(1)
 
 def sim(cm, args):
+    logger.warning("''sim'' command is deprecated as it was intended to be used with CAPI1 format.\n"
+                   "         It will be removed soon, so please use ''run'' command instead.")
+
     do_configure = not args.keep
     do_build = not (args.setup or args.keep)
     do_run   = not (args.build_only or args.setup)
