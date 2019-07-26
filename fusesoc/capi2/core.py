@@ -70,19 +70,24 @@ class Section(object):
     lists   = {}
     dicts   = {}
     def __init__(self, tree):
-        for k, v in tree.items():
+        for k, v in sorted(tree.items()):
             if v is None:
                 continue
             if k in self.members:
                 setattr(self, k, globals()[self.members[k]](v))
             elif k in self.lists:
-                _l = []
+                if k.endswith('_append'):
+                    _k = k[:-7]
+                    _l = getattr(self, _k, [])[:]
+                else:
+                    _k = k
+                    _l = []
                 for _item in v:
                     try:
-                        _l.append(globals()[self.lists[k]](_item))
+                        _l.append(globals()[self.lists[_k]](_item))
                     except TypeError as e:
                         raise SyntaxError("Bad option '{}' in section '{}'".format(_item, k))
-                setattr(self, k, _l)
+                setattr(self, _k, _l)
             elif k in self.dicts:
                 if not isinstance(v, dict):
                     raise SyntaxError("Object in '{}' section must be a dict".format(k))
@@ -738,6 +743,8 @@ def _generate_classes(j, base_class):
             for key in _items['lists']:
                 class_members[key['name']] = []
                 class_members['lists'][key['name']] = key['type']
+                class_members[key['name']+'_append'] = []
+                class_members['lists'][key['name']+'_append'] = key['type']
         if 'dicts' in _items:
             class_members['dicts'] = {}
             for key in _items['dicts']:
@@ -822,6 +829,40 @@ Item is allowed to be either a `String`_ or a list of `String`_
 Vlnv
 ~~~~~~
 :-separated VLNV (Vendor, Library, Name, Vendor) identifier
+
+List
+~~~~
+
+All keys that are defined as lists have a corresponding *<key>_append* key. The items in the *<key>_append* list is automatically appended to the list of the original key.
+
+**Example** A target contains the following keys
+
+::
+
+    filesets : [fileset_a, fileset_b]
+    filesets_append : [fileset_c, fileset_d]
+
+This will be evaluated to
+
+::
+
+    filesets : [fileset_a, fileset_b, fileset_c, fileset_d]
+
+The main use case for this feature is inheritance between targets with yaml anchors as in the following example where a board-specific implementation and a simulation target inherits from the default target
+
+::
+
+    targets:
+      default: &base
+        filesets: [core]
+    
+      myboard:
+        <<: *base
+        filesets_append: [myboard_files]
+    
+      sim:
+        <<: *base
+        filesets_append: [testbench]
 
 Sections
 --------

@@ -1,0 +1,18 @@
+CAPI=2:
+name: ::append:0
+filesets:
+  fs1: {files: [file1]}
+  fs2: {files: [file2]}
+  fs3: {files: [file3]}
+  fs4: {files: [file4]}
+
+targets:
+  no_fs_no_fsappend:
+    toplevel : dummy
+  no_fs_fsappend:
+    filesets_append : [fs3, fs4]
+  fs_no_fsappend:
+    filesets: [fs1, fs2]
+  fs_fsappend:
+    filesets : [fs1, fs2]
+    filesets_append : [fs3, fs4]

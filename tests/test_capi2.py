@@ -60,6 +60,33 @@ def test_capi2_export():
         result += [os.path.relpath(os.path.join(root, f), export_root) for f in files]
     assert expected == sorted(result)
 
+def test_capi2_append():
+    from fusesoc.core import Core
+
+    core = Core(os.path.join(cores_dir, "append.core"))
+
+    flags = {'is_toplevel' : True}
+
+    flags['target'] = 'no_fs_no_fsappend'
+    result = [x.name for x in core.get_files(flags)]
+    expected = []
+    assert expected == result
+
+    flags['target'] = 'no_fs_fsappend'
+    result = [x.name for x in core.get_files(flags)]
+    expected = ['file3', 'file4']
+    assert expected == result
+
+    flags['target'] = 'fs_no_fsappend'
+    result = [x.name for x in core.get_files(flags)]
+    expected = ['file1', 'file2']
+    assert expected == result
+
+    flags['target'] = 'fs_fsappend'
+    result = [x.name for x in core.get_files(flags)]
+    expected = ['file1', 'file2', 'file3', 'file4']
+    assert expected == result
+
 def test_capi2_get_depends():
     from fusesoc.core import Core
     from fusesoc.vlnv import Vlnv
