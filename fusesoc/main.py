@@ -100,7 +100,8 @@ def init(cm, args):
 
 
     if os.path.exists(config_file):
-        logger.warning("'{}' already exists".format(config_file))
+        logger.warning("'{}' already exists. Aborting".format(config_file))
+        exit(1)
         #TODO. Prepend cores_root to file if it doesn't exist
         f = open(config_file, 'w+')
     else:
@@ -133,7 +134,7 @@ def init(cm, args):
         else:
             location = default_dir
         if os.path.exists(location):
-            logger.warning("'{}' already exists".format(location))
+            logger.warning("'{}' already exists. This library will not be added to fusesoc.conf".format(location))
             #TODO: Prompt for overwrite
         else:
             logger.info("Initializing {}".format(name))
