@@ -377,6 +377,8 @@ def sim(cm, args):
                 flags, None, args.system, args.backendargs, None)
 
 def update(cm, args):
+    if "warn" in args:
+        logger.warn(args.warn)
     libraries = args.libraries
     for root in cm.get_cores_root():
         if not root in cm.config.cores_root:
@@ -550,6 +552,11 @@ def parse_args():
     parser_library_add.add_argument('--global', action='store_true', help='Use the global FuseSoc config file in $XDG_CONFIG_HOME/fusesoc/fusesoc.conf')
     parser_library_add.set_defaults(func=add_library)
 
+    #library update subparser
+    parser_library_update = library_subparsers.add_parser('update', help='Update the FuseSoC core libraries')
+    parser_library_update.add_argument('libraries', nargs='*', help='The libraries to update (defaults to all)')
+    parser_library_update.set_defaults(func=update)
+
     # run subparser
     parser_run = subparsers.add_parser('run', help="Start a tool flow")
     parser_run.add_argument('--no-export', action='store_true', help='Reference source files from their current location instead of exporting to a build tree')
@@ -582,6 +589,7 @@ def parse_args():
     parser_update = subparsers.add_parser('update', help='Update the FuseSoC core libraries')
     parser_update.add_argument('libraries', nargs='*', help='The libraries (or core roots) to update (defaults to all)')
     parser_update.set_defaults(func=update)
+    parser_update.set_defaults(warn="'fusesoc update' is deprecated. Use 'fusesoc library update' instead")
 
     args = parser.parse_args()
 
