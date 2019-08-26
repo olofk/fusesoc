@@ -174,6 +174,8 @@ def add_library(cm, args):
         exit(1)
     else:
         library['sync-uri'] = sync_uri
+        #Only remote git libraries supported for now
+        library['sync-type'] = 'git'
         if args.location:
             library['location'] = os.path.abspath(args.location)
     if args.no_auto_sync:
