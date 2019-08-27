@@ -75,6 +75,7 @@ def test_library_add(caplog):
 
     expected = """[library.fusesoc-cores]
 sync-uri = https://github.com/fusesoc/fusesoc-cores
+sync-type = git
 location = {}""".format(os.path.abspath(clone_target))
 
     tcf.seek(0)
