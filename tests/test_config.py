@@ -50,21 +50,6 @@ def test_config_path():
 
     assert conf.library_root == library_root
 
-def test_config_failure():
-    tcf = tempfile.NamedTemporaryFile(mode="w+")
-    tcf.write(EXAMPLE_CONFIG.format(
-            build_root = build_root,
-            cache_root = cache_root,
-            cores_root = "INCORRECT",
-            library_root = library_root
-            )
-        )
-    tcf.seek(0)
-
-    conf = Config(path=tcf.name)
-
-    assert not conf.cores_root == cores_root
-
 def test_config_libraries():
     tcf = tempfile.NamedTemporaryFile(mode="w+")
     tcf.write(EXAMPLE_CONFIG.format(
@@ -78,7 +63,12 @@ def test_config_libraries():
 
     conf = Config(path=tcf.name)
 
-    assert conf.libraries['test_lib']['location'] == os.path.join(library_root, 'test_lib')
-    assert conf.libraries['test_lib']['sync-uri'] == 'https://github.com/fusesoc/fusesoc-cores'
-    assert not conf.libraries['test_lib']['auto-sync']
+    lib = None
+    for library in conf.libraries:
+        if library.name == 'test_lib':
+            lib = library
+    assert lib
 
+    assert lib.location == os.path.join(library_root, 'test_lib')
+    assert lib.sync_uri == 'https://github.com/fusesoc/fusesoc-cores'
+    assert not lib.auto_sync

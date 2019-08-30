@@ -12,6 +12,8 @@ else:
 import os
 import importlib
 
+from fusesoc.librarymanager import Library
+
 logger = logging.getLogger(__name__)
 
 class Config(object):
@@ -19,10 +21,10 @@ class Config(object):
     def __init__(self, path=None, file=None):
         self.build_root = None
         self.cache_root = None
-        self.cores_root = []
-        self.systems_root = None
+        cores_root = []
+        systems_root = []
         self.library_root = None
-        self.libraries = OrderedDict()
+        self.libraries = []
 
         config = CP()
         if file is None:
@@ -57,14 +59,15 @@ class Config(object):
             try:
                 setattr(self, item, os.path.expanduser(config.get('main', item)))
                 if item == 'systems_root':
+                    systems_root = [os.path.expanduser(config.get('main', item))]
                     logger.warn('The systems_root option in fusesoc.conf is deprecated. Please migrate to libraries instead')
             except configparser.NoOptionError:
                 pass
             except configparser.NoSectionError:
                 pass
-        item = 'cores_root'
+
         try:
-            setattr(self, item, config.get('main', item).split())
+            cores_root = config.get('main', 'cores_root').split()
             logger.warn('The cores_root option in fusesoc.conf is deprecated. Please migrate to libraries instead')
         except configparser.NoOptionError:
             pass
@@ -80,23 +83,24 @@ class Config(object):
             self.cache_root = os.path.join(xdg_cache_home, 'fusesoc')
             if not os.path.exists(self.cache_root):
                 os.makedirs(self.cache_root)
-        if not self.cores_root and os.path.exists('cores'):
-            self.cores_root   = [os.path.abspath('cores')]
-        if self.systems_root is None and os.path.exists('systems'):
-            self.systems_root = os.path.abspath('systems')
+        if not cores_root and os.path.exists('cores'):
+            cores_root   = [os.path.abspath('cores')]
+        if (not systems_root) and os.path.exists('systems'):
+            systems_root = [os.path.abspath('systems')]
         if self.library_root is None:
             xdg_data_home = os.environ.get('XDG_DATA_HOME') or \
                              os.path.join(os.path.expanduser('~'), '.local/share')
             self.library_root = os.path.join(xdg_data_home, 'fusesoc')
 
         # Parse library sections
+        libraries = []
         library_sections = [x for x in config.sections() if x.startswith('library')]
         for section in library_sections:
-            library = section.partition('.')[2]
+            name = section.partition('.')[2]
             try:
                 location = config.get(section, 'location')
             except configparser.NoOptionError:
-                location = os.path.join(self.library_root, library)
+                location = os.path.join(self.library_root, name)
 
             try:
                 auto_sync = config.getboolean(section, 'auto-sync')
@@ -104,7 +108,7 @@ class Config(object):
                 auto_sync = True
             except ValueError as e:
                 _s = "Error parsing auto-sync '{}'. Ignoring library '{}'"
-                logger.warn(_s.format(str(e), library))
+                logger.warn(_s.format(str(e), name))
                 continue
 
             try:
@@ -118,60 +122,46 @@ class Config(object):
             except configparser.NoOptionError:
                 # sync-uri is absent for local libraries
                 sync_type = None
+            libraries.append(Library(name, location, sync_type, sync_uri, auto_sync))
+        # Get the environment variable for further cores
+        env_cores_root = []
+        if os.getenv("FUSESOC_CORES"):
+            env_cores_root = os.getenv("FUSESOC_CORES").split(":")
+            env_cores_root.reverse()
 
-            self.libraries[library] = {
-                    'location': location,
-                    'auto-sync': auto_sync,
-                    'sync-uri': sync_uri,
-                    'sync-type': sync_type
-                }
+        for root in cores_root + systems_root + env_cores_root:
+            self.libraries.append(Library(root, root))
+
+        self.libraries += libraries
 
         logger.debug('cache_root='+self.cache_root)
-        logger.debug('cores_root='+':'.join(self.cores_root))
-        logger.debug('systems_root='+self.systems_root if self.systems_root else "Not defined")
         logger.debug('library_root='+self.library_root)
 
-    def add_library(self, name, library):
+    def add_library(self, library):
         from fusesoc.provider import get_provider
         if not hasattr(self, '_path'):
             raise RuntimeError("No FuseSoC config file found - can't add library")
-        section_name = 'library.' + name
+        section_name = 'library.' + library.name
 
         config = CP()
         config.read(self._path)
 
-        if not section_name in config.sections():
-            config.add_section(section_name)
+        if section_name in config.sections():
+            logger.warn("Not adding library. {} already exists in configuration file".format(library.name))
+            return
 
-        # This is not user-controlled at all so an assert is OK
-        assert('location' in library or 'sync-uri' in library);
+        config.add_section(section_name)
 
-        # sync-uri is absent for local libraries
-        if 'sync-uri' in library:
-            config.set(section_name, 'sync-uri', library['sync-uri'])
+        config.set(section_name, 'location', library.location)
 
-        if 'sync-type' in library:
-            config.set(section_name, 'sync-type', library['sync-type'])
-        else:
-            library['sync-type'] = 'git'
-
-        if 'auto-sync' in library:
-            if library['auto-sync']:
-                config.set(section_name, 'auto-sync', 'true')
-            else:
-                config.set(section_name, 'auto-sync', 'false')
-        else:
-            library['auto-sync'] = True
-
-        if 'location' in library:
-            config.set(section_name, 'location', library['location'])
-        else:
-            library['location'] = os.path.join(self.library_root, name)
-
-        self.libraries[name] = library
+        if library.sync_type:
+            config.set(section_name, 'sync-uri' , library.sync_uri)
+            config.set(section_name, 'sync-type', library.sync_type)
+            _auto_sync = 'true' if library.auto_sync else 'false'
+            config.set(section_name, 'auto-sync', _auto_sync)
 
         try:
-            provider = get_provider(library['sync-type'])
+            provider = get_provider(library.sync_type)
         except ImportError as e:
             raise RuntimeError("Invalid sync-type '{}'".format(library['sync-type']))
 

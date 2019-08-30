@@ -10,8 +10,8 @@ logger = logging.getLogger(__name__)
 class Git(Provider):
     @staticmethod
     def init_library(library):
-        logger.info("Cloning library into {}".format(library['location']))
-        git_args = ['clone', library['sync-uri'], library['location']]
+        logger.info("Cloning library into {}".format(library.location))
+        git_args = ['clone', library.sync_uri, library.location]
         try:
             Launcher('git', git_args).run()
         except subprocess.CalledProcessError as e:
@@ -19,8 +19,7 @@ class Git(Provider):
 
     @staticmethod
     def update_library(library):
-        logger.info("Updating library {}".format(library['location']))
-        git_args = ['-C', library['location'], 'pull']
+        git_args = ['-C', library.location, 'pull']
         try:
             Launcher('git', git_args).run()
         except subprocess.CalledProcessError as e:

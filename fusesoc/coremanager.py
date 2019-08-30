@@ -11,6 +11,7 @@ from simplesat.repository import Repository
 from simplesat.request import Request
 
 from fusesoc.core import Core
+from fusesoc.librarymanager import LibraryManager
 
 logger = logging.getLogger(__name__)
 
@@ -46,21 +47,21 @@ class CoreDB(object):
                                   self._package_version(d)))
         return ", ".join(deps)
 
-    def add(self, core):
+    def add(self, core, library):
         name = str(core.name)
         logger.debug("Adding core " + name)
         if name in self._cores:
             _s = "Replacing {} in {} with the version found in {}"
             logger.debug(_s.format(name,
-                                   self._cores[name].core_root,
+                                   self._cores[name]['core'].core_root,
                                    core.core_root))
-        self._cores[name] = core
+        self._cores[name] = {'core' : core, 'library' : library}
 
     def find(self, vlnv=None):
         if vlnv:
             found = self._solve(vlnv, only_matching_vlnv=True)[-1]
         else:
-            found = list(self._cores.values())
+            found = list([core['core'] for core in self._cores.values()])
         return found
 
     def solve(self, top_core, flags):
@@ -75,7 +76,8 @@ class CoreDB(object):
 
         repo = Repository()
         _flags = flags.copy()
-        for core in self._cores.values():
+        cores = [x['core'] for x in self._cores.values()]
+        for core in cores:
             if only_matching_vlnv:
                 if not eq_vln(core.name, top_core):
                     continue
@@ -121,10 +123,11 @@ class CoreManager(object):
 
     def __init__(self, config):
         self.config = config
-        self._cores_root = []
         self.db = CoreDB()
+        self._lm = LibraryManager(config.library_root)
 
-    def load_cores(self, path):
+    def load_cores(self, library):
+        path = os.path.expanduser(library.location)
         if os.path.isdir(path) == False:
             raise IOError(path + " is not a directory")
         logger.debug("Checking for cores in " + path)
@@ -137,7 +140,7 @@ class CoreManager(object):
                     core_file = os.path.join(root, f)
                     try:
                         core = Core(core_file, self.config.cache_root)
-                        self.db.add(core)
+                        self.db.add(core, library)
                     except SyntaxError as e:
                         w = "Parse error. Ignoring file " + core_file + ": " + e.msg
                         logger.warning(w)
@@ -145,19 +148,21 @@ class CoreManager(object):
                         w = 'Failed to register "{}" due to unknown provider: {}'
                         logger.warning(w.format(core_file, str(e)))
 
-    def add_cores_root(self, path):
-        if not path:
+    def add_library(self, library):
+        abspath = os.path.abspath(os.path.expanduser(library.location))
+        _library = self._lm.get_library(abspath, 'location')
+        if _library:
+            _s = "Not adding library {} ({}). Library {} already registered for this location"
+            logger.warn(_s.format(library.name,
+                                  abspath,
+                                  _library.name))
             return
 
-        abspath = os.path.abspath(os.path.expanduser(path))
-        if abspath in self._cores_root:
-            return
+        self.load_cores(library)
+        self._lm.add_library(library)
 
-        self.load_cores(os.path.expanduser(path))
-        self._cores_root += [abspath]
-
-    def get_cores_root(self):
-        return self._cores_root
+    def get_libraries(self):
+        return self._lm.get_libraries()
 
     def get_depends(self, core, flags):
         logger.debug("Calculating dependencies for {}{} with flags {}".format(core.relation,str(core), str(flags)))

@@ -7,8 +7,8 @@ logger = logging.getLogger(__name__)
 class Local(Provider):
     @staticmethod
     def init_library(library):
-        if not os.path.isdir(library['location']):
-            logger.error("Local library at location '{}' not found.".format(library['location']))
+        if not os.path.isdir(library.location):
+            logger.error("Local library at location '{}' not found.".format(library.location))
             exit(1)
 
     def _checkout(self, local_dir):

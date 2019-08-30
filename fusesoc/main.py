@@ -14,9 +14,9 @@ if os.path.exists(os.path.join(fusesocdir, "fusesoc")):
 
 from fusesoc.config import Config
 from fusesoc.coremanager import CoreManager, DependencyError
+from fusesoc.librarymanager import Library
 from fusesoc.edalizer import Edalizer
 from edalize import get_edatool
-from fusesoc.provider import get_provider
 from fusesoc.vlnv import Vlnv
 from fusesoc.utils import Launcher, setup_logging
 
@@ -115,9 +115,6 @@ def init(cm, args):
 
     config = Config(file=f)
 
-    xdg_data_home = os.environ.get('XDG_DATA_HOME') or \
-             os.path.join(os.path.expanduser('~'), '.local/share')
-    library_root = os.path.join(xdg_data_home, 'fusesoc')
     _repo_paths = []
     for repo in REPOS:
         name = repo[0]
@@ -126,7 +123,7 @@ def init(cm, args):
                 'sync-type': 'git'
                 }
 
-        default_dir = os.path.join(library_root, name)
+        default_dir = os.path.join(cm._lm.library_root, name)
         prompt = 'Directory to use for {} ({}) [{}] : '
         if args.y:
             location = None
@@ -149,37 +146,32 @@ def init(cm, args):
     logger.info("FuseSoC is ready to use!")
 
 def list_paths(cm, args):
-    cores_root = cm.get_cores_root()
+    cores_root = [x.location for x in cm.get_libraries()]
     print("\n".join(cores_root))
 
 def add_library(cm, args):
-    library = {}
-    name = args.name
     sync_uri = vars(args)['sync-uri']
-    if 'sync-type' in vars(args):
-        provider = vars(args)['sync-type']
-        library['sync-type'] = provider
-    elif os.path.isdir(sync_uri):
-        provider = 'local'
-        library['sync-type'] = provider
-    else:
-        provider = 'git'
 
-    if provider == 'local' and not args.location:
-        logger.info("Interpreting sync-uri '{}' as location for local provider.".format(sync_uri))
-        library['location'] = os.path.abspath(sync_uri)
-        library['sync-type'] = 'local'
-    elif provider == 'local' and os.path.abspath(args.location) != os.path.abspath(sync_uri):
-        logger.error("Location '{}' does not match sync-uri '{}' for local provider. Consider specifying only sync-uri.".format(args.location, sync_uri))
-        exit(1)
+    location = args.location or os.path.join(cm._lm.library_root, args.name)
+
+    if 'sync-type' in vars(args):
+        sync_type = vars(args)['sync-type']
     else:
-        library['sync-uri'] = sync_uri
-        #Only remote git libraries supported for now
-        library['sync-type'] = 'git'
-        if args.location:
-            library['location'] = os.path.abspath(args.location)
-    if args.no_auto_sync:
-        library['auto-sync'] = False
+        sync_type = None
+
+    #Check if it's a dir. Otherwise fall back to git repo
+    if not sync_type:
+        if os.path.isdir(sync_uri):
+            sync_type = 'local'
+        else:
+            sync_type = 'git'
+
+    if sync_type == 'local':
+        logger.info("Interpreting sync-uri '{}' as location for local provider.".format(sync_uri))
+        location = os.path.abspath(sync_uri)
+
+    auto_sync = not args.no_auto_sync
+    library = Library(args.name, location, sync_type, sync_uri, auto_sync)
 
     if args.config:
         config = Config(file=args.config)
@@ -192,7 +184,7 @@ def add_library(cm, args):
         config = Config(path="fusesoc.conf")
 
     try:
-        config.add_library(name, library)
+        config.add_library(library)
     except RuntimeError as e:
         logger.error("`add library` failed: " + str(e))
         exit(1)
@@ -202,11 +194,11 @@ def list_cores(cm, args):
     cores = cm.get_cores()
     print("\nAvailable cores:\n")
     if not cores:
-        cores_root = cm.get_cores_root()
+        cores_root = cm.get_libraries()
         if cores_root:
-            logger.error("No cores found in "+':'.join(cores_root))
+            logger.error("No cores found in any library")
         else:
-            logger.error("cores_root is not defined")
+            logger.error("No libraries registered")
         exit(1)
     maxlen = max(map(len,cores.keys()))
     print('Core'.ljust(maxlen) + '   Cache status')
@@ -388,41 +380,8 @@ def sim(cm, args):
 def update(cm, args):
     if "warn" in args:
         logger.warn(args.warn)
-    libraries = args.libraries
-    for root in cm.get_cores_root():
-        if not root in cm.config.cores_root:
-            # This is a library - handled differently
-            continue
-        if os.path.exists(root) and (not libraries or root in libraries):
-            args = ['-C', root,
-                    'config', '--get', 'remote.origin.url']
-            repo_root = ""
-            try:
-                repo_root = subprocess.check_output(['git'] + args).decode("utf-8")
-                if repo_root.strip() in [repo[1] for repo in REPOS]:
-                    logger.info("Updating '{}'".format(root))
-                    args = ['-C', root, 'pull']
-                    Launcher('git', args).run()
-            except subprocess.CalledProcessError:
-                pass
 
-    for (name, library) in cm.config.libraries.items():
-        # TODO I don't like this huge "if", get rid of it
-        if os.path.exists(library['location']) and \
-                not library['sync-uri'] is None and \
-                (name in libraries or \
-                library['location'] in libraries or \
-                library['auto-sync']):
-            logger.info("Updating '{}'".format(name))
-            try:
-                provider = get_provider(library['sync-type'])
-            except ImportError as e:
-                logger.error("Invalid sync-type '{}' for library '{}' - skipping".format(library['sync-type'], name))
-                continue
-            try:
-                provider.update_library(library)
-            except RuntimeError as e:
-                logger.error("Failed to update library: " + str(e) + ". Continuing...")
+    cm._lm.update(args.libraries)
 
 def init_logging(verbose, monochrome, log_file=None):
     level = logging.DEBUG if verbose else logging.INFO
@@ -440,28 +399,17 @@ def init_logging(verbose, monochrome, log_file=None):
         logger.debug("Colorful output")
 
 def init_coremanager(config, args_cores_root):
-    logger.debug("Command line arguments: " + str(sys.argv))
-
-    if os.getenv("FUSESOC_CORES"):
-        logger.debug("FUSESOC_CORES: " + str(os.getenv("FUSESOC_CORES").split(':')))
+    logger.debug("Initializing core manager")
     cm = CoreManager(config)
 
-    # Get the environment variable for further cores
-    env_cores_root = []
-    if os.getenv("FUSESOC_CORES"):
-        env_cores_root = os.getenv("FUSESOC_CORES").split(":")
-    env_cores_root.reverse()
-
-    core_libraries = [l['location'] for l in config.libraries.values()]
-    for cores_root in config.cores_root + \
-                       [config.systems_root] + \
-                       env_cores_root + \
-                       core_libraries + \
-                       args_cores_root:
+    args_libs = [Library(acr, acr) for acr in args_cores_root]
+    #Add libraries from config file, env var and command-line
+    for library in config.libraries + args_libs:
         try:
-            cm.add_cores_root(cores_root)
+            cm.add_library(library)
         except (RuntimeError, IOError) as e:
-            logger.warning("Failed to register cores root '{}'".format(str(e)))
+            _s = "Failed to register library '{}'"
+            logger.warning(_s.format(str(e)))
 
     return cm
 
@@ -616,10 +564,12 @@ def main():
     if not args:
         exit(0)
 
+    logger.debug("Command line arguments: " + str(sys.argv))
+
     init_logging(args.verbose, args.monochrome, args.log_file)
     config = Config(file=args.config)
-    cm = init_coremanager(config, args.cores_root)
 
+    cm = init_coremanager(config, args.cores_root)
     # Run the function
     args.func(cm, args)
 
