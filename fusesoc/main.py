@@ -152,7 +152,12 @@ def list_paths(cm, args):
 def add_library(cm, args):
     sync_uri = vars(args)['sync-uri']
 
-    location = args.location or os.path.join(cm._lm.library_root, args.name)
+    if args.location:
+        location = args.location
+    elif vars(args).get('global', False):
+        location = os.path.join(cm._lm.library_root, args.name)
+    else:
+        location = os.path.join('fusesoc_libraries', args.name)
 
     if 'sync-type' in vars(args):
         sync_type = vars(args)['sync-type']

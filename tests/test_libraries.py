@@ -91,7 +91,7 @@ auto-sync = true""".format(os.path.abspath(clone_target))
     vars(args)['sync-type'] = 'git'
 
     expected = """[library.fusesoc-cores]
-location = {}/fusesoc-cores
+location = fusesoc_libraries/fusesoc-cores
 sync-uri = https://github.com/fusesoc/fusesoc-cores
 sync-type = git
 auto-sync = true""".format(cm._lm.library_root)
@@ -102,7 +102,7 @@ auto-sync = true""".format(cm._lm.library_root)
     result = tcf.read().strip()
 
     assert expected == result
-
+    shutil.rmtree('fusesoc_libraries')
     tcf.close()
 
     tcf = tempfile.NamedTemporaryFile(mode="w+")
