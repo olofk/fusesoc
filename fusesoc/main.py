@@ -118,20 +118,14 @@ def init(cm, args):
     _repo_paths = []
     for repo in REPOS:
         name = repo[0]
-        library = {
-                'sync-uri': repo[1],
-                'sync-type': 'git'
-                }
-
+        uri = repo[1]
         default_dir = os.path.join(cm._lm.library_root, name)
         prompt = 'Directory to use for {} ({}) [{}] : '
         if args.y:
             location = None
         else:
             location = input(prompt.format(repo[0], repo[2], default_dir))
-        if location:
-            library['location'] = location
-        else:
+        if not location:
             location = default_dir
         if os.path.exists(location):
             logger.warning("'{}' already exists. This library will not be added to fusesoc.conf".format(location))
@@ -139,7 +133,8 @@ def init(cm, args):
         else:
             logger.info("Initializing {}".format(name))
             try:
-                config.add_library(name, library)
+                library = Library(name, location, 'git', uri, True)
+                config.add_library(library)
             except RuntimeError as e:
                 logger.error("Init failed: " + str(e))
                 exit(1)
