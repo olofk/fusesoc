@@ -63,7 +63,7 @@ class Edalizer(object):
             snippet['tool_options'] = {flags['tool'] : core.get_tool_options(_flags)}
 
             #Extract scripts
-            snippet['scripts'] = core.get_scripts(rel_root, _flags)
+            snippet['hooks'] = core.get_scripts(rel_root, _flags)
 
             _files = []
             for file in core.get_files(_flags):
