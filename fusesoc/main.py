@@ -254,6 +254,14 @@ def run(cm, args):
 
     flags = {'tool'   : args.tool,
              'target' : args.target}
+    for flag in args.flag:
+        if flag[0] == '+':
+            flags[flag[1:]] = True
+        elif flag[0] == '-':
+            flags[flag[1:]] = False
+        else:
+            flags[flag] = True
+
     run_backend(cm,
                 not args.no_export,
                 do_configure, do_build, do_run,
@@ -523,6 +531,7 @@ def parse_args():
     parser_run.add_argument('--run'  ,  action='store_true', help="Execute run stage")
     parser_run.add_argument('--target', help='Override default target')
     parser_run.add_argument('--tool', help="Override default tool for target")
+    parser_run.add_argument('--flag', help="Set custom use flags. Can be specified multiple times", action='append', default=[])
     parser_run.add_argument('--system-name', help='Override default VLNV name for system')
     parser_run.add_argument('system', help='Select a system to operate on')
     parser_run.add_argument('backendargs', nargs=argparse.REMAINDER, help="arguments to be sent to backend")
