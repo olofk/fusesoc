@@ -506,7 +506,7 @@ Targets:
 
         for fs in self._parse_list(flags, target.filesets):
             if not fs in self.filesets:
-                raise SyntaxError("{} : Fileset '{}', requested by fileset '{}', was not found".format(self.name, fs, target.name))
+                raise SyntaxError("{} : Fileset '{}', requested by target '{}', was not found".format(self.name, fs, target.name))
             filesets.append(self.filesets[fs])
 
         self._debug(" Matched filesets {}".format(target.filesets))
