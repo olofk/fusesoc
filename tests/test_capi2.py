@@ -499,7 +499,7 @@ def test_capi2_get_work_root():
 
 def test_capi2_info():
     from fusesoc.core import Core
-    for core_name in ['targets']:
+    for core_name in ['targets', 'generators']:
         core_file = os.path.join(tests_dir,
                                  "capi2_cores",
                                  "misc",

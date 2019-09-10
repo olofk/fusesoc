@@ -445,11 +445,14 @@ Core root: {}
 
 Targets:
 {}"""
-        l = max(len(x) for x in self.targets)
-        targets = ""
+        if self.targets:
+            l = max(len(x) for x in self.targets)
+            targets = ""
 
-        for t in sorted(self.targets):
-            targets += "{} : {}\n".format(t.ljust(l), self.targets[t].description or "<No description>")
+            for t in sorted(self.targets):
+                targets += "{} : {}\n".format(t.ljust(l), self.targets[t].description or "<No description>")
+        else:
+            targets = "<No targets>"
         return s.format(str(self.name),
                         str(self.core_root),
                         targets)
