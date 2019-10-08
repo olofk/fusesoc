@@ -20,13 +20,13 @@ class File(object):
         self.logical_name = ''
         if type(tree) is dict:
             for k, v in tree.items():
-                self.name = os.path.expandvars(k)
+                self.name = String(os.path.expandvars(k))
                 self.file_type       = v.get('file_type', '')
                 self.is_include_file = v.get('is_include_file', False)
                 self.copyto          = v.get('copyto', '')
                 self.logical_name    = v.get('logical_name', '')
         else:
-            self.name = os.path.expandvars(tree)
+            self.name = String(os.path.expandvars(tree))
             self.is_include_file = False #"FIXME"
 
 class Genparams(dict):
@@ -282,7 +282,16 @@ class Core:
         src_files = []
         for fs in self._get_filesets(flags):
             src_files += fs.files
-        return src_files
+        _src_files = []
+        for f in src_files:
+            pf = f.name.parse(flags)
+            if pf:
+                _f = File({pf : {'copyto' : f.copyto,
+                                'file_type' : f.file_type,
+                                'is_include_file' : f.is_include_file,
+                                 'logical_name' : f.logical_name}})
+                _src_files.append(_f)
+        return _src_files
 
     def get_generators(self, flags):
         self._debug("Getting generators for flags {}".format(str(flags)))
