@@ -24,6 +24,10 @@ class Url(Provider):
         url = self.config.get('url')
         logger.info("Downloading...")
         user_agent = self.config.get('user-agent')
+        if not self.config.get('verify_cert', True):
+            import ssl
+            ssl._create_default_https_context = ssl._create_unverified_context
+
         if user_agent and sys.version_info[0] >= 3:
             opener = urllib.build_opener()
             opener.addheaders = [('User-agent', user_agent)]
