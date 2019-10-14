@@ -1,3 +1,20 @@
+1.9.3 2019-10-14 Olof Kindgren <olof.kindgren@gmail.com>
+======================================================
+* Support setting logical_name on individual files
+* Add description field to targets
+* Make unknown CAPI2 keys non-critical
+* Make lists appendable
+* Store workspace-local libraries in fusesoc_libraries
+* Experimental support for use flags
+
+* + improved error handling, bug fixes and refactoring
+
+Contributors:
+Anonymous
+Mark Saunders
+Michał Kruszewski <mkru@protonmail.com>
+Olof Kindgren <olof.kindgren@gmail.com>
+
 1.9.2 2019-06-17 Olof Kindgren <olof.kindgren@gmail.com>
 ======================================================
 * Add --build-root switch to specify build directory
