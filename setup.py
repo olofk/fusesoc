@@ -36,7 +36,7 @@ setup(
         'setuptools_scm',
     ],
     install_requires=[
-        'edalize>=0.1.3',
+        'edalize>=0.1.6',
         'ipyxact>=0.2.3',
         'pyparsing',
         'pytest>=3.3.0',
