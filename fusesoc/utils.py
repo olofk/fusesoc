@@ -96,7 +96,7 @@ def setup_logging(level, monchrome=False, log_file=None):
     formatter = ColoredFormatter("%(levelname)s: %(message)s", monchrome)
     ch.setFormatter(formatter)
     # Which packages do we want to log from.
-    packages = ('__main__', 'fusesoc',)
+    packages = ('__main__', 'fusesoc', 'edalize',)
     for package in packages:
         logger = logging.getLogger(package)
         logger.addHandler(ch)
