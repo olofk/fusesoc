@@ -117,6 +117,13 @@ class CoreDB(object):
         except NoPackageFound as e:
             raise DependencyError(top_core.name)
 
+        objdict = {}
+        depdict = {}
+        if (len(transaction.operations) > 1):
+            for op in transaction.operations:
+                objdict[op.package._name] = str(op.package.core.name)
+                depdict[str(op.package.core.name)] = [objdict[n[0]] for n in op.package.install_requires]
+                op.package.core.direct_deps = [objdict[n[0]] for n in op.package.install_requires]
         return [op.package.core for op in transaction.operations]
 
 class CoreManager(object):

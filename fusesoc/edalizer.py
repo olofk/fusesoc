@@ -47,6 +47,10 @@ class Edalizer(object):
             logger.debug("Collecting EDA API parameters from {}".format(str(core.name)))
             _flags['is_toplevel'] = (core.name == vlnv)
 
+            #Extract direct dependencies
+            snippet['dependencies'] = {str(core.name) :
+                                       getattr(core, 'direct_deps', [])}
+
             #Extract files
             if export_root:
                 files_root = os.path.join(export_root, core.sanitized_name)
@@ -79,6 +83,7 @@ class Edalizer(object):
                     _name = os.path.join(rel_root, file.name)
                 _files.append({
                     'name'            : _name,
+                    'core'            : str(core.name),
                     'file_type'       : file.file_type,
                     'is_include_file' : file.is_include_file,
                     'logical_name'    : file.logical_name})
@@ -117,7 +122,8 @@ class Edalizer(object):
 
         top_core = cores[-1]
         self.edalize = {
-            'version'      : '0.2.0',
+            'version'      : '0.2.1',
+            'dependencies' : {},
             'files'        : [],
             'hooks'        : {},
             'name'         : system_name or top_core.sanitized_name,
