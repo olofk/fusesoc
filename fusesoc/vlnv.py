@@ -1,4 +1,5 @@
 from functools import total_ordering
+import copy
 
 
 @total_ordering
@@ -19,7 +20,7 @@ class Vlnv(object):
         if _s[0:2] in [">=", "<="]:
             self.relation = _s[0:2]
             _s = _s[2:]
-        elif s[0] in [">", "<"]:
+        elif s[0] in [">", "<", "~", "^"]:
             self.relation = s[0]
             _s = _s[1:]
         elif s[0] in ["="]:
@@ -106,6 +107,34 @@ class Vlnv(object):
         else:
             relation = self.relation
         return relation + str(self)
+
+    def simpleVLNVs(self):
+        if self.relation in "^~":
+            # A VLNV which implies a range of versions
+            # ^ for same major release
+            # ~ for same minor release
+            incr = {"^": 0, "~": 1}
+
+            # For both, we represent a >= relation on the provided
+            # version...
+            vlnvs = [copy.deepcopy(self)]
+            vlnvs[0].relation = ">="
+
+            # and then a second < relation on the relevant
+            # field (with later fields tied low)
+            nextversion = list(map(int, self.version.split(".")))
+            pos = incr[self.relation]
+            nextversion[pos] += 1
+            for i in range(pos + 1, len(nextversion)):
+                nextversion[i] = 0
+
+            vlnvs.append(copy.deepcopy(self))
+            vlnvs[1].relation = "<"
+            vlnvs[1].version = ".".join(map(str, nextversion))
+            return vlnvs
+        else:
+            # A normal VLNV, so we can return ourselves
+            return [self]
 
     def __eq__(self, other):
         return (self.vendor, self.library, self.name, self.version) == (

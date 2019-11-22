@@ -52,7 +52,7 @@ class String(str):
             else:
                 return []
 
-        word = Word(alphanums + ":<>.[]_-,=~/")
+        word = Word(alphanums + ":<>.[]_-,=~/^~")
         conditional = Forward()
         conditional << (
             Optional("!")("negate")

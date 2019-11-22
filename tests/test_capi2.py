@@ -112,6 +112,8 @@ def test_capi2_get_depends():
         Vlnv("=::vlnveq:1.0"),
         Vlnv(">::vlnvgt:1.0"),
         Vlnv(">=::vlnvgte:1.0"),
+        Vlnv("^::vlnvmajor:1.0"),
+        Vlnv("~::vlnvminor:2.2.3"),
     ]
     assert len(result) == len(expected)
     for i in range(len(result)):
