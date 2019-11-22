@@ -2,6 +2,24 @@ from functools import total_ordering
 
 @total_ordering
 class Vlnv(object):
+    @classmethod
+    def asSimpleVersionStrings(cls, s):
+        idx = s.find('>=<')
+        if idx != -1:
+            _s = s[idx+3:]
+            parts = _s.split(':')
+            if len(parts) != 4:
+                raise SyntaxError("Unexpected use of >=< in partially specified VLNV")
+            versions = parts[3].split('/')
+            if len(versions) != 2:
+                raise SyntaxError("Use of >=< requires two versions with a / delimiter")
+            # This handles the possibility of ! existing before >=< and creates a two
+            # entry list representing the >= and < relationship expressed by a single
+            # use of >=<
+            return [s[0:idx] + rel + ':'.join(parts[0:3]) + ':' + ver for (rel, ver) in zip(['>=','<'], versions)]
+        else:
+            return [s]
+
     def __init__(self, s, default_relation = ">="):
         def _is_rev(s):
             return s.startswith('r') and s[1:].isdigit()

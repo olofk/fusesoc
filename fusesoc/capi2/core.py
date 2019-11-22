@@ -275,7 +275,8 @@ class Core:
         depends = []
         self._debug("Getting dependencies for flags {}".format(str(flags)))
         for fs in self._get_filesets(flags):
-            depends += [Vlnv(d) for d in self._parse_list(flags, fs.depend)]
+            for vlnvstrings in self._parse_list(flags, fs.depend):
+                depends += [Vlnv(d) for d in Vlnv.asSimpleVersionStrings(vlnvstrings)]
         return depends
 
     def get_files(self, flags):

@@ -22,6 +22,7 @@ filesets:
       - =::vlnveq:1.0
       - ">::vlnvgt:1.0"
       - ">=::vlnvgte:1.0"
+      - ">=<::vlnvrange:1.0/2.0"
 
 targets:
   default:
