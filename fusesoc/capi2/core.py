@@ -840,7 +840,7 @@ Item is allowed to be either a `String`_ or a list of `String`_
 
 Vlnv
 ~~~~~~
-:-separated VLNV (Vendor, Library, Name, Vendor) identifier
+:-separated VLNV (Vendor, Library, Name, Version) identifier
 
 List
 ~~~~
