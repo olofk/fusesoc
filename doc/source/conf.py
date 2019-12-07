@@ -20,7 +20,7 @@ sys.path.insert(0, os.path.abspath(os.path.join('..','..')))
 
 from fusesoc.capi2.core import gen_doc
 s = gen_doc()
-with open(os.path.join(os.path.abspath('.'),'capi2.rst'), 'w') as f:
+with open(os.path.join(os.path.abspath('.'), 'ref/capi2.rst'), 'w') as f:
     f.write(s)
 
 # -- Project information -----------------------------------------------------
@@ -46,10 +46,16 @@ release = ''
 # ones.
 extensions = [
     'sphinx.ext.autodoc',
+    'sphinx.ext.napoleon',
     'sphinx.ext.coverage',
     'sphinx.ext.ifconfig',
     'sphinx.ext.githubpages',
+    'sphinx.ext.intersphinx',
+    'sphinx.ext.todo',
 ]
+
+intersphinx_mapping = {'https://docs.python.org/3': None}
+
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
@@ -68,7 +74,7 @@ master_doc = 'index'
 #
 # This is also used if you do content translation via gettext catalogs.
 # Usually you set "language" from the command line for these cases.
-language = None
+language = 'en'
 
 # List of patterns, relative to source directory, that match files and
 # directories to ignore when looking for source files.
@@ -77,6 +83,9 @@ exclude_patterns = []
 
 # The name of the Pygments (syntax highlighting) style to use.
 pygments_style = 'sphinx'
+
+# If true, `todo` and `todoList` produce output, else they produce nothing.
+todo_include_todos = True
 
 
 # -- Options for HTML output -------------------------------------------------
