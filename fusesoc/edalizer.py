@@ -82,7 +82,7 @@ class Edalizer(object):
                 else:
                     _name = os.path.join(rel_root, file.name)
                 _files.append({
-                    'name'            : _name,
+                    'name'            : str(_name),
                     'core'            : str(core.name),
                     'file_type'       : file.file_type,
                     'is_include_file' : file.is_include_file,
