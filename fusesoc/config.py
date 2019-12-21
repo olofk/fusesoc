@@ -60,7 +60,7 @@ class Config(object):
                 setattr(self, item, os.path.expanduser(config.get('main', item)))
                 if item == 'systems_root':
                     systems_root = [os.path.expanduser(config.get('main', item))]
-                    logger.warn('The systems_root option in fusesoc.conf is deprecated. Please migrate to libraries instead')
+                    logger.warning('The systems_root option in fusesoc.conf is deprecated. Please migrate to libraries instead')
             except configparser.NoOptionError:
                 pass
             except configparser.NoSectionError:
@@ -68,7 +68,7 @@ class Config(object):
 
         try:
             cores_root = config.get('main', 'cores_root').split()
-            logger.warn('The cores_root option in fusesoc.conf is deprecated. Please migrate to libraries instead')
+            logger.warning('The cores_root option in fusesoc.conf is deprecated. Please migrate to libraries instead')
         except configparser.NoOptionError:
             pass
         except configparser.NoSectionError:
@@ -108,7 +108,7 @@ class Config(object):
                 auto_sync = True
             except ValueError as e:
                 _s = "Error parsing auto-sync '{}'. Ignoring library '{}'"
-                logger.warn(_s.format(str(e), name))
+                logger.warning(_s.format(str(e), name))
                 continue
 
             try:
@@ -147,7 +147,7 @@ class Config(object):
         config.read(self._path)
 
         if section_name in config.sections():
-            logger.warn("Not adding library. {} already exists in configuration file".format(library.name))
+            logger.warning("Not adding library. {} already exists in configuration file".format(library.name))
             return
 
         config.add_section(section_name)

@@ -100,7 +100,7 @@ class Section(object):
                     setattr(_d[_name], 'name', _name)
                 setattr(self, k, _d)
             else:
-                logger.warn("Unknown item " + k + " in section " + self.__class__.__name__)
+                logger.warning("Unknown item " + k + " in section " + self.__class__.__name__)
 
 class Provider(object):
     def __new__(cls, *args, **kwargs):

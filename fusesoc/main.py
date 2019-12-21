@@ -387,7 +387,7 @@ def sim(cm, args):
 
 def update(cm, args):
     if "warn" in args:
-        logger.warn(args.warn)
+        logger.warning(args.warn)
 
     cm._lm.update(args.libraries)
 

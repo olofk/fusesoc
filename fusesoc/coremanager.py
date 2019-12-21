@@ -160,9 +160,9 @@ class CoreManager(object):
         _library = self._lm.get_library(abspath, 'location')
         if _library:
             _s = "Not adding library {} ({}). Library {} already registered for this location"
-            logger.warn(_s.format(library.name,
-                                  abspath,
-                                  _library.name))
+            logger.warning(_s.format(library.name,
+                                     abspath,
+                                     _library.name))
             return
 
         self.load_cores(library)

@@ -30,7 +30,7 @@ class Library(object):
 
         #FIXME: Do an initial checkout if missing
         if not os.path.exists(self.location):
-            logger.warn(l("{} does not exist. Ignoring update".format(self.location)))
+            logger.warning(l("{} does not exist. Ignoring update".format(self.location)))
             return
 
         if not (self.auto_sync or force):
@@ -68,7 +68,7 @@ class LibraryManager(object):
             if library:
                 libraries.append(library)
             else:
-                logger.warn("Could not find library {}".format(name))
+                logger.warning("Could not find library {}".format(name))
 
         if library_names:
             force = True
