@@ -21,4 +21,4 @@ build: off
 test_script:
   - "fusesoc init -y"
   - "fusesoc list-cores"
-  - "fusesoc update"
+  - "fusesoc library update"

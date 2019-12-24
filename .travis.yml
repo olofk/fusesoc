@@ -13,5 +13,5 @@ env:
 script:
   - "fusesoc init -y"
   - "fusesoc list-cores"
-  - "fusesoc update"
+  - "fusesoc library update"
   - "py.test"
