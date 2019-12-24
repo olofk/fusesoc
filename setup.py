@@ -39,7 +39,6 @@ setup(
         'edalize>=0.1.6',
         'ipyxact>=0.2.3',
         'pyparsing',
-        'pytest>=3.3.0',
         'pyyaml',
         'simplesat>=0.8.0',
     ],
