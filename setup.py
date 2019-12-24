@@ -22,7 +22,7 @@ setup(
     url = "https://github.com/olofk/fusesoc",
     long_description=read('README.rst'),
     classifiers=[
-        "Development Status :: 3 - Alpha",
+        "Development Status :: 5 - Production/Stable",
         "Topic :: Utilities",
         "Topic :: Software Development :: Build Tools",
         "License :: OSI Approved :: GNU General Public License v3 (GPLv3)",
