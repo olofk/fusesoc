@@ -6,7 +6,6 @@ python:
   - "3.7"
   - "3.8"
 install:
-  - "pip install -U jsonschema"
   - "pip install ."
 env:
   - MODEL_TECH=dummy_value
