@@ -23,3 +23,6 @@ test_script:
   - "fusesoc init -y"
   - "fusesoc list-cores"
   - "fusesoc library update"
+  # Unit tests fail under Windows at the moment for various reasons.
+  # See https://github.com/olofk/fusesoc/issues/330 for details.
+  # - "pytest"
