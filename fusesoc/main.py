@@ -189,6 +189,24 @@ def add_library(cm, args):
         logger.error("`add library` failed: " + str(e))
         exit(1)
 
+def library_list(cm, args):
+    lengths = [4, 8, 9, 8, 9]
+    for lib in cm.get_libraries():
+        lengths[0] = max(lengths[0], len(lib.name))
+        lengths[1] = max(lengths[1], len(lib.location))
+        lengths[2] = max(lengths[2], len(lib.sync_type))
+        lengths[3] = max(lengths[3], len(lib.sync_uri or ''))
+    print("{} : {} : {} : {} : {}".format("Name".ljust(lengths[0]),
+                                          "Location".ljust(lengths[1]),
+                                          "Sync type".ljust(lengths[2]),
+                                          "Sync URI".ljust(lengths[3]),
+                                          "Auto sync".ljust(lengths[4])))
+    for lib in cm.get_libraries():
+        print("{} : {} : {} : {} : {}".format(lib.name.ljust(lengths[0]),
+                                              lib.location.ljust(lengths[1]),
+                                              lib.sync_type.ljust(lengths[2]),
+                                              (lib.sync_uri or 'N/A').ljust(lengths[3]),
+                                              ('y' if lib.auto_sync else 'n').ljust(lengths[4])))
 
 def list_cores(cm, args):
     cores = cm.get_cores()
@@ -516,6 +534,10 @@ def parse_args():
     parser_library_add.add_argument('--no-auto-sync', action='store_true', help='Disable automatic updates of the library')
     parser_library_add.add_argument('--global', action='store_true', help='Use the global FuseSoc config file in $XDG_CONFIG_HOME/fusesoc/fusesoc.conf')
     parser_library_add.set_defaults(func=add_library)
+
+    #library list subparser
+    parser_library_list = library_subparsers.add_parser('list', help='List core libraries')
+    parser_library_list.set_defaults(func=library_list)
 
     #library update subparser
     parser_library_update = library_subparsers.add_parser('update', help='Update the FuseSoC core libraries')
