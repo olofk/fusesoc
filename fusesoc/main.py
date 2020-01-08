@@ -257,6 +257,10 @@ def core_info(cm, args):
 
 def run(cm, args):
     stages = (args.setup, args.build, args.run)
+
+    #Always run setup if build is true
+    args.setup |= args.build
+
     #Run all stages by default if no stage flags are set
     if  stages == (False, False, False):
         do_configure = True
