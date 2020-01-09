@@ -13,7 +13,7 @@ capi (Core API) is the format for core description files. Current version is
 version 2.0. A capi 2.0 file is identified by the string “CAPI=2” in the
 beginning of a file. The rest of the file is a standard YAML_ file.
 
-Core naming rules 
+Core naming rules
 -----------------
 
 FuseSoC uses ``VLNV`` tags to uniquely identify a core. ``VLNV`` is a concept
@@ -37,7 +37,7 @@ and VLNV names by adding ``-r<revision>`` as a suffix (e.g.
 ``::uart16550:1.5-r1``, ``uart16550-1.5-r1``, ``uart16550-r1``). This is used to
 make updates to the ``.core`` file even if the source of the core is unchanged.
 
-Core libraries 
+Core libraries
 ---------------
 
 A collection of one or more cores in a directory tree is called a core
@@ -66,7 +66,7 @@ contents:
    sync-uri = https://github.com/fusesoc/fusesoc-cores
    sync-type = git
 
-Core search order 
+Core search order
 ------------------
 
 Once FuseSoC has found its configuration file, it will parse the
@@ -111,7 +111,7 @@ add new functionality. The following steps can be used to achieve this:
    the command-line arguments
 #. Verify that the new core is found by running fusesoc core-info $core. Check
    the output to see that “Core root:” is set to the directory where the core
-   was downloaded 
+   was downloaded
 
 Backends
 --------

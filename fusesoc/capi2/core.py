@@ -867,11 +867,11 @@ The main use case for this feature is inheritance between targets with yaml anch
     targets:
       default: &base
         filesets: [core]
-    
+
       myboard:
         <<: *base
         filesets_append: [myboard_files]
-    
+
       sim:
         <<: *base
         filesets_append: [testbench]

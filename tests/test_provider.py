@@ -24,11 +24,11 @@ def test_coregen_provider():
 
     with open(os.path.join(core.files_root, 'run.cmd')) as f:
         assert(f.read() == '-r -b dummy.xco -p dummy.cgp\n')
-    
+
 def test_git_provider():
     cache_root = tempfile.mkdtemp('git_')
     core = Core(os.path.join(cores_root, 'misc', 'gitcore.core'), cache_root)
-    
+
     core.setup()
 
     for f in ['LICENSE',
@@ -41,9 +41,9 @@ def test_git_provider():
 def test_github_provider():
     cache_root = tempfile.mkdtemp('github_')
     core = Core(os.path.join(cores_root, 'vlog_tb_utils', 'vlog_tb_utils-1.1.core'), cache_root)
-    
+
     core.setup()
-    
+
     for f in ['LICENSE',
               'vlog_functions.v',
               'vlog_tap_generator.v',

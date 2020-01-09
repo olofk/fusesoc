@@ -8,7 +8,7 @@ logger = logging.getLogger(__name__)
 
 
 class Core(object):
-    
+
     def __new__(cls, *args, **kwargs):
         with open(args[0]) as f:
             l = f.readline().split()

@@ -7,5 +7,3 @@ name = opencores
 repo_name = jtag
 repo_root = trunk/tap/rtl/verilog
 revision = 24
-
-
