@@ -4,24 +4,34 @@ cache:
   directories:
     - $HOME/.cache/pre-commit
 
-python:
-  - "2.7"
-  - "3.5"
-  - "3.6"
-  - "3.7"
-  - "3.8"
+env:
+  - MODEL_TECH=dummy_value TEST_CMD="pytest"
+
+matrix:
+  include:
+    - name: "lint"
+      python: 3.8
+      env:
+        - TEST_CMD="pre-commit run --all-files --show-diff-on-failure"
+    - name: "2.7"
+      python: 2.7
+    - name: "3.5"
+      python: 3.5
+    - name: "3.6"
+      python: 3.6
+    - name: "3.7"
+      python: 3.7
+    - name: "3.8"
+      python: 3.8
 
 install:
-  - "pip install setuptools --upgrade"
-  - "pip install pytest pre-commit"
-  - "pre-commit install"
-  - "pip install ."
-env:
-  - MODEL_TECH=dummy_value
+  - pip install -U setuptools pytest pre-commit
+  - pip install .
+  - pre-commit install
+
+  - fusesoc init -y
+  - fusesoc list-cores
+  - fusesoc library update
+
 script:
-  - "set -e"
-  - "pre-commit run --all-files --show-diff-on-failure"
-  - "fusesoc init -y"
-  - "fusesoc list-cores"
-  - "fusesoc library update"
-  - "pytest"
+  - $TEST_CMD
