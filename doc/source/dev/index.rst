@@ -7,5 +7,4 @@ FuseSoC Developer's Guide
    :caption: Contents
 
    devsetup
-   testing
    api
