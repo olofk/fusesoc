@@ -5,32 +5,43 @@ from fusesoc.provider import get_provider
 
 logger = logging.getLogger(__name__)
 
+
 class Library(object):
-    def __init__(self, name, location, sync_type=None, sync_uri = None, auto_sync = True):
-        if sync_type and not sync_type in ['local', 'git']:
-            raise ValueError("Library {} ({}) Invalid sync-type '{}'".format(name, location, sync_type))
+    def __init__(self, name, location, sync_type=None, sync_uri=None, auto_sync=True):
+        if sync_type and not sync_type in ["local", "git"]:
+            raise ValueError(
+                "Library {} ({}) Invalid sync-type '{}'".format(
+                    name, location, sync_type
+                )
+            )
 
-        if sync_type in ['git']:
+        if sync_type in ["git"]:
             if not sync_uri:
-                raise ValueError("Library {} ({}) sync-uri must be set when using sync_type 'git'".format(name, location))
+                raise ValueError(
+                    "Library {} ({}) sync-uri must be set when using sync_type 'git'".format(
+                        name, location
+                    )
+                )
 
-        self.name      = name
-        self.location  = location
-        self.sync_type = sync_type or 'local'
-        self.sync_uri  = sync_uri
+        self.name = name
+        self.location = location
+        self.sync_type = sync_type or "local"
+        self.sync_uri = sync_uri
         self.auto_sync = auto_sync
 
     def update(self, force=False):
         def l(s):
-            return(self.name + ' : ' + s)
+            return self.name + " : " + s
 
-        if self.sync_type == 'local':
+        if self.sync_type == "local":
             logger.info(l("sync-type is local. Ignoring update"))
             return
 
-        #FIXME: Do an initial checkout if missing
+        # FIXME: Do an initial checkout if missing
         if not os.path.exists(self.location):
-            logger.warning(l("{} does not exist. Ignoring update".format(self.location)))
+            logger.warning(
+                l("{} does not exist. Ignoring update".format(self.location))
+            )
             return
 
         if not (self.auto_sync or force):
@@ -44,6 +55,7 @@ class Library(object):
         except RuntimeError as e:
             logger.error(l("Failed to update library: " + str(e)))
 
+
 class LibraryManager(object):
     _libraries = []
 
@@ -53,7 +65,7 @@ class LibraryManager(object):
     def add_library(self, library):
         self._libraries.append(library)
 
-    def get_library(self, value, key='name'):
+    def get_library(self, value, key="name"):
         for library in self._libraries:
             if getattr(library, key) == value:
                 return library

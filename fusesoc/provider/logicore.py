@@ -6,13 +6,15 @@ from fusesoc.utils import Launcher
 
 logger = logging.getLogger(__name__)
 
-class Logicore(Provider):
 
+class Logicore(Provider):
     def _checkout(self, local_dir):
-        script_file  = self.config.get('script_file')
-        project_file = self.config.get('project_file')
-        extra_files  = self.config.get('extra_files')
-        logger.info("Using Xilinx Vivado to generate LogiCORE(tm) project " + project_file)
+        script_file = self.config.get("script_file")
+        project_file = self.config.get("project_file")
+        extra_files = self.config.get("extra_files")
+        logger.info(
+            "Using Xilinx Vivado to generate LogiCORE(tm) project " + project_file
+        )
         if not os.path.isdir(local_dir):
             os.mkdir(local_dir)
         src_files = [script_file, project_file]
@@ -28,7 +30,6 @@ class Logicore(Provider):
                     os.makedirs(d_dst)
                 shutil.copyfile(f_src, f_dst)
             else:
-                logger.error('Cannot find file %s' % f_src)
-        args = ['-mode', 'batch',
-                '-source', script_file]
-        Launcher('vivado', args, cwd=local_dir).run()
+                logger.error("Cannot find file %s" % f_src)
+        args = ["-mode", "batch", "-source", script_file]
+        Launcher("vivado", args, cwd=local_dir).run()
