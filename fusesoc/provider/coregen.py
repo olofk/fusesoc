@@ -6,12 +6,12 @@ from fusesoc.utils import Launcher
 
 logger = logging.getLogger(__name__)
 
-class Coregen(Provider):
 
+class Coregen(Provider):
     def _checkout(self, local_dir):
-        script_file  = self.config.get('script_file')
-        project_file = self.config.get('project_file')
-        extra_files  = self.config.get('extra_files')
+        script_file = self.config.get("script_file")
+        project_file = self.config.get("project_file")
+        extra_files = self.config.get("extra_files")
         logger.info("Using Coregen to generate project " + project_file)
         if not os.path.isdir(local_dir):
             os.makedirs(local_dir)
@@ -28,8 +28,6 @@ class Coregen(Provider):
                     os.makedirs(d_dst)
                 shutil.copyfile(f_src, f_dst)
             else:
-                logger.error('Cannot find file %s' % f_src)
-        args = ['-r',
-                '-b', script_file,
-                '-p', project_file]
-        Launcher('coregen', args, cwd=local_dir).run()
+                logger.error("Cannot find file %s" % f_src)
+        args = ["-r", "-b", script_file, "-p", project_file]
+        Launcher("coregen", args, cwd=local_dir).run()
