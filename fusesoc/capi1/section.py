@@ -8,7 +8,7 @@ logger = logging.getLogger(__name__)
 class File(object):
     """File objects consist of a mandatory file name, with path relative to
 the core root. Extra options can be specified as a comma-separated list
-enclosed in [] after the file name. Options are either boolean (option) or has a 
+enclosed in [] after the file name. Options are either boolean (option) or has a
 value (option=value). No white-space is allowed anywhere in the file object
 
 The following options are defined:
@@ -611,7 +611,7 @@ class ParameterSection(Section):
                         raise SyntaxError(_s.format(self.default))
                 elif self.datatype == 'int':
                     self.default = int(self.default)
-                
+
     def __str__(self):
         return """Data type      : {}
 Default value  : {}

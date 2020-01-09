@@ -2,7 +2,7 @@ CAPI=1
 [main]
 
 [fileset src_files]
-files = 
+files =
  rtl/vhdl/suv/libstorage_pkg.vhd
  rtl/vhdl/suv/dpram_generic.vhd
  rtl/vhdl/suv/fifo_fwft_adapter.vhd

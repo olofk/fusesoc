@@ -272,7 +272,7 @@ class Core:
                         section.xelab_options = ['--timescale 1ps/1ps',
                                                  '--debug typical']
                         section.xelab_options += section.xsim_options
-                    
+
                 for member in section._members:
                     if hasattr(section, member) and getattr(section, member) and not member == 'depend':
                         #Strip quoted strings

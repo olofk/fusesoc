@@ -19,7 +19,7 @@ def test_name_only_vlnv():
     ('', '', 'uart16550', '0', 0)
     assert vlnv_tuple(Vlnv("::uart16550:")) == \
     ('', '', 'uart16550', '0', 0)
-    
+
 def test_name_version_vlnv():
     assert vlnv_tuple(Vlnv("::uart16550:1.5")) == \
     ('', '', 'uart16550', '1.5', 0)
@@ -34,7 +34,7 @@ def test_name_only_vlnv_revision():
     ('', '', 'uart16550', '0', 0)
     assert vlnv_tuple(Vlnv("::uart16550:")) == \
     ('', '', 'uart16550', '0', 0)
-    
+
 def test_name_version_vlnv():
     assert vlnv_tuple(Vlnv("::uart16550:1.5")) == \
     ('', '', 'uart16550', '1.5', 0)
@@ -63,4 +63,3 @@ def test_name_version_revision_legacy():
 def test_name_revision_legacy():
     assert vlnv_tuple(Vlnv("uart16550-r2")) == \
     ('', '', 'uart16550', '0', 2)
-

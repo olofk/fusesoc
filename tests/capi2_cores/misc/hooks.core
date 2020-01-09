@@ -23,7 +23,7 @@ targets:
   nonexistant:
     hooks:
       post_build: [idontexist]
-  
+
   allhooks:
     hooks:
       pre_build  : [simple1]
@@ -33,7 +33,7 @@ targets:
   multihooks:
     hooks:
       pre_run : [simple1, with_env, multi_cmd]
-    
+
   use_flags:
     hooks:
       post_run:

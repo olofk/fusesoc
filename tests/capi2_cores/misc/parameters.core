@@ -46,7 +46,7 @@ targets:
   noparameters: {}
   nonexistant:
     parameters: [idontexist]
-  
+
   multiparameters:
     parameters : [param1, param2]
 

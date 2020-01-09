@@ -3,4 +3,3 @@ CAPI=1
 
 [scripts]
 pre_build_scripts = scripts/no_exe_script
-
