@@ -2,6 +2,8 @@
 FuseSoC Documentation
 =====================
 
+test 1
+
 FuseSoC is a build system for digital hardware (e.g. Verilog or VHDL designs), and a package manager for reusable blocks in hardware designs.
 
 This documentation contains material for different audiences.
