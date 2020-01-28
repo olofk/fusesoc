@@ -52,11 +52,9 @@ class Provider(object):
                         "git",
                         [
                             "apply",
-                            "--unsafe-paths",
-                            "--directory",
-                            self.files_root,
                             patch_file,
                         ],
+                        self.files_root,
                     ).run()
                 except OSError:
                     raise RuntimeError("Failed to call 'git' for patching core")
