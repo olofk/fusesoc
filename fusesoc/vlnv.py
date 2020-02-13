@@ -118,24 +118,24 @@ class Vlnv(object):
             # A VLNV which implies a range of versions
             # ^ for same major release
             # ~ for same minor release
-            incr = {'^': 0, '~': 1}
-            
+            incr = {"^": 0, "~": 1}
+
             # For both, we represent a >= relation on the provided
-            # version... 
+            # version...
             vlnvs = [copy.deepcopy(self)]
-            vlnvs[0].relation = '>='
+            vlnvs[0].relation = ">="
 
             # and then a second < relation on the relevant
             # field (with later fields tied low)
-            nextversion = list(map(int, self.version.split('.')))
+            nextversion = list(map(int, self.version.split(".")))
             pos = incr[self.relation]
             nextversion[pos] += 1
-            for i in range(pos+1, len(nextversion)):
+            for i in range(pos + 1, len(nextversion)):
                 nextversion[i] = 0
 
             vlnvs.append(copy.deepcopy(self))
-            vlnvs[1].relation = '<'
-            vlnvs[1].version = '.'.join(map(str, nextversion))
+            vlnvs[1].relation = "<"
+            vlnvs[1].version = ".".join(map(str, nextversion))
             return vlnvs
         else:
             # A normal VLNV, so we can return ourselves

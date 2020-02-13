@@ -44,7 +44,11 @@ class CoreDB(object):
         for d in depends:
             for simple in d.simpleVLNVs():
                 deps.append(
-                    _s.format(self._package_name(simple), simple.relation, self._package_version(simple))
+                    _s.format(
+                        self._package_name(simple),
+                        simple.relation,
+                        self._package_version(simple),
+                    )
                 )
         return ", ".join(deps)
 
@@ -100,16 +104,16 @@ class CoreDB(object):
 
             repo.add_package(package)
 
-        request = Request()        
+        request = Request()
         simplevlnvs = top_core.simpleVLNVs()
         for sv in simplevlnvs:
             _top_dep = "{} {} {}".format(
                 self._package_name(top_core),
                 top_core.relation,
-                self._package_version(top_core)
+                self._package_version(top_core),
             )
             request.install(Requirement._from_string(_top_dep))
-        
+
         installed_repository = Repository()
         pool = Pool([repo])
         pool.add_repository(installed_repository)
