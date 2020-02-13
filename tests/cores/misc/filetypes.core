@@ -14,4 +14,3 @@ files =
  vhdl2008_file.vhd[file_type=vhdlSource-2008]
  xci_file.xci[file_type=xci]
  xdc_file[file_type=xdc]
-

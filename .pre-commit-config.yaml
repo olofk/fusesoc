@@ -1,0 +1,17 @@
+# Configuration for pre-commit (https://pre-commit.com/), a tool to run
+# formatters, linters, and other productivity tools before a commit.
+repos:
+- repo: https://github.com/pre-commit/pre-commit-hooks
+  rev: v2.4.0
+  hooks:
+  - id: check-yaml
+  - id: end-of-file-fixer
+    # Test golden references
+    exclude: ^tests/(.+\.(info|patch)|test_provider/.+\.v)
+  - id: trailing-whitespace
+    # Test golden references
+    exclude: ^tests/(.+\.(info|patch)|test_provider/.+\.v)
+- repo: https://github.com/psf/black
+  rev: 19.10b0
+  hooks:
+  - id: black

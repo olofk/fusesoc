@@ -14,9 +14,9 @@ parameters:
 
 with open(sys.argv[1]) as fin:
     data = yaml.safe_load(fin)
-    config     = data.get('parameters')
-    files_root = data.get('files_root')
-    vlnv       = data.get('vlnv')
+    config = data.get("parameters")
+    files_root = data.get("files_root")
+    vlnv = data.get("vlnv")
 
-with open('generated.core', 'w') as fout:
+with open("generated.core", "w") as fout:
     fout.write(template.format(vlnv))

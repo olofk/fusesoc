@@ -1,0 +1,6 @@
+# Python requirements needed to develop fusesoc
+# "End-user" dependencies (during build or install time) are listed in setup.py
+pre-commit
+Sphinx
+sphinx_rtd_theme
+pytest>=3.3.0

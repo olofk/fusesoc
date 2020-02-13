@@ -45,7 +45,7 @@ Example yaml configuration file:
         uart0: {datawidth: 8, offset: 2415919104, size: 32}
     vlnv: ::mysoc-wb_intercon:0
 
-    
+
 The above example is for a generator that creates verilog code for a wishbone interconnect.
 
 Registering a generator
@@ -89,36 +89,36 @@ The final piece of the generators machinery is to run a generator with some spec
                 - rom0
             dbus:
               slaves: [sdram_dbus, uart0, gpio0, gpio1, spi0]
-    
+
           slaves:
             sdram_dbus:
               offset : 0
               size : 0x2000000
-    
+
             sdram_ibus:
               offset: 0
               size: 0x2000000
-    
+
             uart0:
               datawidth: 8
               offset: 0x90000000
               size: 32
-    
+
             gpio0:
               datawidth: 8
               offset: 0x91000000
               size: 2
-    
+
             gpio1:
               datawidth: 8
               offset: 0x92000000
               size: 2
-    
+
             spi0:
               datawidth: 8
               offset: 0xb0000000
               size: 8
-    
+
             rom0:
               offset: 0xf0000000
               size: 1024
@@ -133,7 +133,7 @@ Just registering a generate section will not cause the generator to be invoked. 
       wb_intercon_dep:
         depend:
           [wb_intercon]
-    
+
     targets:
       default:
         filesets : [wb_intercon_dep]
