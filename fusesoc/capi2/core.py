@@ -48,7 +48,7 @@ class String(str):
                 return t.expr
             else:
                 return []
-        word = Word(alphanums+':<>.[]_-,=~/')
+        word = Word(alphanums+':<>.[]_-,=~/^~')
         conditional = Forward()
         conditional << (Optional("!")("negate") + word("cond") + Suppress('?') + Suppress('(') + OneOrMore(conditional ^ word)("expr") + Suppress(')')).setParseAction(cb_conditional)
         string = word
@@ -275,8 +275,7 @@ class Core:
         depends = []
         self._debug("Getting dependencies for flags {}".format(str(flags)))
         for fs in self._get_filesets(flags):
-            for vlnvstrings in self._parse_list(flags, fs.depend):
-                depends += [Vlnv(d) for d in Vlnv.asSimpleVersionStrings(vlnvstrings)]
+            depends += [Vlnv(d) for d in self._parse_list(flags, fs.depend)]
         return depends
 
     def get_files(self, flags):
