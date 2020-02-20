@@ -429,6 +429,10 @@ def run_backend(
                 export_root=export_root,
                 system_name=system_name,
             )
+
+            backend_class = get_edatool(tool)
+            edalizer.parse_args(backend_class, backendargs)
+
         except SyntaxError as e:
             logger.error(e.msg)
             exit(1)
@@ -460,7 +464,7 @@ def run_backend(
 
     if do_configure:
         try:
-            backend.configure(backendargs)
+            backend.configure([])
             print("")
         except RuntimeError as e:
             logger.error("Failed to configure the system")

@@ -1,3 +1,4 @@
+import argparse
 import logging
 import os
 import shutil
@@ -6,6 +7,14 @@ import yaml
 from fusesoc.vlnv import Vlnv
 
 logger = logging.getLogger(__name__)
+
+
+class FileAction(argparse.Action):
+    def __call__(self, parser, namespace, values, option_string=None):
+        path = os.path.expandvars(values[0])
+        path = os.path.expanduser(path)
+        path = os.path.abspath(path)
+        setattr(namespace, self.dest, [path])
 
 
 class Edalizer(object):
@@ -154,6 +163,105 @@ class Edalizer(object):
 
         for snippet in first_snippets + snippets + last_snippets:
             merge_dict(self.edalize, snippet)
+
+    def _build_parser(self, backend_class):
+        typedict = {
+            "bool": {"action": "store_true"},
+            "file": {"type": str, "nargs": 1, "action": FileAction},
+            "int": {"type": int, "nargs": 1},
+            "str": {"type": str, "nargs": 1},
+        }
+        progname = "fusesoc run {}".format(self.edalize["name"])
+
+        parser = argparse.ArgumentParser(prog=progname, conflict_handler="resolve")
+        param_groups = {}
+        _descr = {
+            "plusarg": "Verilog plusargs (Run-time option)",
+            "vlogparam": "Verilog parameters (Compile-time option)",
+            "vlogdefine": "Verilog defines (Compile-time global symbol)",
+            "generic": "VHDL generic (Run-time option)",
+            "cmdlinearg": "Command-line arguments (Run-time option)",
+        }
+        param_type_map = {}
+
+        paramtypes = backend_class.argtypes
+        for name, param in self.edalize["parameters"].items():
+            _description = param.get("description", "No description")
+            _paramtype = param["paramtype"]
+            if _paramtype in paramtypes:
+                if not _paramtype in param_groups:
+                    param_groups[_paramtype] = parser.add_argument_group(
+                        _descr[_paramtype]
+                    )
+
+                default = None
+                if not param.get("default") is None:
+                    try:
+                        if param["datatype"] == "bool":
+                            default = param["default"]
+                        else:
+                            default = [
+                                typedict[param["datatype"]]["type"](param["default"])
+                            ]
+                    except KeyError as e:
+                        pass
+                try:
+                    param_groups[_paramtype].add_argument(
+                        "--" + name,
+                        help=_description,
+                        default=default,
+                        **typedict[param["datatype"]]
+                    )
+                except KeyError as e:
+                    raise RuntimeError(
+                        "Invalid data type {} for parameter '{}'".format(str(e), name)
+                    )
+                param_type_map[name.replace("-", "_")] = _paramtype
+            else:
+                logging.warn(
+                    "Parameter '{}' has unsupported type '{}' for requested backend".format(
+                        name, _paramtype
+                    )
+                )
+
+        # backend_args.
+        backend_args = parser.add_argument_group("Backend arguments")
+        _opts = backend_class.get_doc(0)
+
+        for _opt in _opts.get("members", []) + _opts.get("lists", []):
+            backend_args.add_argument("--" + _opt["name"], help=_opt["desc"])
+        return parser
+
+    def _add_parsed_args(self, backend_class, parsed_args):
+        _opts = backend_class.get_doc(0)
+        # Parse arguments
+        backend_members = [x["name"] for x in _opts.get("members", [])]
+        backend_lists = [x["name"] for x in _opts.get("lists", [])]
+        known = parsed_args
+
+        tool = backend_class.__name__.lower()
+        tool_options = self.edalize["tool_options"][tool]
+
+        for key, value in sorted(vars(known).items()):
+            if value is None:
+                pass
+            elif key in backend_members:
+                tool_options[key] = value
+            elif key in backend_lists:
+                if not key in tool_options:
+                    tool_options[key] = []
+                tool_options[key] += value.split(" ")
+            elif key in self.edalize["parameters"]:
+                _param = self.edalize["parameters"][key]
+                _value = value if type(value) == bool else value[0]
+                _param["default"] = _value
+            else:
+                raise RuntimeError("Unknown parameter " + key)
+
+    def parse_args(self, backend_class, backendargs):
+        parser = self._build_parser(backend_class)
+        parsed_args = parser.parse_args(backendargs)
+        self._add_parsed_args(backend_class, parsed_args)
 
     def to_yaml(self, edalize_file):
         with open(edalize_file, "w") as f:
