@@ -92,17 +92,12 @@ class Vlnv(object):
         self.sanitized_name = str(self).lstrip(":").replace(":", "_")
 
     def __str__(self):
-        if self.relation == "=":
-            relation = ""
-        else:
-            relation = self.relation
+        revision = ""
         if self.revision > 0:
             revision = "-r" + str(self.revision)
-        else:
-            revision = ""
-        #        return "{}{}:{}:{}:{}{}".format(relation,
-        return "{}{}:{}:{}:{}{}".format(
-            "", self.vendor, self.library, self.name, self.version, revision
+
+        return "{}:{}:{}:{}{}".format(
+            self.vendor, self.library, self.name, self.version, revision
         )
 
     def depstr(self):
