@@ -148,6 +148,9 @@ class Core:
         for f in self.main.component:
             self._parse_component(f)
 
+    def __repr__(self):
+        return str(self.name)
+
     def cache_status(self):
         if self.provider:
             return self.provider.status()

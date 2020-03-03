@@ -183,6 +183,9 @@ class Core:
         else:
             self.files_root = self.core_root
 
+    def __repr__(self):
+        return str(self.name)
+
     def cache_status(self):
         if self.provider:
             return self.provider.status()
