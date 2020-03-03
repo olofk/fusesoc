@@ -140,12 +140,14 @@ class Core:
     capi_version = 2
 
     def __init__(self, core_file, cache_root=""):
-        basename = os.path.basename(core_file)
+        self.core_file = core_file
 
-        self.core_root = os.path.dirname(core_file)
+        basename = os.path.basename(self.core_file)
+
+        self.core_root = os.path.dirname(self.core_file)
 
         try:
-            _root = Root(yaml.safe_load(open(core_file)))
+            _root = Root(yaml.safe_load(open(self.core_file)))
         except KeyError as e:
             raise SyntaxError("Unknown item {}".format(e))
         except (yaml.scanner.ScannerError, yaml.constructor.ConstructorError) as e:

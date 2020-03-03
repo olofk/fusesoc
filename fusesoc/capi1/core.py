@@ -49,6 +49,7 @@ class Core:
 
     def __init__(self, core_file, cache_root=""):
         basename = os.path.basename(core_file)
+        self.core_file = core_file
         self.depend = []
         self.simulators = []
 
