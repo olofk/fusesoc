@@ -45,6 +45,8 @@ class FileSet(object):
 
 
 class Core:
+    capi_version = 1
+
     def __init__(self, core_file, cache_root=""):
         basename = os.path.basename(core_file)
         self.depend = []
