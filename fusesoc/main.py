@@ -447,9 +447,7 @@ def run_backend(
         if do_configure:
             edam = edalizer.edalize
         else:
-            import yaml
-
-            edam = yaml.safe_load(open(eda_api_file))
+            edam = utils.yaml_fread(eda_api_file)
         backend = get_edatool(tool)(edam=edam, work_root=work_root)
 
     except ImportError:

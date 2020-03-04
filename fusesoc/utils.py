@@ -3,6 +3,13 @@ import logging
 import sys
 import importlib
 
+import yaml
+
+try:
+    from yaml import CSafeLoader as YamlLoader, CSafeDumper as YamlDumper
+except ImportError:
+    from yaml import SafeLoader as YamlLoader, SafeDumper as YamlDumper
+
 if sys.version[0] == "2":
     FileNotFoundError = OSError
 
@@ -117,3 +124,18 @@ def setup_logging(level, monchrome=False, log_file=None):
         logger.addHandler(ch)
         logger.setLevel(logging.WARNING)
     logger.debug("Setup logging at level {}.".format(level))
+
+
+def yaml_fwrite(filepath, content, preamble=""):
+    with open(filepath, "w") as f:
+        f.write(preamble)
+        f.write(yaml.dump(content, Dumper=YamlDumper))
+
+
+def yaml_fread(filepath):
+    with open(filepath, "r") as f:
+        return yaml.load(f, Loader=YamlLoader)
+
+
+def yaml_read(data):
+    return yaml.load(data, Loader=YamlLoader)

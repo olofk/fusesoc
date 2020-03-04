@@ -2,8 +2,8 @@ import argparse
 import logging
 import os
 import shutil
-import yaml
 
+from fusesoc import utils
 from fusesoc.vlnv import Vlnv
 
 logger = logging.getLogger(__name__)
@@ -264,8 +264,7 @@ class Edalizer(object):
         self._add_parsed_args(backend_class, parsed_args)
 
     def to_yaml(self, edalize_file):
-        with open(edalize_file, "w") as f:
-            f.write(yaml.dump(self.edalize))
+        return utils.yaml_fwrite(edalize_file, self.edalize)
 
 
 from fusesoc.core import Core
@@ -318,8 +317,7 @@ class Ttptttg(object):
         logger.info("Generating " + str(self.vlnv))
         if not os.path.exists(generator_cwd):
             os.makedirs(generator_cwd)
-        with open(generator_input_file, "w") as f:
-            f.write(yaml.dump(self.generator_input))
+        utils.yaml_fwrite(generator_input_file, self.generator_input)
 
         args = [
             os.path.join(os.path.abspath(self.generator.root), self.generator.command),

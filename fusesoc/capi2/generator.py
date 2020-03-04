@@ -1,5 +1,6 @@
 import sys
-import yaml
+
+from fusesoc import utils
 
 
 class Generator(object):
@@ -9,8 +10,7 @@ class Generator(object):
 
     def __init__(self, data=None):
         if data is None:
-            with open(sys.argv[1]) as f:
-                data = yaml.safe_load(f)
+            data = utils.yaml_fread(sys.argv[1])
 
         self.config = data.get("parameters")
         self.files_root = data.get("files_root")
@@ -46,12 +46,10 @@ class Generator(object):
                 self.targets[target]["parameters"].append(parameter)
 
     def write(self):
-        with open(self.core_file, "w") as f:
-            f.write("CAPI=2:\n")
-            coredata = {
-                "name": self.vlnv,
-                "filesets": self.filesets,
-                "parameters": self.parameters,
-                "targets": self.targets,
-            }
-            f.write(yaml.dump(coredata))
+        coredata = {
+            "name": self.vlnv,
+            "filesets": self.filesets,
+            "parameters": self.parameters,
+            "targets": self.targets,
+        }
+        return utils.yaml_fwrite(self.core_file, coredata, "CAPI=2:\n")
