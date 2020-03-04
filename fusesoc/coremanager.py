@@ -28,6 +28,7 @@ class DependencyError(Exception):
 class CoreDB(object):
     def __init__(self):
         self._cores = {}
+        self._solver_cache = {}
 
     # simplesat doesn't allow ':', '-' or leading '_'
     def _package_name(self, vlnv):
@@ -53,6 +54,8 @@ class CoreDB(object):
         return ", ".join(deps)
 
     def add(self, core, library):
+        self._solver_cache_invalidate_all()
+
         name = str(core.name)
         logger.debug("Adding core " + name)
         if name in self._cores:
@@ -69,6 +72,33 @@ class CoreDB(object):
             found = list([core["core"] for core in self._cores.values()])
         return found
 
+    def _solver_cache_lookup(self, key):
+        if key in self._solver_cache:
+            return self._solver_cache[key]
+        return False
+
+    def _solver_cache_store(self, key, value):
+        self._solver_cache[key] = value
+
+    def _solver_cache_invalidate(self, key):
+        if key in self._solver_cache:
+            del self._solver_cache[key]
+
+    def _solver_cache_invalidate_all(self):
+        self._solver_cache = {}
+
+    def _hash_flags_dict(self, flags):
+        """ Hash the flags dict.
+
+        Python's mutable sequences, like dict, are not generally hashable. For
+        the dict we're using for the flags, we can simply implement hashing
+        ourselves without the need to worry about nested dicts.
+        """
+        h = 0
+        for pair in sorted(flags.items()):
+            h ^= hash(pair)
+        return h
+
     def solve(self, top_core, flags):
         return self._solve(top_core, flags)
 
@@ -79,6 +109,12 @@ class CoreDB(object):
                 and this.library == that.library
                 and this.name == that.name
             )
+
+        # Try to return a cached result
+        solver_cache_key = (top_core, self._hash_flags_dict(flags), only_matching_vlnv)
+        cached_solution = self._solver_cache_lookup(solver_cache_key)
+        if cached_solution:
+            return cached_solution
 
         repo = Repository()
         _flags = flags.copy()
@@ -137,7 +173,12 @@ class CoreDB(object):
                 op.package.core.direct_deps = [
                     objdict[n[0]] for n in op.package.install_requires
                 ]
-        return [op.package.core for op in transaction.operations]
+        result = [op.package.core for op in transaction.operations]
+
+        # Cache the solution for further lookups
+        self._solver_cache_store(solver_cache_key, result)
+
+        return result
 
 
 class CoreManager(object):
