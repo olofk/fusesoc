@@ -1,3 +1,23 @@
+1.10 2020-03-04 Olof Kindgren <olof.kindgren@gmail.com>
+======================================================
+* Write resolved dependency tree to EDAM structure
+* Add core affiliation for each file in EDAM
+* Massively improved documentation
+* Add library list command
+* Always run configure before build
+* Support older (<2.3.3) git versions
+* Parse arguments before sending to edalize configure
+* Support dependency ranges with ~ and ^
+
+* + improved error handling, bug fixes and refactoring
+
+Contributors:
+Anonymous
+Alan Gibson <alangibson.misc@gmail.com>
+Olof Kindgren <olof.kindgren@gmail.com>
+Philipp Wagner <philipp.wagner@tum.de>
+Tobias Wölfel <tobias.woelfel@mailbox.org>
+
 1.9.3 2019-10-14 Olof Kindgren <olof.kindgren@gmail.com>
 ======================================================
 * Support setting logical_name on individual files
