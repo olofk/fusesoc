@@ -187,7 +187,8 @@ class CoreManager:
         self.db = CoreDB()
         self._lm = LibraryManager(config.library_root)
 
-    def _load_cores(self, library):
+    def find_cores(self, library):
+        found_cores = []
         path = os.path.expanduser(library.location)
         if os.path.isdir(path) == False:
             raise OSError(path + " is not a directory")
@@ -201,13 +202,19 @@ class CoreManager:
                     core_file = os.path.join(root, f)
                     try:
                         core = Core(core_file, self.config.cache_root)
-                        self.db.add(core, library)
+                        found_cores.append(core)
                     except SyntaxError as e:
                         w = "Parse error. Ignoring file " + core_file + ": " + e.msg
                         logger.warning(w)
                     except ImportError as e:
                         w = 'Failed to register "{}" due to unknown provider: {}'
                         logger.warning(w.format(core_file, str(e)))
+        return found_cores
+
+    def _load_cores(self, library):
+        found_cores = self.find_cores(library)
+        for core in found_cores:
+            self.db.add(core, library)
 
     def add_library(self, library):
         """ Register a library """
