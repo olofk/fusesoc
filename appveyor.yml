@@ -11,9 +11,9 @@ environment:
 
 install:
     - SET PATH=%PYTHON%;%PYTHON%\\Scripts;%PATH%
-    - pip install setuptools --upgrade
-    - pip install pytest
-    - python setup.py install
+    - python -m pip install -U pip setuptools
+    - pip install -r dev-requirements.txt
+    - pip install .
 
 build: off
 
