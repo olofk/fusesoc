@@ -1,26 +1,26 @@
 environment:
   matrix:
-    - PYTHON: "C:\\Python35"
-    - PYTHON: "C:\\Python36"
-    - PYTHON: "C:\\Python37"
-    - PYTHON: "C:\\Python38"
-    - PYTHON: "C:\\Python35-x64"
-    - PYTHON: "C:\\Python36-x64"
-    - PYTHON: "C:\\Python37-x64"
-    - PYTHON: "C:\\Python38-x64"
+    - PYTHON: C:\\Python35
+    - PYTHON: C:\\Python36
+    - PYTHON: C:\\Python37
+    - PYTHON: C:\\Python38
+    - PYTHON: C:\\Python35-x64
+    - PYTHON: C:\\Python36-x64
+    - PYTHON: C:\\Python37-x64
+    - PYTHON: C:\\Python38-x64
 
 install:
-    - "SET PATH=%PYTHON%;%PYTHON%\\Scripts;%PATH%"
-    - "pip install setuptools --upgrade"
-    - "pip install pytest"
-    - "python setup.py install"
+    - SET PATH=%PYTHON%;%PYTHON%\\Scripts;%PATH%
+    - pip install setuptools --upgrade
+    - pip install pytest
+    - python setup.py install
 
 build: off
 
 test_script:
-  - "fusesoc init -y"
-  - "fusesoc list-cores"
-  - "fusesoc library update"
+  - fusesoc init -y
+  - fusesoc list-cores
+  - fusesoc library update
   # Unit tests fail under Windows at the moment for various reasons.
   # See https://github.com/olofk/fusesoc/issues/330 for details.
-  # - "pytest"
+  # - pytest
