@@ -13,8 +13,6 @@ matrix:
       python: 3.8
       env:
         - TEST_CMD="pre-commit run --all-files --show-diff-on-failure"
-    - name: "2.7"
-      python: 2.7
     - name: "3.5"
       python: 3.5
     - name: "3.6"
