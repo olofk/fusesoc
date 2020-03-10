@@ -90,8 +90,7 @@ class Config(object):
                 os.path.expanduser("~"), ".cache"
             )
             self.cache_root = os.path.join(xdg_cache_home, "fusesoc")
-            if not os.path.exists(self.cache_root):
-                os.makedirs(self.cache_root)
+            os.makedirs(self.cache_root, exist_ok=True)
         if not cores_root and os.path.exists("cores"):
             cores_root = [os.path.abspath("cores")]
         if (not systems_root) and os.path.exists("systems"):
