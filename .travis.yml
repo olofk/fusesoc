@@ -23,7 +23,8 @@ matrix:
       python: 3.8
 
 install:
-  - pip install -U setuptools pytest pre-commit
+  - python -m pip install -U pip setuptools
+  - pip install -r dev-requirements.txt
   - pip install .
   - pre-commit install
 
