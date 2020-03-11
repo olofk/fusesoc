@@ -201,7 +201,7 @@ class Core:
                 "FILES_ROOT": files_root,
             }
             flow = self._get_flow(flags)
-            if flow is "sim":
+            if flow == "sim":
                 for s in ["pre_build_scripts", "pre_run_scripts", "post_run_scripts"]:
                     v = getattr(self.scripts, s)
                     if v:
@@ -209,7 +209,7 @@ class Core:
             # For backwards compatibility we only use the script from the
             # top-level core in synth flows. We also rename them here to match
             # the backend stages and set the SYSTEM_ROOT env var
-            elif flow is "synth" and flags["is_toplevel"]:
+            elif flow == "synth" and flags["is_toplevel"]:
                 env["SYSTEM_ROOT"] = self.files_root
                 v = self.scripts.pre_synth_scripts
                 if v:
@@ -333,7 +333,7 @@ class Core:
         return vpi
 
     def get_work_root(self, flags):
-        if self._get_flow(flags) is "synth":
+        if self._get_flow(flags) == "synth":
             s = "bld-"
         else:
             s = "sim-"
@@ -401,9 +401,9 @@ class Core:
             ]:
                 flow = "synth"
         elif "target" in flags:
-            if flags["target"] is "synth":
+            if flags["target"] == "synth":
                 flow = "synth"
-            elif flags["target"] is "sim":
+            elif flags["target"] == "sim":
                 flow = "sim"
         return flow
 
