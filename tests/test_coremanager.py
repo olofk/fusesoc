@@ -91,13 +91,10 @@ def test_deptree(tmp_path):
     # Use Edalizer to get the files.
     # This is necessary because we need to run generators.
     work_root = str(tmp_path / "work")
-    cache_root = str(tmp_path / "cache")
     os.mkdir(work_root)
-    os.mkdir(cache_root)
     edalizer = Edalizer(
         toplevel=root_core.name,
         flags=flags,
-        cache_root=cache_root,
         work_root=work_root,
         core_manager=cm,
     )
@@ -159,7 +156,6 @@ def test_copyto():
         toplevel=core.name,
         flags=flags,
         core_manager=cm,
-        cache_root=None,
         work_root=work_root,
         export_root=None,
         system_name=None,
@@ -211,7 +207,6 @@ def test_export():
         toplevel=core.name,
         flags=flags,
         core_manager=cm,
-        cache_root=None,
         work_root=work_root,
         export_root=export_root,
         system_name=None,

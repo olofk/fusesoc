@@ -29,7 +29,6 @@ class Edalizer:
         self,
         toplevel,
         flags,
-        cache_root,
         work_root,
         core_manager,
         export_root=None,
@@ -39,7 +38,6 @@ class Edalizer:
 
         self.toplevel = toplevel
         self.flags = flags
-        self.cache_root = cache_root
         self.core_manager = core_manager
         self.work_root = work_root
         self.export_root = export_root
@@ -107,6 +105,14 @@ class Edalizer:
         else:
             os.makedirs(self.work_root)
 
+        # Prevent fusesoc from picking up core files generated in work_root
+        # without explicitly adding them to the library, as generators do.
+        with open(os.path.join(self.work_root, "FUSESOC_IGNORE"), "w") as f:
+            f.write(
+                "FuseSoC ignores this directory and all subdirectories\n"
+                "when searching for core files.\n"
+            )
+
     def setup_cores(self):
         """ Setup cores: fetch resources, patch them, etc. """
         for core in self.cores:
@@ -171,7 +177,7 @@ class Edalizer:
                         self.generators,
                         core_list=self._core_list_for_generator(),
                     )
-                    gen_lib = ttptttg.generate(self.cache_root)
+                    gen_lib = ttptttg.generate(self.work_root)
 
                     # The output directory of the generator can contain core
                     # files, which need to be added to the dependency tree.
@@ -442,16 +448,16 @@ class Ttptttg:
             "cores": core_list,
         }
 
-    def generate(self, cache_root):
+    def generate(self, outdir):
         """Run a parametrized generator
 
         Args:
-            cache_root (str): The directory where to store the generated cores
+            outdir (str): The directory where to store the generated cores
 
         Returns:
             Libary: A Library with the generated files
         """
-        generator_cwd = os.path.join(cache_root, "generated", self.vlnv.sanitized_name)
+        generator_cwd = os.path.join(outdir, "generated", self.vlnv.sanitized_name)
         generator_input_file = os.path.join(generator_cwd, self.name + "_input.yml")
 
         logger.info("Generating " + str(self.vlnv))

@@ -156,7 +156,7 @@ When FuseSoC is launched and a core target using a generator is processed, the f
 1. A key lookup is performed in the core file's `generate` section to find the generator configuration
 2. FuseSoC checks that it has registered a generator by the name specified in the `generator` entry of the configuration.
 3. FuseSoC calculates a unique VLNV for the generator instance by taking the calling core's VLNV and concatinating the name field with the generator instance name.
-4. A directory is created under <cache_root>/generated with a sanitized version of the calculated VLNV. This directory is where the output from the generator eventually will appear.
+4. A directory is created under <work_root>/generated with a sanitized version of the calculated VLNV. This directory is where the output from the generator eventually will appear.
 5. A yaml configuration file is created in the generator output directory. The parameters from the instance are passed on to this file. FuseSoC will set the files root of the calling core as `files_root` and add the calculated vlnv.
 6. FuseSoC will switch working directory to the generator output directory and call the generator, using the command found in the generator's `command` field and with the created yaml file as command-line argument.
 7. When *all* generators have successfully completed, FuseSoC will scan the generator output directories of the generators for new core files, and insert them into the list of available cores. This updated list of cores is then resolved to include dependencies.
