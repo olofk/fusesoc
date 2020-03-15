@@ -7,7 +7,7 @@ from fusesoc.capi2.core import Core as Capi2Core
 logger = logging.getLogger(__name__)
 
 
-class Core(object):
+class Core:
     def __new__(cls, *args, **kwargs):
         with open(args[0]) as f:
             l = f.readline().split()

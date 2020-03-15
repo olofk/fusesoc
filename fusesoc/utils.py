@@ -56,7 +56,7 @@ import os
 
 
 def unique_dirs(file_list):
-    return list(set([os.path.dirname(f.name) for f in file_list]))
+    return list({os.path.dirname(f.name) for f in file_list})
 
 
 # With help from:
@@ -80,11 +80,11 @@ COLOR_MAP = {
 
 class ColoredFormatter(logging.Formatter):
     def __init__(self, msg, monochrome):
-        super(ColoredFormatter, self).__init__(msg)
+        super().__init__(msg)
         self.monochrome = monochrome
 
     def format(self, record):
-        uncolored = super(ColoredFormatter, self).format(record)
+        uncolored = super().format(record)
         levelname = record.levelname
         if not self.monochrome and (levelname in COLOR_MAP):
             color_seq = COLOR_SEQ % (30 + COLOR_MAP[levelname])
@@ -133,7 +133,7 @@ def yaml_fwrite(filepath, content, preamble=""):
 
 
 def yaml_fread(filepath):
-    with open(filepath, "r") as f:
+    with open(filepath) as f:
         return yaml.load(f, Loader=YamlLoader)
 
 

@@ -17,7 +17,7 @@ class FileAction(argparse.Action):
         setattr(namespace, self.dest, [path])
 
 
-class Edalizer(object):
+class Edalizer:
     def __init__(
         self,
         vlnv,
@@ -271,7 +271,7 @@ from fusesoc.core import Core
 from fusesoc.utils import Launcher
 
 
-class Ttptttg(object):
+class Ttptttg:
     def __init__(self, ttptttg, core, generators):
         generator_name = ttptttg["generator"]
         if not generator_name in generators:

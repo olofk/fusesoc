@@ -18,7 +18,7 @@ from fusesoc.librarymanager import Library
 logger = logging.getLogger(__name__)
 
 
-class Config(object):
+class Config:
     def __init__(self, path=None, file=None):
         self.build_root = None
         self.cache_root = None

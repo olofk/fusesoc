@@ -546,7 +546,7 @@ def init_coremanager(config, args_cores_root):
     for library in config.libraries + args_libs:
         try:
             cm.add_library(library)
-        except (RuntimeError, IOError) as e:
+        except (RuntimeError, OSError) as e:
             _s = "Failed to register library '{}'"
             logger.warning(_s.format(str(e)))
 

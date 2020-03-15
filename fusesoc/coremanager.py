@@ -25,7 +25,7 @@ class DependencyError(Exception):
         return repr(self.value)
 
 
-class CoreDB(object):
+class CoreDB:
     def __init__(self):
         self._cores = {}
         self._solver_cache = {}
@@ -181,7 +181,7 @@ class CoreDB(object):
         return result
 
 
-class CoreManager(object):
+class CoreManager:
     def __init__(self, config):
         self.config = config
         self.db = CoreDB()
@@ -190,7 +190,7 @@ class CoreManager(object):
     def load_cores(self, library):
         path = os.path.expanduser(library.location)
         if os.path.isdir(path) == False:
-            raise IOError(path + " is not a directory")
+            raise OSError(path + " is not a directory")
         logger.debug("Checking for cores in " + path)
         for root, dirs, files in os.walk(path, followlinks=True):
             if "FUSESOC_IGNORE" in files:
