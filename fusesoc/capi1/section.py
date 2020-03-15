@@ -98,9 +98,9 @@ class StringList(list):
 
     def __new__(cls, *args, **kwargs):
         if not args:
-            return list()
+            return []
         else:
-            return list(args[0].split())
+            return args[0].split()
 
 
 class PathList(StringList):
@@ -112,7 +112,7 @@ Each element in the list is subjected to expansion of environment variables and
 
     def __new__(cls, *args, **kwargs):
         if not args:
-            return list()
+            return []
         else:
             return [os.path.expandvars(p) for p in args[0].split()]
 
@@ -126,7 +126,7 @@ Each element in the list is first subjected to the expansion according to
 
     def __new__(clk, *args, **kwargs):
         if not args:
-            return list()
+            return []
         else:
             return [File(p) for p in PathList(args[0])]
 
@@ -141,7 +141,7 @@ Example: librecores.org:peripherals:uart16550:1.5 >=::simple_spi:1.6 mor1kx =::i
 
     def __new__(clk, *args, **kwargs):
         if not args:
-            return list()
+            return []
         else:
             return [Vlnv(p) for p in StringList(args[0])]
 
