@@ -20,3 +20,9 @@ repos:
   rev: 19.10b0
   hooks:
   - id: black
+- repo: https://github.com/asottile/pyupgrade
+  rev: v2.1.0
+  hooks:
+  - id: pyupgrade
+    # for now don't force to change from %-operator to {}
+    args: [--keep-percent-format, --py3-plus]
