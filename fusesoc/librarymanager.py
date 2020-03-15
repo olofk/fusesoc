@@ -6,7 +6,7 @@ from fusesoc.provider import get_provider
 logger = logging.getLogger(__name__)
 
 
-class Library(object):
+class Library:
     def __init__(self, name, location, sync_type=None, sync_uri=None, auto_sync=True):
         if sync_type and not sync_type in ["local", "git"]:
             raise ValueError(
@@ -56,7 +56,7 @@ class Library(object):
             logger.error(l("Failed to update library: " + str(e)))
 
 
-class LibraryManager(object):
+class LibraryManager:
     _libraries = []
 
     def __init__(self, library_root):

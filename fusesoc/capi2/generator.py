@@ -3,7 +3,7 @@ import sys
 from fusesoc import utils
 
 
-class Generator(object):
+class Generator:
     filesets = {}
     parameters = {}
     targets = {}

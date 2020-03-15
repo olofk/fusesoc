@@ -14,7 +14,7 @@ class FusesocConfigParser(CP):
         if sys.version[0] == "2":
             CP.__init__(self)
         else:
-            super(FusesocConfigParser, self).__init__()
+            super().__init__()
         if not os.path.exists(config_file):
             raise Exception("Could not find " + config_file)
         f = open(config_file)

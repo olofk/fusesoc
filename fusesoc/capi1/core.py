@@ -15,7 +15,7 @@ from fusesoc.capi1.plusargs import Plusargs
 logger = logging.getLogger(__name__)
 
 
-class FileSet(object):
+class FileSet:
     def __init__(self, name="", file=[], usage=[], private=False):
         self.name = name
         self.file = file
@@ -169,7 +169,7 @@ class Core:
     def get_files(self, flags={}):
         files = []
         flow = self._get_flow(flags)
-        usage = set([flow, flags["tool"]])
+        usage = {flow, flags["tool"]}
 
         for fs in self.file_sets:
             if (not fs.private or flags["is_toplevel"]) and (usage & set(fs.usage)):

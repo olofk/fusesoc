@@ -6,7 +6,7 @@ from fusesoc.utils import Launcher
 logger = logging.getLogger(__name__)
 
 
-class Provider(object):
+class Provider:
     def __init__(self, config, core_root, files_root):
         self.config = config
         self.core_root = core_root

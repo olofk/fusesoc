@@ -3,7 +3,7 @@ import copy
 
 
 @total_ordering
-class Vlnv(object):
+class Vlnv:
     def __init__(self, s, default_relation=">="):
         def _is_rev(s):
             return s.startswith("r") and s[1:].isdigit()

@@ -13,7 +13,7 @@ from edalize import get_edatools
 logger = logging.getLogger(__name__)
 
 
-class File(object):
+class File:
     def __init__(self, tree):
         self.copyto = ""
         self.file_type = ""
@@ -71,7 +71,7 @@ class String(str):
         return s
 
 
-class StringOrList(object):
+class StringOrList:
     def __new__(cls, *args, **kwargs):
         if type(args[0]) == list:
             return [String(s) for s in args[0]]
@@ -79,7 +79,7 @@ class StringOrList(object):
             return [String(args[0])]
 
 
-class Section(object):
+class Section:
     members = {}
     lists = {}
     dicts = {}
@@ -124,7 +124,7 @@ class Section(object):
                 )
 
 
-class Provider(object):
+class Provider:
     def __new__(cls, *args, **kwargs):
         provider_name = args[0]["name"]
         if provider_name is None:
