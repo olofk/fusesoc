@@ -10,6 +10,8 @@ repos:
   - id: check-docstring-first
   - id: requirements-txt-fixer
   - id: check-yaml
+    types: [file]
+    files: ^tests/capi2_cores/.+\.core$
   - id: end-of-file-fixer
     # Test golden references
     exclude: ^tests/(.+\.(info|patch)|test_provider/.+\.v)
