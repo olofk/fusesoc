@@ -1,0 +1,28 @@
+CAPI=2:
+name: ::deptree-root
+
+filesets:
+  fs1:
+    depend:
+      # Child 3 is also included from child1; having it listed first here should
+      # ensure that the files from child3 appear before the files from child2.
+      - ::deptree-child3
+      - ::deptree-child2
+      - ::deptree-child1
+    files:
+      - "root-fs1-f1.sv"
+      - "root-fs1-f2.sv"
+    fileType: systemVerilogSource
+  fs2:
+    depend:
+      - ::deptree-child3
+    files:
+      - "root-fs2-f1.sv"
+      - "root-fs2-f2.sv"
+    fileType: systemVerilogSource
+
+targets:
+  default:
+    filesets:
+      - fs1
+      - fs2

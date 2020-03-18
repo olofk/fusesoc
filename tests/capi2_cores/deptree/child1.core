@@ -1,0 +1,16 @@
+CAPI=2:
+name: ::deptree-child1
+
+filesets:
+  fs1:
+    depend:
+      - ::deptree-child3
+    files:
+      - "child1-fs1-f1.sv"
+      - "child1-fs1-f2.sv"
+    fileType: systemVerilogSource
+
+targets:
+  default:
+    filesets:
+      - fs1
