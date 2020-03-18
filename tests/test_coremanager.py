@@ -1,6 +1,53 @@
 import pytest
 
 
+def test_deptree():
+    from fusesoc.coremanager import CoreManager
+    from fusesoc.config import Config
+    from fusesoc.librarymanager import Library
+    from fusesoc.vlnv import Vlnv
+    import os
+
+    tests_dir = os.path.dirname(__file__)
+    deptree_cores_dir = os.path.join(tests_dir, "capi2_cores", "deptree")
+    lib = Library("deptree", deptree_cores_dir)
+
+    cm = CoreManager(Config())
+    cm.add_library(lib)
+
+    root_core = cm.get_core(Vlnv("::deptree-root"))
+
+    # Check dependency tree
+    deps = cm.get_depends(root_core.name, {})
+    deps_names = [str(c) for c in deps]
+    deps_names_expected = [
+        "::deptree-child2:0",
+        "::deptree-child3:0",
+        "::deptree-child1:0",
+        "::deptree-root:0",
+    ]
+    assert deps_names == deps_names_expected
+
+    # Check files in dependency tree
+    files_expected = [
+        "child2-fs1-f1.sv",
+        "child2-fs1-f2.sv",
+        "child3-fs1-f1.sv",
+        "child3-fs1-f2.sv",
+        "child1-fs1-f1.sv",
+        "child1-fs1-f2.sv",
+        "root-fs1-f1.sv",
+        "root-fs1-f2.sv",
+        "root-fs2-f1.sv",
+        "root-fs2-f2.sv",
+    ]
+    files = []
+    for d in deps:
+        files += [f.name for f in d.get_files({})]
+
+    assert files == files_expected
+
+
 def test_copyto():
     import os
     import tempfile
