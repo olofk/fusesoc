@@ -187,7 +187,7 @@ class CoreManager:
         self.db = CoreDB()
         self._lm = LibraryManager(config.library_root)
 
-    def load_cores(self, library):
+    def _load_cores(self, library):
         path = os.path.expanduser(library.location)
         if os.path.isdir(path) == False:
             raise OSError(path + " is not a directory")
@@ -217,7 +217,7 @@ class CoreManager:
             logger.warning(_s.format(library.name, abspath, _library.name))
             return
 
-        self.load_cores(library)
+        self._load_cores(library)
         self._lm.add_library(library)
 
     def get_libraries(self):
