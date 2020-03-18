@@ -210,6 +210,7 @@ class CoreManager:
                         logger.warning(w.format(core_file, str(e)))
 
     def add_library(self, library):
+        """ Register a library """
         abspath = os.path.abspath(os.path.expanduser(library.location))
         _library = self._lm.get_library(abspath, "location")
         if _library:
@@ -221,9 +222,19 @@ class CoreManager:
         self._lm.add_library(library)
 
     def get_libraries(self):
+        """ Get all registered libraries """
         return self._lm.get_libraries()
 
     def get_depends(self, core, flags):
+        """ Get an ordered list of all dependencies of a core
+
+        All direct and indirect dependencies are resolved into a dependency
+        tree, the tree is flattened, and an ordered list of dependencies is
+        created.
+
+        The first element in the list is a leaf dependency, the last element
+        is the core at the root of the dependency tree.
+        """
         logger.debug(
             "Calculating dependencies for {}{} with flags {}".format(
                 core.relation, str(core), str(flags)
@@ -236,14 +247,17 @@ class CoreManager:
         return deps
 
     def get_cores(self):
+        """ Get a dict with all cores, indexed by the core name """
         return {str(x.name): x for x in self.db.find()}
 
     def get_core(self, name):
+        """ Get a core with a given name """
         c = self.db.find(name)
         c.name.relation = "=="
         return c
 
     def get_generators(self):
+        """ Get a dict with all registered generators, indexed by name """
         generators = {}
         for core in self.db.find():
             if hasattr(core, "get_generators"):
