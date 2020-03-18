@@ -146,6 +146,9 @@ class Core:
 
         self.core_root = os.path.dirname(self.core_file)
 
+        # Populated by CoreDB._solve(). TODO: Find a better solution for that.
+        self.direct_deps = []
+
         try:
             _root = Root(utils.yaml_fread(self.core_file))
         except KeyError as e:

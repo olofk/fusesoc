@@ -50,6 +50,10 @@ class Core:
     def __init__(self, core_file, cache_root=""):
         basename = os.path.basename(core_file)
         self.core_file = core_file
+
+        # Populated by CoreDB._solve(). TODO: Find a better solution for that.
+        self.direct_deps = []
+
         self.depend = []
         self.simulators = []
 

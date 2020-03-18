@@ -58,7 +58,7 @@ class Edalizer:
             _flags["is_toplevel"] = core.name == vlnv
 
             # Extract direct dependencies
-            snippet["dependencies"] = {str(core.name): getattr(core, "direct_deps", [])}
+            snippet["dependencies"] = {str(core.name): core.direct_deps}
 
             # Extract files
             if export_root:
