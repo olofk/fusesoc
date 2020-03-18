@@ -147,6 +147,8 @@ def merge_dict(d1, d2):
             d1[key] = merge_dict(d1.get(key, {}), value)
         elif isinstance(value, list):
             d1[key] = d1.get(key, []) + value
+        elif isinstance(value, set):
+            d1[key] = d1.get(key, set()) | value
         else:
             d1[key] = value
     return d1

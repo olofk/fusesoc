@@ -176,6 +176,60 @@ def init(cm, args):
     logger.info("FuseSoC is ready to use!")
 
 
+def dep_graph(cm, args):
+    flags = {"target": args.target, "tool": args.tool}
+    core_vlnv = Vlnv(args.core)
+
+    flags_str = ", ".join([k + "=" + v for k, v in flags.items() if v])
+    print(
+        "Building dependency graph for {core} with flags {flags}.".format(
+            core=args.core, flags=flags_str
+        )
+    )
+    core_graph = cm.get_dependency_graph(core_vlnv, flags)
+
+    dot_filepath = core_vlnv.sanitized_name + ".dot"
+    converted_output_filepath = (
+        core_vlnv.sanitized_name + "." + args.output_format.lower()
+    )
+
+    with open(dot_filepath, "w") as f:
+        f.write("digraph dependencies {\n")
+        for core, deps in core_graph.items():
+            for dep in deps:
+                f.write('"{}"->"{}"\n'.format(core, dep))
+        f.write("}\n")
+
+    if args.output_format != "dot":
+        dot_cmd = [
+            "dot",
+            "-T",
+            args.output_format,
+            "-o",
+            converted_output_filepath,
+            dot_filepath,
+        ]
+        try:
+            subprocess.run(dot_cmd)
+        except subprocess.CalledProcessError as e:
+            logger.fatal(
+                "Unable to call dot to convert dependency graph. "
+                "Install graphviz (which includes dot) and try again."
+            )
+            print(
+                "Kept graph in a dot file at {}. You can manually convert it "
+                "by running {}".format(dot_filepath),
+                " ".join(dot_cmd),
+            )
+            sys.exit(1)
+
+        # Remove the dot file if the conversion went well.
+        os.unlink(dot_filepath)
+    print(
+        "Successfully written dependency graph to {}.".format(converted_output_filepath)
+    )
+
+
 def list_paths(cm, args):
     cores_root = [x.location for x in cm.get_libraries()]
     print("\n".join(cores_root))
@@ -811,6 +865,35 @@ def parse_args():
     parser_update.set_defaults(
         warn="'fusesoc update' is deprecated. Use 'fusesoc library update' instead"
     )
+
+    # dep subparser
+    parser_dep = subparsers.add_parser("dep", help="Subcommands dependency management")
+    dep_subparsers = parser_dep.add_subparsers()
+    parser_dep.set_defaults(subparser=parser_dep)
+
+    # dep graph subparser
+    parser_dep_graph = dep_subparsers.add_parser(
+        "graph", help="Produce a dependency graph for GraphViz"
+    )
+    parser_dep_graph.add_argument(
+        "core", help="Core to build the dependency graph for."
+    )
+    parser_dep_graph.add_argument(
+        "--target", help="Target to build the dependency graph for.", default="default"
+    )
+    parser_dep_graph.add_argument(
+        "--tool", help="Tool to build the dependency graph for.", default=""
+    )
+    parser_dep_graph.add_argument(
+        "--output-format",
+        help=(
+            "Convert output into desired format (requires dot). "
+            "All dot-supported formats can be used, run 'dot -T?' for a "
+            "complete list."
+        ),
+        default="dot",
+    )
+    parser_dep_graph.set_defaults(func=dep_graph)
 
     args = parser.parse_args()
 
