@@ -139,3 +139,14 @@ def yaml_fread(filepath):
 
 def yaml_read(data):
     return yaml.load(data, Loader=YamlLoader)
+
+
+def merge_dict(d1, d2):
+    for key, value in d2.items():
+        if isinstance(value, dict):
+            d1[key] = merge_dict(d1.get(key, {}), value)
+        elif isinstance(value, list):
+            d1[key] = d1.get(key, []) + value
+        else:
+            d1[key] = value
+    return d1
