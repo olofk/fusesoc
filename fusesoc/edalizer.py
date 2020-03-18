@@ -10,7 +10,7 @@ import shutil
 from fusesoc import utils
 from fusesoc.coremanager import DependencyError
 from fusesoc.librarymanager import Library
-from fusesoc.utils import merge_dict
+from fusesoc.utils import depgraph_to_dot, merge_dict
 from fusesoc.vlnv import Vlnv
 
 logger = logging.getLogger(__name__)
@@ -84,6 +84,15 @@ class Edalizer:
         # Run all generators. Generators can create new cores, which are added
         # to the list of available cores.
         self.run_generators()
+
+        # Dump complete dependency tree as dot file.
+        core_graph = self.core_manager.get_dependency_graph(self.toplevel, self.flags)
+        dot_filepath = os.path.join(
+            self.work_root, self.toplevel.sanitized_name + ".deps-after-generators.dot"
+        )
+        with open(dot_filepath, "w") as f:
+            f.write(depgraph_to_dot(core_graph))
+        logger.info("Wrote dependency graph to {}".format(dot_filepath))
 
         # Create EDA API file contents
         self.create_eda_api_struct()
