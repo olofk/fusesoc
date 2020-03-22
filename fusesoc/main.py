@@ -478,7 +478,7 @@ def run_backend(
 
     if do_run:
         try:
-            backend.run(backendargs)
+            backend.run([])
         except RuntimeError as e:
             logger.error("Failed to run {} : {}".format(str(core.name), str(e)))
             exit(1)
