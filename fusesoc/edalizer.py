@@ -5,6 +5,7 @@ import shutil
 
 from fusesoc import utils
 from fusesoc.vlnv import Vlnv
+from fusesoc.utils import merge_dict
 
 logger = logging.getLogger(__name__)
 
@@ -39,16 +40,6 @@ class Edalizer:
 
         logger.debug("Building EDA API")
 
-        def merge_dict(d1, d2):
-            for key, value in d2.items():
-                if isinstance(value, dict):
-                    d1[key] = merge_dict(d1.get(key, {}), value)
-                elif isinstance(value, list):
-                    d1[key] = d1.get(key, []) + value
-                else:
-                    d1[key] = value
-            return d1
-
         generators = {}
 
         first_snippets = []
@@ -67,7 +58,7 @@ class Edalizer:
             _flags["is_toplevel"] = core.name == vlnv
 
             # Extract direct dependencies
-            snippet["dependencies"] = {str(core.name): getattr(core, "direct_deps", [])}
+            snippet["dependencies"] = {str(core.name): core.direct_deps}
 
             # Extract files
             if export_root:

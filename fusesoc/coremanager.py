@@ -187,7 +187,8 @@ class CoreManager:
         self.db = CoreDB()
         self._lm = LibraryManager(config.library_root)
 
-    def load_cores(self, library):
+    def find_cores(self, library):
+        found_cores = []
         path = os.path.expanduser(library.location)
         if os.path.isdir(path) == False:
             raise OSError(path + " is not a directory")
@@ -201,15 +202,22 @@ class CoreManager:
                     core_file = os.path.join(root, f)
                     try:
                         core = Core(core_file, self.config.cache_root)
-                        self.db.add(core, library)
+                        found_cores.append(core)
                     except SyntaxError as e:
                         w = "Parse error. Ignoring file " + core_file + ": " + e.msg
                         logger.warning(w)
                     except ImportError as e:
                         w = 'Failed to register "{}" due to unknown provider: {}'
                         logger.warning(w.format(core_file, str(e)))
+        return found_cores
+
+    def _load_cores(self, library):
+        found_cores = self.find_cores(library)
+        for core in found_cores:
+            self.db.add(core, library)
 
     def add_library(self, library):
+        """ Register a library """
         abspath = os.path.abspath(os.path.expanduser(library.location))
         _library = self._lm.get_library(abspath, "location")
         if _library:
@@ -217,13 +225,23 @@ class CoreManager:
             logger.warning(_s.format(library.name, abspath, _library.name))
             return
 
-        self.load_cores(library)
+        self._load_cores(library)
         self._lm.add_library(library)
 
     def get_libraries(self):
+        """ Get all registered libraries """
         return self._lm.get_libraries()
 
     def get_depends(self, core, flags):
+        """ Get an ordered list of all dependencies of a core
+
+        All direct and indirect dependencies are resolved into a dependency
+        tree, the tree is flattened, and an ordered list of dependencies is
+        created.
+
+        The first element in the list is a leaf dependency, the last element
+        is the core at the root of the dependency tree.
+        """
         logger.debug(
             "Calculating dependencies for {}{} with flags {}".format(
                 core.relation, str(core), str(flags)
@@ -236,14 +254,17 @@ class CoreManager:
         return deps
 
     def get_cores(self):
+        """ Get a dict with all cores, indexed by the core name """
         return {str(x.name): x for x in self.db.find()}
 
     def get_core(self, name):
+        """ Get a core with a given name """
         c = self.db.find(name)
         c.name.relation = "=="
         return c
 
     def get_generators(self):
+        """ Get a dict with all registered generators, indexed by name """
         generators = {}
         for core in self.db.find():
             if hasattr(core, "get_generators"):
