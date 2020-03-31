@@ -188,3 +188,19 @@ def depgraph_to_dot(core_graph):
             s += '"{}"->"{}"\n'.format(core, dep)
     s += "}\n"
     return s
+
+
+def depgraph_cores(core_graph):
+    """ Return the list of all nodes in a dependency graph """
+
+    names = set()
+    cores = []
+
+    # Note that every node occurs as a key of the dict, so we only have to
+    # iterate over the keys.
+    for core in core_graph.keys():
+        if core.name not in names:
+            names.add(core.name)
+            cores.append(core)
+
+    return cores

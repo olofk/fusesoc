@@ -10,7 +10,7 @@ import shutil
 from fusesoc import utils
 from fusesoc.coremanager import DependencyError
 from fusesoc.librarymanager import Library
-from fusesoc.utils import depgraph_to_dot, merge_dict
+from fusesoc.utils import depgraph_cores, depgraph_to_dot, merge_dict
 from fusesoc.vlnv import Vlnv
 
 logger = logging.getLogger(__name__)
@@ -43,8 +43,15 @@ class Edalizer:
         self.export_root = export_root
         self.system_name = system_name
 
+        # A dictionary of generators. This is keyed by the generator name and
+        # values are pairs (core_name, gen) where core_name is the name of the
+        # core that produced the generator and gen is a Generator object.
         self.generators = {}
         self._cached_core_list_for_generator = []
+
+        # A set of names of cores that have VPI information. Populated in
+        # create_eda_api_struct.
+        self._cores_with_vpi = set()
 
     @property
     def cores(self):
@@ -97,6 +104,15 @@ class Edalizer:
         # Create EDA API file contents
         self.create_eda_api_struct()
 
+        # Dump flattened dependency tree as Makefile fragment (this has to come
+        # after create_eda_api_struct, because we need _cores_with_vpi)
+        mk_filepath = os.path.join(self.work_root, "core-deps.mk")
+        mk_contents = self._depgraph_to_mk(core_graph)
+        if mk_contents is not None:
+            with open(mk_filepath, "w") as f:
+                f.write(mk_contents)
+            logger.info("Wrote Makefile fragment to {}".format(mk_filepath))
+
     def _core_flags(self, core):
         """ Get flags for a specific core """
 
@@ -134,10 +150,9 @@ class Edalizer:
         for core in self.cores:
             logger.debug("Searching for generators in " + str(core.name))
             if hasattr(core, "get_generators"):
-                core_generators = core.get_generators()
-                if core_generators:
-                    logger.debug("Found generators: {}".format(core_generators.keys()))
-                generators.update(core_generators)
+                for gen_name, generator in core.get_generators().items():
+                    logger.debug("  Found generator: {}".format(gen_name))
+                    generators[gen_name] = (core.name, generator)
 
         self.generators = generators
 
@@ -286,6 +301,8 @@ class Edalizer:
                         "libs": _vpi["libs"],
                     }
                 )
+            if snippet["vpi"]:
+                self._cores_with_vpi.add(str(core.name))
 
             if hasattr(core, "pos"):
                 if core.pos == "first":
@@ -406,6 +423,82 @@ class Edalizer:
             else:
                 raise RuntimeError("Unknown parameter " + key)
 
+    def _depgraph_to_mk(self, core_graph):
+        """Convert a dependency graph into a Makefile fragment
+
+        The dependency graph is expected to be in the form produced by
+        CoreManager.get_dependency_graph().
+
+        The Makefile fragment will define a variable called "fusesoc-deps"
+        which contains a list of files. A downstream Makefile can have its
+        'build' target depend on this list of files to rebuild when necessary.
+
+        Note this is a little different from GCC-style .d files, which define a
+        Make target that adds dependencies to the compiled object file. We
+        can't do that here, because we don't know what the file is.
+
+        All paths are absolute because the Makefile using this may run in a
+        different directory from where fusesoc was run.
+
+        Returns either the string contents of the Makefile to write or None (if
+        there's some reason we shouldn't produce a Makefile for this core). In
+        the latter case, it prints an info message.
+
+        """
+        cores = depgraph_cores(core_graph)
+        dep_paths = []
+        generator_names = set()
+
+        for core in cores:
+            # Makefile dependencies for cores with VPI information are not
+            # currently supported (TODO?). Rather than spit out an incomplete
+            # Makefile, which might cause a user to miss a rebuild, we don't
+            # spit one out at all.
+            if str(core.name) in self._cores_with_vpi:
+                logger.info(
+                    "Not writing Makefile because core {} has "
+                    "VPI information (not currently supported).".format(str(core.name))
+                )
+                return None
+
+            # Every core depends on its actual core file (since a change to
+            # this might add other files to the file list)
+            dep_paths.append(core.core_file)
+
+            # It also depends on each file in its file list
+            core_flags = self._core_flags(core)
+            for core_file in core.get_files(core_flags):
+                dep_paths.append(os.path.join(core.files_root, core_file["name"]))
+
+            # Was this core generated?
+            if core.from_generator is not None:
+                generator_names.add(core.from_generator)
+
+        # Some of the cores might have been auto-generated. In which case, we
+        # also need to depend on their generators and the cores that contained
+        # them.
+        for gen_name in generator_names:
+            # We know that gen_name is a valid key of self.generators (since it
+            # got passed in when making a generated core in run_generators)
+            gen_core_name, generator = self.generators[gen_name]
+
+            # Add the .core file that defines the generator and the script that
+            # it ran. Rather than iterating through self.cores, we cheat and
+            # look up the name in self._core_list_for_generator(). While the
+            # resulting dict doesn't have the core object, it does have an
+            # entry for "core_filepath", which is what we need.
+            core_dict = self._core_list_for_generator()[str(gen_core_name)]
+
+            dep_paths.append(core_dict["core_filepath"])
+            dep_paths.append(Ttptttg.generator_script(generator))
+
+        # We now have a list of paths (relative to the current directory).
+        return (
+            "fusesoc-deps := \\\n  "
+            + " \\\n  ".join(os.path.abspath(path) for path in dep_paths)
+            + "\n"
+        )
+
     def parse_args(self, backend_class, backendargs, edam):
         parser = self._build_parser(backend_class, edam)
         parsed_args = parser.parse_args(backendargs)
@@ -429,13 +522,13 @@ from fusesoc.utils import Launcher
 class Ttptttg:
     def __init__(self, ttptttg, core, generators, core_list):
         generator_name = ttptttg["generator"]
-        if not generator_name in generators:
+        if generator_name not in generators:
             raise RuntimeError(
                 "Could not find generator '{}' requested by {}".format(
                     generator_name, core.name
                 )
             )
-        self.generator = generators[generator_name]
+        self.generator = generators[generator_name][1]
         self.name = ttptttg["name"]
         self.pos = ttptttg["pos"]
         parameters = ttptttg["config"]
@@ -476,7 +569,7 @@ class Ttptttg:
         utils.yaml_fwrite(generator_input_file, self.generator_input)
 
         args = [
-            os.path.join(os.path.abspath(self.generator.root), self.generator.command),
+            Ttptttg.generator_script(self.generator),
             os.path.abspath(generator_input_file),
         ]
 
@@ -487,3 +580,8 @@ class Ttptttg:
 
         library_name = "generated-" + self.vlnv.sanitized_name
         return Library(name=library_name, location=generator_cwd)
+
+    @staticmethod
+    def generator_script(generator):
+        """"Get the absolute path to the script for a generator"""
+        return os.path.join(os.path.abspath(generator.root), generator.command)
