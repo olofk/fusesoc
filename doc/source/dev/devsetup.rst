@@ -69,7 +69,7 @@ Running tests
 
 The FuseSoC contains unit tests written using the pytest framework.
 
-.. code-block::
+.. code-block:: bash
 
    cd fusesoc/source/directory
 
