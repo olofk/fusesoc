@@ -3,5 +3,5 @@ name: ::generators:0
 
 generators:
   generator1:
-    interpreter: python
+    interpreter: python3
     command: testgen.py
