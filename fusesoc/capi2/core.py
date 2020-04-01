@@ -145,8 +145,9 @@ class Provider:
 class Core:
     capi_version = 2
 
-    def __init__(self, core_file, cache_root=""):
+    def __init__(self, core_file, cache_root="", from_generator=None):
         self.core_file = core_file
+        self.from_generator = from_generator
 
         basename = os.path.basename(self.core_file)
 

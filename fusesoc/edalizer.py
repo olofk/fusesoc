@@ -173,7 +173,7 @@ class Edalizer:
 
     def run_generators(self):
         """ Run all generators """
-        generated_libraries = []
+        generated_libraries = {}
         for core in self.cores:
             logger.debug("Running generators in " + str(core.name))
             core_flags = self._core_flags(core)
@@ -192,7 +192,8 @@ class Edalizer:
                     # This isn't done instantly, but only after all generators
                     # have finished, to re-do the dependency resolution only
                     # once, and not once per generator run.
-                    generated_libraries.append(gen_lib)
+                    generator_name = ttptttg_data["generator"]
+                    generated_libraries.setdefault(generator_name, []).append(gen_lib)
 
                     # Create a dependency to all generated cores.
                     # XXX: We need a cleaner API to the CoreManager to add
@@ -208,8 +209,9 @@ class Edalizer:
 
         # Make all new libraries known to fusesoc. This invalidates the solver
         # cache and is therefore quite expensive.
-        for lib in generated_libraries:
-            self.core_manager.add_library(lib)
+        for gen_name, libs in generated_libraries.items():
+            for lib in libs:
+                self.core_manager.add_library(lib, from_generator=gen_name)
         self._invalidate_cached_core_list_for_generator()
 
     def create_eda_api_struct(self):
