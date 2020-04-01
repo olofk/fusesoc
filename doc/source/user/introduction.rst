@@ -32,5 +32,3 @@ Its main purpose is to increase reuse of IP (Intellectual Property) cores and be
 **FuseSoC is free software** It puts however no restrictions on the cores and can be used to manage your company's internal proprietary core collections as well as public open source projects
 
 **FuseSoC is battle-proven** It has been used to successfully build or simulate projects such as Nyuzi, Pulpino, VScale, various OpenRISC SoCs, picorv32, osvvm and more.
-
-Read more in the online_ documentation, or get straight into business with the quick start below
