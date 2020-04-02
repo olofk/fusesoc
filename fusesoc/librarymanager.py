@@ -57,9 +57,8 @@ class Library:
 
 
 class LibraryManager:
-    _libraries = []
-
     def __init__(self, library_root):
+        self._libraries = []
         self.library_root = library_root
 
     def add_library(self, library):
