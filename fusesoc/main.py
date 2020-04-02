@@ -20,7 +20,7 @@ from fusesoc.librarymanager import Library
 from fusesoc.edalizer import Edalizer
 from edalize import get_edatool
 from fusesoc.vlnv import Vlnv
-from fusesoc.utils import Launcher, setup_logging
+from fusesoc.utils import Launcher, setup_logging, yaml_fread
 
 import logging
 
@@ -447,7 +447,7 @@ def run_backend(
         if do_configure:
             edam = edalizer.edalize
         else:
-            edam = utils.yaml_fread(eda_api_file)
+            edam = yaml_fread(eda_api_file)
         backend = get_edatool(tool)(edam=edam, work_root=work_root)
 
     except ImportError:
