@@ -320,7 +320,7 @@ class CoreManager:
         generators = {}
         for core in self.db.find():
             if hasattr(core, "get_generators"):
-                _generators = core.get_generators({})
+                _generators = core.get_generators()
                 if _generators:
                     generators[str(core.name)] = _generators
         return generators
