@@ -412,21 +412,24 @@ def run_backend(
     if not os.path.exists(eda_api_file):
         do_configure = True
 
+    backend_class = get_edatool(tool)
+
+    edalizer = Edalizer(
+        toplevel=core.name,
+        flags=flags,
+        core_manager=cm,
+        cache_root=cm.config.cache_root,
+        work_root=work_root,
+        export_root=export_root,
+        system_name=system_name,
+    )
+
     if do_configure:
         try:
-            edalizer = Edalizer(
-                toplevel=core.name,
-                flags=flags,
-                core_manager=cm,
-                cache_root=cm.config.cache_root,
-                work_root=work_root,
-                export_root=export_root,
-                system_name=system_name,
-            )
             edalizer.run()
-
-            backend_class = get_edatool(tool)
-            edalizer.parse_args(backend_class, backendargs)
+            edam = edalizer.edalize
+            parsed_args = edalizer.parse_args(backend_class, backendargs, edam)
+            edalizer.add_parsed_args(backend_class, parsed_args)
 
         except SyntaxError as e:
             logger.error(e.msg)
@@ -435,14 +438,13 @@ def run_backend(
             logger.error("Setup failed : {}".format(str(e)))
             exit(1)
         edalizer.to_yaml(eda_api_file)
+    else:
+        edam = yaml_fread(eda_api_file)
+        parsed_args = edalizer.parse_args(backend_class, backendargs, edam)
 
     # Frontend/backend separation
 
     try:
-        if do_configure:
-            edam = edalizer.edalize
-        else:
-            edam = yaml_fread(eda_api_file)
         backend = get_edatool(tool)(edam=edam, work_root=work_root)
 
     except ImportError:
@@ -473,7 +475,7 @@ def run_backend(
 
     if do_run:
         try:
-            backend.run(backendargs)
+            backend.run(parsed_args)
         except RuntimeError as e:
             logger.error("Failed to run {} : {}".format(str(core.name), str(e)))
             exit(1)
