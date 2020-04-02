@@ -355,13 +355,11 @@ class Core:
                 _src_files.append(_f)
         return _src_files
 
-    def get_generators(self, flags):
-        self._debug("Getting generators for flags {}".format(str(flags)))
+    def get_generators(self):
         generators = {}
         for k, v in self.generators.items():
             generators[k] = v
             generators[k].root = self.files_root
-            self._debug(" Found generator " + k)
         return generators
 
     def get_parameters(self, flags={}, ext_parameters={}):

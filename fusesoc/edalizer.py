@@ -108,11 +108,10 @@ class Edalizer:
         generators = {}
         for core in self.cores:
             logger.debug("Searching for generators in " + str(core.name))
-            core_flags = self._core_flags(core)
-
             if hasattr(core, "get_generators"):
-                core_generators = core.get_generators(core_flags)
-                logger.debug("Found generators: %s" % (core_generators,))
+                core_generators = core.get_generators()
+                if core_generators:
+                    logger.debug(f"Found generators: {core_generators.keys()}")
                 generators.update(core_generators)
 
         self.generators = generators

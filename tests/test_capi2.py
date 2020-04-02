@@ -203,7 +203,7 @@ def test_capi2_get_generators():
 
     core = Core(os.path.join(cores_dir, "generate", "generators.core"))
 
-    generators = core.get_generators({})
+    generators = core.get_generators()
     assert len(generators) == 1
     assert generators["generator1"].command == "testgen.py"
 
