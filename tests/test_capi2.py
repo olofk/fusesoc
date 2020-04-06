@@ -186,7 +186,7 @@ def test_capi2_get_files():
 def test_capi2_get_generators():
     from fusesoc.core import Core
 
-    core = Core(os.path.join(cores_dir, "generators.core"))
+    core = Core(os.path.join(cores_dir, "generate", "generators.core"))
 
     generators = core.get_generators({})
     assert len(generators) == 1
@@ -441,7 +441,7 @@ def test_capi2_get_toplevel():
 def test_capi2_get_ttptttg():
     from fusesoc.core import Core
 
-    core = Core(os.path.join(cores_dir, "generate.core"))
+    core = Core(os.path.join(cores_dir, "generate", "generate.core"))
 
     flags = {"is_toplevel": True}
     expected = [
@@ -517,8 +517,12 @@ def test_capi2_get_work_root():
 def test_capi2_info():
     from fusesoc.core import Core
 
-    for core_name in ["targets", "generators"]:
-        core_file = os.path.join(tests_dir, "capi2_cores", "misc", core_name + ".core")
+    dirs_and_corenames = [("", "targets"), ("generate", "generators")]
+
+    for subdir, core_name in dirs_and_corenames:
+        core_file = os.path.join(
+            tests_dir, "capi2_cores", "misc", subdir, core_name + ".core"
+        )
         core = Core(core_file)
 
         gen_info = "\n".join(

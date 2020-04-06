@@ -410,25 +410,16 @@ def run_backend(
 
     if do_configure:
         try:
-            cores = cm.get_depends(core.name, flags)
-        except DependencyError as e:
-            logger.error(
-                e.msg + "\nFailed to resolve dependencies for {}".format(system)
-            )
-            exit(1)
-        except SyntaxError as e:
-            logger.error(e.msg)
-            exit(1)
-        try:
             edalizer = Edalizer(
-                core.name,
-                flags,
-                cores,
+                toplevel=core.name,
+                flags=flags,
+                core_manager=cm,
                 cache_root=cm.config.cache_root,
                 work_root=work_root,
                 export_root=export_root,
                 system_name=system_name,
             )
+            edalizer.run()
 
             backend_class = get_edatool(tool)
             edalizer.parse_args(backend_class, backendargs)
