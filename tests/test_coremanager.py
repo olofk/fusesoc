@@ -38,6 +38,20 @@ def test_deptree(tmp_path):
         ("::deptree-child3:0", "::deptree-child1:0"),
         # Dependencies of child-a core
         ("::deptree-child4:0", "::deptree-child-a:0"),
+        # Dependencies of the generated cores
+        ("::deptree-child-a-generated-child-a-generate:0", "::deptree-child-a:0"),
+        (
+            "::deptree-child-a-generated-child-a-generate-position-first:0",
+            "::deptree-child-a:0",
+        ),
+        (
+            "::deptree-child-a-generated-child-a-generate-position-last:0",
+            "::deptree-child-a:0",
+        ),
+        (
+            "::deptree-child-a-generated-child-a-generate-position-append:0",
+            "::deptree-child-a:0",
+        ),
     )
 
     # The ordered files that we expect from each core.
@@ -55,21 +69,22 @@ def test_deptree(tmp_path):
             "child1-fs1-f2.sv",
         ),
         "::deptree-child4:0": ("child4.sv",),
-        "::deptree-child-a:0": (
-            # Files from filesets are always included before any
-            # files from generators with "position: append".
-            # This is because generated files are often dependent on files
-            # that are not generated, and it convenient to be able to
-            # include them in the same core.
-            "child-a2.sv",
-            "generated-child-a.sv",
-            "generated-child-a-append.sv",
-        ),
+        "::deptree-child-a:0": ("child-a2.sv",),
         "::deptree-root:0": (
             "root-fs1-f1.sv",
             "root-fs1-f2.sv",
             "root-fs2-f1.sv",
             "root-fs2-f2.sv",
+        ),
+        "::deptree-child-a-generated-child-a-generate:0": ("generated-child-a.sv",),
+        "::deptree-child-a-generated-child-a-generate-position-first:0": (
+            "generated-child-a-first.sv",
+        ),
+        "::deptree-child-a-generated-child-a-generate-position-last:0": (
+            "generated-child-a-last.sv",
+        ),
+        "::deptree-child-a-generated-child-a-generate-position-append:0": (
+            "generated-child-a-append.sv",
         ),
     }
 
@@ -108,12 +123,8 @@ def test_deptree(tmp_path):
     # Each fileset in order. Followed by each generator in order.
     # The order between the cores is taken the above `dep_names`.
     expected_filenames = []
-    # A generator-created core with "position: first"
-    expected_filenames.append("generated-child-a-first.sv")
     for dep_name in deps_names:
         expected_filenames += list(expected_core_files[dep_name])
-    # A generator-created core with "position: last"
-    expected_filenames.append("generated-child-a-last.sv")
 
     edalized_filenames = [
         os.path.basename(f["name"]) for f in edalizer.edalize["files"]

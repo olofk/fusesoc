@@ -9,6 +9,7 @@ import shutil
 
 from fusesoc import utils
 from fusesoc.coremanager import DependencyError
+from fusesoc.librarymanager import Library
 from fusesoc.utils import merge_dict
 from fusesoc.vlnv import Vlnv
 
@@ -46,14 +47,9 @@ class Edalizer:
 
         self.generators = {}
 
-        self._resolved_or_generated_cores = []
-
     @property
     def cores(self):
-        if self._resolved_or_generated_cores:
-            return self._resolved_or_generated_cores
-        else:
-            return self.resolved_cores
+        return self.resolved_cores
 
     @property
     def resolved_cores(self):
@@ -132,21 +128,42 @@ class Edalizer:
 
     def run_generators(self):
         """ Run all generators """
-        self._resolved_or_generated_cores = []
+        generated_libraries = []
         for core in self.cores:
             logger.debug("Running generators in " + str(core.name))
             core_flags = self._core_flags(core)
-            self._resolved_or_generated_cores.append(core)
             if hasattr(core, "get_ttptttg"):
                 for ttptttg_data in core.get_ttptttg(core_flags):
-                    _ttptttg = Ttptttg(
+                    ttptttg = Ttptttg(
                         ttptttg_data,
                         core,
                         self.generators,
                     )
-                    for gen_core in _ttptttg.generate(self.cache_root):
-                        gen_core.pos = _ttptttg.pos
-                        self._resolved_or_generated_cores.append(gen_core)
+                    gen_lib = ttptttg.generate(self.cache_root)
+
+                    # The output directory of the generator can contain core
+                    # files, which need to be added to the dependency tree.
+                    # This isn't done instantly, but only after all generators
+                    # have finished, to re-do the dependency resolution only
+                    # once, and not once per generator run.
+                    generated_libraries.append(gen_lib)
+
+                    # Create a dependency to all generated cores.
+                    # XXX: We need a cleaner API to the CoreManager to add
+                    # these dependencies. Until then, explicitly use a private
+                    # API to be reminded that this is a workaround.
+                    gen_cores = self.core_manager.find_cores(gen_lib)
+                    gen_core_vlnvs = [core.name for core in gen_cores]
+                    logger.debug(
+                        "The generator produced the following cores, which are inserted into the dependency tree: %s",
+                        gen_cores,
+                    )
+                    core._generator_created_dependencies += gen_core_vlnvs
+
+        # Make all new libraries known to fusesoc. This invalidates the solver
+        # cache and is therefore quite expensive.
+        for lib in generated_libraries:
+            self.core_manager.add_library(lib)
 
     def create_eda_api_struct(self):
         first_snippets = []
@@ -398,7 +415,7 @@ class Ttptttg:
             cache_root (str): The directory where to store the generated cores
 
         Returns:
-            list: Cores created by the generator
+            Libary: A Library with the generated files
         """
         generator_cwd = os.path.join(cache_root, "generated", self.vlnv.sanitized_name)
         generator_input_file = os.path.join(generator_cwd, self.name + "_input.yml")
@@ -418,15 +435,5 @@ class Ttptttg:
 
         Launcher(args[0], args[1:], cwd=generator_cwd).run()
 
-        cores = []
-        logger.debug("Looking for generated cores in " + generator_cwd)
-        for root, dirs, files in os.walk(generator_cwd):
-            for f in files:
-                if f.endswith(".core"):
-                    try:
-                        cores.append(Core(os.path.join(root, f)))
-                    except SyntaxError as e:
-                        w = "Failed to parse generated core file " + f + ": " + e.msg
-                        raise RuntimeError(w)
-        logger.debug("Found " + ", ".join(str(c.name) for c in cores))
-        return cores
+        library_name = "generated-" + self.vlnv.sanitized_name
+        return Library(name=library_name, location=generator_cwd)
