@@ -36,6 +36,8 @@ def test_deptree(tmp_path):
         # Dependencies of child1 core
         ("::deptree-child3:0", "::deptree-child1:0"),
         # Dependencies of child-a core
+        # All generated cores are an dependency to the core that generated it.
+        ("::generated-child-a:0", "::deptree-child-a:0"),
         ("::deptree-child4:0", "::deptree-child-a:0"),
     )
 
@@ -54,16 +56,8 @@ def test_deptree(tmp_path):
             "child1-fs1-f2.sv",
         ),
         "::deptree-child4:0": ("child4.sv",),
-        "::deptree-child-a:0": (
-            # Files from filesets are always included before any
-            # files from generators with "position: append".
-            # This is because generated files are often dependent on files
-            # that are not generated, and it convenient to be able to
-            # include them in the same core.
-            "child-a2.sv",
-            "generated-child-a.sv",
-            "generated-child-a-append.sv",
-        ),
+        "::deptree-child-a:0": ("child-a2.sv",),
+        "::generated-child-a:0": ("generated-child-a.sv",),
         "::deptree-root:0": (
             "root-fs1-f1.sv",
             "root-fs1-f2.sv",

@@ -180,6 +180,11 @@ class Core:
         else:
             self.files_root = self.core_root
 
+        # XXX: We need a cleaner way to query and insert dependencies for a
+        # core. Until then, that should do the trick to insert dependencies
+        # from a generator run.
+        self._generator_created_dependencies = []
+
     def __repr__(self):
         return str(self.name)
 
@@ -314,6 +319,7 @@ class Core:
         self._debug("Getting dependencies for flags {}".format(str(flags)))
         for fs in self._get_filesets(flags):
             depends += [Vlnv(d) for d in self._parse_list(flags, fs.depend)]
+        depends += self._generator_created_dependencies
         return depends
 
     def get_files(self, flags):
