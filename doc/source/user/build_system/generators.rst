@@ -50,6 +50,12 @@ Example yaml configuration file:
         spi0: {datawidth: 8, offset: 2952790016, size: 8}
         uart0: {datawidth: 8, offset: 2415919104, size: 32}
     vlnv: ::mysoc-wb_intercon:0
+    cores:
+      ::SD-card-controller:0:
+        capi_version: 1
+        core_filepath: path/to/a/file.core
+        used: false
+
 
 
 The above example is for a generator that creates verilog code for a wishbone interconnect.

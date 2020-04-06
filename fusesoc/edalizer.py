@@ -46,6 +46,7 @@ class Edalizer:
         self.system_name = system_name
 
         self.generators = {}
+        self._cached_core_list_for_generator = []
 
     @property
     def cores(self):
@@ -126,6 +127,36 @@ class Edalizer:
 
         self.generators = generators
 
+    def _invalidate_cached_core_list_for_generator(self):
+        if self._cached_core_list_for_generator:
+            self._cached_core_list_for_generator = None
+
+    def _core_list_for_generator(self):
+        """Produce a dictionary of cores, suitable for passing to a generator
+
+        The results of this functions are cached for a significant overall
+        speedup. Users need to call _invalidate_cached_core_list_for_generator()
+        whenever the CoreDB is modified.
+        """
+
+        if self._cached_core_list_for_generator:
+            return self._cached_core_list_for_generator
+
+        out = {}
+        resolved_cores = self.resolved_cores  # cache for speed
+        for core in self.discovered_cores:
+            core_flags = self._core_flags(core)
+            out[str(core)] = {
+                "capi_version": core.capi_version,
+                "core_filepath": os.path.abspath(core.core_file),
+                "used": core in resolved_cores,
+                "core_root": os.path.abspath(core.core_root),
+                "files": [str(f["name"]) for f in core.get_files(core_flags)],
+            }
+
+        self._cached_core_list_for_generator = out
+        return out
+
     def run_generators(self):
         """ Run all generators """
         generated_libraries = []
@@ -138,6 +169,7 @@ class Edalizer:
                         ttptttg_data,
                         core,
                         self.generators,
+                        core_list=self._core_list_for_generator(),
                     )
                     gen_lib = ttptttg.generate(self.cache_root)
 
@@ -164,6 +196,7 @@ class Edalizer:
         # cache and is therefore quite expensive.
         for lib in generated_libraries:
             self.core_manager.add_library(lib)
+        self._invalidate_cached_core_list_for_generator()
 
     def create_eda_api_struct(self):
         first_snippets = []
@@ -378,7 +411,7 @@ from fusesoc.utils import Launcher
 
 
 class Ttptttg:
-    def __init__(self, ttptttg, core, generators):
+    def __init__(self, ttptttg, core, generators, core_list):
         generator_name = ttptttg["generator"]
         if not generator_name in generators:
             raise RuntimeError(
@@ -406,6 +439,7 @@ class Ttptttg:
             "gapi": "1.0",
             "parameters": parameters,
             "vlnv": vlnv_str,
+            "cores": core_list,
         }
 
     def generate(self, cache_root):
