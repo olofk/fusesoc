@@ -1,8 +1,15 @@
 CAPI=2:
 name : ::generate:0
 
+filesets:
+  default:
+    depend:
+      - generators
+
 targets:
   default:
+    filesets :
+      - default
     generate : [testgenerate_without_params, testgenerate_with_params]
     toplevel : na
 
