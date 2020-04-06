@@ -52,17 +52,36 @@ def test_copyto():
     import os
     import tempfile
 
+    from fusesoc.config import Config
+    from fusesoc.coremanager import CoreManager
     from fusesoc.edalizer import Edalizer
-    from fusesoc.core import Core
+    from fusesoc.librarymanager import Library
+    from fusesoc.vlnv import Vlnv
 
-    core = Core(
-        os.path.join(os.path.dirname(__file__), "cores", "misc", "copytocore.core")
-    )
     flags = {"tool": "icarus"}
 
     work_root = tempfile.mkdtemp(prefix="copyto_")
 
-    eda_api = Edalizer(core.name, flags, [core], None, work_root, None).edalize
+    core_dir = os.path.join(os.path.dirname(__file__), "cores", "misc", "copytocore")
+    lib = Library("misc", core_dir)
+
+    cm = CoreManager(Config())
+    cm.add_library(lib)
+
+    core = cm.get_core(Vlnv("::copytocore"))
+
+    edalizer = Edalizer(
+        toplevel=core.name,
+        flags=flags,
+        core_manager=cm,
+        cache_root=None,
+        work_root=work_root,
+        export_root=None,
+        system_name=None,
+    )
+    edalizer.run()
+
+    eda_api = edalizer.edalize
 
     assert eda_api["files"] == [
         {
@@ -88,25 +107,35 @@ def test_export():
     import os
     import tempfile
 
+    from fusesoc.config import Config
+    from fusesoc.coremanager import CoreManager
     from fusesoc.edalizer import Edalizer
-    from fusesoc.core import Core
+    from fusesoc.librarymanager import Library
+    from fusesoc.vlnv import Vlnv
 
-    core = Core(
-        os.path.join(
-            os.path.dirname(__file__), "cores", "wb_intercon", "wb_intercon-1.0.core"
-        )
-    )
+    flags = {"tool": "icarus"}
 
     build_root = tempfile.mkdtemp(prefix="export_")
     export_root = os.path.join(build_root, "exported_files")
-    eda_api = Edalizer(
-        core.name,
-        {"tool": "icarus"},
-        [core],
+    work_root = os.path.join(build_root, "work")
+
+    core_dir = os.path.join(os.path.dirname(__file__), "cores")
+
+    cm = CoreManager(Config())
+    cm.add_library(Library("cores", core_dir))
+
+    core = cm.get_core(Vlnv("::wb_intercon"))
+
+    edalizer = Edalizer(
+        toplevel=core.name,
+        flags=flags,
+        core_manager=cm,
         cache_root=None,
-        work_root=os.path.join(build_root, "work"),
+        work_root=work_root,
         export_root=export_root,
-    ).edalize
+        system_name=None,
+    )
+    edalizer.run()
 
     for f in [
         "wb_intercon_1.0/dummy_icarus.v",
