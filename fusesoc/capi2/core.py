@@ -369,6 +369,11 @@ class Core:
                     return default
                 else:
                     return int(default, 0)
+            elif datatype == "real":
+                if type(default) == float:
+                    return default
+                else:
+                    return float(default)
             else:
                 return str(default)
 
@@ -378,7 +383,7 @@ class Core:
             description = core_param.description
             paramtype = core_param.paramtype.parse(flags)
 
-            if not datatype in ["bool", "file", "int", "str"]:
+            if not datatype in ["bool", "file", "int", "real", "str"]:
                 _s = "{} : Invalid datatype '{}' for parameter {}"
                 raise SyntaxError(_s.format(self.name, datatype, p))
 

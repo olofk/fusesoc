@@ -35,6 +35,11 @@ parameters:
     default   : 0
     paramtype : vlogparam
 
+  realpi:
+    datatype  : real
+    default   : 3.14159
+    paramtype : vlogparam
+
   emptystr:
     datatype  : str
     default   : ""
@@ -55,9 +60,9 @@ targets:
     parameters : [param1, param2]
 
   override:
-    parameters : [param1=def, param2=new_def, intparam=0xdeadbeef, boolfalse=true, booltrue=false]
+    parameters : [param1=def, param2=new_def, intparam=0xdeadbeef, boolfalse=true, booltrue=false, realpi=3.14]
   types:
-    parameters : [param2, intparam, boolfalse, booltrue]
+    parameters : [param2, intparam, boolfalse, booltrue, realpi]
 
   use_flags:
     parameters:
