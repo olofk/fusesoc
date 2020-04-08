@@ -245,6 +245,7 @@ class Edalizer:
             "file": {"type": str, "nargs": 1, "action": FileAction},
             "int": {"type": int, "nargs": 1},
             "str": {"type": str, "nargs": 1},
+            "real": {"type": float, "nargs": 1},
         }
         progname = "fusesoc run {}".format(edam["name"])
 

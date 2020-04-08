@@ -209,6 +209,11 @@ def test_capi2_get_parameters():
         "datatype": "str",
         "paramtype": "vlogparam",
     }
+    realpi = {
+        "datatype": "real",
+        "default": 3.14159,
+        "paramtype": "vlogparam",
+    }
 
     flags = {"is_toplevel": True}
     expected = {"param1": param1}
@@ -252,6 +257,7 @@ def test_capi2_get_parameters():
         "intparam": intparam,
         "boolfalse": boolfalse,
         "booltrue": booltrue,
+        "realpi": realpi,
     }
     result = core.get_parameters(flags)
     assert expected == result
@@ -262,6 +268,7 @@ def test_capi2_get_parameters():
     assert int == type(result["intparam"]["default"])
     assert bool == type(result["boolfalse"]["default"])
     assert bool == type(result["booltrue"]["default"])
+    assert float == type(result["realpi"]["default"])
 
     flags["target"] = "empty"
     expected = {"int0": int0, "emptystr": emptystr}
@@ -274,12 +281,14 @@ def test_capi2_get_parameters():
     intparam["default"] = 0xDEADBEEF
     boolfalse["default"] = True
     booltrue["default"] = False
+    realpi["default"] = 3.14
     expected = {
         "param1": param1,
         "param2": param2,
         "intparam": intparam,
         "boolfalse": boolfalse,
         "booltrue": booltrue,
+        "realpi": realpi,
     }
     assert expected == core.get_parameters(flags)
 
