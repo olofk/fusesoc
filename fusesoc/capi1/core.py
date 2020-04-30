@@ -392,6 +392,7 @@ class Core:
                 "rivierapro",
                 "xsim",
                 "vcs",
+                "xcelium",
             ]:
                 flow = "sim"
             elif flags["tool"] in [

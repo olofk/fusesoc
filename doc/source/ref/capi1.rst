@@ -41,7 +41,7 @@ Each element in the list is subjected to expansion of environment variables and
 
 [[SimulatorList]] SimulatorList ~~~~~~~~~~~~~ List of supported
 simulators. Allowed values are ghdl, icarus, isim, modelsim, verilator,
-xsim
+xcelium, xsim
 
 [[SourceType]] SourceType ~~~~~~~~~~ Language used for Verilator
 testbenches. Allowed values are C, CPP or systemC
@@ -137,7 +137,7 @@ component file \|depend \| <<VlnvList,VlnvList>> \| Common dependencies
 Component name \|patches \| <<StringList,StringList>> \|
 FuseSoC-specific patches \|simulators \| <<SimulatorList,SimulatorList>>
 \| Supported simulators. Valid values are icarus, modelsim, verilator,
-isim and xsim. Each simulator have a dedicated section desribed
+isim, xcelium and xsim. Each simulator have a dedicated section described
 elsewhere in this document \|==============================
 
 modelsim ~~~~~~~~
@@ -249,6 +249,15 @@ vpi ~~~
 include files for VPI library \|libs \| <<StringList,StringList>> \|
 External libraries linked with the VPI library \|src_files \|
 <<FileList,FileList>> \| C source files for VPI library
+\|==============================
+
+xcelium ~~~~~~~~
+
+[cols=“2,1,5”,options=“header”] \|============================== \|Name
+\| Type \| Description \|depend \| <<VlnvList,VlnvList>> \|
+Tool-specific Dependencies \|xmvlog_options \| <<StringList,StringList>>
+\| Additional arguments for vlog \|vsim_options \|
+<<StringList,StringList>> \| Additional arguments for vsim
 \|==============================
 
 xsim ~~~~
