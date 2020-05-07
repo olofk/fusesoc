@@ -27,7 +27,7 @@ class Launcher:
         logger.debug("    " + str(self))
         try:
             subprocess.check_call(
-                [self.cmd] + self.args, cwd=self.cwd, stdin=subprocess.PIPE
+                map(str, [self.cmd] + self.args), cwd=self.cwd, stdin=subprocess.PIPE
             ),
         except FileNotFoundError:
             raise RuntimeError(
@@ -38,7 +38,7 @@ class Launcher:
             raise RuntimeError(self.errormsg.format(str(self)))
 
     def __str__(self):
-        return " ".join([self.cmd] + self.args)
+        return " ".join(map(str, [self.cmd] + self.args))
 
 
 def is_mingw():
