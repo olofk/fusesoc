@@ -23,6 +23,8 @@ class Launcher:
         self.cwd = cwd
 
     def run(self):
+        """Runs the cmd with args after converting them all to strings via str
+        """
         logger.debug(self.cwd)
         logger.debug("    " + str(self))
         try:
