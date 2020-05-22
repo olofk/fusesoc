@@ -17,13 +17,85 @@ def test_empty_core(tmpdir):
     assert "Unknown file type" in str(excinfo.value)
 
 
-def test_capi2_export():
-    import os
+def test_capi2_export(tmpdir):
     import tempfile
     from fusesoc.core import Core
 
-    core_file = os.path.join(tests_dir, "capi2_cores", "misc", "files.core")
-    core = Core(core_file)
+    core_file = pathlib.Path(str(tmpdir), 'files.core')
+    core_file.write_text(
+"""CAPI=2:
+name: ::copytocore:0
+filesets:
+  logical_name:
+    files:
+      - vlogfile : {logical_name : overridden_logical_name}
+      - vhdlfile
+    file_type : vhdlSource
+    logical_name : default_logical_name
+
+  copyfiles:
+    files:
+      - subdir/dummy.extra: {copyto : copied.file, file_type : user}
+      - dummy.tcl: {copyto : subdir/another.file}
+    file_type : tclSource
+  unusedfiles:
+    files:
+      - idontexist
+  miscfiles:
+    files:
+      - vlogfile: {file_type : verilogSource, is_include_file : true}
+      - vhdlfile: {is_include_file : false}
+    file_type : vhdlSource
+  pickme:
+    files:
+      - pickthisfile: {file_type : user}
+  dontpickme:
+    files:
+      - dontpickthisfile: {file_type : user}
+  script_fileset:
+    files:
+      - scriptfile : {file_type : user}
+
+  fileset_in_files_root:
+    files: [targets.info]
+  vpi_fileset:
+    files:
+      - vpifile : {file_type : CSource}
+
+scripts:
+  script_with_fileset:
+    filesets : [script_fileset]
+targets:
+  default:
+    filesets: [
+    logical_name,
+    copyfiles,
+    miscfiles,
+    "tool_icarus? (pickme)",
+    "!tool_icarus? (dontpickme)"]
+    hooks:
+      pre_build: [script_with_fileset]
+    vpi : [vpi_with_fileset]
+  will_fail:
+    filesets : [unusedfiles]
+  files_root_test:
+    filesets: [fileset_in_files_root]
+
+vpi:
+  vpi_with_fileset:
+    filesets : [vpi_fileset]
+""")
+
+    pathlib.Path(str(tmpdir), 'dontpickthisfile').write_text('')
+    pathlib.Path(str(tmpdir), 'dummy.tcl').write_text('')
+    pathlib.Path(str(tmpdir), 'scriptfile').write_text('')
+    pathlib.Path(str(tmpdir), 'subdir/dummy.extra').parent.mkdir()
+    pathlib.Path(str(tmpdir), 'subdir/dummy.extra').write_text('')
+    pathlib.Path(str(tmpdir), 'vhdlfile').write_text('')
+    pathlib.Path(str(tmpdir), 'vlogfile').write_text('')
+    pathlib.Path(str(tmpdir), 'vpifile').write_text('')
+
+    core = Core(str(core_file.resolve()))
 
     export_root = tempfile.mkdtemp(prefix="capi2_export_")
 
