@@ -38,9 +38,6 @@ filesets:
       - subdir/dummy.extra: {copyto : copied.file, file_type : user}
       - dummy.tcl: {copyto : subdir/another.file}
     file_type : tclSource
-  unusedfiles:
-    files:
-      - idontexist
   miscfiles:
     files:
       - vlogfile: {file_type : verilogSource, is_include_file : true}
@@ -76,8 +73,6 @@ targets:
     hooks:
       pre_build: [script_with_fileset]
     vpi : [vpi_with_fileset]
-  will_fail:
-    filesets : [unusedfiles]
   files_root_test:
     filesets: [fileset_in_files_root]
 
@@ -117,10 +112,6 @@ vpi:
 
     assert expected == sorted(result)
 
-    with pytest.raises(RuntimeError) as excinfo:
-        core.export(export_root, {"target": "will_fail", "is_toplevel": True})
-    assert "Cannot find idontexist in" in str(excinfo.value)
-
     core.files_root = os.path.join(tests_dir, __name__)
     core.export(export_root, {"target": "files_root_test", "is_toplevel": True})
     expected = ["targets.info"]
@@ -130,6 +121,34 @@ vpi:
     for root, dirs, files in os.walk(export_root):
         result += [os.path.relpath(os.path.join(root, f), export_root) for f in files]
     assert expected == sorted(result)
+
+
+def test_capi2_export_unused_files(tmpdir):
+    import tempfile
+    from fusesoc.core import Core
+
+    core_file = pathlib.Path(str(tmpdir), 'unused_files.core')
+    core_file.write_text(
+"""CAPI=2:
+name: ::copytocore:0
+filesets:
+  unusedfiles:
+    files:
+      - idontexist
+targets:
+  will_fail:
+    filesets : [unusedfiles]
+""")
+
+    core = Core(str(core_file.resolve()))
+
+    export_root = tempfile.mkdtemp(prefix="capi2_export_")
+
+    core.export(export_root)
+
+    with pytest.raises(RuntimeError) as excinfo:
+        core.export(export_root, {"target": "will_fail", "is_toplevel": True})
+    assert "Cannot find idontexist in" in str(excinfo.value)
 
 
 def test_capi2_append():
