@@ -1,3 +1,4 @@
+import pathlib
 import pytest
 import os.path
 
@@ -5,14 +6,14 @@ tests_dir = os.path.dirname(__file__)
 cores_dir = os.path.join(tests_dir, "capi2_cores", "misc")
 
 
-def test_empty_core():
-    import os
-    import tempfile
+def test_empty_core(tmpdir):
     from fusesoc.core import Core
 
-    core_file = os.path.join(tests_dir, "capi2_cores", "misc", "empty.core")
+    core_file = pathlib.Path(str(tmpdir), 'empty.core')
+    core_file.write_text('')
+
     with pytest.raises(RuntimeError) as excinfo:
-        core = Core(core_file)
+        Core(str(core_file.resolve()))
     assert "Unknown file type" in str(excinfo.value)
 
 
