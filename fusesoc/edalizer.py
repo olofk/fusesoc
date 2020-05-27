@@ -139,6 +139,7 @@ class Edalizer:
         first_snippets = []
         snippets = []
         last_snippets = []
+        parameters = {}
         for core in self.cores:
             snippet = {}
 
@@ -158,7 +159,8 @@ class Edalizer:
             rel_root = os.path.relpath(files_root, self.work_root)
 
             # Extract parameters
-            snippet["parameters"] = core.get_parameters(_flags)
+            snippet["parameters"] = core.get_parameters(_flags, parameters)
+            merge_dict(parameters, snippet["parameters"])
 
             # Extract tool options
             snippet["tool_options"] = {

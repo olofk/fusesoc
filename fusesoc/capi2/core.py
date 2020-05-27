@@ -350,7 +350,58 @@ class Core:
             self._debug(" Found generator " + k)
         return generators
 
-    def get_parameters(self, flags={}):
+    def get_parameters(self, flags={}, ext_parameters={}):
+        def _parse_param_value(name, datatype, default):
+            if datatype == "bool":
+                if default.lower() == "true":
+                    return True
+                elif default.lower() == "false":
+                    return False
+                else:
+                    _s = "{}: Invalid default value '{}' for bool parameter {}"
+                    raise SyntaxError(_s.format(self.name, default, p))
+            elif datatype == "int":
+                if type(default) == int:
+                    return default
+                else:
+                    return int(default, 0)
+            else:
+                return str(default)
+
+        def _parse_param(flags, name, core_param):
+            parsed_param = {}
+            datatype = core_param.datatype
+            description = core_param.description
+            paramtype = core_param.paramtype.parse(flags)
+
+            if not datatype in ["bool", "file", "int", "str"]:
+                _s = "{} : Invalid datatype '{}' for parameter {}"
+                raise SyntaxError(_s.format(self.name, datatype, p))
+
+            if not paramtype in [
+                "cmdlinearg",
+                "generic",
+                "plusarg",
+                "vlogdefine",
+                "vlogparam",
+            ]:
+                _s = "{} : Invalid paramtype '{}' for parameter {}"
+                raise SyntaxError(_s.format(self.name, paramtype, p))
+            parsed_param = {
+                "datatype": str(core_param.datatype),
+                "paramtype": paramtype,
+            }
+
+            if description:
+                parsed_param["description"] = str(description)
+
+            if core_param.default:
+                parsed_param["default"] = _parse_param_value(
+                    name, datatype, core_param.default
+                )
+
+            return parsed_param
+
         self._debug("Getting parameters for flags '{}'".format(str(flags)))
         target = self._get_target(flags)
         parameters = {}
@@ -361,62 +412,34 @@ class Core:
 
                 p = plist[0]
 
+                # parse might have left us with an empty string for the parameter name
+                # In that case, just go to the next parameter
                 if not p:
                     continue
 
-                if not p in self.parameters:
+                # The parameter exists either in this core...
+                if p in self.parameters:
+                    parameters[p] = _parse_param(flags, p, self.parameters[p])
+
+                # ...or in any of its dependencies
+                elif p in ext_parameters:
+                    parameters[p] = ext_parameters[p]
+                    datatype = parameters[p]["datatype"]
+
+                else:
                     raise SyntaxError(
                         "Parameter '{}', requested by target '{}', was not found".format(
                             p, target.name
                         )
                     )
 
-                datatype = self.parameters[p].datatype
+                # Set default value
                 if len(plist) > 1:
-                    default = plist[1]
-                else:
-                    default = self.parameters[p].default
-                description = self.parameters[p].description
-                paramtype = self.parameters[p].paramtype.parse(flags)
+                    parameters[p]["default"] = _parse_param_value(
+                        p, parameters[p]["datatype"], plist[1]
+                    )
 
-                if not datatype in ["bool", "file", "int", "str"]:
-                    _s = "{} : Invalid datatype '{}' for parameter {}"
-                    raise SyntaxError(_s.format(self.name, datatype, p))
-
-                if not paramtype in [
-                    "cmdlinearg",
-                    "generic",
-                    "plusarg",
-                    "vlogdefine",
-                    "vlogparam",
-                ]:
-                    _s = "{} : Invalid paramtype '{}' for parameter {}"
-                    raise SyntaxError(_s.format(self.name, paramtype, p))
-                parameters[p] = {
-                    "datatype": str(self.parameters[p].datatype),
-                    "paramtype": paramtype,
-                }
-
-                if description:
-                    parameters[p]["description"] = str(description)
-
-                if default:
-                    if datatype == "bool":
-                        if default.lower() == "true":
-                            parameters[p]["default"] = True
-                        elif default.lower() == "false":
-                            parameters[p]["default"] = False
-                        else:
-                            _s = "{}: Invalid default value '{}' for bool parameter {}"
-                            raise SyntaxError(_s.format(self.name, default, p))
-                    elif datatype == "int":
-                        if type(default) == int:
-                            parameters[p]["default"] = default
-                        else:
-                            parameters[p]["default"] = int(default, 0)
-                    else:
-                        parameters[p]["default"] = str(default)
-        self._debug("Found parameters {}".format(parameters))
+            self._debug("Found parameters {}".format(parameters))
         return parameters
 
     def get_toplevel(self, flags):

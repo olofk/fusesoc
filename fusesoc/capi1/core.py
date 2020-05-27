@@ -180,7 +180,7 @@ class Core:
                 files += [vars(f) for f in fs.file]
         return files
 
-    def get_parameters(self, flags={}):
+    def get_parameters(self, flags={}, _parameters=None):
         self._debug("Getting parameters for flags '{}'".format(str(flags)))
         parameters = {}
         for k, v in self.parameter.items():
