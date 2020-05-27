@@ -1,8 +1,15 @@
-CAPI=1
-[main]
+CAPI=2:
 
-[fileset copyfiles]
-files =
- subdir/dummy.extra[copyto=copied.file,file_type=user]
- dummy.tcl[copyto=subdir/another.file]
-file_type = tclSource
+name : ::copytocore:0
+
+filesets:
+  copyfiles:
+    files:
+      - subdir/dummy.extra : {copyto : copied.file, file_type : user}
+      - dummy.tcl : {copyto : subdir/another.file}
+    file_type : tclSource
+
+targets:
+  default:
+    filesets : [copyfiles]
+    toplevel : na

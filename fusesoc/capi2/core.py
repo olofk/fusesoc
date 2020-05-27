@@ -199,7 +199,7 @@ class Core:
         if os.path.exists(dst_dir):
             shutil.rmtree(dst_dir)
 
-        src_files = [f.name for f in self.get_files(flags)]
+        src_files = [f["name"] for f in self.get_files(flags)]
 
         for k, v in self._get_vpi(flags).items():
             src_files += [
@@ -331,16 +331,11 @@ class Core:
         for f in src_files:
             pf = f.name.parse(flags)
             if pf:
-                _f = File(
-                    {
-                        pf: {
-                            "copyto": f.copyto,
-                            "file_type": f.file_type,
-                            "is_include_file": f.is_include_file,
-                            "logical_name": f.logical_name,
-                        }
-                    }
-                )
+                _f = {}
+                for k, v in vars(f).items():
+                    if v:
+                        _f[k] = v
+                _f["name"] = pf
                 _src_files.append(_f)
         return _src_files
 

@@ -170,24 +170,21 @@ class Edalizer:
 
             _files = []
             for file in core.get_files(_flags):
-                if file.copyto:
-                    _name = file.copyto
+                _f = file
+                if file.get("copyto"):
+                    _name = file["copyto"]
                     dst = os.path.join(self.work_root, _name)
                     _dstdir = os.path.dirname(dst)
                     if not os.path.exists(_dstdir):
                         os.makedirs(_dstdir)
-                    shutil.copy2(os.path.join(files_root, file.name), dst)
+                    shutil.copy2(os.path.join(files_root, file["name"]), dst)
+                    del _f["copyto"]
                 else:
-                    _name = os.path.join(rel_root, file.name)
-                _files.append(
-                    {
-                        "name": str(_name),
-                        "core": str(core.name),
-                        "file_type": file.file_type,
-                        "is_include_file": file.is_include_file,
-                        "logical_name": file.logical_name,
-                    }
-                )
+                    _name = os.path.join(rel_root, file["name"])
+                _f["name"] = str(_name)
+                _f["core"] = str(core.name)
+
+                _files.append(_f)
 
             snippet["files"] = _files
 

@@ -67,22 +67,22 @@ def test_capi2_append():
     flags = {"is_toplevel": True}
 
     flags["target"] = "no_fs_no_fsappend"
-    result = [x.name for x in core.get_files(flags)]
+    result = [x["name"] for x in core.get_files(flags)]
     expected = []
     assert expected == result
 
     flags["target"] = "no_fs_fsappend"
-    result = [x.name for x in core.get_files(flags)]
+    result = [x["name"] for x in core.get_files(flags)]
     expected = ["file3", "file4"]
     assert expected == result
 
     flags["target"] = "fs_no_fsappend"
-    result = [x.name for x in core.get_files(flags)]
+    result = [x["name"] for x in core.get_files(flags)]
     expected = ["file1", "file2"]
     assert expected == result
 
     flags["target"] = "fs_fsappend"
-    result = [x.name for x in core.get_files(flags)]
+    result = [x["name"] for x in core.get_files(flags)]
     expected = ["file1", "file2", "file3", "file4"]
     assert expected == result
 
@@ -128,58 +128,28 @@ def test_capi2_get_files():
 
     expected = [
         {
-            "is_include_file": False,
             "file_type": "vhdlSource",
-            "copyto": "",
             "logical_name": "overridden_logical_name",
             "name": "vlogfile",
         },
         {
-            "is_include_file": False,
             "file_type": "vhdlSource",
-            "copyto": "",
             "logical_name": "default_logical_name",
             "name": "vhdlfile",
         },
+        {"file_type": "user", "copyto": "copied.file", "name": "subdir/dummy.extra",},
         {
-            "is_include_file": False,
-            "file_type": "user",
-            "copyto": "copied.file",
-            "logical_name": "",
-            "name": "subdir/dummy.extra",
-        },
-        {
-            "is_include_file": False,
             "file_type": "tclSource",
             "copyto": "subdir/another.file",
-            "logical_name": "",
             "name": "dummy.tcl",
         },
-        {
-            "copyto": "",
-            "file_type": "verilogSource",
-            "is_include_file": True,
-            "logical_name": "",
-            "name": "vlogfile",
-        },
-        {
-            "copyto": "",
-            "file_type": "vhdlSource",
-            "is_include_file": False,
-            "logical_name": "",
-            "name": "vhdlfile",
-        },
-        {
-            "copyto": "",
-            "file_type": "user",
-            "is_include_file": False,
-            "logical_name": "",
-            "name": "pickthisfile",
-        },
+        {"file_type": "verilogSource", "is_include_file": True, "name": "vlogfile",},
+        {"file_type": "vhdlSource", "name": "vhdlfile",},
+        {"file_type": "user", "name": "pickthisfile",},
     ]
 
     flags = {"tool": "icarus"}
-    result = [vars(x) for x in core.get_files(flags)]
+    result = core.get_files(flags)
     assert expected == result
 
 

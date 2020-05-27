@@ -43,7 +43,7 @@ def test_deptree():
     ]
     files = []
     for d in deps:
-        files += [f.name for f in d.get_files({})]
+        files += [f["name"] for f in d.get_files({})]
 
     assert files == files_expected
 
@@ -84,19 +84,11 @@ def test_copyto():
     eda_api = edalizer.edalize
 
     assert eda_api["files"] == [
-        {
-            "file_type": "user",
-            "core": "::copytocore:0",
-            "logical_name": "",
-            "name": "copied.file",
-            "is_include_file": False,
-        },
+        {"file_type": "user", "core": "::copytocore:0", "name": "copied.file",},
         {
             "file_type": "tclSource",
             "core": "::copytocore:0",
-            "logical_name": "",
             "name": "subdir/another.file",
-            "is_include_file": False,
         },
     ]
     assert os.path.exists(os.path.join(work_root, "copied.file"))
