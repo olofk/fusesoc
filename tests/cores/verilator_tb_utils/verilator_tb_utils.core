@@ -1,4 +1,8 @@
 CAPI=1
+# Copyright FuseSoC contributors
+# Licensed under the 2-Clause BSD License, see LICENSE for details.
+# SPDX-License-Identifier: BSD-2-Clause
+
 [main]
 description = "Verilator test bench utility class"
 depend = elf-loader

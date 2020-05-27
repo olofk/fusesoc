@@ -1,4 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!--
+Copyright FuseSoC contributors
+Licensed under the 2-Clause BSD License, see LICENSE for details.
+SPDX-License-Identifier: BSD-2-Clause
+-->
 <ipxact:component xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ipxact="http://www.accellera.org/XMLSchema/IPXACT/1685-2014" xmlns:kactus2="http://kactus2.cs.tut.fi" xsi:schemaLocation="http://www.accellera.org/XMLSchema/IPXACT/1685-2014/ http://www.accellera.org/XMLSchema/IPXACT/1685-2014/index.xsd">
 	<ipxact:vendor>librecores.org</ipxact:vendor>
 	<ipxact:library>ip</ipxact:library>
