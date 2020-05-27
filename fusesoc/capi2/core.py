@@ -18,12 +18,14 @@ class File:
         self.copyto = ""
         self.file_type = ""
         self.is_include_file = False
+        self.include_path = None
         self.logical_name = ""
         if type(tree) is dict:
             for k, v in tree.items():
                 self.name = String(os.path.expandvars(k))
                 self.file_type = v.get("file_type", "")
                 self.is_include_file = v.get("is_include_file", False)
+                self.include_path = v.get("include_path")
                 self.copyto = v.get("copyto", "")
                 self.logical_name = v.get("logical_name", "")
         else:
@@ -903,6 +905,7 @@ A File object represents a physical file. It can be a simple string, with the pa
 Attribute       Type Description
 =============== ==== ===========
 is_include_file bool Treats file as an include file when true
+include_path    str  Explicitly set an include directory, relative to core root, instead of the directory containing the file
 file_type       str  File type. Overrides the file_type set on the containing fileset
 logical_name    str  Logical name, i.e. library for VHDL/SystemVerilog. Overrides the logical_name set on the containing fileset
 =============== ==== ===========

@@ -183,6 +183,8 @@ class Edalizer:
                     _name = os.path.join(rel_root, file["name"])
                 _f["name"] = str(_name)
                 _f["core"] = str(core.name)
+                if file.get("include_path"):
+                    _f["include_path"] = os.path.join(rel_root, file["include_path"])
 
                 _files.append(_f)
 
