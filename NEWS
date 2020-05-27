@@ -1,3 +1,22 @@
+1.11.0 2020-06-16 Olof Kindgren <olof.kindgren@gmail.com>
+======================================================
+* Remove python 2 support
+* Improved CI checks
+* Add CAPI2 support for setting include_path
+* Relicensed to 2-clause BSD license
+* Allow using parameters defined in dependencies
+* Support real (float) parameters
+
+* + improved error handling, bug fixes and refactoring
+
+Contributors:
+Anonymous
+Ben Reynwar <ben@reynwar.net>
+Jonathan Balkind <jbalkind@princeton.edu>
+Olof Kindgren <olof.kindgren@gmail.com>
+Philipp Wagner <philipp.wagner@tum.de>
+Rupert Swarbrick <rswarbrick@gmail.com>
+
 1.10 2020-03-04 Olof Kindgren <olof.kindgren@gmail.com>
 ======================================================
 * Write resolved dependency tree to EDAM structure
