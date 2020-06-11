@@ -194,6 +194,7 @@ class CoreManager:
     def find_cores(self, library):
         found_cores = []
         path = os.path.expanduser(library.location)
+        exclude = {".git"}
         if os.path.isdir(path) == False:
             raise OSError(path + " is not a directory")
         logger.debug("Checking for cores in " + path)
@@ -201,6 +202,7 @@ class CoreManager:
             if "FUSESOC_IGNORE" in files:
                 del dirs[:]
                 continue
+            dirs[:] = [directory for directory in dirs if directory not in exclude]
             for f in files:
                 if f.endswith(".core"):
                     core_file = os.path.join(root, f)
