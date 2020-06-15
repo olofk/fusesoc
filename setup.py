@@ -48,6 +48,9 @@ setup(
         "pyyaml",
         "simplesat>=0.8.0",
     ],
+    extras_require={
+        "dev": ["pre-commit", "pytest>=3.3.0", "Sphinx", "sphinx_rtd_theme"],
+    },
     # Supported Python versions: 3.5+
     python_requires=">=3.5, <4",
 )

@@ -30,14 +30,11 @@ In this mode, the ``fusesoc`` command is linked to the source directory, and cha
 
 .. code-block:: bash
 
-   # Install all Python packages required to develop fusesoc
-   pip3 install --user -r dev-requirements.txt
+   # Install the fusesoc package in editable mode with packages required to develop fusesoc
+   pip3 install --user -e .[dev]
 
    # Install Git pre-commit hooks, e.g. for the code formatter and lint tools
    pre-commit install
-
-   # Install the fusesoc package in editable mode
-   pip3 install --user -e .
 
 .. note::
 
