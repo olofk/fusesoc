@@ -32,9 +32,7 @@ class Launcher:
         logger.debug(self.cwd)
         logger.debug("    " + str(self))
         try:
-            subprocess.check_call(
-                map(str, [self.cmd] + self.args), cwd=self.cwd,
-            ),
+            subprocess.check_call(map(str, [self.cmd] + self.args), cwd=self.cwd,),
         except FileNotFoundError:
             raise RuntimeError(
                 "Command '" + self.cmd + "' not found. Make sure it is in $PATH"
