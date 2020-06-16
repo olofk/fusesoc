@@ -220,8 +220,7 @@ class Core:
 
         dirs = list(set(map(os.path.dirname, src_files)))
         for d in dirs:
-            if not os.path.exists(os.path.join(dst_dir, d)):
-                os.makedirs(os.path.join(dst_dir, d))
+            os.makedirs(os.path.join(dst_dir, d), exist_ok=True)
 
         for f in src_files:
             if not os.path.isabs(f):
