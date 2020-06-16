@@ -46,11 +46,14 @@ class Edalizer:
 
         self.generators = {}
 
-        self._generated_cores = []
+        self._resolved_or_generated_cores = []
 
     @property
     def cores(self):
-        return self.resolved_cores + self._generated_cores
+        if self._resolved_or_generated_cores:
+            return self._resolved_or_generated_cores
+        else:
+            return self.resolved_cores
 
     @property
     def resolved_cores(self):
@@ -129,10 +132,11 @@ class Edalizer:
 
     def run_generators(self):
         """ Run all generators """
+        self._resolved_or_generated_cores = []
         for core in self.cores:
             logger.debug("Running generators in " + str(core.name))
             core_flags = self._core_flags(core)
-
+            self._resolved_or_generated_cores.append(core)
             if hasattr(core, "get_ttptttg"):
                 for ttptttg_data in core.get_ttptttg(core_flags):
                     _ttptttg = Ttptttg(
@@ -142,7 +146,7 @@ class Edalizer:
                     )
                     for gen_core in _ttptttg.generate(self.cache_root):
                         gen_core.pos = _ttptttg.pos
-                        self._generated_cores.append(gen_core)
+                        self._resolved_or_generated_cores.append(gen_core)
 
     def create_eda_api_struct(self):
         first_snippets = []
