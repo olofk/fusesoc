@@ -412,7 +412,11 @@ def run_backend(
     if not os.path.exists(eda_api_file):
         do_configure = True
 
-    backend_class = get_edatool(tool)
+    try:
+        backend_class = get_edatool(tool)
+    except ImportError:
+        logger.error("Backend {!r} not found".format(tool))
+        exit(1)
 
     edalizer = Edalizer(
         toplevel=core.name,
@@ -445,11 +449,8 @@ def run_backend(
     # Frontend/backend separation
 
     try:
-        backend = get_edatool(tool)(edam=edam, work_root=work_root)
+        backend = backend_class(edam=edam, work_root=work_root)
 
-    except ImportError:
-        logger.error('Backend "{}" not found'.format(tool))
-        exit(1)
     except RuntimeError as e:
         logger.error(str(e))
         exit(1)
