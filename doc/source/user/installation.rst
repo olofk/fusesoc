@@ -58,9 +58,9 @@ System-wide installation
 FuseSoC can be installed for all users on a system.
 This operation typically requires root permissions.
 
-```command
-$ sudo pip3 install --upgrade fusesoc
-````
+.. code-block:: shell-session
+
+   $ sudo pip3 install --upgrade fusesoc
 
 Uninstalling FuseSoC
 ~~~~~~~~~~~~~~~~~~~~
