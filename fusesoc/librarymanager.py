@@ -11,7 +11,15 @@ logger = logging.getLogger(__name__)
 
 
 class Library:
-    def __init__(self, name, location, sync_type=None, sync_uri=None, auto_sync=True):
+    def __init__(
+        self,
+        name,
+        location,
+        sync_type=None,
+        sync_uri=None,
+        sync_version=None,
+        auto_sync=True,
+    ):
         if sync_type and not sync_type in ["local", "git"]:
             raise ValueError(
                 "Library {} ({}) Invalid sync-type '{}'".format(
@@ -31,6 +39,7 @@ class Library:
         self.location = location
         self.sync_type = sync_type or "local"
         self.sync_uri = sync_uri
+        self.sync_version = sync_version
         self.auto_sync = auto_sync
 
     def update(self, force=False):
