@@ -98,10 +98,8 @@ def add_library(cm, args):
     else:
         location = os.path.join("fusesoc_libraries", args.name)
 
-    if "sync-type" in vars(args):
-        sync_type = vars(args)["sync-type"]
-    else:
-        sync_type = None
+    sync_type = vars(args).get("sync-type")
+    sync_version = vars(args).get("sync-version")
 
     # Check if it's a dir. Otherwise fall back to git repo
     if not sync_type:
@@ -119,7 +117,7 @@ def add_library(cm, args):
         location = os.path.abspath(sync_uri)
 
     auto_sync = not args.no_auto_sync
-    library = Library(args.name, location, sync_type, sync_uri, auto_sync)
+    library = Library(args.name, location, sync_type, sync_uri, sync_version, auto_sync)
 
     if args.config:
         config = Config(args.config)
@@ -140,29 +138,32 @@ def add_library(cm, args):
 
 
 def library_list(cm, args):
-    lengths = [4, 8, 9, 8, 9]
+    lengths = [4, 8, 9, 8, 12, 9]
     for lib in cm.get_libraries():
         lengths[0] = max(lengths[0], len(lib.name))
         lengths[1] = max(lengths[1], len(lib.location))
         lengths[2] = max(lengths[2], len(lib.sync_type))
         lengths[3] = max(lengths[3], len(lib.sync_uri or ""))
+        lengths[4] = max(lengths[4], len(lib.sync_version))
     print(
-        "{} : {} : {} : {} : {}".format(
+        "{} : {} : {} : {} : {} : {}".format(
             "Name".ljust(lengths[0]),
             "Location".ljust(lengths[1]),
             "Sync type".ljust(lengths[2]),
             "Sync URI".ljust(lengths[3]),
-            "Auto sync".ljust(lengths[4]),
+            "Sync version".ljust(lengths[4]),
+            "Auto sync".ljust(lengths[5]),
         )
     )
     for lib in cm.get_libraries():
         print(
-            "{} : {} : {} : {} : {}".format(
+            "{} : {} : {} : {} : {} : {}".format(
                 lib.name.ljust(lengths[0]),
                 lib.location.ljust(lengths[1]),
                 lib.sync_type.ljust(lengths[2]),
                 (lib.sync_uri or "N/A").ljust(lengths[3]),
-                ("y" if lib.auto_sync else "n").ljust(lengths[4]),
+                (lib.sync_version or "(none)").ljust(lengths[4]),
+                ("y" if lib.auto_sync else "n").ljust(lengths[5]),
             )
         )
 
@@ -619,6 +620,11 @@ def get_parser():
         "sync-uri", help="The URI source for the library (can be a file system path)"
     )
     parser_library_add.add_argument(
+        "--sync-version",
+        help="Optionally specify the version of the library to use, for providers that support it",
+        dest="sync-version",
+    )
+    parser_library_add.add_argument(
         "--location",
         help="The location to store the library into (defaults to $XDG_DATA_HOME/[name])",
     )
@@ -626,6 +632,7 @@ def get_parser():
         "--sync-type",
         help="The provider type for the library. Defaults to 'git'.",
         choices=["git", "local"],
+        dest="sync-type",
     )
     parser_library_add.add_argument(
         "--no-auto-sync",

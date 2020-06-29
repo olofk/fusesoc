@@ -15,11 +15,24 @@ logger = logging.getLogger(__name__)
 
 class Git(Provider):
     @staticmethod
+    def _checkout_library_version(library):
+        git_args = ["-C", library.location, "checkout", "-q", library.sync_version]
+
+        if library.sync_version:
+            logger.info(
+                "Checkout out {} at version {}".format(
+                    library.name, library.sync_version
+                )
+            )
+            Launcher("git", git_args).run()
+
+    @staticmethod
     def init_library(library):
         logger.info(f"Cloning library into {library.location}")
         git_args = ["clone", library.sync_uri, library.location]
         try:
             Launcher("git", git_args).run()
+            Git._checkout_library_version(library)
         except subprocess.CalledProcessError as e:
             raise RuntimeError(str(e))
 
@@ -27,6 +40,7 @@ class Git(Provider):
     def update_library(library):
         git_args = ["-C", library.location, "pull"]
         try:
+            Git._checkout_library_version(library)
             Launcher("git", git_args).run()
         except subprocess.CalledProcessError as e:
             raise RuntimeError(str(e))

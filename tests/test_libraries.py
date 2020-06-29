@@ -127,6 +127,32 @@ auto-sync = true"""
         in caplog.text
     )
 
+    tcf = tempfile.NamedTemporaryFile(mode="w+")
+    args.config = tcf.name
+
+    vars(args)["sync-type"] = "git"
+    vars(args)["sync-uri"] = sync_uri
+    vars(args)["sync-version"] = "capi2"
+    args.location = None
+
+    expected = """[library.fusesoc-cores]
+location = fusesoc_libraries/fusesoc-cores
+sync-uri = https://github.com/fusesoc/fusesoc-cores
+sync-version = capi2
+sync-type = git
+auto-sync = true""".format(
+        cm._lm.library_root
+    )
+
+    add_library(cm, args)
+
+    tcf.seek(0)
+    result = tcf.read().strip()
+
+    assert expected == result
+    shutil.rmtree("fusesoc_libraries")
+    tcf.close()
+
 
 def test_library_update(caplog):
     from fusesoc.main import init_coremanager, init_logging, update

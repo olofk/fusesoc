@@ -63,18 +63,13 @@ class Config:
                 logger.warning(_s.format(str(e), name))
                 continue
 
-            try:
-                sync_uri = config.get(section, "sync-uri")
-            except configparser.NoOptionError:
-                # sync-uri is absent for local libraries
-                sync_uri = None
+            sync_uri = config.get(section, "sync-uri", fallback=None)
+            sync_version = config.get(section, "sync-version", fallback=None)
+            sync_type = config.get(section, "sync-type", fallback=None)
 
-            try:
-                sync_type = config.get(section, "sync-type")
-            except configparser.NoOptionError:
-                # sync-uri is absent for local libraries
-                sync_type = None
-            libraries.append(Library(name, location, sync_type, sync_uri, auto_sync))
+            libraries.append(
+                Library(name, location, sync_type, sync_uri, sync_version, auto_sync)
+            )
         # Get the environment variable for further cores
         env_cores_root = []
         if os.getenv("FUSESOC_CORES"):
@@ -162,6 +157,10 @@ class Config:
 
         if library.sync_type:
             config.set(section_name, "sync-uri", library.sync_uri)
+
+            if library.sync_version is not None:
+                config.set(section_name, "sync-version", library.sync_version)
+
             config.set(section_name, "sync-type", library.sync_type)
             _auto_sync = "true" if library.auto_sync else "false"
             config.set(section_name, "auto-sync", _auto_sync)

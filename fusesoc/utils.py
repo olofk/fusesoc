@@ -27,7 +27,7 @@ class Launcher:
 
     def run(self):
         """Runs the cmd with args after converting them all to strings via str"""
-        logger.debug(self.cwd)
+        logger.debug(self.cwd or "./")
         logger.debug("    " + str(self))
         try:
             subprocess.check_call(
