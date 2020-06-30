@@ -115,9 +115,9 @@ class Config:
                 logger.warning(_s.format(str(e), name))
                 continue
 
-            sync_uri = config.get(section, "sync-uri", None)
-            sync_version = config.get(section, "sync-version", None)
-            sync_type = config.get(section, "sync-type", None)
+            sync_uri = config.get(section, "sync-uri", fallback=None)
+            sync_version = config.get(section, "sync-version", fallback=None)
+            sync_type = config.get(section, "sync-type", fallback=None)
 
             libraries.append(
                 Library(name, location, sync_type, sync_uri, sync_version, auto_sync)
