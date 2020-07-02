@@ -5,14 +5,17 @@
 # FIXME: Add IP-XACT support
 import logging
 import os
-from pyparsing import Forward, OneOrMore, Optional, Suppress, Word, alphanums
 import shutil
 import yaml
 
 from fusesoc import utils
 from fusesoc.provider import get_provider
 from fusesoc.vlnv import Vlnv
+
+from fusesoc.capi2.exprs import Exprs
+
 from edalize import get_edatools
+
 
 logger = logging.getLogger(__name__)
 
@@ -42,39 +45,13 @@ class Genparams(dict):
 
 
 class String(str):
+    def __init__(self, string):
+        self.exprs = None
+
     def parse(self, flags):
-        _flags = []
-        for k, v in flags.items():
-            if v == True:
-                _flags.append(k)
-            elif v in [False, None]:
-                pass
-            else:
-                _flags.append(k + "_" + v)
-
-        def cb_conditional(s, l, t):
-            if (t.cond in _flags) != (t.negate == "!"):
-                return t.expr
-            else:
-                return []
-
-        word = Word(alphanums + ":<>.[]_-,=~/^~")
-        conditional = Forward()
-        conditional << (
-            Optional("!")("negate")
-            + word("cond")
-            + Suppress("?")
-            + Suppress("(")
-            + OneOrMore(conditional ^ word)("expr")
-            + Suppress(")")
-        ).setParseAction(cb_conditional)
-        string = word
-        string_list = OneOrMore(conditional ^ string)
-        s = " ".join(string_list.parseString(self.__str__()))
-        logger.debug(
-            "Parsing '{}' with flags {} => {}".format(self.__str__(), str(_flags), s)
-        )
-        return s
+        if self.exprs is None:
+            self.exprs = Exprs(str(self))
+        return self.exprs.expand(flags)
 
 
 class StringOrList:
