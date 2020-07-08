@@ -16,14 +16,14 @@ filesets:
     files:
       - "root-fs1-f1.sv"
       - "root-fs1-f2.sv"
-    fileType: systemVerilogSource
+    file_type: systemVerilogSource
   fs2:
     depend:
       - ::deptree-child3
     files:
       - "root-fs2-f1.sv"
       - "root-fs2-f2.sv"
-    fileType: systemVerilogSource
+    file_type: systemVerilogSource
 
 targets:
   default:

@@ -10,7 +10,7 @@ filesets:
     files:
       - "child2-fs1-f1.sv"
       - "child2-fs1-f2.sv"
-    fileType: systemVerilogSource
+    file_type: systemVerilogSource
 
 targets:
   default:
