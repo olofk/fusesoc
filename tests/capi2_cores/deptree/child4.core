@@ -1,0 +1,17 @@
+CAPI=2:
+# Copyright FuseSoC contributors
+# Licensed under the 2-Clause BSD License, see LICENSE for details.
+# SPDX-License-Identifier: BSD-2-Clause
+
+name: ::deptree-child4
+
+filesets:
+  fs1:
+    files:
+      - "child4.sv"
+    file_type: systemVerilogSource
+
+targets:
+  default:
+    filesets:
+      - fs1
