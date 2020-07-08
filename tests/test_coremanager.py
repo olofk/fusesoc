@@ -5,12 +5,15 @@
 import pytest
 
 
-def test_deptree():
+def test_deptree(tmp_path):
+    import os
     from fusesoc.coremanager import CoreManager
     from fusesoc.config import Config
     from fusesoc.librarymanager import Library
     from fusesoc.vlnv import Vlnv
-    import os
+    from fusesoc.edalizer import Edalizer
+
+    flags = {"tool": "icarus"}
 
     tests_dir = os.path.dirname(__file__)
     deptree_cores_dir = os.path.join(tests_dir, "capi2_cores", "deptree")
@@ -21,35 +24,96 @@ def test_deptree():
 
     root_core = cm.get_core(Vlnv("::deptree-root"))
 
-    # Check dependency tree
+    # This is an array of (child, parent) core name tuples and
+    # is used for checking that the flattened list of core
+    # names is consistent with the dependencies.
+    dependencies = (
+        # Dependencies of the root core
+        ("::deptree-child3:0", "::deptree-root:0"),
+        ("::deptree-child2:0", "::deptree-root:0"),
+        ("::deptree-child1:0", "::deptree-root:0"),
+        ("::deptree-child-a:0", "::deptree-root:0"),
+        # Dependencies of child1 core
+        ("::deptree-child3:0", "::deptree-child1:0"),
+        # Dependencies of child-a core
+        ("::deptree-child4:0", "::deptree-child-a:0"),
+    )
+
+    # The ordered files that we expect from each core.
+    expected_core_files = {
+        "::deptree-child3:0": (
+            "child3-fs1-f1.sv",
+            "child3-fs1-f2.sv",
+        ),
+        "::deptree-child2:0": (
+            "child2-fs1-f1.sv",
+            "child2-fs1-f2.sv",
+        ),
+        "::deptree-child1:0": (
+            "child1-fs1-f1.sv",
+            "child1-fs1-f2.sv",
+        ),
+        "::deptree-child4:0": ("child4.sv",),
+        "::deptree-child-a:0": (
+            # Files from filesets are always included before any
+            # files from generators.
+            # This is because generated files are often dependent on files
+            # that are not generated, and it convenient to be able to
+            # include them in the same core.
+            "child-a2.sv",
+            "generated-child-a.sv",
+        ),
+        "::deptree-root:0": (
+            "root-fs1-f1.sv",
+            "root-fs1-f2.sv",
+            "root-fs2-f1.sv",
+            "root-fs2-f2.sv",
+        ),
+    }
+
+    # Use Edalizer to get the files.
+    # This is necessary because we need to run generators.
+    work_root = str(tmp_path / "work")
+    cache_root = str(tmp_path / "cache")
+    os.mkdir(work_root)
+    os.mkdir(cache_root)
+    edalizer = Edalizer(
+        toplevel=root_core.name,
+        flags=flags,
+        cache_root=cache_root,
+        work_root=work_root,
+        core_manager=cm,
+    )
+    edalizer.run()
+
+    # Check dependency tree (after running all generators)
     deps = cm.get_depends(root_core.name, {})
     deps_names = [str(c) for c in deps]
-    deps_names_expected = [
-        "::deptree-child2:0",
-        "::deptree-child3:0",
-        "::deptree-child1:0",
-        "::deptree-root:0",
-    ]
-    assert deps_names == deps_names_expected
 
-    # Check files in dependency tree
-    files_expected = [
-        "child2-fs1-f1.sv",
-        "child2-fs1-f2.sv",
-        "child3-fs1-f1.sv",
-        "child3-fs1-f2.sv",
-        "child1-fs1-f1.sv",
-        "child1-fs1-f2.sv",
-        "root-fs1-f1.sv",
-        "root-fs1-f2.sv",
-        "root-fs2-f1.sv",
-        "root-fs2-f2.sv",
-    ]
-    files = []
-    for d in deps:
-        files += [f["name"] for f in d.get_files({})]
+    all_core_names = set()
+    for child, parent in dependencies:
+        assert child in deps_names
+        assert parent in deps_names
+        all_core_names.add(child)
+        all_core_names.add(parent)
+    # Confirm that we don't have any extra or missing core names.
+    assert all_core_names == set(deps_names)
+    # Make sure there are no repeats in deps_names
+    assert len(all_core_names) == len(deps_names)
 
-    assert files == files_expected
+    # Now work out what order we expect to get the filenames.
+    # The order of filenames within each core in deterministic.
+    # Each fileset in order. Followed by each generator in order.
+    # The order between the cores is taken the above `dep_names`.
+    expected_filenames = []
+    for dep_name in deps_names:
+        expected_filenames += list(expected_core_files[dep_name])
+
+    edalized_filenames = [
+        os.path.basename(f["name"]) for f in edalizer.edalize["files"]
+    ]
+
+    assert edalized_filenames == expected_filenames
 
 
 def test_copyto():

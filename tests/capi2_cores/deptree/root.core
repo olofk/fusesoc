@@ -8,8 +8,10 @@ name: ::deptree-root
 filesets:
   fs1:
     depend:
-      # Child 3 is also included from child1; having it listed first here should
-      # ensure that the files from child3 appear before the files from child2.
+      # Child 3 is also included from child 1.
+      # The only effect of that, is that we would expect the child 3 files
+      # always to be included before the child 1 files.
+      - ::deptree-child-a
       - ::deptree-child3
       - ::deptree-child2
       - ::deptree-child1
@@ -30,3 +32,5 @@ targets:
     filesets:
       - fs1
       - fs2
+    toplevel:
+      - root
