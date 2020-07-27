@@ -6,6 +6,7 @@ import subprocess
 import logging
 import sys
 import importlib
+import warnings
 
 import yaml
 
@@ -106,6 +107,22 @@ def setup_logging(level, monchrome=False, log_file=None):
     if log_file:
         logging.basicConfig(filename=log_file, filemode="w", level=logging.DEBUG)
 
+    # Redirect Python warnings (from the warnings module) to the standard
+    # logging infrastructure. Warnings end up in the py.warnings category.
+    logging.captureWarnings(True)
+
+    def _formatwarning(message, category, filename, lineno, line=None):
+        # Format FutureWarnings, which are intended for end users, in a way
+        # that strips out all code references, which are meaningless to an end
+        # user.
+        if category == FutureWarning:
+            return message
+
+        return _formatwarning_orig(message, category, filename, lineno, line)
+
+    _formatwarning_orig = warnings.formatwarning
+    warnings.formatwarning = _formatwarning
+
     # Pretty color terminal logging
     ch = logging.StreamHandler()
     ch.setLevel(logging.DEBUG)
@@ -116,6 +133,7 @@ def setup_logging(level, monchrome=False, log_file=None):
         "__main__",
         "fusesoc",
         "edalize",
+        "py.warnings",
     )
     for package in packages:
         logger = logging.getLogger(package)
