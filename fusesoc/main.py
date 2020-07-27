@@ -8,6 +8,7 @@ import os
 import subprocess
 import sys
 import signal
+import warnings
 
 from fusesoc import __version__
 
@@ -96,6 +97,12 @@ def build(cm, args):
 
 
 def pgm(cm, args):
+    warnings.warn(
+        "The 'pgm' subcommand is deprecated and will be removed in the next "
+        "release. Use 'fusesoc run --target=synth --run' instead.",
+        FutureWarning,
+    )
+
     do_configure = False
     do_build = False
     do_run = True
@@ -611,7 +618,8 @@ def parse_args():
 
     # pgm subparser
     parser_pgm = subparsers.add_parser(
-        "pgm", help="Program an FPGA with a system configuration"
+        "pgm",
+        help="Program an FPGA with a system configuration. DEPRECATED, use 'run' instead.",
     )
     parser_pgm.add_argument("system")
     parser_pgm.add_argument("backendargs", nargs=argparse.REMAINDER)
