@@ -68,34 +68,6 @@ def abort_handler(signal, frame):
 signal.signal(signal.SIGINT, abort_handler)
 
 
-def build(cm, args):
-    logger.warning(
-        "''build'' command is deprecated as it was intended to be used with CAPI1 format.\n"
-        "         It will be removed soon, so please use ''run'' command instead."
-    )
-
-    do_configure = True
-    do_build = not args.setup
-    do_run = False
-    if not args.target:
-        target = "synth"
-    else:
-        target = args.target
-    flags = {"target": target, "tool": args.tool}
-    run_backend(
-        cm,
-        not args.no_export,
-        do_configure,
-        do_build,
-        do_run,
-        flags,
-        None,
-        args.system,
-        args.backendargs,
-        None,
-    )
-
-
 def pgm(cm, args):
     warnings.warn(
         "The 'pgm' subcommand is deprecated and will be removed in the next "
@@ -489,36 +461,6 @@ def run_backend(
             exit(1)
 
 
-def sim(cm, args):
-    logger.warning(
-        "''sim'' command is deprecated as it was intended to be used with CAPI1 format.\n"
-        "         It will be removed soon, so please use ''run'' command instead."
-    )
-
-    do_configure = not args.keep
-    do_build = not (args.setup or args.keep)
-    do_run = not (args.build_only or args.setup)
-
-    flags = {
-        "flow": "sim",
-        "tool": args.sim,
-        "target": "sim",
-        "testbench": args.testbench,
-    }
-    run_backend(
-        cm,
-        not args.no_export,
-        do_configure,
-        do_build,
-        do_run,
-        flags,
-        None,
-        args.system,
-        args.backendargs,
-        None,
-    )
-
-
 def update(cm, args):
     if "warn" in args:
         logger.warning(args.warn)
@@ -588,24 +530,6 @@ def parse_args():
     )
     parser.add_argument("--verbose", help="More info messages", action="store_true")
     parser.add_argument("--log-file", help="Write log messages to file")
-
-    # build subparser
-    parser_build = subparsers.add_parser("build", help="Build an FPGA load module")
-    parser_build.add_argument(
-        "--no-export",
-        action="store_true",
-        help="Reference source files from their current location instead of exporting to a build tree",
-    )
-    parser_build.add_argument(
-        "--setup",
-        action="store_true",
-        help="Only create the project files without running the EDA tool",
-    )
-    parser_build.add_argument("--target", help="Override default target")
-    parser_build.add_argument("--tool", help="Override default tool for target")
-    parser_build.add_argument("system")
-    parser_build.add_argument("backendargs", nargs=argparse.REMAINDER)
-    parser_build.set_defaults(func=build)
 
     # init subparser
     parser_init = subparsers.add_parser(
@@ -767,42 +691,6 @@ def parse_args():
         "backendargs", nargs=argparse.REMAINDER, help="arguments to be sent to backend"
     )
     parser_run.set_defaults(func=run)
-
-    # sim subparser
-    parser_sim = subparsers.add_parser("sim", help="Setup and run a simulation")
-    parser_sim.add_argument(
-        "--no-export",
-        action="store_true",
-        help="Reference source files from their current location instead of exporting to a build tree",
-    )
-    parser_sim.add_argument(
-        "--sim", help="Override the simulator settings from the system file"
-    )
-    parser_sim.add_argument(
-        "--setup",
-        action="store_true",
-        help="Only create the project files without running the EDA tool",
-    )
-    parser_sim.add_argument(
-        "--build-only",
-        action="store_true",
-        help="Build the simulation binary without running the simulator",
-    )
-    parser_sim.add_argument(
-        "--force",
-        action="store_true",
-        help="Force rebuilding simulation model when directory exists",
-    )
-    parser_sim.add_argument(
-        "--keep",
-        action="store_true",
-        help="Prevent rebuilding simulation model if it exists",
-    )
-    parser_sim.add_argument("--target", help="Override default target")
-    parser_sim.add_argument("--testbench", help="Override default testbench")
-    parser_sim.add_argument("system", help="Select a system to simulate")
-    parser_sim.add_argument("backendargs", nargs=argparse.REMAINDER)
-    parser_sim.set_defaults(func=sim)
 
     # update subparser
     parser_update = subparsers.add_parser(
