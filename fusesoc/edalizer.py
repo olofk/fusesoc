@@ -402,7 +402,7 @@ class Ttptttg:
 
         args = [
             os.path.join(os.path.abspath(self.generator.root), self.generator.command),
-            generator_input_file,
+            os.path.abspath(generator_input_file),
         ]
 
         if self.generator.interpreter:
