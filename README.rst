@@ -43,8 +43,8 @@ Its main purpose is to increase reuse of IP (Intellectual Property) cores and be
 
 Read more in the online_ documentation, or get straight into business with the quick start below
 
-Quick start
------------
+Getting started
+---------------
 
 Install latest stable version:
 
@@ -52,7 +52,7 @@ Install latest stable version:
 
    sudo pip install fusesoc
 
-Install latest development version from git:
+or install latest development version from git:
 
 ::
 
@@ -60,45 +60,72 @@ Install latest development version from git:
    cd fusesoc
    sudo pip install -e .
 
-FuseSoC should now be installed. Next step is to download the standard IP core libraries, which contain over 100 Open Source IP cores.
+FuseSoC should now be installed and ready to use. Next step is to add some cores to use with FuseSoC. FuseSoC itself doesn't come with any cores but there is a `FuseSoC base library`_ with a lot of useful cores. In addition to that, many projects such as OpenTitan_, SweRVolf_ and OpenPiton_ provide their own core libraries.
 
-*FuseSoC is currently in a transition phase and will prompt for the old standard library (* orpsoc-cores_ *) in addition to the new one (* fusesoc-cores_ *)*
+If you have one of the supported simulators installed, and want to do a quick check to see that it's working, follow the steps below, or look at the tutorial_ in the online_ documentation for a more thorough introduction.
+
+Quick start
+^^^^^^^^^^^
+
+Create and enter an empty workspace
 
 ::
 
-   fusesoc init
+   mkdir workspace
+   cd workspace
 
-Test your installation by running ``fusesoc list-cores``. This should return the list of cores that FuseSoC has found.
+Install the FuseSoc base library into the workspace
+
+::
+
+   fusesoc library add fusesoc-cores https://github.com/fusesoc/fusesoc-cores
+
+Get a list of cores found in the workspace
+
+::
+
+   fusesoc core list
 
 If you have any of the supported simulators installed, you can try to run a simulation on one of the cores as well.
-For example, ``fusesoc sim --sim=icarus wb_sdram_ctrl`` will run a regression test on the core wb_sdram_ctrl with icarus verilog.
-If you also have Altera Quartus installed, you can try to build an example system - for example, ``fusesoc build de0_nano``.
+For example, ``fusesoc run --target=sim i2c`` will run a regression test on the core i2c with icarus verilog. If you want to try another simulator instead, add e.g. ``--tool=modelsim`` or ``--tool=xcelium`` between `run` and `i2c`.
 
 ``fusesoc --help`` will give you more information on commands and switches.
 
-Did it work? Great! Check out the online_ documentation to learn more about creating your own core files and using existing ones. If it didn't work, please file a `bug report`_
+Did it work? Great! FuseSoC can be used to create FPGA images, perform linting, manage your IP libraries or do formal verification as well. Check out the online_ documentation and tutorial_ to learn more about creating your own core files and using existing ones. If it didn't work, please `get in touch`_
 
+Next steps
+----------
 
-Documentation
--------------
+A good way to get your first hands-on experience with FuseSoC is to contribute to the `LED to Believe`_ project. This project aims to used FuseSoC to blink a LED on every available FPGA development board in existence. There are already around 40 different boards supported. If you're board is already supported, great, then you can run your first FuseSoC-based design. If it's not supported, great, you now have the chance to add it to the list of supported boards. Either way, head over to `LED to Believe`_ to learn more and see how to go from a blinking LED to running a RISC-V core on an FPGA.
 
-The current documentation can be viewed online_.
+.. _`get in touch`:
 
-An effort to update the documentation is in progress. To check this new
-documentation, run ``cd doc && make html`` from the repo root.
+Need help?
+----------
+
+The online_ documentation contains a tutorial_ as well as information for users and developers of cores, or FuseSoC itself. For some quick communication with the active developers, feel free to join us at the `FuseSoC chat`_. If you have found an issue, or want to know more about currently known problems, check out the `issue tracker`_.
+
+If you are looking for professional paid support, we are happy to provide feature additions, bug fixes, user training, setting up core libraries, migrating existing designs to FuseSoC and other things.
+
+Please contact olof.kindgren@gmail.com for more info
 
 Further reading
 ---------------
-A few tutorials using FuseSoC are available, but they are unfortunately all written before FuseSoC was renamed from orpsocv3:
 
-http://web.archive.org/web/20150208222518/http://elec4fun.fr/2011-03-30-10-16-30/2012-08-22-20-50-31/or1200-barebox-on-de1
+- A Scalable Approach to IP Management with FuseSoC paper and slides from OSDA 2019 https://osda.gitlab.io/19/kindgren.pdf https://osda.gitlab.io/19/kindgren-slides.pdf
+- Antmicro blog post on how to use FuseSoC as a linter https://antmicro.com/blog/2020/04/systemverilog-linter-and-formatter-in-fusesoc/
+- FuseSoC-related posts on the Tales from Beyond the Register Map blog http://olofkindgren.blogspot.com/search/label/FuseSoC
+- Presentation from Latch-Up Portland 2019 https://www.youtube.com/watch?v=7eWRAOK9mns
+- Presentation from WOSH 2019 https://www.youtube.com/watch?v=HOFYplIBSWM
+- Presentation from ORConf 2017 https://www.youtube.com/watch?v=iPpT9k_H67k
+- Presentation from ORConf 2016 https://www.youtube.com/watch?v=pKlJWe_HKPM
 
-http://www.rs-online.com/designspark/electronics/eng/blog/booting-linux-on-a-de0-nano-with-orpsoc
-
-There is also some FuseSoC-related articles and extended release information on my blog_
-
-.. _blog: https://olofkindgren.blogspot.com/search/label/FuseSoC
+.. _tutorial: https://fusesoc.readthedocs.io/en/latest/user/tutorials/index.html
 .. _online: https://fusesoc.readthedocs.io/en/latest/index.html
-.. _orpsoc-cores: https://github.com/openrisc/orpsoc-cores
-.. _fusesoc-cores: https://github.com/fusesoc/fusesoc-cores
-.. _`bug report`: https://github.com/olofk/fusesoc/issues
+.. _`FuseSoC base library`: https://github.com/fusesoc/fusesoc-cores
+.. _`issue tracker`: https://github.com/olofk/fusesoc/issues
+.. _OpenTitan: https://github.com/lowRISC/opentitan
+.. _SweRVolf: https://github.com/chipsalliance/Cores-SweRVolf
+.. _OpenPiton: https://github.com/PrincetonUniversity/openpiton
+.. _`LED to Believe`: https://github.com/fusesoc/blinky
+.. _`FuseSoC chat`: https://gitter.im/librecores/fusesoc
