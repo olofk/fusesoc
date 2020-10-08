@@ -440,6 +440,12 @@ def test_capi2_get_ttptttg():
             "pos": "append",
             "config": {"param1": "a param", "param2": ["list", "of", "stuff"]},
         },
+        {
+            "name": "testgenerate_with_override",
+            "generator": "generator1",
+            "pos": "append",
+            "config": {"the_value": 138},
+        },
     ]
     assert expected == core.get_ttptttg(flags)
 

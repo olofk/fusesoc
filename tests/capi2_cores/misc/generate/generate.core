@@ -14,7 +14,7 @@ targets:
   default:
     filesets :
       - default
-    generate : [testgenerate_without_params, testgenerate_with_params]
+    generate : [testgenerate_without_params, testgenerate_with_params, testgenerate_with_override : {the_value : 138}]
     toplevel : na
 
   nogenerate: {generate : []}
@@ -31,3 +31,8 @@ generate:
     parameters:
       param1 : a param
       param2: [list, of, stuff]
+
+  testgenerate_with_override:
+    generator: generator1
+    parameters:
+      the_value : 1234

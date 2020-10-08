@@ -62,6 +62,17 @@ class StringOrList:
             return [String(args[0])]
 
 
+class StringOrDict:
+    def __init__(self, tree):
+        self.params = {}
+        if type(tree) is dict:
+            for k, v in tree.items():
+                self.params = v
+                self.name = String(os.path.expandvars(k))
+        else:
+            self.name = String(os.path.expandvars(tree))
+
+
 class Section:
     members = {}
     lists = {}
@@ -448,22 +459,30 @@ class Core:
         if not target:
             return ttptttg
 
-        _ttptttg = self._parse_list(flags, target.generate)
+        _ttptttg = []
+        for f in target.generate:
+            pf = f.name.parse(flags)
+            # f.name might end up empty after parse. In that case, we ignore it
+            if pf:
+                _ttptttg.append({"name": pf, "params": f.params})
+
         if _ttptttg:
             self._debug(" Matched generator instances {}".format(_ttptttg))
         for gen in _ttptttg:
-            if not gen in self.generate:
+            gen_name = gen["name"]
+            if not gen_name in self.generate:
                 raise SyntaxError(
                     "Generator instance '{}', requested by target '{}', was not found".format(
-                        gen, target.name
+                        gen_name, target.name
                     )
                 )
-            params = self.generate[gen].parameters or {}
+            gen_inst = self.generate[gen_name]
+            params = utils.merge_dict(gen_inst.parameters or {}, gen["params"])
             t = {
-                "name": gen,
-                "generator": str(self.generate[gen].generator),
+                "name": gen_name,
+                "generator": str(gen_inst.generator),
                 "config": dict(params),
-                "pos": str(self.generate[gen].position or "append"),
+                "pos": str(self.generate[gen_name].position or "append"),
             }
             ttptttg.append(t)
         return ttptttg
@@ -734,8 +753,8 @@ Target:
       type : String
       desc : File sets to use in target
     - name : generate
-      type : String
-      desc : Parameterized generators to run for this target
+      type : StringOrDict
+      desc : Parameterized generators to run for this target with optional parametrization
     - name : parameters
       type : String
       desc : Parameters to use in target. The parameter default value can be set here with ``param=value``
