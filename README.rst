@@ -7,6 +7,9 @@ FuseSoC
 .. image:: https://ci.appveyor.com/api/projects/status/bg3tutcube9x0fgs/branch/master?svg=true
     :target: https://ci.appveyor.com/project/olofk/fusesoc/branch/master
 
+.. image:: https://img.shields.io/pypi/dm/fusesoc.svg?label=PyPI%20downloads
+    :target: https://pypi.org/project/fusesoc/
+
 Introduction
 ------------
 FuseSoC is an award-winning package manager and a set of build tools for HDL (Hardware Description Language) code.
