@@ -1,0 +1,40 @@
+CAPI=2:
+name: fusesoc:examples:dualblinky:1.0.0
+description: DualBlinky, a FuseSoC example with dependencies
+
+filesets:
+  rtl:
+    files:
+      - rtl/dualblinky.sv
+    file_type: systemVerilogSource
+    depend:
+      - fusesoc:examples:blinky
+
+  nexys_video:
+    files:
+      - data/nexys_video.xdc:
+          file_type: xdc
+
+targets:
+  default: &default
+    filesets:
+      - rtl
+    toplevel: dualblinky
+
+  synth:
+    <<: *default
+    description: Synthesize the design for a Nexys Video FPGA board
+    default_tool: vivado
+    filesets_append:
+      - nexys_video
+    tools:
+      vivado:
+        part: xc7a200tsbg484-1
+    parameters:
+      clk_freq_hz: 100000000
+
+parameters:
+  clk_freq_hz:
+    datatype: int
+    description: Frequency of the board clock, in Hz
+    paramtype: vlogparam
