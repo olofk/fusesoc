@@ -92,7 +92,7 @@ class CoreDB:
         self._solver_cache = {}
 
     def _hash_flags_dict(self, flags):
-        """ Hash the flags dict.
+        """Hash the flags dict.
 
         Python's mutable sequences, like dict, are not generally hashable. For
         the dict we're using for the flags, we can simply implement hashing
@@ -239,7 +239,7 @@ class CoreManager:
         return self._lm.get_libraries()
 
     def get_depends(self, core, flags):
-        """ Get an ordered list of all dependencies of a core
+        """Get an ordered list of all dependencies of a core
 
         All direct and indirect dependencies are resolved into a dependency
         tree, the tree is flattened, and an ordered list of dependencies is

@@ -2,7 +2,7 @@
 # formatters, linters, and other productivity tools before a commit.
 repos:
 - repo: https://github.com/pre-commit/pre-commit-hooks
-  rev: v2.5.0
+  rev: v3.3.0
   hooks:
   - id: check-ast
   - id: check-builtin-literals
@@ -19,11 +19,11 @@ repos:
     # Test golden references
     exclude: ^tests/(.+\.(info|patch)|test_provider/.+\.v)
 - repo: https://github.com/psf/black
-  rev: 19.10b0
+  rev: 20.8b1
   hooks:
   - id: black
 - repo: https://github.com/asottile/pyupgrade
-  rev: v2.1.0
+  rev: v2.7.4
   hooks:
   - id: pyupgrade
     # for now don't force to change from %-operator to {}
