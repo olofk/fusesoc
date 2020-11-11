@@ -916,8 +916,11 @@ _generate_classes(capi2_data, Section)
 
 def gen_doc():
     c = capi2_data.copy()
-    s = """CAPI2
-=====
+    s = """.. _ref_capi2:
+
+***************
+CAPI2 Reference
+***************
 
 CAPI2 (Core API version 2) describes the properties of a core as a YAML data structure.
 

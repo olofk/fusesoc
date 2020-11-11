@@ -9,3 +9,4 @@ FuseSoC Reference Manual
    capi2.rst
    capi1.rst
    migrations.rst
+   glossary.rst

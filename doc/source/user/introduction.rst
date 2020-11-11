@@ -1,5 +1,6 @@
-Introduction
-------------
+************
+Why FuseSoC?
+************
 
 FuseSoC is an award-winning package manager and a set of build tools for HDL (Hardware Description Language) code.
 

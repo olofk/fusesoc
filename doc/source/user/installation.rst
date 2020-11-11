@@ -1,20 +1,23 @@
-Installation
-============
+.. _ug_installation:
+
+******************
+Installing FuseSoC
+******************
 
 FuseSoC is written in Python and runs on all major operating systems.
 
 System Requirements
--------------------
+===================
 
 Before installing FuseSoC check your system requirements.
 
 - Operating System: Linux, Windows, macOS
 - Python 3.5 or newer.
-  (The last version supporting Python 2.7 is 1.10.)
+  (The last version supporting Python 2.7 is FuseSoC 1.10.)
 - The Python packages ``setuptools`` and ``pip`` need to be installed for Python 3.
 
-Installing FuseSoC under Linux
-------------------------------
+Installation under Linux
+========================
 
 .. note::
 
@@ -31,7 +34,7 @@ FuseSoC, like all Python packages, can be installed for the current user, or sys
 The system-wide installation typically requires root permissions.
 
 Installation for the current user
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+---------------------------------
 
 To install the current stable version of FuseSoC for the current user, open a terminal window and run the following command.
 If an older version of FuseSoC is found, this version is upgraded to the latest stable release.
@@ -53,7 +56,7 @@ If the terminal reports an error about the command not being found check that th
 
 
 System-wide installation
-~~~~~~~~~~~~~~~~~~~~~~~~
+------------------------
 
 FuseSoC can be installed for all users on a system.
 This operation typically requires root permissions.
@@ -63,7 +66,7 @@ This operation typically requires root permissions.
    $ sudo pip3 install --upgrade fusesoc
 
 Uninstalling FuseSoC
-~~~~~~~~~~~~~~~~~~~~
+--------------------
 
 Use ``pip`` to remove FuseSoC from your system.
 
@@ -73,7 +76,7 @@ Use ``pip`` to remove FuseSoC from your system.
 
 
 Installation under Windows
---------------------------
+==========================
 
 .. todo::
 
@@ -81,7 +84,7 @@ Installation under Windows
 
 
 Installation under macOS
-------------------------
+========================
 
 .. todo::
 

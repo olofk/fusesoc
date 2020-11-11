@@ -1,130 +1,116 @@
-FuseSoC
-=======
+.. _ug_overview:
 
-FuseSoC is a package manager and a set of build tools for HDL code.
+*********************
+Understanding FuseSoC
+*********************
 
-Its main purpose is to increase reuse of IP cores and be an aid for creating,
-building and simulating SoC solutions.
+The components of FuseSoC
+=========================
 
-Core description files
-----------------------
+FuseSoC is a package manager and a build system for HDL code.
+The following sections explain the main concepts of FuseSoC, and how they work together to obtain, configure, and build hardware designs.
 
-capi (Core API) is the format for core description files. Current version is
-version 2.0. A capi 2.0 file is identified by the string “CAPI=2” in the
-beginning of a file. The rest of the file is a standard YAML_ file.
+A fundamental entity in FuseSoC is a core.
+Cores can be discovered by the FuseSoC package manager in local or remote locations, and combined into a full hardware design by the build system.
 
-Core naming rules
------------------
+.. _ug_overview_cores:
 
-FuseSoC uses ``VLNV`` tags to uniquely identify a core. ``VLNV`` is a concept
-borrowed from the IP-XACT and stands for Vendor Library Name Version. This means
-that the name of the cores consists of four parts, which are generally separated
-by ‘:’, such as ``librecores.org:peripherals:uart16550:1.5``. In FuseSoC, it is
-allowed to leave out all parts of the VLNV tag except for the name part, e.g
-``::uart16550``. In those cases, the Vendor and Library parts will be empty
-strings, and the version will be set to 0.
-
-As the VLNV concept was introduced in FuseSoC after many core files had already
-been created, FuseSoC still supports parsing files with the legacy naming
-convention. These can either be of the format ``name``, in which case they will
-be translated internally to VLNV tags with the Name field set, and Version set
-to 0, or they can be of the format ``name-version``, which will also set the
-Version field.
-
-As an extension to the VLNV naming scheme, FuseSoC also support specifying a
-revision of a core file. This is a fifth field that can be added to both legacy
-and VLNV names by adding ``-r<revision>`` as a suffix (e.g.
-``::uart16550:1.5-r1``, ``uart16550-1.5-r1``, ``uart16550-r1``). This is used to
-make updates to the ``.core`` file even if the source of the core is unchanged.
-
-Core libraries
----------------
-
-A collection of one or more cores in a directory tree is called a core
-library. FuseSoC supports working with multiple core libraries. The
-locations of the libraries are specified in the FuseSoC configuration
-file, ``fusesoc.conf``
-
-To find a configuration file, FuseSoC will first look for
-``fusesoc.conf`` in the current directory, and if there is no file
-there, it will search next in ``$XDG_CONFIG_HOME/fusesoc`` (i.e.
-``~/.config/fusesoc`` on Linux and ``%LOCALAPPDATA%\fusesoc`` in
-Windows) and lastly in ``/etc/fusesoc``
-
-By running ``fusesoc init`` after FuseSoC is installed, the standard
-libraries will be installed, and a default configuration file will be
-created in ``$XDG_CONFIG_HOME/fusesoc/fusesoc.conf`` with the following
-contents:
-
-::
-
-   [library.orpsoc-cores]
-   sync-uri = https://github.com/openrisc/orpsoc-cores
-   sync-type = git
-
-   [library.fusesoc-cores]
-   sync-uri = https://github.com/fusesoc/fusesoc-cores
-   sync-type = git
-
-Core search order
-------------------
-
-Once FuseSoC has found its configuration file, it will parse the
-``cores_root`` option in the ``[main]`` section of ``fusesoc.conf``.
-This option is a space-separated list of library locations which are
-searched in the order they appear. Additional library locations can be
-added on the command line by setting the ``--cores-root`` parameter when
-FuseSoC is launched. The library locations specified from the
-command-line will be parsed after those in ``fusesoc.conf``
-
-For each library location, FuseSoC will recursively search for files
-with a *.core* suffix. Each of these files will be parsed and addded to
-the in-memory FuseSoC database if they are valid ``.core`` files.
-
-Several ``.core`` files can reside in the same directory and they will all be parsed.
-
-If several cores with the same VLNV identifier are encountered the latter will
-replace the former. This can be used to override cores in a library with an
-alternative core in another library by specifying them in a library that will be
-parsed later, either temporarily by adding ``--cores-root`` to the command-line,
-or permanently by adding the other library at the end of fusesoc.conf
-
-Making changes to cores in a library
+FuseSoC's basic building block: cores
 -------------------------------------
-A common situation is that a user wants to use their own copy of a core,
-instead of the one provided by a library, for example to fix a bug or
-add new functionality. The following steps can be used to achieve this:
 
-**Example.** Replace a core in a library with a user-specified version
+A **FuseSoC core** is a reasonably self-contained, reusable piece of IP, such as a FIFO implementation.
+In other contexts, the same concept is called package (as in deb package, npm package, etc.), or programming library (a term which is used with a different meaning in FuseSoC).
 
-#. Create a new directory to keep the user-copies of the cores (this
-   directory will be referred to as ``$corelib`` from now on)
-#. Download the core source (the repository or URL can be found in the
-   ``[provider]`` section of the original core)
-#. *If the downloaded core already contains a .core file, this step is
-   ignored* Copy the original .core file to the root of the downloaded
-   core. Edit the file and remove the ``[provider]`` section. (This will
-   stop FuseSoC from downloading the core and use files from the
-   directory containing the .core file instead)
-#. Add ``$corelib`` to the end of your library search path, either by
-   editing ``fusesoc.conf`` or by adding ``--cores-root=$corelib`` to
-   the command-line arguments
-#. Verify that the new core is found by running fusesoc core-info $core. Check
-   the output to see that “Core root:” is set to the directory where the core
-   was downloaded
+A core in FuseSoC has a name, such as ``example:ip:fifo``.
+The name and other information about the core, such as the list of (e.g. Verilog or VHDL) source files, is contained in a description file called the **core file**.
+Core files have filenames ending in ``.core``.
 
-Backends
---------
+A core can also have dependencies on other cores.
+For example, a "FIFO core" can have a dependency on an "SRAM core."
 
-FuseSoC uses the backends available from edalize_.
+Discover cores: the package manager
+-----------------------------------
 
-Migration guide
----------------
+FuseSoC cores can be stored in many places, both locally and remote.
+Finding cores, and producing a list of cores available to the user, is the job of the FuseSoC package manager.
 
-As new features are added to FuseSoC, some older features become obsolete. Read
-the link:migrations{outfilesuffix}[migration guide] to learn how to keep the
-.core files up-to-date with the latest best practices
+To find cores, the FuseSoC package manager searches through a configurable set of **core libraries**.
+A core library can be local or remote.
+In the simplest case, a local core library is just a directory with cores, as it is common in many hardware projects.
+To support more advanced cases of code re-use and discovery, FuseSoC can also use remote core libraries.
+Remote core libraries can be a key enabler to IP re-use especially in larger corporate settings, or in free and open source silicon projects.
 
-.. _YAML: https://yaml.org
-.. _configparser: http://docs.python.org/2/library/configparser.html
-.. _edalize: https://github.com/olofk/edalize
+From cores to a whole system: the build system
+----------------------------------------------
+
+The FuseSoC build system resolves all dependencies between cores, starting from a top-level core.
+A top-level core is technically just another FuseSoC core, but with a special meaning: it is the entry point into the design.
+The output of the dependency resolution step is a list of source files and other metadata that an EDA tool needs to build (i.e. synthesize, simulate, lint, etc.) the top-level design.
+The dependency resolution process can be influenced by constraints.
+Constraints are effectively input variables to the build process, and capture things like the target of the build (e.g. simulation, FPGA synthesis, or ASIC synthesis), the EDA tool to be used (e.g. Verilator or Xilinx Vivado), and much more.
+
+From a file list to a synthesized design: EDAlize it!
+-----------------------------------------------------
+
+After the build system has collected all source files and parameters of the design, it is time to hand off to the build tool, such as Xilinx Vivado for FPGA synthesis, Verilator for Verilog simulation, and so on.
+
+How exactly the hand-off is performed is highly tool-dependent, but FuseSoC abstracts these differences away and users typically don't need to worry about them.
+For example, in for Vivado, FuseSoC creates a Vivado project file and then executes Vivado to run through the synthesis and place and route steps until a final bitstream is produced.
+For Verilator, it creates a Makefile and then calls Verilator to do its job.
+
+FuseSoC supports many of the proprietary and open source EDA tools commonly used, and can be easily extended to support further ones.
+
+Concepts of the FuseSoC build system
+====================================
+
+To understand how FuseSoC builds a design it is necessary to understand three basic concepts: targets, tool flows, and build stages.
+
+.. _ug_overview_toolflows:
+
+Tool flows
+----------
+
+A tool flow (often abbreviated to just "tool" or "EDA tool") is a piece of software operating on the design to analyze it, simulate it, transform it, etc.
+Common categories of tools are simulators, synthesis tools, or static analysis tools.
+For example, Verilator is a tool (a simulation and static analysis tool), as is Xilinx Vivado (an FPGA tool flow), or Synopsys Design Compiler (an ASIC synthesis tool).
+
+FuseSoC tries its best to hide differences between tools to make switching between them as easy as possible.
+For example, it often only requires a different command line invocation of FuseSoC to simulate a design with Synopsys VCS instead of with Icarus Verilog.
+Of course, customization options for individual tools are still available for when they are needed.
+
+.. _ug_overview_targets:
+
+Targets
+-------
+
+Many things can be done with a hardware design:
+it can be synthesized for an FPGA, it can be simulated, it can be analyzed by lint tools, and much more.
+Even though all of these things operate on the same hardware design, there are differences:
+design parameters (e.g. Verilog defines and parameters, or VHDL generics) are set differently, source files are added or substituted (e.g. a top-level testbench wrapper is added, or a behavioral model of an IP block is exchanged against a hard macro), etc.
+In FuseSoC, a target is a group of such settings.
+Users of FuseSoC can freely name targets.
+Commonly used targets are one for simulation (typically called ``sim``), one for FPGA or ASIC synthesis (``synth``), and one for static analysis (``lint``).
+
+.. _ug_overview_buildstages:
+
+Build stages
+------------
+
+FuseSoC builds a design in three stages: setup, build, and run.
+
+#. The **setup** stage.
+   In this first step, the design is stitched together and prepared to be handed over to the tool flow.
+
+   #. A dependency tree is produced, starting from the top-level core.
+   #. Generators (special cores with dynamic behavior) are called.
+      Cores produced by generators are inserted into the dependency tree as well.
+   #. The dependency tree is resolved to produce a flattened view of the design.
+      All design information is written into an EDAM file.
+   #. Tool-flow specific setup routines are being called.
+
+#. The **build** stage runs the tool flow until some form of output file has been produced.
+#. The **run** stage somehow "executes" the build output.
+   What this exactly means is highly tool flow dependent:
+   for simulation flows, the simulation is executed.
+   For static analysis (lint) flows, the lint tool is called and its output is displayed.
+   For FPGA flows, the FPGA is programmed with the generated bitstream.
