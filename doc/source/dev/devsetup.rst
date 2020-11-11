@@ -68,16 +68,23 @@ Running tests
 -------------
 
 The FuseSoC contains unit tests written using the pytest framework.
+To run the tests in an isolated environment it is recommended to run pytest through tox, which first creates a package of the source code, installs it, and then runs the tests.
+This ensures that packaging and environment errors are less likely to slip through.
 
 .. code-block:: bash
 
    cd fusesoc/source/directory
 
-   # run all tests
-   python3 -m pytest
+   # Run all tests in an isolated environment (recommended)
+   tox
 
-   # run a single test: use filename::method_name, e.g.
-   python3 -m pytest tests/test_capi2.py::test_capi2_get_tool --verbose
+   # All arguments passed to tox after -- are passed to pytest directly.
+   # E.g. run a single test: use filename::method_name, e.g.
+   tox -- tests/test_capi2.py::test_capi2_get_tool --verbose
+
+   # Alternatively, tests can be run directly from the source tree.
+   # E.g. to run a single test: use filename::method_name, e.g.
+   python3 -m pytest
 
 Refer to the `pytest documentation <https://docs.pytest.org/en/latest/>`_ for more information how tests can be run.
 
