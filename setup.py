@@ -19,7 +19,7 @@ setup(
     description=(
         "FuseSoC is a package manager and a set of build tools for HDL (Hardware Description Language) code."
     ),
-    license="GPLv3",
+    license="BSD-2-Clause",
     keywords=[
         "VHDL",
         "verilog",
@@ -37,7 +37,7 @@ setup(
         "Development Status :: 5 - Production/Stable",
         "Topic :: Utilities",
         "Topic :: Software Development :: Build Tools",
-        "License :: OSI Approved :: GNU General Public License v3 (GPLv3)",
+        "License :: OSI Approved :: BSD License",
     ],
     entry_points={"console_scripts": ["fusesoc = fusesoc.main:main"]},
     setup_requires=["setuptools_scm",],
