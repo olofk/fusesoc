@@ -1,0 +1,73 @@
+CAPI=2:
+name: fusesoc:examples:blinky:1.0.0
+description: Blinky, a FuseSoC example core
+
+filesets:
+  rtl:
+    files:
+      - rtl/blinky.sv
+      - rtl/macros.svh:
+          is_include_file: true
+    file_type: systemVerilogSource
+
+  tb:
+    files:
+      - tb/blinky_tb.sv
+    file_type: systemVerilogSource
+
+  nexys_video:
+    files:
+      # YAML short form, see rtl/macros.svh above for the longer form.
+      - data/nexys_video.xdc: {file_type: xdc}
+
+targets:
+  # The "default" target is special in FuseSoC and used in dependencies.
+  # The "&default" is a YAML anchor referenced later.
+  default: &default
+    filesets:
+      - rtl
+    toplevel: blinky
+    parameters:
+      - clk_freq_hz
+
+  # The "sim" target simulates the design. (It could have any name.)
+  sim:
+    # Copy all key/value pairs from the "default" target.
+    <<: *default
+    description: Simulate the design
+    default_tool: icarus
+    filesets_append:
+      - tb
+    toplevel: blinky_tb
+    tools:
+      icarus:
+        iverilog_options:
+          - -g2012 # Use SystemVerilog-2012
+        modelsim:
+          vlog_options:
+          - -timescale=1ns/1ns
+    parameters:
+      - pulses=10
+
+  # The "synth" target synthesizes the design. (It could have any name.)
+  synth:
+    <<: *default
+    description: Synthesize the design for a Nexys Video FPGA board
+    default_tool: vivado
+    filesets_append:
+      - nexys_video
+    tools:
+      vivado:
+        part: xc7a200tsbg484-1
+    parameters:
+      - clk_freq_hz=100000000
+
+parameters:
+  clk_freq_hz:
+    datatype    : int
+    description : Frequency of the board clock, in Hz
+    paramtype   : vlogparam
+  pulses:
+    datatype    : int
+    description : Number of pulses to run in testbench
+    paramtype   : vlogparam
