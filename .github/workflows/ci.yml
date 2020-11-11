@@ -1,0 +1,50 @@
+name: CI
+
+on:
+  # Run CI on all pushes.
+  push:
+    branches:
+      - master
+
+  # Run pull request CI in the context of the target (upstream, origin)
+  # repository, which gives more access to secrets.
+  pull_request_target:
+    branches:
+      - master
+
+jobs:
+  build-and-test:
+    name: Build and Test (Python ${{ matrix.python-version }} on ${{ matrix.os }})
+    runs-on: ubuntu-latest
+    # Always run on push events, but only run on the pull_request_target event
+    # when the pull request pulls from the fork repository. For pull requests
+    # within the same repository the pull event is sufficient.
+    if: >
+      github.event_name == 'push' ||
+      (github.event_name == 'pull_request_target'
+       && github.event.pull_request.head.repo.full_name != github.repository)
+    strategy:
+      matrix:
+        os:
+          - ubuntu-latest
+          - macos-latest
+          - windows-latest
+        python-version:
+          - 3.5
+          - 3.6
+          - 3.7
+          - 3.8
+          - 3.9
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v2
+      with:
+        python-version: ${{ matrix.python-version }}
+    - name: Display Python version
+      run: python -c "import sys; print(sys.version)"
+    - name: Install Tox and any other packages
+      run: pip install tox tox-gh-actions
+    - name: Build package and run tests with tox
+      run: tox

@@ -7,6 +7,10 @@ FuseSoC
 .. image:: https://ci.appveyor.com/api/projects/status/bg3tutcube9x0fgs/branch/master?svg=true
     :target: https://ci.appveyor.com/project/olofk/fusesoc/branch/master
 
+.. image:: https://github.com/olofk/fusesoc/workflows/CI/badge.svg
+    :target: https://github.com/olofk/fusesoc/actions?query=workflow%3ACI
+    :alt: CI status
+
 .. image:: https://img.shields.io/pypi/dm/fusesoc.svg?label=PyPI%20downloads
     :target: https://pypi.org/project/fusesoc/
 
