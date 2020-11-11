@@ -135,7 +135,11 @@ class Edalizer:
 
             if hasattr(core, "get_ttptttg"):
                 for ttptttg_data in core.get_ttptttg(core_flags):
-                    _ttptttg = Ttptttg(ttptttg_data, core, self.generators,)
+                    _ttptttg = Ttptttg(
+                        ttptttg_data,
+                        core,
+                        self.generators,
+                    )
                     for gen_core in _ttptttg.generate(self.cache_root):
                         gen_core.pos = _ttptttg.pos
                         self._generated_cores.append(gen_core)

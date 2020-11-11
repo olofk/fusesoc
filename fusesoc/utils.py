@@ -28,12 +28,14 @@ class Launcher:
         self.cwd = cwd
 
     def run(self):
-        """Runs the cmd with args after converting them all to strings via str
-        """
+        """Runs the cmd with args after converting them all to strings via str"""
         logger.debug(self.cwd)
         logger.debug("    " + str(self))
         try:
-            subprocess.check_call(map(str, [self.cmd] + self.args), cwd=self.cwd,),
+            subprocess.check_call(
+                map(str, [self.cmd] + self.args),
+                cwd=self.cwd,
+            ),
         except FileNotFoundError:
             raise RuntimeError(
                 "Command '" + self.cmd + "' not found. Make sure it is in $PATH"

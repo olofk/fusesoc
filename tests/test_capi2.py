@@ -141,15 +141,29 @@ def test_capi2_get_files():
             "logical_name": "default_logical_name",
             "name": "vhdlfile",
         },
-        {"file_type": "user", "copyto": "copied.file", "name": "subdir/dummy.extra",},
+        {
+            "file_type": "user",
+            "copyto": "copied.file",
+            "name": "subdir/dummy.extra",
+        },
         {
             "file_type": "tclSource",
             "copyto": "subdir/another.file",
             "name": "dummy.tcl",
         },
-        {"file_type": "verilogSource", "is_include_file": True, "name": "vlogfile",},
-        {"file_type": "vhdlSource", "name": "vhdlfile",},
-        {"file_type": "user", "name": "pickthisfile",},
+        {
+            "file_type": "verilogSource",
+            "is_include_file": True,
+            "name": "vlogfile",
+        },
+        {
+            "file_type": "vhdlSource",
+            "name": "vhdlfile",
+        },
+        {
+            "file_type": "user",
+            "name": "pickthisfile",
+        },
     ]
 
     flags = {"tool": "icarus"}

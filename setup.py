@@ -13,7 +13,10 @@ def read(fname):
 setup(
     name="fusesoc",
     packages=["fusesoc", "fusesoc.capi1", "fusesoc.capi2", "fusesoc.provider"],
-    use_scm_version={"relative_to": __file__, "write_to": "fusesoc/version.py",},
+    use_scm_version={
+        "relative_to": __file__,
+        "write_to": "fusesoc/version.py",
+    },
     author="Olof Kindgren",
     author_email="olof.kindgren@gmail.com",
     description=(
@@ -40,7 +43,9 @@ setup(
         "License :: OSI Approved :: GNU General Public License v3 (GPLv3)",
     ],
     entry_points={"console_scripts": ["fusesoc = fusesoc.main:main"]},
-    setup_requires=["setuptools_scm",],
+    setup_requires=[
+        "setuptools_scm",
+    ],
     install_requires=[
         "edalize>=0.2.2",
         "ipyxact>=0.2.3",

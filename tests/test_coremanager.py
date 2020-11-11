@@ -88,7 +88,11 @@ def test_copyto():
     eda_api = edalizer.edalize
 
     assert eda_api["files"] == [
-        {"file_type": "user", "core": "::copytocore:0", "name": "copied.file",},
+        {
+            "file_type": "user",
+            "core": "::copytocore:0",
+            "name": "copied.file",
+        },
         {
             "file_type": "tclSource",
             "core": "::copytocore:0",

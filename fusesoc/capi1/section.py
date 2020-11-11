@@ -12,24 +12,23 @@ logger = logging.getLogger(__name__)
 
 class File:
     """File objects consist of a mandatory file name, with path relative to
-the core root. Extra options can be specified as a comma-separated list
-enclosed in [] after the file name. Options are either boolean (option) or has a
-value (option=value). No white-space is allowed anywhere in the file object
+    the core root. Extra options can be specified as a comma-separated list
+    enclosed in [] after the file name. Options are either boolean (option) or has a
+    value (option=value). No white-space is allowed anywhere in the file object
 
-The following options are defined:
+    The following options are defined:
 
-* *file_type :* Value can be any type defined in <<FileTypes, File types>>
+    * *file_type :* Value can be any type defined in <<FileTypes, File types>>
 
-* *is_include_file :* Boolean value to indicate this should be treated as an include file
+    * *is_include_file :* Boolean value to indicate this should be treated as an include file
 
-* *logical_name :* Indicate that the file belongs to a logical unit (e.g. VHDL Library) with the name set by the value
-* *copyto :* Indicate that the file should be copied to a new location relative to the work root.
+    * *logical_name :* Indicate that the file belongs to a logical unit (e.g. VHDL Library) with the name set by the value
+    * *copyto :* Indicate that the file should be copied to a new location relative to the work root.
 
-Example: rtl/verilog/uart_defines.v[file_type=verilogSource,is_include_file]
+    Example: rtl/verilog/uart_defines.v[file_type=verilogSource,is_include_file]
 
-Example: data/mem_init_file.bin[copyto=out/boot.bin]
-
-"""
+    Example: data/mem_init_file.bin[copyto=out/boot.bin]
+    """
 
     FILE_TYPES = [
         "PCF",
@@ -110,9 +109,8 @@ class StringList(list):
 class PathList(StringList):
     """Space-separated list of paths
 
-Each element in the list is subjected to expansion of environment variables and
- ~ to home directories
-"""
+    Each element in the list is subjected to expansion of environment variables and
+     ~ to home directories"""
 
     def __new__(cls, *args, **kwargs):
         if not args:
@@ -124,9 +122,8 @@ Each element in the list is subjected to expansion of environment variables and
 class FileList(PathList):
     """Space-separated list of <<File>>
 
-Each element in the list is first subjected to the expansion according to
-<<PathList>> and then parsed as a <<File>>
-"""
+    Each element in the list is first subjected to the expansion according to
+    <<PathList>> and then parsed as a <<File>>"""
 
     def __new__(clk, *args, **kwargs):
         if not args:
@@ -138,10 +135,9 @@ Each element in the list is first subjected to the expansion according to
 class VlnvList(StringList):
     """Space-separated list of VLNV tags
 
-Each element is treated as a VLNV element with an optional version range
+    Each element is treated as a VLNV element with an optional version range
 
-Example: librecores.org:peripherals:uart16550:1.5 >=::simple_spi:1.6 mor1kx =::i2c:1.14
-"""
+    Example: librecores.org:peripherals:uart16550:1.5 >=::simple_spi:1.6 mor1kx =::i2c:1.14"""
 
     def __new__(clk, *args, **kwargs):
         if not args:
