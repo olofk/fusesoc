@@ -13,11 +13,11 @@ on:
 jobs:
   build-and-test:
     name: Build and Test (Python ${{ matrix.python-version }} on ${{ matrix.os }})
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
     strategy:
       matrix:
         os:
-          - ubuntu-latest
+          - ubuntu-20.04
           - macos-latest
           - windows-latest
         python-version:
