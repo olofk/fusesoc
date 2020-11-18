@@ -131,7 +131,10 @@ except ImportError:
 html_static_path = ["_static"]
 
 html_context = {
-    "css_files": ["_static/theme_overrides.css",],  # override wide tables in RTD theme
+    "css_files": [
+        # override wide tables in RTD theme
+        "_static/theme_overrides.css",
+    ]
 }
 
 # Custom sidebar templates, must be a dictionary that maps document names
