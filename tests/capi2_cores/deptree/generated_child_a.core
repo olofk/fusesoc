@@ -17,6 +17,26 @@ filesets:
 generate:
   generated-child-a-generate:
     generator: generated-child-a-generator
+    parameters:
+      filename: generated-child-a.sv
+
+  generated-child-a-generate-position-append:
+    generator: generated-child-a-generator
+    parameters:
+      filename: generated-child-a-append.sv
+    position: append
+
+  generated-child-a-generate-position-last:
+    generator: generated-child-a-generator
+    parameters:
+      filename: generated-child-a-last.sv
+    position: last
+
+  generated-child-a-generate-position-first:
+    generator: generated-child-a-generator
+    parameters:
+      filename: generated-child-a-first.sv
+    position: first
 
 generators:
   generated-child-a-generator:
@@ -29,3 +49,6 @@ targets:
       - fs1
     generate:
       - generated-child-a-generate
+      - generated-child-a-generate-position-append
+      - generated-child-a-generate-position-last
+      - generated-child-a-generate-position-first

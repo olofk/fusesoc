@@ -56,12 +56,13 @@ def test_deptree(tmp_path):
         "::deptree-child4:0": ("child4.sv",),
         "::deptree-child-a:0": (
             # Files from filesets are always included before any
-            # files from generators.
+            # files from generators with "position: append".
             # This is because generated files are often dependent on files
             # that are not generated, and it convenient to be able to
             # include them in the same core.
             "child-a2.sv",
             "generated-child-a.sv",
+            "generated-child-a-append.sv",
         ),
         "::deptree-root:0": (
             "root-fs1-f1.sv",
@@ -106,8 +107,12 @@ def test_deptree(tmp_path):
     # Each fileset in order. Followed by each generator in order.
     # The order between the cores is taken the above `dep_names`.
     expected_filenames = []
+    # A generator-created core with "position: first"
+    expected_filenames.append("generated-child-a-first.sv")
     for dep_name in deps_names:
         expected_filenames += list(expected_core_files[dep_name])
+    # A generator-created core with "position: last"
+    expected_filenames.append("generated-child-a-last.sv")
 
     edalized_filenames = [
         os.path.basename(f["name"]) for f in edalizer.edalize["files"]

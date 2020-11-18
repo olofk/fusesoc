@@ -7,8 +7,8 @@ from fusesoc.capi2.generator import Generator
 
 class MacroGenerator(Generator):
     def run(self):
-        self.vlnv = "::generated-child-a"
-        self.add_files(["generated-child-a.sv"], file_type="systemVerilogSource")
+        assert self.config["filename"]
+        self.add_files([self.config["filename"]], file_type="systemVerilogSource")
 
 
 if __name__ == "__main__":
