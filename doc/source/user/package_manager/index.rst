@@ -17,12 +17,13 @@ file, ``fusesoc.conf``
 To find a configuration file, FuseSoC will first look for
 ``fusesoc.conf`` in the current directory, and if there is no file
 there, it will search next in ``$XDG_CONFIG_HOME/fusesoc`` (i.e.
-``~/.config/fusesoc`` on Linux and ``%LOCALAPPDATA%\fusesoc`` in
+``~/.config/fusesoc`` on Linux and ``%HOMEPATH%\.config\fusesoc`` on
 Windows) and lastly in ``/etc/fusesoc``
 
 By running ``fusesoc init`` after FuseSoC is installed, the standard
 libraries will be installed, and a default configuration file will be
-created in ``$XDG_CONFIG_HOME/fusesoc/fusesoc.conf`` with the following
+created in ``$XDG_CONFIG_HOME/fusesoc/fusesoc.conf`` on Linux and ``%HOMEPATH%\.config\fusesoc\fusesoc.conf`` on
+Windows with the following
 contents:
 
 ::
