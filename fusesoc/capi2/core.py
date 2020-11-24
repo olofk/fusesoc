@@ -728,7 +728,7 @@ Generators:
       desc : Short description of the generator, as shown with ``fusesoc gen list``
     - name : usage
       type : String
-      desc : A longer description of how to use the generator, including which parameters it uses (as shown with ``fusesoc gen show $generator``
+      desc : A longer description of how to use the generator, including which parameters it uses (as shown with ``fusesoc gen show $generator``).
 
 Target:
   description : A target is the entry point to a core. It describes a single use-case and what resources that are needed from the core such as file sets, generators, parameters and specific tool options. A core can have multiple targets, e.g. for simulation, synthesis or when used as a dependency for another core. When a core is used, only a single target is active. The *default* target is a special target that is always used when the core is being used as a dependency for another core or when no ``--target=`` flag is set.
@@ -795,7 +795,7 @@ Parameter:
       desc : Description of the parameter, as can be seen with ``fusesoc run --target=$target $core --help``
     - name : paramtype
       type : String
-      desc : Specifies type of parameter. Legal values are *cmdlinearg* for command-line arguments directly added when running the core, *generic* for VHDL generics, *plusarg* for verilog plusargs, *vlogdefine* for verilog `define or *vlogparam* for verilog top-level parameters. All paramtypes are not valid for every backend. Consult the backend documentation for details.
+      desc : Specifies type of parameter. Legal values are *cmdlinearg* for command-line arguments directly added when running the core, *generic* for VHDL generics, *plusarg* for verilog plusargs, *vlogdefine* for Verilog `` `define`` or *vlogparam* for verilog top-level parameters. All paramtypes are not valid for every backend. Consult the backend documentation for details.
     - name : scope
       type : String
       desc : "**Not used** : Kept for backwards compatibility"
@@ -952,7 +952,8 @@ String
 ~~~~~~
 String is a string that can contain CAPI2 expressions that are evaulated during parsing.
 
-CAPI2 expressions are used to evaluate an exprssion only if a flag is set or unset. The general form is *flag_is_set ? ( expression )* to evaluate *expression* if flag is set or *!flag_is_set ? ( expression )* to evaluate *expression* if flag is not set.
+CAPI2 expressions are used to evaluate an expression only if a flag is set or unset.
+The general form is *flag_is_set ? ( expression )* to evaluate *expression* if flag is set or *!flag_is_set ? ( expression )* to evaluate *expression* if flag is not set.
 
 **Example** Only include fileset *verilator_tb* when the target is used with verilator
 
@@ -963,9 +964,29 @@ StringOrList
 
 Item is allowed to be either a `String`_ or a list of `String`_
 
+StringOrDict
+~~~~~~~~~~~~
+
+Item is allowed to be either a `Dict`_ or a list of `Dict`_
+
 Vlnv
 ~~~~~~
 :-separated VLNV (Vendor, Library, Name, Version) identifier
+
+Dict
+~~~~
+
+A dictionary.
+
+Bool
+~~~~
+
+A boolean.
+
+Integer
+~~~~~~~
+
+An integer.
 
 List
 ~~~~

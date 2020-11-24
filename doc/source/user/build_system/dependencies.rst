@@ -159,7 +159,7 @@ Semantic versioning is a convention that gives meaning to version numbers.
 Being a convention, semantic versioning is not enforced by tooling, but relies on cooperation and a shared understanding between authors of reusable IP cores.
 Effectively, semantic versioning allows authors to encode in the version number information such as "this version breaks API compatibility", "this version is backwards compatible with a certain previous version", etc.
 
-A detailed explanation of semantic versioning is available at ``semver.org <https://semver.org/>`_.
+A detailed explanation of semantic versioning is available at `semver.org <https://semver.org/>`_.
 The basics, however, are quickly explained.
 Semantic versioning expects version numbers with three components, MAJOR, MINOR, and PATCH, such as 1.0.3.
 With this structure in place, follow these guidelines:
