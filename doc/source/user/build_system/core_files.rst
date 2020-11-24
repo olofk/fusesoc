@@ -51,11 +51,13 @@ Things one should know about YAML
 For a quick introduction into most of YAML's features have a look at `Learn YAML in Y minutes <https://learnxinyminutes.com/docs/yaml/>`_.
 The full YAML 1.2 specification is available at `yaml.org <https://yaml.org/spec/1.2/spec.html>`_ (it's not an easy read, though).
 
+.. _ug_build_system_core_files_example_blinky:
+
 An example: the blinky core
 ---------------------------
 
 The following sections explain how to add FuseSoC support to a hardware project.
-The code is taken from an example design in the `FuseSoC source tree <https://github.com/olofk/fusesoc>`_ in the ``tests/userguide/blinky``.
+The code is taken from an example design in the `FuseSoC source tree <https://github.com/olofk/fusesoc>`_ in the ``tests/userguide/blinky`` directory.
 
 The design consists of two SystemVerilog files, a testbench, a Xilinx constraint file (with pin mappings for a Nexys Video FPGA board), and finally, the FuseSoC core file.
 
