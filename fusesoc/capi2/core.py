@@ -742,7 +742,7 @@ Generators:
       desc : Short description of the generator, as shown with ``fusesoc gen list``
     - name : usage
       type : String
-      desc : A longer description of how to use the generator, including which parameters it uses (as shown with ``fusesoc gen show $generator``
+      desc : A longer description of how to use the generator, including which parameters it uses (as shown with ``fusesoc gen show $generator``).
 
 Target:
   description : A target is the entry point to a core. It describes a single use-case and what resources that are needed from the core such as file sets, generators, parameters and specific tool options. A core can have multiple targets, e.g. for simulation, synthesis or when used as a dependency for another core. When a core is used, only a single target is active. The *default* target is a special target that is always used when the core is being used as a dependency for another core or when no ``--target=`` flag is set.
@@ -966,7 +966,8 @@ String
 ~~~~~~
 String is a string that can contain CAPI2 expressions that are evaulated during parsing.
 
-CAPI2 expressions are used to evaluate an exprssion only if a flag is set or unset. The general form is *flag_is_set ? ( expression )* to evaluate *expression* if flag is set or *!flag_is_set ? ( expression )* to evaluate *expression* if flag is not set.
+CAPI2 expressions are used to evaluate an expression only if a flag is set or unset.
+The general form is *flag_is_set ? ( expression )* to evaluate *expression* if flag is set or *!flag_is_set ? ( expression )* to evaluate *expression* if flag is not set.
 
 **Example** Only include fileset *verilator_tb* when the target is used with verilator
 
@@ -976,6 +977,11 @@ StringOrList
 ~~~~~~~~~~~~
 
 Item is allowed to be either a `String`_ or a list of `String`_
+
+StringOrDict
+~~~~~~~~~~~~
+
+Item is allowed to be either a `Dict`_ or a list of `Dict`_
 
 Vlnv
 ~~~~~~
