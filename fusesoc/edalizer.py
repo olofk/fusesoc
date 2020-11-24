@@ -134,7 +134,6 @@ class Edalizer:
         for core in self.cores:
             logger.debug("Running generators in " + str(core.name))
             core_flags = self._core_flags(core)
-            self._resolved_or_generated_cores.append(core)
             if hasattr(core, "get_ttptttg"):
                 for ttptttg_data in core.get_ttptttg(core_flags):
                     ttptttg = Ttptttg(
@@ -169,9 +168,7 @@ class Edalizer:
             self.core_manager.add_library(lib)
 
     def create_eda_api_struct(self):
-        first_snippets = []
         snippets = []
-        last_snippets = []
         parameters = {}
         for core in self.cores:
             snippet = {}
@@ -241,15 +238,7 @@ class Edalizer:
                     }
                 )
 
-            if hasattr(core, "pos"):
-                if core.pos == "first":
-                    first_snippets.append(snippet)
-                elif core.pos == "last":
-                    last_snippets.append(snippet)
-                else:
-                    snippets.append(snippet)
-            else:
-                snippets.append(snippet)
+            snippets.append(snippet)
 
         top_core = self.resolved_cores[-1]
         self.edalize = {
@@ -264,7 +253,7 @@ class Edalizer:
             "vpi": [],
         }
 
-        for snippet in first_snippets + snippets + last_snippets:
+        for snippet in snippets:
             merge_dict(self.edalize, snippet)
 
     def _build_parser(self, backend_class, edam):
@@ -391,7 +380,6 @@ class Ttptttg:
             )
         self.generator = generators[generator_name]
         self.name = ttptttg["name"]
-        self.pos = ttptttg["pos"]
         parameters = ttptttg["config"]
 
         vlnv_str = ":".join(

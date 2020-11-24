@@ -37,7 +37,7 @@ def test_deptree(tmp_path):
         ("::deptree-child3:0", "::deptree-child1:0"),
         # Dependencies of child-a core
         # All generated cores are an dependency to the core that generated it.
-        ("::generated-child-a:0", "::deptree-child-a:0"),
+        ("::deptree-child-a-generated-child-a-generate:0", "::deptree-child-a:0"),
         ("::deptree-child4:0", "::deptree-child-a:0"),
     )
 
@@ -57,7 +57,7 @@ def test_deptree(tmp_path):
         ),
         "::deptree-child4:0": ("child4.sv",),
         "::deptree-child-a:0": ("child-a2.sv",),
-        "::generated-child-a:0": ("generated-child-a.sv",),
+        "::deptree-child-a-generated-child-a-generate:0": ("generated-child-a.sv",),
         "::deptree-root:0": (
             "root-fs1-f1.sv",
             "root-fs1-f2.sv",
@@ -101,12 +101,8 @@ def test_deptree(tmp_path):
     # Each fileset in order. Followed by each generator in order.
     # The order between the cores is taken the above `dep_names`.
     expected_filenames = []
-    # A generator-created core with "position: first"
-    expected_filenames.append("generated-child-a-first.sv")
     for dep_name in deps_names:
         expected_filenames += list(expected_core_files[dep_name])
-    # A generator-created core with "position: last"
-    expected_filenames.append("generated-child-a-last.sv")
 
     edalized_filenames = [
         os.path.basename(f["name"]) for f in edalizer.edalize["files"]

@@ -445,23 +445,36 @@ def test_capi2_get_ttptttg():
         {
             "name": "testgenerate_without_params",
             "generator": "generator1",
-            "pos": "append",
             "config": {},
         },
         {
             "name": "testgenerate_with_params",
             "generator": "generator1",
-            "pos": "append",
             "config": {"param1": "a param", "param2": ["list", "of", "stuff"]},
         },
         {
             "name": "testgenerate_with_override",
             "generator": "generator1",
-            "pos": "append",
             "config": {"the_value": 138},
         },
+        {
+            "name": "testgenerate_with_position",
+            "generator": "generator1",
+            "config": {},
+        },
     ]
-    assert expected == core.get_ttptttg(flags)
+
+    position_warning = (
+        "The generate/position key is deprecated and has no effect "
+        "any more. Please remove it from your core file. You can "
+        "now use dependencies within the generated core to "
+        "influence ordering."
+    )
+
+    with pytest.warns(FutureWarning, match=position_warning):
+        actual = core.get_ttptttg(flags)
+
+    assert actual == expected
 
     flags["target"] = "nogenerate"
     assert [] == core.get_ttptttg(flags)

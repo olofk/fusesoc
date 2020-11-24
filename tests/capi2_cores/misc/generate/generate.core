@@ -36,3 +36,7 @@ generate:
     generator: generator1
     parameters:
       the_value : 1234
+
+  testgenerate_with_position:
+    generator: generator1
+    position: last

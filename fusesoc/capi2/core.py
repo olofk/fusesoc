@@ -6,6 +6,7 @@
 import logging
 import os
 import shutil
+import warnings
 import yaml
 
 from fusesoc import utils
@@ -488,8 +489,15 @@ class Core:
                 "name": gen_name,
                 "generator": str(gen_inst.generator),
                 "config": dict(params),
-                "pos": str(self.generate[gen_name].position or "append"),
             }
+            if self.generate[gen_name].position:
+                warnings.warn(
+                    "The generate/position key is deprecated and has no effect "
+                    "any more. Please remove it from your core file. You can "
+                    "now use dependencies within the generated core to "
+                    "influence ordering.",
+                    FutureWarning,
+                )
             ttptttg.append(t)
         return ttptttg
 
@@ -718,7 +726,7 @@ Generate:
       desc : Generator-specific parameters. ``fusesoc gen show $generator`` might show available parameters
     - name : position
       type : String
-      desc : Where to insert the generated core. Legal values are *first*, *append* or *last*. *append* will insert core after the core that called the generator
+      desc : Deprecated and ignored. Use dependencies in the generated core instead.
 
 Generators:
   description : Generators are custom programs that generate FuseSoC cores. They are generally used during the build process, but can be used stand-alone too. This section allows a core to register a generator that can be used by other cores.
