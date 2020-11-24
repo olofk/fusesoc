@@ -43,8 +43,8 @@ targets:
       icarus:
         iverilog_options:
           - -g2012 # Use SystemVerilog-2012
-        modelsim:
-          vlog_options:
+      modelsim:
+        vlog_options:
           - -timescale=1ns/1ns
     parameters:
       - pulses=10
