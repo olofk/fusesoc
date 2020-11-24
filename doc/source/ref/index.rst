@@ -7,6 +7,7 @@ FuseSoC Reference Manual
    :caption: Contents
 
    capi2.rst
+   gapi.rst
    capi1.rst
    migrations.rst
    glossary.rst

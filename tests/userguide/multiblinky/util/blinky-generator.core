@@ -1,0 +1,8 @@
+CAPI=2:
+name: fusesoc:examples:blinky-generator:1.0.0
+
+generators:
+  blinky-generator:
+    description: Generate multiblinky, a file with multiple blinky instances
+    interpreter: python3
+    command: blinky-generator.py

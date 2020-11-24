@@ -3,151 +3,164 @@
 Generators: produce and specialize cores on demand
 ==================================================
 
-.. todo::
+Generators are a powerful way to generate parts of a hardware design on the fly.
+Under the hood, generators are user-provided helper tools which are called by FuseSoC during the build process.
 
-   This section was taken from older documentation and needs to be adjusted in style and content for the refactored user guide.
+When to use generators
+----------------------
 
-FuseSoC core files lists files which are natively used by the backends, such as VHDL/(System)Verilog files, constraints, tcl scripts, hex files for $readmemh, etc. There are however many cases where these files need to be created from another format. Examples of this are Chisel/MyHDL/Migen source code which output verilog, C programs that are compiled into a format suitable to be preloaded into memories or any kind of description formats used to create HDL files. For these cases FuseSoC supports generators, which is a mechanism to generate core files on the fly during the FuseSoC build flow. Since there are too many custom programs to generate HDL files, it is not feasible to have them all inside of FuseSoC. Instead they are implemented as stand-alone programs residing within cores, which can be invoked by FuseSoC. The generators support consists of three parts:
+FuseSoC :term:`core files` list files which are natively used by the backends, such as VHDL/(System)Verilog files, constraints, TCL scripts, hex files for ``$readmemh()``, etc.
+There are however many cases where these files need to be created from another format.
+Examples of this are Chisel/MyHDL/Migen source code which output Verilog, C programs that are compiled into a format suitable to be preloaded into memories, or any kind of description formats used to create HDL files.
 
-* The generator itself, which is a stand-alone program residing inside a core. It needs to accept a yaml file with a defined structure described below as its first (and only) argument. The generator will output a valid .core file and output files in the directory where it is called.
+The three parts of a generator
+------------------------------
 
-* The core that contains a generator must define a section in its core file to let FuseSoC know that it has a generator and how to invoke it.
+The generators support consists of three parts:
 
-* A core using a generator must contain a section that describes which parameters to send to the generator, and each target must list which generators to use
+#. Provide the generator itself, which is a user-provided program.
+   It is called by FuseSoC during the build process.
+#. Register the generator in a ``generator`` section in a :term:`core file`, describing the generator and how to call it.
+#. Finally, use a ``generate`` section to invoke the generator.
+   The ``generate`` section is used similar to a ``fileset`` section.
+
+Read on for a step-by-step explanation how generators can be used in FuseSoC.
+
+An example: the multiblinky core
+--------------------------------
+
+To illustrate the declaration and use of generators the following sections refer to a complete example called ``multiblinky``, which extends the :ref:`blinky example <ug_build_system_core_files_example_blinky>` shown previously.
+MultiBlinky uses a generator to generate a SystemVerilog file on the fly which instantiates ``blinky`` a configurable number of times.
+
+The complete code is available in the `FuseSoC source tree <https://github.com/olofk/fusesoc>`_ in the ``tests/userguide/multiblinky`` directory.
+The following files are part of the example.
+
+.. code-block:: console
+
+   $ tree tests/userguide/multiblinky/
+   tests/userguide/multiblinky/
+   ├── multiblinky.core
+   ├── tb
+   │   └── multiblinky_tb.sv
+   └── util
+      ├── blinky-generator.core
+      └── blinky-generator.py
+
+Files in ``util`` are related to the generator itself.
+The generator is then called (used) in ``multiblinky.core``.
 
 Creating a generator
 --------------------
 
-Generators can be written in any language. The only requirement is that they are executable on the command line and accepts a yaml file for configuration as its first argument. This also means that generators can be used outside of FuseSoC to create cores. The yaml file contains the configuration needed for the generator. The following options are defined for the configuration file.
+A generator is a callable command-line application (often a script), written in any programming language.
 
-========== ===========
-Key        Description
-========== ===========
-gapi       Version of the generator configuration file API. Only 1.0 is defined
-files_root Directory where input files are found. FuseSoC sets this to the calling core's file directory
-vlnv       Colon-separated VLNV identifier to use for the output core. A generator is free to ignore this and use another VLNV.
-parameters Everything contained under the parameters key should be treated as instance-specific configuration for the generator
-========== ===========
+Below is an example of a generator to create a SystemVerilog module ``multiblinky`` within a file ``multiblinky.sv``, which instantiates the module ``blinky`` a parametrizable number of times.
 
-Example yaml configuration file:
+.. literalinclude:: ../../../../tests/userguide/multiblinky/util/blinky-generator.py
+   :language: python3
+   :caption: ``blinky-generator.py``, an exemplary FuseSoC generator
+   :name: ug_build_system_generators_blinky_generator_py
+   :lines: 4-
 
-.. code:: yaml
+.. note::
 
-    files_root: /home/user/cores/mysoc
-    gapi: '1.0'
-    parameters:
-      masters:
-        dbus:
-          slaves: [sdram_dbus, uart0, gpio0, gpio1, spi0]
-        or1k_i:
-          slaves: [sdram_ibus, rom0]
-      slaves:
-        gpio0: {datawidth: 8, offset: 2432696320, size: 2}
-        gpio1: {datawidth: 8, offset: 2449473536, size: 2}
-        rom0: {offset: 4026531840, size: 1024}
-        sdram_dbus: {offset: 0, size: 33554432}
-        sdram_ibus: {offset: 0, size: 33554432}
-        spi0: {datawidth: 8, offset: 2952790016, size: 8}
-        uart0: {datawidth: 8, offset: 2415919104, size: 32}
-    vlnv: ::mysoc-wb_intercon:0
+   FuseSoC provides the helper class :class:`fusesoc.capi2.Generator` to simplify code below significantly.
+   However, to ease the writing of generators in other programming languages we show a pure Python implementation.
 
+Input to the generator: the GAPI file
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-The above example is for a generator that creates verilog code for a wishbone interconnect.
+The generator is called by FuseSoC with a single command-line argument: the path to a configuration file in :term:`GAPI` format.
+Here is a commented example of a GAPI file passed to a generator.
+
+.. code-block:: yaml
+
+  # An exemplary GAPI file, input to blinky-generator.py.
+
+  # GAPI version, always 1.0 (currently).
+  gapi: '1.0'
+  # Proposed name of the generated core
+  vlnv: fusesoc:examples:multiblinky-my_blinkygenerator:1.0.0
+  # Source file path
+  files_root: /some/path/multiblinky
+  # Parameters passed to the generator
+  parameters:
+    blinky_count: 3
+
+Refer to :ref:`ref_gapi` for the complete format description.
+
+Expected output from the generator
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+XXX: TODO
 
 Registering a generator
 -----------------------
 
-When FuseSoC scans the flattened dependency tree of a core, it will look for a section called `generators` in each core file. This section is used by cores to notify FuseSoC that they contain a generator and describe how to use it.
+To register a generator, write a :term:`core file` with a ``generate`` section.
+It is recommended to place this section in a separate core file, as shown below.
 
-The generators section contain a map of generator sections so that each core is free to define multiple generators. The key of each generator decide its name
+.. literalinclude:: ../../../../tests/userguide/multiblinky/util/blinky-generator.core
+   :language: yaml
+   :caption: ``blinky-generator.core``, a core file to register the ``blinky-generator.py`` generator.
+   :name: ug_build_system_generators_blinky_generator_core
 
-The following keys are valid in a generator section.
+In this example the generator is called ``blinky-generator``; this name is used later when referring to the generator.
 
-command: The command to run (relative to the core root) to invoke the generator. FuseSoC will pass a yaml configuration file as the first argument when calling the command.
-interpreter: If the command requires an interpreter (e.g. python or perl), this will be used called, with the string specified in `command` as the first argument, and the yaml file as the second argument.
+The ``generator.NAME`` section support the following arguments:
 
-Example generator section from a CAPI2 core file
+* ``description`` (optional): A description of the generator.
+* ``command``: The command to run.
+* ``interpreter`` (optional): When the generator is called the ``command`` is prefixed with the ``interpreter``, e.g. ``python3``, or ``perl``.
 
-.. code:: yaml
+Refer to the :ref:`CAPI2 reference documentation <ref_capi2>` for more details.
 
-    generators:
-      wb_intercon_gen:
-        interpreter: python
-        command: sw/wb_intercon_gen
+When FuseSoC calls the generator it invokes ``<interpreter> <command> <gapi-file-path>`` (``interpreter`` is left out if not defined).
 
-The above snippet will register a generator with the name wb_intercon_gen. This name will be used by cores that wish to invoke the generator. When the generator is invoked it will run `python /path/to/core/sw/wb_intercon_gen` from the sw subdirectory of the core where the generators section is defined.
+To check the generator is successfully registered call ``fusesoc gen list``.
 
-Calling a generator
--------------------
+.. code-block:: console
 
-The final piece of the generators machinery is to run a generator with some specific parameters. This is done by creating a special section in the core that wishes to use a generator and adding this section to the targets that need it. Using the same example generator as previously, this section could look like the example below:
+   $ fusesoc gen list
 
-.. code:: yaml
+   Available generators:
 
-    generate:
-      wb_intercon:
-        generator : wb_intercon_gen
-        parameters:
-          masters:
-            or1k_i:
-              slaves:
-                - sdram_ibus
-                - rom0
-            dbus:
-              slaves: [sdram_dbus, uart0, gpio0, gpio1, spi0]
+   Core                                      Generator
+   ===================================================
+   fusesoc:examples:blinky-generator:1.0.0 : blinky-generator : Generate multiblinky, a file with multiple blinky instances
 
-          slaves:
-            sdram_dbus:
-              offset : 0
-              size : 0x2000000
 
-            sdram_ibus:
-              offset: 0
-              size: 0x2000000
+Invoking a generator
+--------------------
 
-            uart0:
-              datawidth: 8
-              offset: 0x90000000
-              size: 32
+The final piece of the generators machinery is to parametrize and invoke the generator.
+The example below shows the ``multiblinky.core`` file, which makes use of the ``blinky-generator`` generator.
 
-            gpio0:
-              datawidth: 8
-              offset: 0x91000000
-              size: 2
+.. literalinclude:: ../../../../tests/userguide/multiblinky/multiblinky.core
+   :language: yaml
+   :caption: ``multiblinky.core``
+   :name: ug_build_system_generators_multiblinky_core
+   :end-at: toplevel: multiblinky
 
-            gpio1:
-              datawidth: 8
-              offset: 0x92000000
-              size: 2
+Three steps are necessary to invoke a generator:
 
-            spi0:
-              datawidth: 8
-              offset: 0xb0000000
-              size: 8
+#. Depend on the generator :term:`core` (the core file containing the ``generator`` section).
+#. Add a ``generate`` section to define a named parametrized **generator instance**.
+#. Add the generator instance to the desired target(s).
 
-            rom0:
-              offset: 0xf0000000
-              size: 1024
+The ``generate`` section has a sub-section for each named generator instance.
+The following attributes are available in each ``generate.NAME`` section.
 
-The above core file snippet will register a parametrized generator instance with the name wb_intercon. It will use the generator called `wb_intercon_gen` which FuseSoC has previously found in the depedency tree. Everything listed under the `parameters` key is instance-specific configuration to be sent to the generator.
+* ``generator``: Name of the generator (matching the ``generator.NAME.name`` attribute).
+* ``parameters``: A :term:`YAML` data structure with parameters.
+  This structure is passed on without modification to the generator, allowing the passing of arbitrary data types, including nested structures.
 
-Just registering a generate section will not cause the generator to be invoked. It must also be listed in the target and the generator to be used must be in the dependency tree. The following snippet adds the parameterized generator to the `default` target and adds an explicit dependency on the core that contains the generator. As CAPI2 cores only allow filesets to have dependencies, an empty fileset for this purpose must be created
-
-.. code:: yaml
-
-    filesets:
-      wb_intercon_dep:
-        depend:
-          [wb_intercon]
-
-    targets:
-      default:
-        filesets : [wb_intercon_dep]
-        generate : [wb_intercon]
+How FuseSoC calls generators
+----------------------------
 
 When FuseSoC is launched and a core target using a generator is processed, the following will happen for each entry in the target's `generate` entry.
 
-1. A key lookup is performed in the core file's `generate` section to find the generator configuration
+1. A key lookup is performed in the core file's `generate` section to find the generator configuration.
 2. FuseSoC checks that it has registered a generator by the name specified in the `generator` entry of the configuration.
 3. FuseSoC calculates a unique VLNV for the generator instance by taking the calling core's VLNV and concatinating the name field with the generator instance name.
 4. A directory is created under <cache_root>/generated with a sanitized version of the calculated VLNV. This directory is where the output from the generator eventually will appear.

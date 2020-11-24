@@ -1,0 +1,45 @@
+CAPI=2:
+name: fusesoc:examples:multiblinky:1.0.0
+description: MultiBlinky, a FuseSoC example with generators
+
+filesets:
+  rtl:
+    # 1. Depend on the core containing the generator.
+    depend:
+      - fusesoc:examples:blinky-generator
+  tb:
+    files:
+      - tb/multiblinky_tb.sv
+    file_type: systemVerilogSource
+
+# 2. Create a named instance of the generator, and pass parameters.
+generate:
+  generated_multiblinky:
+    generator: blinky-generator
+    parameters:
+      blinky_count: 3
+
+targets:
+  default: &default
+    filesets:
+      - rtl
+    # 3. Invoke the generator in the default target.
+    generate:
+      - generated_multiblinky
+    toplevel: multiblinky
+  sim:
+    <<: *default
+    filesets_append:
+      - tb
+    tools:
+      icarus:
+        iverilog_options:
+          - -g2012
+    default_tool: icarus
+    toplevel: multiblinky_tb
+
+parameters:
+  clk_freq_hz:
+    datatype: int
+    description: Frequency of the board clock, in Hz
+    paramtype: vlogparam

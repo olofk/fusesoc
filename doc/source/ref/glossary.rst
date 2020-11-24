@@ -16,6 +16,9 @@ This glossary section explains some of the jargon used.
    core description file
       A file describing a :term:`core`, including source files, available targets, etc.
 
+   GAPI
+      Generator API. A :term:`YAML`-based file format for :ref:`generator <_ug_build_system_generators>` configuration files.
+
    semantic versioning
    SemVer
       Semantic versioning is a convention to give meaning to version numbers.
