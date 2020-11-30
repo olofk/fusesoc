@@ -1,13 +1,15 @@
+***************
 Migration guide
-===============
+***************
 
-FuseSoC strives to be backwards-compatible, but as new features are added to FuseSoC, some older features become obsolete. This chapter contains information on how to migrate away from deprecated features to keep the core description files up-to-date with the latest best practices.
+FuseSoC strives to be backwards-compatible, but as new features are added to FuseSoC, some older features become obsolete.
+This chapter contains information on how to migrate away from deprecated features to keep the core description files up-to-date with the latest best practices.
 
 Migrating from .system files
-----------------------------
+============================
 
 Why
-~~~
+---
 
 The synthesis backends required a separate .system file in addition to
 the .core file. There is however very little information in the .system
@@ -17,7 +19,7 @@ drop the .system file and move the relevant information to the .core
 file instead.
 
 When
-~~~~
+----
 
 ``.system`` files are no longer needed as of FuseSoC 1.6
 
@@ -26,7 +28,7 @@ users to perform the migration, but any equivalent options in the
 ``.core`` file will override the ones in ``.system``
 
 How
-~~~
+---
 
 Perform the following steps to migrate from .system files
 
@@ -45,10 +47,10 @@ Perform the following steps to migrate from .system files
    in the ``.core`` file.
 
 Migrating from plusargs
------------------------
+=======================
 
 Why
-~~~
+---
 
 Up until FuseSoC 1.3, verilog plusargs were the only way to set
 external run-time parameters. Cores could register which plusargs they
@@ -58,14 +60,14 @@ defines, VHDL generics etc, ``parameter`` sections were introduced to
 replace the ``plusargs`` section.
 
 When
-~~~~
+----
 
 ``parameter`` sections were introduced in FuseSoC 1.3
 
 The ``plusargs`` section is still supported to allow time for migrations
 
 How
-~~~
+---
 
 Entries in the ``plusargs`` section are described as
 ``<name> = <type> <description>``. For each of these entries, create a
@@ -84,10 +86,10 @@ be visible to other cores (``scope=public``) or only when this core is
 used as the toplevel (``scope=private``).
 
 Migrating to filesets
----------------------
+=====================
 
 Why
-~~~
+---
 
 Originally only verilog source files were supported. In order to
 make source code handling more generic, filesets were introduced.
@@ -98,14 +100,14 @@ files. The verilog section is still supported for some time to allow
 users to perform the migration.
 
 When
-~~~~
+----
 
 ``fileset`` sections were introduced in FuseSoC 1.4
 
 The ``verilog`` section is still supported to allow time for migrations
 
 How
-~~~
+---
 
 Given a ``verilog`` section with the following contents:
 
@@ -181,10 +183,10 @@ attributes
 and usage are set for each fileset.
 
 Migrating from verilator define_files
--------------------------------------
+=====================================
 
 Why
-~~~
+---
 
 Files specified as ``define_files`` in the verilator core
 section were treated as verilog files containing ```define``
@@ -195,12 +197,12 @@ FuseSoC code base. The decision is therefore made to deprecate this
 functionality and instead require the user to make the conversion.
 
 When
-~~~~
+----
 
 ``verilator define_files`` are no longer converted in FuseSoC 1.7
 
 How
-~~~
+---
 
 The following stand-alone Python script will perform the same function.
 It can also be executed as a ``pre_build`` script to perform the
@@ -227,10 +229,10 @@ conversion automatically before a build
        convert_V2H(sys.argv[1], sys.argv[2])
 
 Redefining build_root
----------------------
+=====================
 
 Why
-~~~
+---
 As an aid for scripts executed during the build process, a number of environment variables were defined. Unfortunately this was done without too much thought and as time moved on, some of these turned out to be a maintenance burden without bringing much benefit, and in some cases without ever being used.
 
 At the same time, the introduction of VLNV and dependency ranges has introduced non-determinism in where the output of a build ends up. For these reasons, it was determined to redefine the rarely used `build_root` variable to point to the the directory containing the work root and exported files. A `--build-root` command-line switch is introduced to explictly set a build_root. Setting `build_root` in `fusesoc.conf` will keep working the same way as before, but the command-line switch takes precedence. CAPI1 cores will no longer export the `BUILD_ROOT` environment variable.
@@ -240,9 +242,9 @@ These changes affects the following cases:
 * Relying on the `BUILD_ROOT` variable in scripts called from CAPI1 cores.
 
 When
-~~~~
+----
 `build_root` was redefined after the release of FuseSoC 1.9.1
 
 How
-~~~
-Any scripts that previously relied on `$BUILD_ROOT` will have to be updated. Note that due to other changes in FuseSoC most of them were unlikely to work at this point anyway.
+---
+Any scripts that previously relied on ``$BUILD_ROOT`` will have to be updated. Note that due to other changes in FuseSoC most of them were unlikely to work at this point anyway.
