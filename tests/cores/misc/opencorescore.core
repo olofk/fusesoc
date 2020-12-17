@@ -1,13 +1,17 @@
-CAPI=1
+CAPI=2:
 # Copyright FuseSoC contributors
 # Licensed under the 2-Clause BSD License, see LICENSE for details.
 # SPDX-License-Identifier: BSD-2-Clause
-
-[main]
-description = Test core for opencores provider
-
-[provider]
-name = opencores
-repo_name = jtag
-repo_root = trunk/tap/rtl/verilog
-revision = 24
+description: Test core for opencores provider
+name: ::opencorescore:0
+provider:
+  name: opencores
+  patches: []
+  repo_name: jtag
+  repo_root: trunk/tap/rtl/verilog
+  revision: '24'
+targets:
+  default:
+    filesets: []
+  sim:
+    toplevel: orpsoc_tb

@@ -1,11 +1,15 @@
-CAPI=1
+CAPI=2:
 # Copyright FuseSoC contributors
 # Licensed under the 2-Clause BSD License, see LICENSE for details.
 # SPDX-License-Identifier: BSD-2-Clause
-
-[main]
-description = Test core for git provider
-
-[provider]
-name = git
-repo = https://github.com/fusesoc/wb_common
+description: Test core for git provider
+name: ::gitcore:0
+provider:
+  name: git
+  patches: []
+  repo: https://github.com/fusesoc/wb_common
+targets:
+  default:
+    filesets: []
+  sim:
+    toplevel: orpsoc_tb

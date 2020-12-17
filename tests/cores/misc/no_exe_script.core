@@ -1,9 +1,35 @@
-CAPI=1
+CAPI=2:
 # Copyright FuseSoC contributors
 # Licensed under the 2-Clause BSD License, see LICENSE for details.
 # SPDX-License-Identifier: BSD-2-Clause
-
-[main]
-
-[scripts]
-pre_build_scripts = scripts/no_exe_script
+filesets:
+  pre_build_scripts:
+    file_type: user
+    files:
+    - scripts/no_exe_script
+name: ::no_exe_script:0
+scripts:
+  pre_build_scripts:
+    cmd:
+    - sh
+    - ../src/no_exe_script_0/scripts/no_exe_script
+targets:
+  default:
+    filesets:
+    - pre_build_scripts
+    hooks:
+      pre_build:
+      - pre_build_scripts
+  sim:
+    filesets:
+    - pre_build_scripts
+    hooks:
+      pre_build:
+      - pre_build_scripts
+    toplevel: orpsoc_tb
+  synth:
+    filesets:
+    - pre_build_scripts
+    hooks:
+      pre_build:
+      - pre_build_scripts

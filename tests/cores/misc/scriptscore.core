@@ -1,13 +1,72 @@
-CAPI=1
+CAPI=2:
 # Copyright FuseSoC contributors
 # Licensed under the 2-Clause BSD License, see LICENSE for details.
 # SPDX-License-Identifier: BSD-2-Clause
-
-[main]
-
-[scripts]
-pre_synth_scripts = synthpre_build_scripts0  synthpre_build_scripts1
-post_impl_scripts = synthpost_build_scripts0 synthpost_build_scripts1
-pre_build_scripts = simpre_build_scripts0    simpre_build_scripts1
-pre_run_scripts   = simpre_run_scripts0      simpre_run_scripts1
-post_run_scripts  = simpost_run_scripts0     simpost_run_scripts1
+filesets:
+  post_run_scripts:
+    file_type: user
+    files:
+    - simpost_run_scripts0
+    - simpost_run_scripts1
+  pre_build_scripts:
+    file_type: user
+    files:
+    - simpre_build_scripts0
+    - simpre_build_scripts1
+  pre_run_scripts:
+    file_type: user
+    files:
+    - simpre_run_scripts0
+    - simpre_run_scripts1
+name: ::scriptscore:0
+scripts:
+  post_run_scripts:
+    cmd:
+    - sh
+    - ../src/scriptscore_0/simpost_run_scripts0
+  pre_build_scripts:
+    cmd:
+    - sh
+    - ../src/scriptscore_0/simpre_build_scripts0
+  pre_run_scripts:
+    cmd:
+    - sh
+    - ../src/scriptscore_0/simpre_run_scripts0
+targets:
+  default:
+    filesets:
+    - pre_build_scripts
+    - pre_run_scripts
+    - post_run_scripts
+    hooks:
+      post_run:
+      - post_run_scripts
+      pre_build:
+      - pre_build_scripts
+      pre_run:
+      - pre_run_scripts
+  sim:
+    filesets:
+    - pre_build_scripts
+    - pre_run_scripts
+    - post_run_scripts
+    hooks:
+      post_run:
+      - post_run_scripts
+      pre_build:
+      - pre_build_scripts
+      pre_run:
+      - pre_run_scripts
+    toplevel: orpsoc_tb
+  synth:
+    filesets:
+    - pre_build_scripts
+    - pre_run_scripts
+    - post_run_scripts
+    hooks:
+      post_run:
+      - post_run_scripts
+      pre_build:
+      - pre_build_scripts
+      pre_run:
+      - pre_run_scripts

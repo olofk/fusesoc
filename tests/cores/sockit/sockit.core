@@ -1,48 +1,68 @@
-CAPI=1
+CAPI=2:
 # Copyright FuseSoC contributors
 # Licensed under the 2-Clause BSD License, see LICENSE for details.
 # SPDX-License-Identifier: BSD-2-Clause
-
-[main]
-name = sockit-1.0
-description = "Arrow/Terasic SoCKit board"
-backend = quartus
-depend =
- filetypes
- jtag_tap
- wb_intercon
- adv_debug_sys
- mor1kx
- uart16550-1.5
- gpio
- paramtest
- vga_lcd
-
-simulators =
- icarus
-
-[verilog]
-src_files =
- rtl/verilog/clkgen.v
- rtl/verilog/orpsoc_top.v
- rtl/verilog/rom.v
- rtl/verilog/wb_intercon.v
-
-include_files =
- rtl/verilog/include/orpsoc-defines.v
- rtl/verilog/include/timescale.v
- rtl/verilog/include/uart_defines.v
- rtl/verilog/wb_intercon.vh
-
-[fileset qsys]
-files = data/sockit.qsys
-file_type = QSYS
-usage = quartus
-
-[quartus]
-family = "Cyclone V"
-device = 5CSXFC6D6F31C8ES
-sdc_files = data/sockit.sdc
-tcl_files = data/pinmap.tcl
-qsys_files = data/sockit.qsys
-quartus_options = --64bit
+description: Arrow/Terasic SoCKit board
+filesets:
+  backend_files:
+    file_type: QSYS
+    files:
+    - data/sockit.qsys
+    - data/sockit.sdc:
+        file_type: SDC
+    - data/pinmap.tcl:
+        file_type: tclSource
+  qsys:
+    file_type: QSYS
+    files:
+    - data/sockit.qsys
+  verilog_src_files:
+    depend:
+    - '>=::filetypes:0'
+    - '>=::jtag_tap:0'
+    - '>=::wb_intercon:0'
+    - '>=::adv_debug_sys:0'
+    - '>=::mor1kx:0'
+    - ::uart16550:1.5
+    - '>=::gpio:0'
+    - '>=::paramtest:0'
+    - '>=::vga_lcd:0'
+    file_type: verilogSource
+    files:
+    - rtl/verilog/include/orpsoc-defines.v:
+        is_include_file: true
+    - rtl/verilog/include/timescale.v:
+        is_include_file: true
+    - rtl/verilog/include/uart_defines.v:
+        is_include_file: true
+    - rtl/verilog/wb_intercon.vh:
+        is_include_file: true
+    - rtl/verilog/clkgen.v
+    - rtl/verilog/orpsoc_top.v
+    - rtl/verilog/rom.v
+    - rtl/verilog/wb_intercon.v
+name: ::sockit:1.0
+targets:
+  default:
+    filesets:
+    - verilog_src_files
+    - qsys
+  sim:
+    default_tool: icarus
+    filesets:
+    - verilog_src_files
+    - verilog_tb_src_files
+    - verilog_tb_private_src_files
+    toplevel: orpsoc_tb
+  synth:
+    default_tool: quartus
+    filesets:
+    - verilog_src_files
+    - qsys
+    - backend_files
+    tools:
+      quartus:
+        device: 5CSXFC6D6F31C8ES
+        family: Cyclone V
+        quartus_options: --64bit
+    toplevel: orpsoc_top

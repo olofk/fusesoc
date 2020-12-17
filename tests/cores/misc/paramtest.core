@@ -1,78 +1,111 @@
-CAPI=1
+CAPI=2:
 # Copyright FuseSoC contributors
 # Licensed under the 2-Clause BSD License, see LICENSE for details.
 # SPDX-License-Identifier: BSD-2-Clause
-
-[main]
-
-[parameter vlogparam_bool]
-datatype  = bool
-description = boolean verilog parameter
-paramtype = vlogparam
-scope = public
-
-[parameter vlogparam_int]
-datatype  = int
-description = integer verilog parameter
-paramtype = vlogparam
-scope = public
-
-[parameter vlogparam_str]
-datatype  = str
-description = string verilog parameter
-paramtype = vlogparam
-scope = public
-
-[parameter vlogdefine_bool]
-datatype  = bool
-description = boolean verilog define
-paramtype = vlogdefine
-scope = public
-
-[parameter vlogdefine_int]
-datatype  = int
-description = integer verilog define
-paramtype = vlogdefine
-scope = public
-
-[parameter vlogdefine_str]
-datatype  = str
-description = string verilog define
-paramtype = vlogdefine
-scope = public
-
-[parameter plusarg_bool]
-datatype  = bool
-description = boolean verilog plusarg
-paramtype = plusarg
-scope = public
-
-[parameter plusarg_int]
-datatype  = int
-description = integer verilog plusarg
-paramtype = plusarg
-scope = public
-
-[parameter plusarg_str]
-datatype  = str
-description = string verilog plusarg
-paramtype = plusarg
-scope = public
-
-[parameter cmdlinearg_bool]
-datatype  = bool
-description = boolean verilog cmdlinearg
-paramtype = cmdlinearg
-scope = public
-
-[parameter cmdlinearg_int]
-datatype  = int
-description = integer verilog cmdlinearg
-paramtype = cmdlinearg
-scope = public
-
-[parameter cmdlinearg_str]
-datatype  = str
-description = string verilog cmdlinearg
-paramtype = cmdlinearg
-scope = public
+name: ::paramtest:0
+parameters:
+  cmdlinearg_bool:
+    datatype: bool
+    description: boolean verilog cmdlinearg
+    paramtype: cmdlinearg
+    scope: public
+  cmdlinearg_int:
+    datatype: int
+    description: integer verilog cmdlinearg
+    paramtype: cmdlinearg
+    scope: public
+  cmdlinearg_str:
+    datatype: str
+    description: string verilog cmdlinearg
+    paramtype: cmdlinearg
+    scope: public
+  plusarg_bool:
+    datatype: bool
+    description: boolean verilog plusarg
+    paramtype: plusarg
+    scope: public
+  plusarg_int:
+    datatype: int
+    description: integer verilog plusarg
+    paramtype: plusarg
+    scope: public
+  plusarg_str:
+    datatype: str
+    description: string verilog plusarg
+    paramtype: plusarg
+    scope: public
+  vlogdefine_bool:
+    datatype: bool
+    description: boolean verilog define
+    paramtype: vlogdefine
+    scope: public
+  vlogdefine_int:
+    datatype: int
+    description: integer verilog define
+    paramtype: vlogdefine
+    scope: public
+  vlogdefine_str:
+    datatype: str
+    description: string verilog define
+    paramtype: vlogdefine
+    scope: public
+  vlogparam_bool:
+    datatype: bool
+    description: boolean verilog parameter
+    paramtype: vlogparam
+    scope: public
+  vlogparam_int:
+    datatype: int
+    description: integer verilog parameter
+    paramtype: vlogparam
+    scope: public
+  vlogparam_str:
+    datatype: str
+    description: string verilog parameter
+    paramtype: vlogparam
+    scope: public
+targets:
+  default:
+    filesets: []
+    parameters:
+    - vlogparam_bool
+    - vlogparam_int
+    - vlogparam_str
+    - vlogdefine_bool
+    - vlogdefine_int
+    - vlogdefine_str
+    - plusarg_bool
+    - plusarg_int
+    - plusarg_str
+    - cmdlinearg_bool
+    - cmdlinearg_int
+    - cmdlinearg_str
+  sim:
+    parameters:
+    - vlogparam_bool
+    - vlogparam_int
+    - vlogparam_str
+    - vlogdefine_bool
+    - vlogdefine_int
+    - vlogdefine_str
+    - plusarg_bool
+    - plusarg_int
+    - plusarg_str
+    - cmdlinearg_bool
+    - cmdlinearg_int
+    - cmdlinearg_str
+    toplevel: orpsoc_tb
+  synth:
+    parameters:
+    - vlogparam_bool
+    - vlogparam_int
+    - vlogparam_str
+    - vlogdefine_bool
+    - vlogdefine_int
+    - vlogdefine_str
+    - plusarg_bool
+    - plusarg_int
+    - plusarg_str
+    - cmdlinearg_bool
+    - cmdlinearg_int
+    - cmdlinearg_str

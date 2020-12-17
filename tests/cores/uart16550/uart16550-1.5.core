@@ -1,26 +1,39 @@
-CAPI=1
+CAPI=2:
 # Copyright FuseSoC contributors
 # Licensed under the 2-Clause BSD License, see LICENSE for details.
 # SPDX-License-Identifier: BSD-2-Clause
-
-[main]
-description = UART 16550 transceiver
-
-[verilog]
-src_files =
- rtl/verilog/raminfr.v
- rtl/verilog/uart_debug_if.v
- rtl/verilog/uart_receiver.v
- rtl/verilog/uart_regs.v
- rtl/verilog/uart_rfifo.v
- rtl/verilog/uart_sync_flops.v
- rtl/verilog/uart_tfifo.v
- rtl/verilog/uart_top.v
- rtl/verilog/uart_transmitter.v
- rtl/verilog/uart_wb.v
-
-[provider]
-name = github
-user = olofk
-repo = uart16550
-version = rel_5
+description: UART 16550 transceiver
+filesets:
+  verilog_src_files:
+    file_type: verilogSource
+    files:
+    - rtl/verilog/raminfr.v
+    - rtl/verilog/uart_debug_if.v
+    - rtl/verilog/uart_receiver.v
+    - rtl/verilog/uart_regs.v
+    - rtl/verilog/uart_rfifo.v
+    - rtl/verilog/uart_sync_flops.v
+    - rtl/verilog/uart_tfifo.v
+    - rtl/verilog/uart_top.v
+    - rtl/verilog/uart_transmitter.v
+    - rtl/verilog/uart_wb.v
+name: ::uart16550:1.5
+provider:
+  name: github
+  patches: []
+  repo: uart16550
+  user: olofk
+  version: rel_5
+targets:
+  default:
+    filesets:
+    - verilog_src_files
+  sim:
+    filesets:
+    - verilog_src_files
+    - verilog_tb_src_files
+    - verilog_tb_private_src_files
+    toplevel: orpsoc_tb
+  synth:
+    filesets:
+    - verilog_src_files

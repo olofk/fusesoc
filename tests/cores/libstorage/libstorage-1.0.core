@@ -1,23 +1,28 @@
-CAPI=1
-# Copyright FuseSoC contributors
-# Licensed under the 2-Clause BSD License, see LICENSE for details.
-# SPDX-License-Identifier: BSD-2-Clause
-
-[main]
-
-[fileset src_files]
-files =
- rtl/vhdl/suv/libstorage_pkg.vhd
- rtl/vhdl/suv/dpram_generic.vhd
- rtl/vhdl/suv/fifo_fwft_adapter.vhd
- rtl/vhdl/suv/fifo_generic.vhd
- rtl/vhdl/suv/fifo_fwft_generic.vhd
-file_type = vhdlSource-2008
-logical_name=libstorage_1
-usage = sim synth
-
-[provider]
-name = github
-user = olofk
-repo = libstorage
-version = master
+CAPI=2:
+filesets:
+  src_files:
+    file_type: vhdlSource-2008
+    files:
+    - rtl/vhdl/suv/libstorage_pkg.vhd
+    - rtl/vhdl/suv/dpram_generic.vhd
+    - rtl/vhdl/suv/fifo_fwft_adapter.vhd
+    - rtl/vhdl/suv/fifo_generic.vhd
+    - rtl/vhdl/suv/fifo_fwft_generic.vhd
+name: ::libstorage:1.0
+provider:
+  name: github
+  patches: []
+  repo: libstorage
+  user: olofk
+  version: master
+targets:
+  default:
+    filesets:
+    - src_files
+  sim:
+    filesets:
+    - src_files
+    toplevel: orpsoc_tb
+  synth:
+    filesets:
+    - src_files

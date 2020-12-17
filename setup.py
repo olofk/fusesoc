@@ -13,7 +13,7 @@ def read(fname):
 
 setup(
     name="fusesoc",
-    packages=["fusesoc", "fusesoc.capi1", "fusesoc.capi2", "fusesoc.provider"],
+    packages=["fusesoc", "fusesoc.capi2", "fusesoc.provider"],
     use_scm_version={
         "relative_to": __file__,
         "write_to": "fusesoc/version.py",
@@ -51,7 +51,6 @@ setup(
     ],
     install_requires=[
         "edalize>=0.2.3",
-        "ipyxact>=0.2.3",
         "pyparsing",
         "pyyaml",
         "simplesat>=0.8.0",

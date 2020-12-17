@@ -1,16 +1,27 @@
-CAPI=1
-# Copyright FuseSoC contributors
-# Licensed under the 2-Clause BSD License, see LICENSE for details.
-# SPDX-License-Identifier: BSD-2-Clause
-
-[main]
-description = JTAG Tap
-
-[verilog]
-src_files = tap/rtl/verilog/tap_top.v
-
-[provider]
-name = github
-user = olofk
-repo = jtag
-version = v1.13
+CAPI=2:
+description: JTAG Tap
+filesets:
+  verilog_src_files:
+    file_type: verilogSource
+    files:
+    - tap/rtl/verilog/tap_top.v
+name: ::jtag_tap:1.13
+provider:
+  name: github
+  patches: []
+  repo: jtag
+  user: olofk
+  version: v1.13
+targets:
+  default:
+    filesets:
+    - verilog_src_files
+  sim:
+    filesets:
+    - verilog_src_files
+    - verilog_tb_src_files
+    - verilog_tb_private_src_files
+    toplevel: orpsoc_tb
+  synth:
+    filesets:
+    - verilog_src_files

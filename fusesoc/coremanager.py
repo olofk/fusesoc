@@ -206,7 +206,20 @@ class CoreManager:
                 if f.endswith(".core"):
                     core_file = os.path.join(root, f)
                     try:
-                        core = Core(core_file, self.config.cache_root)
+                        if self._detect_capi_version(core_file) != 2:
+                            # Skip core files which are not in CAPI2 format.
+                            logger.error(
+                                "Core file {} is in CAPI1 format, which is not supported "
+                                "any more since FuseSoC 2.0. The core file is ignored. "
+                                "Please migrate your cores to the CAPI2 file format, or "
+                                "use FuseSoC 1.x as stop-gap.".format(core_file)
+                            )
+                            continue
+
+                        core = Core(
+                            core_file,
+                            self.config.cache_root,
+                        )
                         found_cores.append(core)
                     except SyntaxError as e:
                         w = "Parse error. Ignoring file " + core_file + ": " + e.msg
@@ -215,6 +228,40 @@ class CoreManager:
                         w = 'Failed to register "{}" due to unknown provider: {}'
                         logger.warning(w.format(core_file, str(e)))
         return found_cores
+
+    def _detect_capi_version(self, core_file) -> int:
+        """Detect the CAPI version in a .core file
+
+        Returns:
+            Version of the core file (1 or 2)
+        """
+
+        with open(core_file) as f:
+            l = f.readline().split()
+            if l:
+                first_line = l[0]
+            else:
+                first_line = ""
+            if first_line == "CAPI=1":
+                return 1
+            elif first_line == "CAPI=2:":
+                return 2
+            else:
+                error_msg = (
+                    "The first line of the core file {} must be "
+                    ' "CAPI=1" or "CAPI=2:".'.format(core_file)
+                )
+                error_msg += '  The first line of this core file is "{}".'.format(
+                    first_line
+                )
+                if first_line == "CAPI=2":
+                    error_msg += "  Just add a colon on the end!"
+                logger.warning(error_msg)
+                raise ValueError(
+                    "Unable to determine CAPI version from core file {}.".format(
+                        core_file
+                    )
+                )
 
     def _load_cores(self, library):
         found_cores = self.find_cores(library)
