@@ -3,6 +3,7 @@
 # SPDX-License-Identifier: BSD-2-Clause
 
 import logging
+import warnings
 
 from fusesoc.capi1.core import Core as Capi1Core
 from fusesoc.capi2.core import Core as Capi2Core
@@ -19,6 +20,12 @@ class Core:
             else:
                 first_line = ""
             if first_line == "CAPI=1":
+                warnings.warn(
+                    "The CAPI1 core file description format is deprecated and "
+                    "will be removed in the next major version of FuseSoC. "
+                    "Please port your core files to the CAPI2 format.",
+                    FutureWarning,
+                )
                 return Capi1Core(*args, **kwargs)
             elif first_line == "CAPI=2:":
                 return Capi2Core(*args, **kwargs)

@@ -28,6 +28,18 @@ def test_core_info():
             assert f.read() == gen_info, core_name
 
 
+def test_capi1_deprecation_warning():
+    from fusesoc.vlnv import Vlnv
+
+    tests_dir = os.path.dirname(__file__)
+    cores_root = os.path.join(tests_dir, "cores")
+    sockit_core = os.path.join(cores_root, "sockit", "sockit.core")
+
+    with pytest.warns(FutureWarning, match="is deprecated"):
+        core = Core(sockit_core)
+        assert core.name == Vlnv("::sockit:1.0")
+
+
 def test_core_parsing():
     from fusesoc.vlnv import Vlnv
 
