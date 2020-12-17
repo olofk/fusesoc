@@ -1,55 +1,76 @@
-CAPI=1
+CAPI=2:
 # Copyright FuseSoC contributors
 # Licensed under the 2-Clause BSD License, see LICENSE for details.
 # SPDX-License-Identifier: BSD-2-Clause
-
-[main]
-backend = ise
-depend =
- adv_debug_sys
- filetypes
- libstorage
- paramtest
-
-[verilog]
-src_files =
- rtl/verilog/orpsoc_top.v
- rtl/verilog/clkgen.v
- rtl/verilog/rom.v
- rtl/verilog/wb_intercon.v
- rtl/verilog/xilinx_ddr2/ddr2_mig.v
- rtl/verilog/xilinx_ddr2/infrastructure.v
- rtl/verilog/xilinx_ddr2/iodrp_controller.v
- rtl/verilog/xilinx_ddr2/iodrp_mcb_controller.v
- rtl/verilog/xilinx_ddr2/mcb_raw_wrapper.v
- rtl/verilog/xilinx_ddr2/mcb_soft_calibration_top.v
- rtl/verilog/xilinx_ddr2/mcb_soft_calibration.v
- rtl/verilog/xilinx_ddr2/mcb_ui_top.v
- rtl/verilog/xilinx_ddr2/memc_wrapper.v
- rtl/verilog/xilinx_ddr2/xilinx_ddr2_if.v
- rtl/verilog/xilinx_ddr2/xilinx_ddr2.v
- rtl/verilog/dvi_gen/convert_30to15_fifo.v
- rtl/verilog/dvi_gen/dcmspi.v
- rtl/verilog/dvi_gen/DRAM16XN.v
- rtl/verilog/dvi_gen/dvi_encoder.v
- rtl/verilog/dvi_gen/dvi_gen_top.v
- rtl/verilog/dvi_gen/encode.v
- rtl/verilog/dvi_gen/serdes_n_to_1.v
- rtl/verilog/dvi_gen/synchro.v
-
-include_files =
- rtl/verilog/include/or1200_defines.v
- rtl/verilog/include/orpsoc-defines.v
- rtl/verilog/include/timescale.v
- rtl/verilog/include/uart_defines.v
- rtl/verilog/wb_intercon.vh
- rtl/verilog/include/xilinx_ddr2_params.v
-
-[ise]
-ucf_files = data/atlys.ucf
-family = spartan6
-device = xc6slx45
-package = csg324
-speed = -2
-tcl_files = data/dummy_backend_tcl_file.tcl
-top_module = orpsoc_top
+filesets:
+  backend_files:
+    file_type: tclSource
+    files:
+    - data/dummy_backend_tcl_file.tcl
+    - data/atlys.ucf:
+        file_type: UCF
+  verilog_src_files:
+    depend:
+    - '>=::adv_debug_sys:0'
+    - '>=::filetypes:0'
+    - '>=::libstorage:0'
+    - '>=::paramtest:0'
+    file_type: verilogSource
+    files:
+    - rtl/verilog/include/or1200_defines.v:
+        is_include_file: true
+    - rtl/verilog/include/orpsoc-defines.v:
+        is_include_file: true
+    - rtl/verilog/include/timescale.v:
+        is_include_file: true
+    - rtl/verilog/include/uart_defines.v:
+        is_include_file: true
+    - rtl/verilog/wb_intercon.vh:
+        is_include_file: true
+    - rtl/verilog/include/xilinx_ddr2_params.v:
+        is_include_file: true
+    - rtl/verilog/orpsoc_top.v
+    - rtl/verilog/clkgen.v
+    - rtl/verilog/rom.v
+    - rtl/verilog/wb_intercon.v
+    - rtl/verilog/xilinx_ddr2/ddr2_mig.v
+    - rtl/verilog/xilinx_ddr2/infrastructure.v
+    - rtl/verilog/xilinx_ddr2/iodrp_controller.v
+    - rtl/verilog/xilinx_ddr2/iodrp_mcb_controller.v
+    - rtl/verilog/xilinx_ddr2/mcb_raw_wrapper.v
+    - rtl/verilog/xilinx_ddr2/mcb_soft_calibration_top.v
+    - rtl/verilog/xilinx_ddr2/mcb_soft_calibration.v
+    - rtl/verilog/xilinx_ddr2/mcb_ui_top.v
+    - rtl/verilog/xilinx_ddr2/memc_wrapper.v
+    - rtl/verilog/xilinx_ddr2/xilinx_ddr2_if.v
+    - rtl/verilog/xilinx_ddr2/xilinx_ddr2.v
+    - rtl/verilog/dvi_gen/convert_30to15_fifo.v
+    - rtl/verilog/dvi_gen/dcmspi.v
+    - rtl/verilog/dvi_gen/DRAM16XN.v
+    - rtl/verilog/dvi_gen/dvi_encoder.v
+    - rtl/verilog/dvi_gen/dvi_gen_top.v
+    - rtl/verilog/dvi_gen/encode.v
+    - rtl/verilog/dvi_gen/serdes_n_to_1.v
+    - rtl/verilog/dvi_gen/synchro.v
+name: ::atlys:0
+targets:
+  default:
+    filesets:
+    - verilog_src_files
+  sim:
+    filesets:
+    - verilog_src_files
+    - verilog_tb_src_files
+    - verilog_tb_private_src_files
+    toplevel: orpsoc_tb
+  synth:
+    default_tool: ise
+    filesets:
+    - verilog_src_files
+    - backend_files
+    tools:
+      ise:
+        device: xc6slx45
+        family: spartan6
+        package: csg324
+    toplevel: orpsoc_top

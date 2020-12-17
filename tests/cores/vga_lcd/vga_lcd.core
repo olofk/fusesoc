@@ -1,34 +1,47 @@
-CAPI=1
+CAPI=2:
 # Copyright FuseSoC contributors
 # Licensed under the 2-Clause BSD License, see LICENSE for details.
 # SPDX-License-Identifier: BSD-2-Clause
-
-[main]
-description = "VGA/LCD Controller core"
-
-[verilog]
-src_files =
- rtl/verilog/generic_dpram.v
- rtl/verilog/generic_spram.v
- rtl/verilog/timescale.v
- rtl/verilog/vga_clkgen.v
- rtl/verilog/vga_colproc.v
- rtl/verilog/vga_csm_pb.v
- rtl/verilog/vga_cur_cregs.v
- rtl/verilog/vga_curproc.v
- rtl/verilog/vga_enh_top.v
- rtl/verilog/vga_fifo_dc.v
- rtl/verilog/vga_fifo.v
- rtl/verilog/vga_pgen.v
- rtl/verilog/vga_tgen.v
- rtl/verilog/vga_vtim.v
- rtl/verilog/vga_wb_master.v
- rtl/verilog/vga_wb_slave.v
-include_files =
- rtl/verilog/vga_defines.v
-
-[provider]
-name = github
-user = olofk
-repo = vga_lcd
-version = 4c0f93996e5bdba8f20edd6c83f527882a890284
+description: VGA/LCD Controller core
+filesets:
+  verilog_src_files:
+    file_type: verilogSource
+    files:
+    - rtl/verilog/vga_defines.v:
+        is_include_file: true
+    - rtl/verilog/generic_dpram.v
+    - rtl/verilog/generic_spram.v
+    - rtl/verilog/timescale.v
+    - rtl/verilog/vga_clkgen.v
+    - rtl/verilog/vga_colproc.v
+    - rtl/verilog/vga_csm_pb.v
+    - rtl/verilog/vga_cur_cregs.v
+    - rtl/verilog/vga_curproc.v
+    - rtl/verilog/vga_enh_top.v
+    - rtl/verilog/vga_fifo_dc.v
+    - rtl/verilog/vga_fifo.v
+    - rtl/verilog/vga_pgen.v
+    - rtl/verilog/vga_tgen.v
+    - rtl/verilog/vga_vtim.v
+    - rtl/verilog/vga_wb_master.v
+    - rtl/verilog/vga_wb_slave.v
+name: ::vga_lcd:0
+provider:
+  name: github
+  patches: []
+  repo: vga_lcd
+  user: olofk
+  version: 4c0f93996e5bdba8f20edd6c83f527882a890284
+targets:
+  default:
+    filesets:
+    - verilog_src_files
+  sim:
+    filesets:
+    - verilog_src_files
+    - verilog_tb_src_files
+    - verilog_tb_private_src_files
+    toplevel: orpsoc_tb
+  synth:
+    filesets:
+    - verilog_src_files

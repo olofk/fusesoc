@@ -1,44 +1,60 @@
-CAPI=1
-# Copyright FuseSoC contributors
-# Licensed under the 2-Clause BSD License, see LICENSE for details.
-# SPDX-License-Identifier: BSD-2-Clause
-
-[main]
-
-simulators = icarus
-backend = icestorm
-
-depend = paramtest
-
-[fileset rtl_files]
-files =
- c3demo.v
- ledpanel.v[is_include_file]
- picorv32.v
-file_type = verilogSource
-
-[fileset tb_files]
-files =
- firmware.hex[is_include_file]
- $YOSYS_DAT_DIR/ice40/cells_sim.v
- testbench.v
-file_type = verilogSource
-usage = sim
-
-[simulator]
-toplevel = testbench
-
-[parameter firmware_file]
-datatype = file
-description = "Firmware"
-paramtype = vlogparam
-scope = private
-
-[scripts]
-pre_synth_scripts = scripts/pre_build_script
-post_impl_scripts = scripts/post_build_script
-
-[icestorm]
-arachne_pnr_options = -s 1 -d 8k
-pcf_file = c3demo.pcf
-top_module = c3demo
+CAPI=2:
+filesets:
+  backend_files:
+    file_type: PCF
+    files:
+    - c3demo.pcf
+  rtl_files:
+    depend:
+    - '>=::paramtest:0'
+    file_type: verilogSource
+    files:
+    - c3demo.v
+    - ledpanel.v:
+        is_include_file: true
+    - picorv32.v
+  tb_files:
+    file_type: verilogSource
+    files:
+    - firmware.hex:
+        is_include_file: true
+    - $YOSYS_DAT_DIR/ice40/cells_sim.v
+    - testbench.v
+name: ::c3demo:0
+parameters:
+  firmware_file:
+    datatype: file
+    description: '"Firmware"'
+    paramtype: vlogparam
+    scope: private
+scripts: {}
+targets:
+  default:
+    filesets:
+    - rtl_files
+    - tb_files
+    parameters:
+    - firmware_file
+  sim:
+    default_tool: icarus
+    filesets:
+    - rtl_files
+    - tb_files
+    parameters:
+    - firmware_file
+    toplevel: testbench
+  synth:
+    default_tool: icestorm
+    filesets:
+    - rtl_files
+    - backend_files
+    parameters:
+    - firmware_file
+    tools:
+      icestorm:
+        arachne_pnr_options:
+        - -s
+        - '1'
+        - -d
+        - 8k
+    toplevel: c3demo

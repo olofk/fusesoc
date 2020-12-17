@@ -1,20 +1,40 @@
-CAPI=1
+CAPI=2:
 # Copyright FuseSoC contributors
 # Licensed under the 2-Clause BSD License, see LICENSE for details.
 # SPDX-License-Identifier: BSD-2-Clause
-
-[main]
-
-[fileset file_types]
-files =
- qip_file.qip[file_type=QIP]
- sv_file.sv[file_type=systemVerilogSource]
- ucf_file.ucf[file_type=UCF]
- user_file[file_type=user]
- tcl_file.tcl[file_type=tclSource]
- vlog_file.v[file_type=verilogSource]
- vhdl_file.vhd[file_type=vhdlSource]
- vhdl_lib_file.vhd[file_type=vhdlSource,logical_name=libx]
- vhdl2008_file.vhd[file_type=vhdlSource-2008]
- xci_file.xci[file_type=xci]
- xdc_file[file_type=xdc]
+filesets:
+  file_types:
+    file_type: vhdlSource
+    files:
+    - qip_file.qip:
+        file_type: QIP
+    - sv_file.sv:
+        file_type: systemVerilogSource
+    - ucf_file.ucf:
+        file_type: UCF
+    - user_file:
+        file_type: user
+    - tcl_file.tcl:
+        file_type: tclSource
+    - vlog_file.v:
+        file_type: verilogSource
+    - vhdl_file.vhd
+    - vhdl_lib_file.vhd
+    - vhdl2008_file.vhd:
+        file_type: vhdlSource-2008
+    - xci_file.xci:
+        file_type: xci
+    - xdc_file:
+        file_type: xdc
+name: ::filetypes:0
+targets:
+  default:
+    filesets:
+    - file_types
+  sim:
+    filesets:
+    - file_types
+    toplevel: orpsoc_tb
+  synth:
+    filesets:
+    - file_types

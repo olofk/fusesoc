@@ -41,9 +41,9 @@ def test_empty_core():
     from fusesoc.core import Core
 
     core_file = os.path.join(tests_dir, "capi2_cores", "misc", "empty.core")
-    with pytest.raises(RuntimeError) as excinfo:
+    with pytest.raises(SyntaxError) as excinfo:
         core = Core(core_file)
-    assert "Unknown file type" in str(excinfo.value)
+    assert "Error while trying to parse the core file" in str(excinfo.value)
 
 
 def test_capi2_export():

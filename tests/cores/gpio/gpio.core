@@ -1,10 +1,21 @@
-CAPI=1
-# Copyright FuseSoC contributors
-# Licensed under the 2-Clause BSD License, see LICENSE for details.
-# SPDX-License-Identifier: BSD-2-Clause
-
-[main]
-description = Simple 8-bit gpio core
-
-[verilog]
-src_files = gpio.v
+CAPI=2:
+description: Simple 8-bit gpio core
+filesets:
+  verilog_src_files:
+    file_type: verilogSource
+    files:
+    - gpio.v
+name: ::gpio:0
+targets:
+  default:
+    filesets:
+    - verilog_src_files
+  sim:
+    filesets:
+    - verilog_src_files
+    - verilog_tb_src_files
+    - verilog_tb_private_src_files
+    toplevel: orpsoc_tb
+  synth:
+    filesets:
+    - verilog_src_files

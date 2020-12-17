@@ -1,17 +1,34 @@
-CAPI=1
+CAPI=2:
 # Copyright FuseSoC contributors
 # Licensed under the 2-Clause BSD License, see LICENSE for details.
 # SPDX-License-Identifier: BSD-2-Clause
-
-[main]
-description = "Verilog arbiter"
-
-[verilog]
-src_files = src/arbiter.v
-tb_private_src_files = src/arbiter_tb.v
-
-[provider]
-name = github
-user = bmartini
-repo = verilog-arbiter
-version = b79f89e17f0be3b70a513c1a0b456f734a79273a
+description: Verilog arbiter
+filesets:
+  verilog_src_files:
+    file_type: verilogSource
+    files:
+    - src/arbiter.v
+  verilog_tb_private_src_files:
+    file_type: verilogSource
+    files:
+    - src/arbiter_tb.v
+name: ::verilog-arbiter:0-r1
+provider:
+  name: github
+  patches: []
+  repo: verilog-arbiter
+  user: bmartini
+  version: b79f89e17f0be3b70a513c1a0b456f734a79273a
+targets:
+  default:
+    filesets:
+    - verilog_src_files
+  sim:
+    filesets:
+    - verilog_src_files
+    - verilog_tb_src_files
+    - verilog_tb_private_src_files
+    toplevel: orpsoc_tb
+  synth:
+    filesets:
+    - verilog_src_files

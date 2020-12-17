@@ -1,13 +1,31 @@
-CAPI=1
+CAPI=2:
 # Copyright FuseSoC contributors
 # Licensed under the 2-Clause BSD License, see LICENSE for details.
 # SPDX-License-Identifier: BSD-2-Clause
-
-[main]
-description = "Verilator test bench utility class"
-depend = elf-loader
-
-[verilator]
-source_type = CPP
-src_files = verilator_tb_utils.cpp jtagServer.cpp
-include_files = verilator_tb_utils.h jtagServer.h
+description: Verilator test bench utility class
+filesets:
+  verilator_src_files:
+    file_type: cppSource
+    files:
+    - verilator_tb_utils.cpp
+    - jtagServer.cpp
+    - verilator_tb_utils.h:
+        is_include_file: true
+    - jtagServer.h:
+        is_include_file: true
+name: ::verilator_tb_utils:0
+targets:
+  default:
+    filesets:
+    - verilator_src_files
+  sim:
+    toplevel: orpsoc_tb
+  synth:
+    default_tool: verilator
+    filesets:
+    - verilator_src_files
+    tools:
+      verilator:
+        cli_parser: passthrough
+        mode: cc
+    toplevel: ''

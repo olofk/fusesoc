@@ -1,1 +1,10 @@
-CAPI=1
+CAPI=2:
+# Copyright FuseSoC contributors
+# Licensed under the 2-Clause BSD License, see LICENSE for details.
+# SPDX-License-Identifier: BSD-2-Clause
+name: ::nomain:0
+targets:
+  default:
+    filesets: []
+  sim:
+    toplevel: orpsoc_tb

@@ -157,6 +157,8 @@ class Core:
             raise SyntaxError(f"Unknown item {e}")
         except (yaml.scanner.ScannerError, yaml.constructor.ConstructorError) as e:
             raise SyntaxError(str(e))
+        except AttributeError as e:
+            raise SyntaxError("Error while trying to parse the core file: " + str(e))
         for i in _root.members:
             setattr(self, i, getattr(_root, i))
         for i in _root.lists:
