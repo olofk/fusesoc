@@ -9,6 +9,29 @@ tests_dir = os.path.dirname(__file__)
 cores_dir = os.path.join(tests_dir, "capi2_cores", "misc")
 
 
+def test_files_out_of_hierarchy():
+    import os
+    import tempfile
+    from fusesoc.core import Core
+
+    core_file = os.path.join(
+        tests_dir,
+        "capi2_cores",
+        "files_out_of_hierarchy",
+        "subdir",
+        "files_out_of_hierarchy.core",
+    )
+    core = Core(core_file)
+    export_root = tempfile.mkdtemp(prefix="capi2_files_out_of_hierarchy_")
+
+    with pytest.warns(FutureWarning, match="not within the directory"):
+        core.export(export_root, {"target": "bad", "is_toplevel": True})
+
+    with pytest.warns(None) as record:
+        core.export(export_root, {"target": "good", "is_toplevel": True})
+    assert not record
+
+
 def test_empty_core():
     import os
     import tempfile
