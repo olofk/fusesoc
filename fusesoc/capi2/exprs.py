@@ -141,7 +141,7 @@ def _parse(string):
         raw_ast = _get_parser().parseString(string, parseAll=True)
     except ParseException as err:
         raise ValueError(
-            "Invalid syntax for string: {}. Parsed text was {!r}.".format(err, string)
+            f"Invalid syntax for string: {err}. Parsed text was {string!r}."
         ) from None
 
     return _simplify_ast(raw_ast)

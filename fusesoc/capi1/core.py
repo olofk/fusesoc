@@ -117,7 +117,7 @@ class Core:
             try:
                 self.backend = getattr(self, self.main.backend)
             except AttributeError:
-                raise SyntaxError('Invalid backend "{}"'.format(self.main.backend))
+                raise SyntaxError(f'Invalid backend "{self.main.backend}"')
 
         self._collect_filesets()
 
@@ -194,7 +194,7 @@ class Core:
                 for field in ["default", "description"]:
                     if getattr(v, field):
                         parameters[k][field] = getattr(v, field)
-        self._debug("Found parameters {}".format(parameters))
+        self._debug(f"Found parameters {parameters}")
         return parameters
 
     def get_scripts(self, files_root, flags):
@@ -238,7 +238,7 @@ class Core:
             toplevel = flags["testbench"]
         else:
             toplevel = self.simulator["toplevel"]
-        self._debug("Matched toplevel {}".format(toplevel))
+        self._debug(f"Matched toplevel {toplevel}")
         return toplevel
 
     def get_tool(self, flags):
@@ -253,7 +253,7 @@ class Core:
         else:
             if len(self.simulators) > 0:
                 tool = self.simulators[0]
-        self._debug(" Matched tool {}".format(tool))
+        self._debug(f" Matched tool {tool}")
         return tool
 
     def get_tool_options(self, flags):
@@ -327,7 +327,7 @@ class Core:
         return options
 
     def get_vpi(self, flags):
-        self._debug("Getting VPI libraries for flags {}".format(flags))
+        self._debug(f"Getting VPI libraries for flags {flags}")
         vpi = []
         if self.vpi:
             vpi.append(
@@ -611,13 +611,13 @@ Common dependencies  : {}\n\n"""
             if obj:
                 if type(obj) == OrderedDict:
                     for k, v in obj.items():
-                        s += "== {} {} ==\n{}\n".format(sec, k, v)
+                        s += f"== {sec} {k} ==\n{v}\n"
                 else:
-                    s += "== {} ==\n{}\n".format(sec, obj)
+                    s += f"== {sec} ==\n{obj}\n"
         s += "File sets:\n"
         for fs in self.file_sets:
             s += str(fs) + "\n"
 
         if self.main.backend:
-            s += "\n== Backend {} ==\n{}\n".format(self.main.backend, self.backend)
+            s += f"\n== Backend {self.main.backend} ==\n{self.backend}\n"
         return s

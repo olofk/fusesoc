@@ -35,11 +35,11 @@ class CoreDB:
 
     # simplesat doesn't allow ':', '-' or leading '_'
     def _package_name(self, vlnv):
-        _name = "{}_{}_{}".format(vlnv.vendor, vlnv.library, vlnv.name).lstrip("_")
+        _name = f"{vlnv.vendor}_{vlnv.library}_{vlnv.name}".lstrip("_")
         return _name.replace("-", "__")
 
     def _package_version(self, vlnv):
-        return "{}-{}".format(vlnv.version, vlnv.revision)
+        return f"{vlnv.version}-{vlnv.revision}"
 
     def _parse_depend(self, depends):
         # FIXME: Handle conflicts

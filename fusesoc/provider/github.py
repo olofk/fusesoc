@@ -31,11 +31,11 @@ class Github(Provider):
 
         # TODO : Sanitize URL
         url = URL.format(user=user, repo=repo, version=version)
-        logger.info("Downloading {}/{} from github".format(user, repo))
+        logger.info(f"Downloading {user}/{repo} from github")
         try:
             (filename, headers) = urllib.urlretrieve(url)
         except URLError as e:
-            raise RuntimeError("Failed to download '{}'. '{}'".format(url, e.reason))
+            raise RuntimeError(f"Failed to download '{url}'. '{e.reason}'")
         t = tarfile.open(filename)
         (cache_root, core) = os.path.split(local_dir)
 

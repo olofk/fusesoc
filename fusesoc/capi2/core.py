@@ -107,21 +107,17 @@ class Section:
                     try:
                         _l.append(globals()[self.lists[_k]](_item))
                     except TypeError as e:
-                        raise SyntaxError(
-                            "Bad option '{}' in section '{}'".format(_item, k)
-                        )
+                        raise SyntaxError(f"Bad option '{_item}' in section '{k}'")
                 setattr(self, _k, _l)
             elif k in self.dicts:
                 if not isinstance(v, dict):
-                    raise SyntaxError("Object in '{}' section must be a dict".format(k))
+                    raise SyntaxError(f"Object in '{k}' section must be a dict")
                 _d = {}
                 for _name, _items in v.items():
                     try:
                         _d[_name] = globals()[self.dicts[k]](_items)
                     except AttributeError as e:
-                        raise SyntaxError(
-                            "Bad option '{}' in section '{}'".format(_name, k)
-                        )
+                        raise SyntaxError(f"Bad option '{_name}' in section '{k}'")
                     setattr(_d[_name], "name", _name)
                 setattr(self, k, _d)
             else:
@@ -158,7 +154,7 @@ class Core:
         try:
             _root = Root(utils.yaml_fread(self.core_file))
         except KeyError as e:
-            raise SyntaxError("Unknown item {}".format(e))
+            raise SyntaxError(f"Unknown item {e}")
         except (yaml.scanner.ScannerError, yaml.constructor.ConstructorError) as e:
             raise SyntaxError(str(e))
         for i in _root.members:
@@ -299,7 +295,7 @@ class Core:
                 tool = str(target.default_tool)
 
         if tool:
-            self._debug(" Matched tool {}".format(tool))
+            self._debug(f" Matched tool {tool}")
         else:
             self._debug(" Matched no tool")
         return tool
@@ -456,7 +452,7 @@ class Core:
                         p, parameters[p]["datatype"], plist[1]
                     )
 
-            self._debug("Found parameters {}".format(parameters))
+            self._debug(f"Found parameters {parameters}")
         return parameters
 
     def get_toplevel(self, flags):
@@ -466,7 +462,7 @@ class Core:
         target = self._get_target(_flags)
         if target.toplevel:
             toplevel = self._parse_list(_flags, target.toplevel)
-            self._debug("Matched toplevel {}".format(toplevel))
+            self._debug(f"Matched toplevel {toplevel}")
             return " ".join(toplevel)
         else:
             s = "{} : Target '{}' has no toplevel"
@@ -488,7 +484,7 @@ class Core:
                 _ttptttg.append({"name": pf, "params": f.params})
 
         if _ttptttg:
-            self._debug(" Matched generator instances {}".format(_ttptttg))
+            self._debug(f" Matched generator instances {_ttptttg}")
         for gen in _ttptttg:
             gen_name = gen["name"]
             if not gen_name in self.generate:
@@ -548,7 +544,7 @@ class Core:
         return vpi
 
     def get_vpi(self, flags):
-        self._debug("Getting VPI libraries for flags {}".format(flags))
+        self._debug(f"Getting VPI libraries for flags {flags}")
         target = self._get_target(flags)
         vpi = []
         _vpi = self._get_vpi(flags)
@@ -630,7 +626,7 @@ Targets:
             target_name = "default"
 
         if target_name in self.targets:
-            self._debug(" Matched target {}".format(target_name))
+            self._debug(f" Matched target {target_name}")
             return self.targets[target_name]
         else:
             self._debug("Matched no target")
@@ -651,7 +647,7 @@ Targets:
                 )
             filesets.append(self.filesets[fs])
 
-        self._debug(" Matched filesets {}".format(target.filesets))
+        self._debug(f" Matched filesets {target.filesets}")
         return filesets
 
     def _parse_list(self, flags, l):
@@ -913,7 +909,7 @@ for backend in get_edatools():
         tool_options = backend.get_doc(0)
     elif hasattr(backend, "tool_options"):
         _tool_options = getattr(backend, "tool_options")
-        tool_options = {"description": "Options for {} backend".format(backend_name)}
+        tool_options = {"description": f"Options for {backend_name} backend"}
         for group in ["members", "lists", "dicts"]:
             if group in _tool_options:
                 tool_options[group] = []

@@ -124,12 +124,12 @@ def init(cm, args):
     config_file = os.path.join(xdg_config_home, "fusesoc", "fusesoc.conf")
 
     if os.path.exists(config_file):
-        logger.warning("'{}' already exists. Aborting".format(config_file))
+        logger.warning(f"'{config_file}' already exists. Aborting")
         exit(1)
         # TODO. Prepend cores_root to file if it doesn't exist
         f = open(config_file, "w+")
     else:
-        logger.info("Writing configuration file to '{}'".format(config_file))
+        logger.info(f"Writing configuration file to '{config_file}'")
         if not os.path.exists(os.path.dirname(config_file)):
             os.makedirs(os.path.dirname(config_file))
         f = open(config_file, "w+")
@@ -156,7 +156,7 @@ def init(cm, args):
             )
             # TODO: Prompt for overwrite
         else:
-            logger.info("Initializing {}".format(name))
+            logger.info(f"Initializing {name}")
             try:
                 library = Library(name, location, "git", uri, True)
                 config.add_library(library)
@@ -403,7 +403,7 @@ def run_backend(
     build_root = build_root_arg or os.path.join(
         cm.config.build_root, core.name.sanitized_name
     )
-    logger.debug("Setting build_root to {}".format(build_root))
+    logger.debug(f"Setting build_root to {build_root}")
     if export:
         export_root = os.path.join(build_root, "src")
     else:
@@ -420,7 +420,7 @@ def run_backend(
     try:
         backend_class = get_edatool(tool)
     except ImportError:
-        logger.error("Backend {!r} not found".format(tool))
+        logger.error(f"Backend {tool!r} not found")
         exit(1)
 
     edalizer = Edalizer(
@@ -460,7 +460,7 @@ def run_backend(
         logger.error(str(e))
         exit(1)
     except FileNotFoundError as e:
-        logger.error('Could not find EDA API file "{}"'.format(e.filename))
+        logger.error(f'Could not find EDA API file "{e.filename}"')
         exit(1)
 
     if do_configure:
