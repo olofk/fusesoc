@@ -76,7 +76,7 @@ class Vlnv:
             else:
                 self.version = vlnv_parts[3]
         else:
-            raise SyntaxError("Illegal core name '{}'".format(s))
+            raise SyntaxError(f"Illegal core name '{s}'")
 
         if self.version or (self.revision > 0):
             if not self.relation:

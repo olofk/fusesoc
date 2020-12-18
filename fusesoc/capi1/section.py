@@ -785,9 +785,7 @@ def load_section(config, section_name, file_name="<unknown>"):
     if cls is None:
         # Note: The following sections are not in section.py yet
         if not section_name in ["plusargs", "simulator", "provider"]:
-            logger.warning(
-                "Unknown section '{}' in '{}'".format(section_name, file_name)
-            )
+            logger.warning(f"Unknown section '{section_name}' in '{file_name}'")
         return None
 
     items = config.get_section(section_name)
@@ -885,7 +883,7 @@ Sections
             if _typename == "str":
                 _typename = "String"
             else:
-                _typename = "<<{},{}>>".format(_typename, _typename)
+                _typename = f"<<{_typename},{_typename}>>"
             s.append("|{} | {} | {}".format(k2, _typename, v2["desc"]))
         sections += SECTION_TEMPLATE.format(k, "~" * len(k), "\n".join(s))
 

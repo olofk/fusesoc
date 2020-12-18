@@ -29,7 +29,7 @@ sys.path.insert(0, os.path.abspath(os.path.join("..", "..")))
 # -- Project information -----------------------------------------------------
 
 project = "FuseSoC"
-copyright = "2018-{}, Olof Kindgren".format(datetime.now().year)
+copyright = f"2018-{datetime.now().year}, Olof Kindgren"
 author = "Olof Kindgren"
 
 # The full version, including alpha/beta/rc tags.

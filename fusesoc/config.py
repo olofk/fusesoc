@@ -34,7 +34,7 @@ class Config:
                     "fusesoc.conf",
                 ]
             else:
-                logger.debug("Using config file '{}'".format(path))
+                logger.debug(f"Using config file '{path}'")
                 if not os.path.isfile(path):
                     with open(path, "a"):
                         pass

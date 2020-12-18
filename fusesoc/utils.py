@@ -145,7 +145,7 @@ def setup_logging(level, monchrome=False, log_file=None):
         package_logger = logging.getLogger(package)
         package_logger.addHandler(ch)
         package_logger.setLevel(logging.WARNING)
-    logger.debug("Setup logging at level {}.".format(level))
+    logger.debug(f"Setup logging at level {level}.")
 
 
 def yaml_fwrite(filepath, content, preamble=""):

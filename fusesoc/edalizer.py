@@ -62,7 +62,7 @@ class Edalizer:
             return self.core_manager.get_depends(self.toplevel, self.flags)
         except DependencyError as e:
             logger.error(
-                e.msg + "\nFailed to resolve dependencies for {}".format(self.toplevel)
+                e.msg + f"\nFailed to resolve dependencies for {self.toplevel}"
             )
             exit(1)
         except SyntaxError as e:
@@ -294,7 +294,7 @@ class Edalizer:
                         "--" + name,
                         help=_description,
                         default=default,
-                        **typedict[param["datatype"]]
+                        **typedict[param["datatype"]],
                     )
                 except KeyError as e:
                     raise RuntimeError(

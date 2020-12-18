@@ -39,7 +39,7 @@ class Url(Provider):
         try:
             (filename, headers) = urllib.urlretrieve(url)
         except (URLError, HTTPError) as e:
-            raise RuntimeError("Failed to download '{}'. '{}'".format(url, e.reason))
+            raise RuntimeError(f"Failed to download '{url}'. '{e.reason}'")
 
         filetype = self.config.get("filetype")
         if filetype == "tar":

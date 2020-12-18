@@ -16,7 +16,7 @@ logger = logging.getLogger(__name__)
 class Git(Provider):
     @staticmethod
     def init_library(library):
-        logger.info("Cloning library into {}".format(library.location))
+        logger.info(f"Cloning library into {library.location}")
         git_args = ["clone", library.sync_uri, library.location]
         try:
             Launcher("git", git_args).run()
