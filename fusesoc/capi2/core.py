@@ -6,6 +6,7 @@
 import logging
 import os
 import shutil
+import warnings
 import yaml
 
 from fusesoc import utils
@@ -211,6 +212,15 @@ class Core:
             os.makedirs(os.path.join(dst_dir, d), exist_ok=True)
 
         for f in src_files:
+            if f.startswith(".."):
+                warnings.warn(
+                    "The file {} in {} is not within the directory containing "
+                    "the core file. This is deprecated and will be an error in "
+                    "a future FuseSoC version. A typical solution is to move "
+                    "core file into the root directory of the IP block it "
+                    "describes.".format(f, self.core_file),
+                    FutureWarning,
+                )
             if not os.path.isabs(f):
                 if os.path.exists(os.path.join(self.core_root, f)):
                     shutil.copyfile(
