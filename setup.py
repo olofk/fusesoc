@@ -56,6 +56,6 @@ setup(
         "pyyaml",
         "simplesat>=0.8.0",
     ],
-    # Supported Python versions: 3.5+
-    python_requires=">=3.5, <4",
+    # Supported Python versions: 3.6+
+    python_requires=">=3.6, <4",
 )

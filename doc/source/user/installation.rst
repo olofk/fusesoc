@@ -12,7 +12,7 @@ System Requirements
 Before installing FuseSoC check your system requirements.
 
 - Operating System: Linux, Windows, macOS
-- Python 3.5 or newer.
+- Python 3.6 or newer.
   (The last version supporting Python 2.7 is FuseSoC 1.10.)
 - The Python packages ``setuptools`` and ``pip`` need to be installed for Python 3.
 
