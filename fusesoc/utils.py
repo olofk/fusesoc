@@ -17,9 +17,6 @@ except ImportError:
     from yaml import SafeDumper as YamlDumper
     from yaml import SafeLoader as YamlLoader
 
-if sys.version[0] == "2":
-    FileNotFoundError = OSError
-
 logger = logging.getLogger(__name__)
 
 
