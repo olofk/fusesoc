@@ -108,9 +108,6 @@ class Vlnv:
     def __hash__(self):
         return hash(str(self))
 
-    def __eq__(self, other):
-        return self.__class__ == other.__class__ and str(self) == str(other)
-
     def depstr(self):
         if self.relation == "==":
             relation = ""
