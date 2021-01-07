@@ -19,6 +19,7 @@ def check_parse_error(string):
 def test_exprs():
     check_parses_to("a", ["a"])
     check_parses_to("a b", ["a b"])
+    check_parses_to("a+b", ["a+b"])
     check_parses_to("a ? (b)", [(False, "a", ["b"])])
     check_parses_to("a ? (b c)", [(False, "a", ["b c"])])
     check_parses_to("a ? (b ? (c))", [(False, "a", [(False, "b", ["c"])])])
