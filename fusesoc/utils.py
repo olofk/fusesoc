@@ -138,15 +138,15 @@ def setup_logging(level, monchrome=False, log_file=None):
         "py.warnings",
     )
     for package in packages:
-        logger = logging.getLogger(package)
-        logger.addHandler(ch)
-        logger.setLevel(level)
+        package_logger = logging.getLogger(package)
+        package_logger.addHandler(ch)
+        package_logger.setLevel(level)
     # Warning only packages
     warning_only_packages = []
     for package in warning_only_packages:
-        logger = logging.getLogger(package)
-        logger.addHandler(ch)
-        logger.setLevel(logging.WARNING)
+        package_logger = logging.getLogger(package)
+        package_logger.addHandler(ch)
+        package_logger.setLevel(logging.WARNING)
     logger.debug("Setup logging at level {}.".format(level))
 
 
