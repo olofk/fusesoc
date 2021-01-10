@@ -7,12 +7,8 @@ import logging
 
 import sys
 
-if sys.version[0] == "2":
-    import ConfigParser as configparser
-    from ConfigParser import SafeConfigParser as CP
-else:
-    import configparser
-    from configparser import ConfigParser as CP
+import configparser
+from configparser import ConfigParser as CP
 
 import os
 import importlib
