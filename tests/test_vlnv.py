@@ -57,10 +57,6 @@ def test_name_only_vlnv_revision():
     assert vlnv_tuple(Vlnv("::uart16550:")) == ("", "", "uart16550", "0", 0)
 
 
-def test_name_version_vlnv():
-    assert vlnv_tuple(Vlnv("::uart16550:1.5")) == ("", "", "uart16550", "1.5", 0)
-
-
 # Tests for legacy naming scheme
 def test_name_version_legacy():
     assert vlnv_tuple(Vlnv("uart16550-1.5")) == ("", "", "uart16550", "1.5", 0)
