@@ -18,13 +18,18 @@ repos:
       - id: trailing-whitespace
         # Test golden references
         exclude: ^tests/(.+\.(info|patch)|test_provider/.+\.v)
-  - repo: https://github.com/psf/black
-    rev: 20.8b1
-    hooks:
-      - id: black
   - repo: https://github.com/asottile/pyupgrade
     rev: v2.7.4
     hooks:
       - id: pyupgrade
         # for now don't force to change from %-operator to {}
         args: [--keep-percent-format, --py3-plus]
+  - repo: https://github.com/PyCQA/isort
+    rev: "5.7.0"
+    hooks:
+      - id: isort
+        args: ["--profile", "black", "--filter-files"]
+  - repo: https://github.com/psf/black
+    rev: 20.8b1
+    hooks:
+      - id: black
