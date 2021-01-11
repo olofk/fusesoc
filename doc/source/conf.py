@@ -9,23 +9,21 @@
 # full list see the documentation:
 # http://www.sphinx-doc.org/en/master/config
 
+import fusesoc
+from fusesoc.capi2.capi2 import gen_doc
+from datetime import datetime
+from distutils.version import LooseVersion
+import os
+import sys
+
 # -- Path setup --------------------------------------------------------------
 
 # If extensions (or modules to document with autodoc) are in another directory,
 # add these directories to sys.path here. If the directory is relative to the
 # documentation root, use os.path.abspath to make it absolute, like shown here.
 #
-import os
-import sys
-from datetime import datetime
 
 sys.path.insert(0, os.path.abspath(os.path.join("..", "..")))
-
-from fusesoc.capi2.core import gen_doc
-
-s = gen_doc()
-with open(os.path.join(os.path.abspath("."), "ref/capi2.rst"), "w") as f:
-    f.write(s)
 
 # -- Project information -----------------------------------------------------
 
@@ -33,11 +31,11 @@ project = "FuseSoC"
 copyright = "2018-{}, Olof Kindgren".format(datetime.now().year)
 author = "Olof Kindgren"
 
-# The short X.Y version
-version = ""
-# The full version, including alpha/beta/rc tags
-release = ""
-
+# The full version, including alpha/beta/rc tags.
+release = fusesoc.__version__
+# The short X.Y version.
+v_major, v_minor = LooseVersion(release).version[:2]
+version = f"{v_major}.{v_minor}"
 
 # -- General configuration ---------------------------------------------------
 
@@ -205,3 +203,8 @@ texinfo_documents = [
 
 
 # -- Extension configuration -------------------------------------------------
+
+
+s = gen_doc()
+with open(os.path.join(os.path.abspath("."), "ref/capi2.rst"), "w") as f:
+    f.write(s)
