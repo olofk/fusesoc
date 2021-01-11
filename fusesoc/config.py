@@ -2,16 +2,13 @@
 # Licensed under the 2-Clause BSD License, see LICENSE for details.
 # SPDX-License-Identifier: BSD-2-Clause
 
-from collections import OrderedDict
-import logging
-
-import sys
-
 import configparser
-from configparser import ConfigParser as CP
-
-import os
 import importlib
+import logging
+import os
+import sys
+from collections import OrderedDict
+from configparser import ConfigParser as CP
 
 from fusesoc.librarymanager import Library
 

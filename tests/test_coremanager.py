@@ -7,11 +7,12 @@ import pytest
 
 def test_deptree(tmp_path):
     import os
-    from fusesoc.coremanager import CoreManager
+
     from fusesoc.config import Config
+    from fusesoc.coremanager import CoreManager
+    from fusesoc.edalizer import Edalizer
     from fusesoc.librarymanager import Library
     from fusesoc.vlnv import Vlnv
-    from fusesoc.edalizer import Edalizer
 
     flags = {"tool": "icarus"}
 

@@ -42,8 +42,10 @@
 
 import logging
 import os
-import yaml
 import sys
+
+import yaml
+
 from fusesoc.capi1.core import Core as Capi1Core
 from fusesoc.vlnv import Vlnv
 

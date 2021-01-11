@@ -2,17 +2,16 @@
 # Licensed under the 2-Clause BSD License, see LICENSE for details.
 # SPDX-License-Identifier: BSD-2-Clause
 
-import tempfile
-import shutil
-import os.path
 import logging
+import os.path
+import shutil
 import subprocess
-
+import tempfile
 from argparse import Namespace
 
-from fusesoc.config import Config
+from test_common import cache_root, cores_root, library_root
 
-from test_common import cores_root, cache_root, library_root
+from fusesoc.config import Config
 
 build_root = "test_build_root"
 
@@ -58,9 +57,10 @@ def test_library_location():
 
 def test_library_add(caplog):
     import tempfile
-    from fusesoc.main import add_library
+
     from fusesoc.coremanager import CoreManager
     from fusesoc.librarymanager import LibraryManager
+    from fusesoc.main import add_library
 
     tcf = tempfile.NamedTemporaryFile(mode="w+")
     clone_target = tempfile.mkdtemp(prefix="library_add_")
@@ -131,7 +131,7 @@ auto-sync = true"""
 
 
 def test_library_update(caplog):
-    from fusesoc.main import update, init_coremanager, init_logging
+    from fusesoc.main import init_coremanager, init_logging, update
 
     clone_target = tempfile.mkdtemp()
 

@@ -3,13 +3,13 @@
 # SPDX-License-Identifier: BSD-2-Clause
 
 import os
-import pytest
 import shutil
 import tempfile
 
-from fusesoc.core import Core
-
+import pytest
 from test_common import tests_dir
+
+from fusesoc.core import Core
 
 cores_root = os.path.join(tests_dir, "cores")
 

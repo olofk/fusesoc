@@ -2,8 +2,9 @@
 # Licensed under the 2-Clause BSD License, see LICENSE for details.
 # SPDX-License-Identifier: BSD-2-Clause
 
-import pytest
 import os.path
+
+import pytest
 
 tests_dir = os.path.dirname(__file__)
 cores_dir = os.path.join(tests_dir, "capi2_cores", "misc")
@@ -12,6 +13,7 @@ cores_dir = os.path.join(tests_dir, "capi2_cores", "misc")
 def test_files_out_of_hierarchy():
     import os
     import tempfile
+
     from fusesoc.core import Core
 
     core_file = os.path.join(
@@ -35,6 +37,7 @@ def test_files_out_of_hierarchy():
 def test_empty_core():
     import os
     import tempfile
+
     from fusesoc.core import Core
 
     core_file = os.path.join(tests_dir, "capi2_cores", "misc", "empty.core")
@@ -46,6 +49,7 @@ def test_empty_core():
 def test_capi2_export():
     import os
     import tempfile
+
     from fusesoc.core import Core
 
     core_file = os.path.join(tests_dir, "capi2_cores", "misc", "files.core")
@@ -205,8 +209,8 @@ def test_capi2_get_generators():
 
 
 def test_capi2_get_parameters():
-    from fusesoc.core import Core
     from fusesoc.capi2.core import Generators
+    from fusesoc.core import Core
 
     core_file = os.path.join(tests_dir, "capi2_cores", "misc", "parameters.core")
     core = Core(core_file)

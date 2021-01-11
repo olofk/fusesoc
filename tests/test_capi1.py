@@ -4,6 +4,7 @@
 
 import difflib
 import os
+
 import pytest
 
 from fusesoc.core import Core

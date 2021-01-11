@@ -4,17 +4,16 @@
 
 import logging
 import os.path
+import shutil
 import sys
 import tarfile
 import zipfile
-import shutil
 
 logger = logging.getLogger(__name__)
 
 if sys.version_info[0] >= 3:
     import urllib.request as urllib
-    from urllib.error import URLError
-    from urllib.error import HTTPError
+    from urllib.error import HTTPError, URLError
 else:
     import urllib
     from urllib2 import URLError

@@ -2,18 +2,20 @@
 # Licensed under the 2-Clause BSD License, see LICENSE for details.
 # SPDX-License-Identifier: BSD-2-Clause
 
-import subprocess
-import logging
-import sys
 import importlib
+import logging
+import subprocess
+import sys
 import warnings
 
 import yaml
 
 try:
-    from yaml import CSafeLoader as YamlLoader, CSafeDumper as YamlDumper
+    from yaml import CSafeDumper as YamlDumper
+    from yaml import CSafeLoader as YamlLoader
 except ImportError:
-    from yaml import SafeLoader as YamlLoader, SafeDumper as YamlDumper
+    from yaml import SafeDumper as YamlDumper
+    from yaml import SafeLoader as YamlLoader
 
 if sys.version[0] == "2":
     FileNotFoundError = OSError
