@@ -3,9 +3,10 @@
 # SPDX-License-Identifier: BSD-2-Clause
 
 import logging
-import shutil
 import os.path
+import shutil
 import subprocess
+
 from fusesoc.provider.provider import Provider
 from fusesoc.utils import Launcher
 

@@ -2,12 +2,12 @@
 # Licensed under the 2-Clause BSD License, see LICENSE for details.
 # SPDX-License-Identifier: BSD-2-Clause
 
-import tempfile
 import os.path
+import tempfile
+
+from test_common import cache_root, cores_root, library_root
 
 from fusesoc.config import Config
-
-from test_common import cores_root, cache_root, library_root
 
 build_root = "test_build_root"
 

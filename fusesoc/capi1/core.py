@@ -2,19 +2,20 @@
 # Licensed under the 2-Clause BSD License, see LICENSE for details.
 # SPDX-License-Identifier: BSD-2-Clause
 
-from collections import OrderedDict
 import importlib
 import logging
 import os
 import shutil
+from collections import OrderedDict
 
 from ipyxact.ipyxact import Component
+
 from fusesoc import utils
-from fusesoc.provider import get_provider
-from fusesoc.vlnv import Vlnv
 from fusesoc.capi1 import section
 from fusesoc.capi1.fusesocconfigparser import FusesocConfigParser
 from fusesoc.capi1.plusargs import Plusargs
+from fusesoc.provider import get_provider
+from fusesoc.vlnv import Vlnv
 
 logger = logging.getLogger(__name__)
 

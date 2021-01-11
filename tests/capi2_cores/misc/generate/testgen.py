@@ -3,6 +3,7 @@
 # SPDX-License-Identifier: BSD-2-Clause
 
 import sys
+
 import yaml
 
 template = """CAPI=2:

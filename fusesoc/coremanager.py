@@ -6,7 +6,6 @@ import logging
 import os
 
 from okonomiyaki.versions import EnpkgVersion
-
 from simplesat.constraints import PrettyPackageStringParser, Requirement
 from simplesat.dependency_solver import DependencySolver
 from simplesat.errors import NoPackageFound, SatisfiabilityError

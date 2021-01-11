@@ -7,16 +7,14 @@ import logging
 import os
 import shutil
 import warnings
+
 import yaml
-
-from fusesoc import utils
-from fusesoc.provider import get_provider
-from fusesoc.vlnv import Vlnv
-
-from fusesoc.capi2.exprs import Exprs
-
 from edalize import get_edatools
 
+from fusesoc import utils
+from fusesoc.capi2.exprs import Exprs
+from fusesoc.provider import get_provider
+from fusesoc.vlnv import Vlnv
 
 logger = logging.getLogger(__name__)
 

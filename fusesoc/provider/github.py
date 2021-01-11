@@ -6,6 +6,7 @@ import logging
 import os.path
 import sys
 import tarfile
+
 from fusesoc.provider.provider import Provider
 
 logger = logging.getLogger(__name__)
@@ -15,6 +16,7 @@ if sys.version_info[0] >= 3:
     from urllib.error import URLError
 else:
     import urllib
+
     from urllib2 import URLError
 
 URL = "https://github.com/{user}/{repo}/archive/{version}.tar.gz"

@@ -5,6 +5,7 @@
 import logging
 import os
 import shutil
+
 from fusesoc.provider.provider import Provider
 from fusesoc.utils import Launcher
 

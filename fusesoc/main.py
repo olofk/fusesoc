@@ -5,9 +5,9 @@
 
 import argparse
 import os
+import signal
 import subprocess
 import sys
-import signal
 import warnings
 
 from fusesoc import __version__
@@ -19,16 +19,17 @@ fusesocdir = os.path.abspath(
 if os.path.exists(os.path.join(fusesocdir, "fusesoc")):
     sys.path[0:0] = [fusesocdir]
 
+import logging
+
+from edalize import get_edatool
+
 from fusesoc.config import Config
 from fusesoc.coreconverter import convert_core
 from fusesoc.coremanager import CoreManager, DependencyError
-from fusesoc.librarymanager import Library
 from fusesoc.edalizer import Edalizer
-from edalize import get_edatool
-from fusesoc.vlnv import Vlnv
+from fusesoc.librarymanager import Library
 from fusesoc.utils import Launcher, setup_logging, yaml_fread
-
-import logging
+from fusesoc.vlnv import Vlnv
 
 logger = logging.getLogger(__name__)
 

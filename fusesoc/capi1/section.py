@@ -2,8 +2,9 @@
 # Licensed under the 2-Clause BSD License, see LICENSE for details.
 # SPDX-License-Identifier: BSD-2-Clause
 
-import os
 import logging
+import os
+
 from fusesoc.utils import unique_dirs
 from fusesoc.vlnv import Vlnv
 

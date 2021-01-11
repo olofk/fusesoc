@@ -3,6 +3,7 @@
 # SPDX-License-Identifier: BSD-2-Clause
 
 import pytest
+
 from fusesoc.capi2.exprs import Exprs
 
 

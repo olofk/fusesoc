@@ -9,12 +9,13 @@
 # full list see the documentation:
 # http://www.sphinx-doc.org/en/master/config
 
-import fusesoc
-from fusesoc.capi2.capi2 import gen_doc
-from datetime import datetime
-from distutils.version import LooseVersion
 import os
 import sys
+from datetime import datetime
+from distutils.version import LooseVersion
+
+import fusesoc
+from fusesoc.capi2.capi2 import gen_doc
 
 # -- Path setup --------------------------------------------------------------
 

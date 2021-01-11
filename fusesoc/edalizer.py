@@ -8,9 +8,9 @@ import os
 import shutil
 
 from fusesoc import utils
-from fusesoc.vlnv import Vlnv
-from fusesoc.utils import merge_dict
 from fusesoc.coremanager import DependencyError
+from fusesoc.utils import merge_dict
+from fusesoc.vlnv import Vlnv
 
 logger = logging.getLogger(__name__)
 

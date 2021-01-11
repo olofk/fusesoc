@@ -31,13 +31,13 @@ containing each word that matched.
 
 from pyparsing import (
     Forward,
+    Group,
     OneOrMore,
     Optional,
+    ParseException,
     Suppress,
     Word,
     alphanums,
-    Group,
-    ParseException,
 )
 
 

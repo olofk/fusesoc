@@ -4,6 +4,7 @@
 
 import logging
 import os.path
+
 from fusesoc.provider.provider import Provider
 
 logger = logging.getLogger(__name__)
