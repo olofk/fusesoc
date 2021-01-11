@@ -1,2 +1,2 @@
-edalize >= 0.1.3
-PyYAML
+Sphinx >= 3.0
+sphinx-rtd-theme

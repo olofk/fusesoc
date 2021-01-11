@@ -91,3 +91,21 @@ Refer to the `pytest documentation <https://docs.pytest.org/en/latest/>`_ for mo
 .. note::
 
     In many installations you can replace ``python3 -m pytest`` with the shorter ``pytest`` command.
+
+Building the documentation
+--------------------------
+
+The FuseSoC documentation (i.e., the thing you're reading right now) is built from files in the ``doc`` directory in the FuseSoC source repository.
+The documentation is written `reStructuredText <https://docutils.readthedocs.io/en/sphinx-docs/user/rst/quickstart.html>`_, and `Sphinx <https://www.sphinx-doc.org/>`_ is used to convert the documentation into different output formats, such as HTML or PDF.
+
+Use the following command to build the documentation on your machine after making changes to it.
+The rendered documentation can be previewed by pointing a browser to the output file as shown in the run output, typically ``.tox/docs_out/index.html`` in the current directory.
+
+
+.. code-block:: bash
+
+   cd fusesoc/source/directory
+   tox -e doc
+
+   # On Linux: Open the rendered documentaton with the standard browser
+   xdg-open .tox/docs_out/index.html
