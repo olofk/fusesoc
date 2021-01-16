@@ -3,11 +3,9 @@
 # SPDX-License-Identifier: BSD-2-Clause
 
 import configparser
-import importlib
 import logging
 import os
 import sys
-from collections import OrderedDict
 from configparser import ConfigParser as CP
 
 from fusesoc.librarymanager import Library
