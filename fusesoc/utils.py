@@ -2,7 +2,6 @@
 # Licensed under the 2-Clause BSD License, see LICENSE for details.
 # SPDX-License-Identifier: BSD-2-Clause
 
-import importlib
 import logging
 import subprocess
 import sys
