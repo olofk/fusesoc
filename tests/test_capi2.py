@@ -425,8 +425,7 @@ def test_capi2_get_toplevel():
     core = Core(core_file)
 
     flags = {"target": "no_toplevel"}
-    with pytest.raises(SyntaxError):
-        core.get_toplevel(flags)
+    assert "no_toplevel" == core.get_toplevel(flags)
 
     flags = {"target": "str_toplevel"}
     assert "toplevel_as_string" == core.get_toplevel(flags)

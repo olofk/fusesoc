@@ -206,6 +206,7 @@ The most common keys are:
 * ``filesets``: An ordered list of file sets (source files) included in the target.
 * ``description`` (optional): A description of the target.
 * ``toplevel`` (optional): The name of the design toplevel.
+  If the name of the toplevel is not specified, then the name of the target is implicitly used.
   (For advanced scenarios it is possible to specify a list of multiple toplevels instead of just a single one.)
 * ``default_tool`` (optional): The default tool to be used to build the target.
   The tool can also be set or overridden through a FuseSoC command-line argument.

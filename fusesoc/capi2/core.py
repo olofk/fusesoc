@@ -448,8 +448,12 @@ class Core:
             self._debug("Matched toplevel {}".format(toplevel))
             return " ".join(toplevel)
         else:
-            s = "{} : Target '{}' has no toplevel"
-            raise SyntaxError(s.format(self.name, target.name))
+            logger.info(
+                "{} : Target '{}' has no toplevel - using target name".format(
+                    self.name, target.name
+                )
+            )
+            return target.name
 
     def get_ttptttg(self, flags):
         self._debug("Getting ttptttg for flags {}".format(str(flags)))
@@ -747,7 +751,7 @@ Target:
       desc : Tool-specific options for target
     - name : toplevel
       type : StringOrList
-      desc : Top-level module. Normally a single module/entity but can be a list of several items
+      desc : Top-level module. Normally a single module/entity but can be a list of several items. If the name of the toplevel is not specified, then the name of the target is implicitly used
   lists:
     - name : filesets
       type : String
