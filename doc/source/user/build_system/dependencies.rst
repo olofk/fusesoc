@@ -60,7 +60,7 @@ The example below shows how to create a dependency between the ``fusesoc:example
 .. note::
 
    YAML requires quotation marks for strings with special characters, as they are used in version constraints.
-   Both single (``'``) and double quotes ``"`` can be used.
+   Both single (``'``) and double quotes (``"``) can be used.
 
 
 File ordering
