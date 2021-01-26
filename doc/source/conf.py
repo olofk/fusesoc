@@ -15,7 +15,7 @@ from datetime import datetime
 from distutils.version import LooseVersion
 
 import fusesoc
-from fusesoc.capi2.capi2 import gen_doc
+from fusesoc.capi2.core import gen_doc
 
 # -- Path setup --------------------------------------------------------------
 
