@@ -24,7 +24,6 @@ import logging
 from edalize import get_edatool
 
 from fusesoc.config import Config
-from fusesoc.coreconverter import convert_core
 from fusesoc.coremanager import CoreManager, DependencyError
 from fusesoc.edalizer import Edalizer
 from fusesoc.librarymanager import Library
@@ -309,25 +308,6 @@ Usage       :
                 )
 
 
-def migrate_capi1_to_capi2(cm, args):
-    if not args.nowarn:
-        logger.warning(
-            "The CAPI1 -> CAPI2 core file conversion is best effort\n"
-            "and does not work in all situations. Carefully check the results\n"
-            "and manually fix problems. Refer to the CAPI2 reference manual at\n"
-            "https://fusesoc.readthedocs.io/en/master/ref/capi2.html for help."
-        )
-
-    if args.inplace:
-        output_file = args.input
-        if args.output:
-            logger.error(
-                "Argument error: --output and --inplace are mutually exclusive."
-            )
-            sys.exit(1)
-    convert_core(args.input, output_file)
-
-
 def core_info(cm, args):
     core = _get_core(cm, args.core)
     print(core.info())
@@ -603,23 +583,6 @@ def get_parser():
     # list-cores subparser
     parser_list_cores = subparsers.add_parser("list-cores", help="List available cores")
     parser_list_cores.set_defaults(func=list_cores)
-
-    # migrate-capi1-to-capi2 subparser
-    parser_conv = subparsers.add_parser(
-        "migrate-capi1-to-capi2",
-        help="Convert a CAPI1 core file into the CAPI2 file format",
-    )
-    parser_conv.add_argument(
-        "input", metavar="CAPI1_FILE", type=str, help="CAPI1 input file"
-    )
-    parser_conv.add_argument("--output", "-o", type=str, help="CAPI2 output file.")
-    parser_conv.add_argument(
-        "--inplace", "-i", action="store_true", help="Convert the input file in place."
-    )
-    parser_conv.add_argument(
-        "--nowarn", action="store_true", help="Do not display warning banner."
-    )
-    parser_conv.set_defaults(func=migrate_capi1_to_capi2)
 
     # core-info subparser
     parser_core_info = subparsers.add_parser(
