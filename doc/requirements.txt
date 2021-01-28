@@ -1,2 +1,3 @@
 Sphinx >= 3.0
 sphinx-rtd-theme
+sphinxcontrib-programoutput

@@ -55,6 +55,7 @@ extensions = [
     "sphinx.ext.githubpages",
     "sphinx.ext.intersphinx",
     "sphinx.ext.todo",
+    "sphinxcontrib.programoutput",
 ]
 
 intersphinx_mapping = {"https://docs.python.org/3": None}
