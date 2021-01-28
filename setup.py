@@ -21,7 +21,8 @@ setup(
     author="Olof Kindgren",
     author_email="olof.kindgren@gmail.com",
     description=(
-        "FuseSoC is a package manager and a set of build tools for HDL (Hardware Description Language) code."
+        "FuseSoC is a package manager and a set of build tools for HDL "
+        "(Hardware Description Language) code."
     ),
     license="BSD-2-Clause",
     keywords=[
@@ -36,7 +37,8 @@ setup(
         "Altera",
     ],
     url="https://github.com/olofk/fusesoc",
-    long_description=read("README.rst"),
+    long_description=read("README.md"),
+    long_description_content_type="text/markdown",
     classifiers=[
         "Development Status :: 5 - Production/Stable",
         "Topic :: Utilities",
