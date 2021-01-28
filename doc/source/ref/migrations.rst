@@ -5,6 +5,49 @@ Migration guide
 FuseSoC strives to be backwards-compatible, but as new features are added to FuseSoC, some older features become obsolete.
 This chapter contains information on how to migrate away from deprecated features to keep the core description files up-to-date with the latest best practices.
 
+Migrating from CAPI1 to CAPI2
+=============================
+
+Why
+---
+
+FuseSoC's `.core` files are written in a "language" called CAPI.
+The current version of CAPI is version 2, also called CAPI2.
+Going forward, only the newer CAPI2 file format will be supported, which simplifies the use and implementation of FuseSoC greatly.
+
+When
+----
+
+In FuseSoC 1.x, both CAPI1 and CAPI2 are supported.
+Starting with FuseSoC 2 only CAPI2 will be supported.
+To be able to update to the next version of FuseSoC seamlessly you need to migrate your existing CAPI1 core files to CAPI2.
+We recommend doing this migration *now* while still running FuseSoC 1.x.
+
+How
+---
+
+FuseSoC ships with an automated conversion tool from CAPI1 to CAPI2, which provides a solid starting point for the conversion process.
+However, even though CAPI2 supports almost all features of CAPI1, there isn't always a 1:1 mapping between the two formats.
+Therefore the automatic conversion won't be always correct, and a bit of manual cleanup work will be needed.
+
+To convert a single core file, follow these steps:
+
+1. Ensure you're running the latest version of FuseSoC 1.x.
+2. Ensure that you have a backup of your core file, or have committed the current version in a version control system.
+3. Run ``fusesoc migrate-capi1-to-capi2 --inplace your_core_file.core`` to convert the file automatically.
+4. Open ``your_core_file.core`` to check the conversion output and adjust it as necessary (e.g. add back comments, adjust the ordering of statements, etc.)
+
+You can find documentation on the :ref:`CAPI1 <ref_capi1>` as well as on :ref:`CAPI2 <ref_capi2>` in the reference manual.
+We also recommend to have a look at the :ref:`ug_build_system_core_files` section in the user guide for current best practices on writing CAPI2 core files.
+
+To convert all core files in a directory, Linux users can run the following command:
+
+.. code-block::
+
+   find your_coredir -iname '*.core' -exec fusesoc migrate-capi1-to-capi2 --nowarn --inplace {} \;
+
+If you get stuck in the conversion process, or if a CAPI1 feature you rely on isn't available in CAPI2, please get in touch by `filing an issue on GitHub <https://github.com/olofk/fusesoc/issues/new>`_.
+
 Migrating from .system files
 ============================
 
