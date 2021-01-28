@@ -45,10 +45,8 @@ If an older version of FuseSoC is found, this version is upgraded to the latest 
 
 Check that the installation worked by running
 
-.. code-block:: shell-session
+.. command-output:: fusesoc --version
 
-   $ fusesoc --version
-   1.9.3
 
 If this command works FuseSoC is installed properly and ready to be used.
 
