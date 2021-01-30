@@ -28,14 +28,14 @@ class File:
         self.logical_name = ""
         if type(tree) is dict:
             for k, v in tree.items():
-                self.name = String(os.path.expandvars(k))
+                self.name = StringWithUseFlags(os.path.expandvars(k))
                 self.file_type = v.get("file_type", "")
                 self.is_include_file = v.get("is_include_file", False)
                 self.include_path = v.get("include_path")
                 self.copyto = v.get("copyto", "")
                 self.logical_name = v.get("logical_name", "")
         else:
-            self.name = String(os.path.expandvars(tree))
+            self.name = StringWithUseFlags(os.path.expandvars(tree))
             self.is_include_file = False  # "FIXME"
 
 
@@ -43,7 +43,9 @@ class Genparams(dict):
     pass
 
 
-class String(str):
+class StringWithUseFlags(str):
+    """ A parsed string with support for use flags. """
+
     def __init__(self, string):
         self.exprs = None
 
@@ -53,23 +55,34 @@ class String(str):
         return self.exprs.expand(flags)
 
 
-class StringOrList:
+class String(str):
+    """ A plain (unparsed) string. """
+
+    def parse(self, flags):
+        raise RuntimeError(
+            "BUG: Attempted to parse a plain string. This is a bug in FuseSoC. "
+            "Please file an issue at "
+            "https://github.com/olofk/fusesoc/issues/new."
+        )
+
+
+class StringWithUseFlagsOrList:
     def __new__(cls, *args, **kwargs):
         if type(args[0]) == list:
-            return [String(s) for s in args[0]]
+            return [StringWithUseFlags(s) for s in args[0]]
         elif type(args[0]) == str:
-            return [String(args[0])]
+            return [StringWithUseFlags(args[0])]
 
 
-class StringOrDict:
+class StringWithUseFlagsOrDict:
     def __init__(self, tree):
         self.params = {}
         if type(tree) is dict:
             for k, v in tree.items():
                 self.params = v
-                self.name = String(os.path.expandvars(k))
+                self.name = StringWithUseFlags(os.path.expandvars(k))
         else:
-            self.name = String(os.path.expandvars(tree))
+            self.name = StringWithUseFlags(os.path.expandvars(tree))
 
 
 class Section:
@@ -706,7 +719,7 @@ Fileset:
       type : File
       desc : Files in fileset
     - name : depend
-      type : String
+      type : StringWithUseFlags
       desc : Dependencies of fileset
 
 Generate:
@@ -754,20 +767,20 @@ Target:
       type : Tools
       desc : Tool-specific options for target
     - name : toplevel
-      type : StringOrList
+      type : StringWithUseFlagsOrList
       desc : Top-level module. Normally a single module/entity but can be a list of several items
   lists:
     - name : filesets
-      type : String
+      type : StringWithUseFlags
       desc : File sets to use in target
     - name : generate
-      type : StringOrDict
+      type : StringWithUseFlagsOrDict
       desc : Parameterized generators to run for this target with optional parametrization
     - name : parameters
-      type : String
+      type : StringWithUseFlags
       desc : Parameters to use in target. The parameter default value can be set here with ``param=value``
     - name : vpi
-      type : String
+      type : StringWithUseFlags
       desc : VPI modules to build and include for target
 
 Tools:
@@ -777,16 +790,16 @@ Hooks:
   description : Hooks are scripts that are run at different points in the build process. They are always launched from the work root
   lists:
     - name : pre_build
-      type : String
+      type : StringWithUseFlags
       desc : Scripts executed before the *build* phase
     - name : post_build
-      type : String
+      type : StringWithUseFlags
       desc : Scripts executed after the *build* phase
     - name : pre_run
-      type : String
+      type : StringWithUseFlags
       desc : Scrips executed before the *run* phase
     - name : post_run
-      type : String
+      type : StringWithUseFlags
       desc : Scripts executed after the *run* phase
 
 Parameter:
@@ -802,7 +815,7 @@ Parameter:
       type : String
       desc : Description of the parameter, as can be seen with ``fusesoc run --target=$target $core --help``
     - name : paramtype
-      type : String
+      type : StringWithUseFlags
       desc : Specifies type of parameter. Legal values are *cmdlinearg* for command-line arguments directly added when running the core, *generic* for VHDL generics, *plusarg* for verilog plusargs, *vlogdefine* for Verilog `` `define`` or *vlogparam* for verilog top-level parameters. All paramtypes are not valid for every backend. Consult the backend documentation for details.
     - name : scope
       type : String
@@ -958,7 +971,13 @@ Specifies how to fetch the core. The presence of a provider section indicates th
 
 String
 ~~~~~~
-String is a string that can contain CAPI2 expressions that are evaulated during parsing.
+
+String is an unparsed (plain) string.
+
+StringWithUseFlags
+~~~~~~~~~~~~~~~~~~
+
+StringWithUseFlags is a string that can contain CAPI2 expressions that are evaluated during parsing.
 
 CAPI2 expressions are used to evaluate an expression only if a flag is set or unset.
 The general form is *flag_is_set ? ( expression )* to evaluate *expression* if flag is set or *!flag_is_set ? ( expression )* to evaluate *expression* if flag is not set.
@@ -967,15 +986,15 @@ The general form is *flag_is_set ? ( expression )* to evaluate *expression* if f
 
 ``filesets : [rtl, tb, tool_verilator? (verilator_tb)]``
 
-StringOrList
-~~~~~~~~~~~~
+StringWithUseFlagsOrDict
+~~~~~~~~~~~~~~~~~~~~~~~~
 
-Item is allowed to be either a `String`_ or a list of `String`_
+Item is allowed to be either a `StringWithUseFlags`_ or a dict of `StringWithUseFlags`_.
 
-StringOrDict
-~~~~~~~~~~~~
+StringWithUseFlagsOrList
+~~~~~~~~~~~~~~~~~~~~~~~~
 
-Item is allowed to be either a `Dict`_ or a list of `Dict`_
+Item is allowed to be either a `StringWithUseFlags`_ or a list of `StringWithUseFlags`_
 
 Vlnv
 ~~~~~~
