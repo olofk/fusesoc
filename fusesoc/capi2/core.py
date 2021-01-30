@@ -80,9 +80,9 @@ class StringWithUseFlagsOrDict:
         if type(tree) is dict:
             for k, v in tree.items():
                 self.params = v
-                self.name = StringWithUseFlags(os.path.expandvars(k))
+                self.name = StringWithUseFlags(k)
         else:
-            self.name = StringWithUseFlags(os.path.expandvars(tree))
+            self.name = StringWithUseFlags(tree)
 
 
 class Section:
