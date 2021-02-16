@@ -526,7 +526,7 @@ def init_coremanager(config, args_cores_root):
     return cm
 
 
-def parse_args():
+def get_parser():
     parser = argparse.ArgumentParser()
     subparsers = parser.add_subparsers()
 
@@ -749,7 +749,13 @@ def parse_args():
         warn="'fusesoc update' is deprecated. Use 'fusesoc library update' instead"
     )
 
-    args = parser.parse_args()
+    return parser
+
+
+def parse_args(argv):
+    parser = get_parser()
+
+    args = parser.parse_args(argv)
 
     if hasattr(args, "func"):
         return args
@@ -760,20 +766,23 @@ def parse_args():
         return None
 
 
-def main():
-
-    args = parse_args()
-    if not args:
-        exit(0)
-
-    logger.debug("Command line arguments: " + str(sys.argv))
-
+def fusesoc(args):
     init_logging(args.verbose, args.monochrome, args.log_file)
     config = Config(file=args.config)
 
     cm = init_coremanager(config, args.cores_root)
     # Run the function
     args.func(cm, args)
+
+
+def main():
+    args = parse_args(sys.argv[1:])
+    if not args:
+        exit(0)
+
+    logger.debug("Command line arguments: " + str(sys.argv))
+
+    fusesoc(args)
 
 
 if __name__ == "__main__":
