@@ -1,3 +1,25 @@
+1.12.0 2021-02-25 Olof Kindgren <olof.kindgren@gmail.com>
+======================================================
+* fusesoc pgm and init are deprecated
+* Deprecated build and sim commands are removed
+* logicore and coregen providers are deprecated
+* Instance parameters can be set from target
+* Rewritten documentation
+* + improved error handling, bug fixes and refactoring
+
+Contributors:
+Anonymous
+Alfred E Neuman <quinky@gmx.ch>
+Ben Reynwar <ben@reynwar.net>
+Dominik Salvet <dominik.salvet@gmail.com>
+Michał Kruszewski <mkru@protonmail.com>
+Olof Kindgren <olof.kindgren@gmail.com>
+Oxore <oxore@protonmail.com>
+Philipp Wagner <philipp.wagner@tum.de>
+Rob Taylor <robtaylor@floopily.org>
+Rupert Swarbrick <rswarbrick@gmail.com>
+Shareef Jalloq <shareef@jalloq.co.uk>
+
 1.11.0 2020-06-16 Olof Kindgren <olof.kindgren@gmail.com>
 ======================================================
 * Remove python 2 support

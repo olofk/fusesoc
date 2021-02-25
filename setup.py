@@ -50,7 +50,7 @@ setup(
         "setuptools_scm",
     ],
     install_requires=[
-        "edalize>=0.2.2",
+        "edalize>=0.2.3",
         "ipyxact>=0.2.3",
         "pyparsing",
         "pyyaml",
