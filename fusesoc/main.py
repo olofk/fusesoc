@@ -106,6 +106,11 @@ def fetch(cm, args):
 
 
 def init(cm, args):
+    warnings.warn(
+        "The 'init' subcommand is deprecated and will be removed in the next "
+        "release. It was intended to fetch the FuseSoC standard library. This can be done with 'fusesoc library add fusesoc_cores https://github.com/fusesoc/fusesoc-cores' instead.",
+        FutureWarning,
+    )
     # Fix Python 2.x.
     global input
     try:
@@ -554,7 +559,7 @@ def parse_args():
 
     # init subparser
     parser_init = subparsers.add_parser(
-        "init", help="Initialize the FuseSoC core libraries"
+        "init", help="Initialize the FuseSoC core libraries. DEPRECATED"
     )
     parser_init.add_argument(
         "-y", action="store_true", help="Skip user input and use default settings"
