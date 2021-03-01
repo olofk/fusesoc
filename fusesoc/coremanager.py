@@ -56,6 +56,13 @@ class CoreDB:
                 )
         return ", ".join(deps)
 
+    def _parse_virtual(self, virtuals):
+        package_names = []
+        for virtual in virtuals:
+            for simple in virtual.simpleVLNVs():
+                package_names.append("{}".format(self._package_name(simple)))
+        return ", ".join(package_names)
+
     def add(self, core, library):
         self._solver_cache_invalidate_all()
 
@@ -124,12 +131,22 @@ class CoreDB:
         cores = [x["core"] for x in self._cores.values()]
         for core in cores:
             if only_matching_vlnv:
-                if not eq_vln(core.name, top_core):
+                if not any(
+                    [eq_vln(core.name, top_core)]
+                    + [
+                        eq_vln(virtual_vlnv, top_core)
+                        for virtual_vlnv in core.get_virtuals()
+                    ]
+                ):
                     continue
 
             package_str = "{} {}-{}".format(
                 self._package_name(core.name), core.name.version, core.name.revision
             )
+            _virtuals = core.get_virtuals()
+            if _virtuals:
+                _s = "; provides ( {} )"
+                package_str += _s.format(self._parse_virtual(_virtuals))
             if not only_matching_vlnv:
                 _flags["is_toplevel"] = core.name == top_core
                 _depends = core.get_depends(_flags)
@@ -169,10 +186,11 @@ class CoreDB:
         depdict = {}
         if len(transaction.operations) > 1:
             for op in transaction.operations:
-                objdict[op.package._name] = str(op.package.core.name)
                 depdict[str(op.package.core.name)] = [
                     objdict[n[0]] for n in op.package.install_requires
                 ]
+                for p in op.package.provides:
+                    objdict[p[0]] = str(op.package.core.name)
                 op.package.core.direct_deps = [
                     objdict[n[0]] for n in op.package.install_requires
                 ]

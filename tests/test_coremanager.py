@@ -210,3 +210,40 @@ def test_export():
         "wb_intercon_1.0/rtl/verilog/wb_upsizer.v",
     ]:
         assert os.path.isfile(os.path.join(export_root, f))
+
+
+def test_virtual():
+    import os
+    import tempfile
+
+    from fusesoc.config import Config
+    from fusesoc.coremanager import CoreManager
+    from fusesoc.edalizer import Edalizer
+    from fusesoc.librarymanager import Library
+    from fusesoc.vlnv import Vlnv
+
+    flags = {"tool": "icarus"}
+
+    build_root = tempfile.mkdtemp(prefix="export_")
+    work_root = os.path.join(build_root, "work")
+
+    core_dir = os.path.join(os.path.dirname(__file__), "capi2_cores", "virtual")
+
+    cm = CoreManager(Config())
+    cm.add_library(Library("virtual", core_dir))
+
+    root_core = cm.get_core(Vlnv("::user"))
+
+    edalizer = Edalizer(
+        toplevel=root_core.name,
+        flags=flags,
+        cache_root=None,
+        core_manager=cm,
+        work_root=work_root,
+    )
+    edalizer.run()
+
+    deps = cm.get_depends(root_core.name, {})
+    deps_names = [str(c) for c in deps]
+
+    assert deps_names == ["::impl2:0", "::user:0"]

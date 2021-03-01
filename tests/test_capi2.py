@@ -46,6 +46,15 @@ def test_empty_core():
     assert "Error while trying to parse the core file" in str(excinfo.value)
 
 
+def test_virtual():
+    from fusesoc.core import Core
+    from fusesoc.vlnv import Vlnv
+
+    core_file = os.path.join(tests_dir, "capi2_cores", "virtual", "impl1.core")
+    core = Core(core_file)
+    assert core.get_virtuals() == [Vlnv("::someinterface:0")]
+
+
 def test_capi2_export():
     import os
     import tempfile
