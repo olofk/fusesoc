@@ -169,6 +169,22 @@ def merge_dict(d1, d2):
             d1[key] = merge_dict(d1.get(key, {}), value)
         elif isinstance(value, list):
             d1[key] = d1.get(key, []) + value
+        elif isinstance(value, set):
+            d1[key] = d1.get(key, set()) | value
         else:
             d1[key] = value
     return d1
+
+
+def depgraph_to_dot(core_graph):
+    """Convert a dependency graph into the dot format used by GraphViz
+
+    The dependency graph is expected to be in the form produced by
+    CoreManager.get_dependency_graph().
+    """
+    s = "digraph dependencies {\n"
+    for core, deps in core_graph.items():
+        for dep in deps:
+            s += '"{}"->"{}"\n'.format(core, dep)
+    s += "}\n"
+    return s

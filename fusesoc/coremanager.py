@@ -15,6 +15,7 @@ from simplesat.request import Request
 
 from fusesoc.core import Core
 from fusesoc.librarymanager import LibraryManager
+from fusesoc.vlnv import Vlnv
 
 logger = logging.getLogger(__name__)
 
@@ -304,6 +305,38 @@ class CoreManager:
         logger.debug(" Resolved core to {}".format(str(resolved_core.name)))
         logger.debug(" with dependencies " + ", ".join([str(c.name) for c in deps]))
         return deps
+
+    def get_dependency_graph(self, core_vlnv, flags):
+        """Generate a dependency graph
+
+        The graph is represented as flat dict. The key is the core, the value
+        is a set of dependencies.
+        """
+        is_toplevel = True
+        work_list = [self.get_core(core_vlnv)]
+        seen = {core_vlnv}
+        graph = {}
+
+        while work_list:
+            core = work_list.pop()
+            deps = core.get_depends({**flags, "is_toplevel": is_toplevel})
+            is_toplevel = False
+
+            dep_names = set()
+            for dep in deps:
+                # Find a core object for the dependency name
+                dep_core = self.get_core(dep)
+                dep_names.add(dep_core.name)
+
+                # Add the dependency to the work list if we haven't seen it
+                # before
+                if dep not in seen:
+                    seen.add(dep)
+                    work_list.append(dep_core)
+
+            graph[core] = dep_names
+
+        return graph
 
     def get_cores(self):
         """ Get a dict with all cores, indexed by the core name """
