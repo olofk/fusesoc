@@ -65,8 +65,10 @@ class String(str):
             "https://github.com/olofk/fusesoc/issues/new."
         )
 
+
 class Integer(int):
     pass
+
 
 class StringWithUseFlagsOrList:
     def __new__(cls, *args, **kwargs):
@@ -361,6 +363,10 @@ class Core:
             generators[k].root = self.files_root
             self._debug(" Found generator " + k)
         return generators
+
+    def get_virtuals(self):
+        """ Get a list of "virtual" VLNVs provided by this core. """
+        return self.virtual
 
     def get_parameters(self, flags={}, ext_parameters={}):
         def _parse_param_value(name, datatype, default):
@@ -710,6 +716,10 @@ Root:
     - name : vpi
       type : Vpi
       desc : Available VPI modules
+  lists:
+    - name : virtual
+      type : Vlnv
+      desc : VLNV of a virtual core provided by this core. Versions are currently not supported, only the VLN part is used.
 
 Fileset:
   description : A fileset represents a group of files with a common purpose. Each file in the fileset is required to have a file type and is allowed to have a logical_name which can be set for the whole fileset or individually for each file. A fileset can also have dependencies on other cores, specified in the depend section
