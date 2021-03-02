@@ -140,19 +140,26 @@ class CoreDB:
                 ):
                     continue
 
+            # Build a "pretty" package string in a format expected by
+            # PrettyPackageStringParser()
             package_str = "{} {}-{}".format(
                 self._package_name(core.name), core.name.version, core.name.revision
             )
+
             _virtuals = core.get_virtuals()
             if _virtuals:
                 _s = "; provides ( {} )"
                 package_str += _s.format(self._parse_virtual(_virtuals))
+
+            # Add dependencies only if we want to build the whole dependency
+            # tree.
             if not only_matching_vlnv:
                 _flags["is_toplevel"] = core.name == top_core
                 _depends = core.get_depends(_flags)
                 if _depends:
                     _s = "; depends ( {} )"
                     package_str += _s.format(self._parse_depend(_depends))
+
             parser = PrettyPackageStringParser(EnpkgVersion.from_string)
 
             package = parser.parse_to_package(package_str)
@@ -161,14 +168,12 @@ class CoreDB:
             repo.add_package(package)
 
         request = Request()
-        simplevlnvs = top_core.simpleVLNVs()
-        for sv in simplevlnvs:
-            _top_dep = "{} {} {}".format(
-                self._package_name(top_core),
-                top_core.relation,
-                self._package_version(top_core),
-            )
-            request.install(Requirement._from_string(_top_dep))
+        _top_dep = "{} {} {}".format(
+            self._package_name(top_core),
+            top_core.relation,
+            self._package_version(top_core),
+        )
+        request.install(Requirement._from_string(_top_dep))
 
         installed_repository = Repository()
         pool = Pool([repo])
@@ -183,12 +188,8 @@ class CoreDB:
             raise DependencyError(top_core.name)
 
         objdict = {}
-        depdict = {}
         if len(transaction.operations) > 1:
             for op in transaction.operations:
-                depdict[str(op.package.core.name)] = [
-                    objdict[n[0]] for n in op.package.install_requires
-                ]
                 for p in op.package.provides:
                     objdict[p[0]] = str(op.package.core.name)
                 op.package.core.direct_deps = [
