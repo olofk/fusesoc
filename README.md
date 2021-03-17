@@ -2,6 +2,7 @@
 
 [![CI status](https://github.com/olofk/fusesoc/workflows/CI/badge.svg)](https://github.com/olofk/fusesoc/actions?query=workflow%3ACI)
 [![image](https://img.shields.io/pypi/dm/fusesoc.svg?label=PyPI%20downloads)](https://pypi.org/project/fusesoc/)
+[![LibreCores](https://www.librecores.org/olofk/FuseSoC/badge.svg?style=flat)](https://www.librecores.org/olofk/FuseSoC)
 
 ## Introduction
 
