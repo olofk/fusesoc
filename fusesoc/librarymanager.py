@@ -3,7 +3,7 @@
 # SPDX-License-Identifier: BSD-2-Clause
 
 import logging
-import os
+from pathlib import Path
 
 from fusesoc.provider import get_provider
 
@@ -28,7 +28,7 @@ class Library:
                 )
 
         self.name = name
-        self.location = location
+        self.location = Path(location)
         self.sync_type = sync_type or "local"
         self.sync_uri = sync_uri
         self.auto_sync = auto_sync
@@ -42,7 +42,7 @@ class Library:
             return
 
         # FIXME: Do an initial checkout if missing
-        if not os.path.exists(self.location):
+        if not self.location.exists():
             logger.warning(l(f"{self.location} does not exist. Ignoring update"))
             return
 
@@ -61,7 +61,7 @@ class Library:
 class LibraryManager:
     def __init__(self, library_root):
         self._libraries = []
-        self.library_root = library_root
+        self.library_root = Path(library_root)
 
     def add_library(self, library):
         self._libraries.append(library)

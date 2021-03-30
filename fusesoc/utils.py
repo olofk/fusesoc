@@ -6,6 +6,7 @@ import logging
 import subprocess
 import sys
 import warnings
+from pathlib import Path
 
 import yaml
 
@@ -57,11 +58,8 @@ def cygpath(win_path):
     return path.decode("ascii").strip()
 
 
-import os
-
-
 def unique_dirs(file_list):
-    return list({os.path.dirname(f.name) for f in file_list})
+    return list({Path(f).parent for f in file_list})
 
 
 # With help from:

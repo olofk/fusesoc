@@ -6,6 +6,7 @@ import argparse
 import logging
 import os
 import shutil
+from pathlib import Path
 
 from fusesoc import utils
 from fusesoc.coremanager import DependencyError
@@ -18,9 +19,10 @@ logger = logging.getLogger(__name__)
 class FileAction(argparse.Action):
     def __call__(self, parser, namespace, values, option_string=None):
         path = os.path.expandvars(values[0])
-        path = os.path.expanduser(path)
-        path = os.path.abspath(path)
-        setattr(namespace, self.dest, [path])
+        path = Path(path)
+        path = path.expanduser()
+        path = path.absolute()
+        setattr(namespace, self.dest, [str(path)])
 
 
 class Edalizer:
@@ -38,10 +40,10 @@ class Edalizer:
 
         self.toplevel = toplevel
         self.flags = flags
-        self.cache_root = cache_root
+        self.cache_root = Path(cache_root)
         self.core_manager = core_manager
-        self.work_root = work_root
-        self.export_root = export_root
+        self.work_root = Path(work_root)
+        self.export_root = Path(export_root)
         self.system_name = system_name
 
         self.generators = {}
@@ -101,14 +103,14 @@ class Edalizer:
         return core_flags
 
     def _prepare_work_root(self):
-        if os.path.exists(self.work_root):
-            for f in os.listdir(self.work_root):
-                if os.path.isdir(os.path.join(self.work_root, f)):
-                    shutil.rmtree(os.path.join(self.work_root, f))
+        if self.work_root.exists():
+            for f in self.work_root.iterdir():
+                if f.is_dir():
+                    shutil.rmtree(f)
                 else:
-                    os.remove(os.path.join(self.work_root, f))
+                    f.unlink()
         else:
-            os.makedirs(self.work_root)
+            self.work_root.mkdir(parents=True)
 
     def setup_cores(self):
         """ Setup cores: fetch resources, patch them, etc. """
@@ -164,12 +166,12 @@ class Edalizer:
 
             # Extract files
             if self.export_root:
-                files_root = os.path.join(self.export_root, core.sanitized_name)
+                files_root = self.export_root / core.sanitized_name
                 core.export(files_root, _flags)
             else:
                 files_root = core.files_root
 
-            rel_root = os.path.relpath(files_root, self.work_root)
+            rel_root = files_root.relative_to(self.work_root)
 
             # Extract parameters
             snippet["parameters"] = core.get_parameters(_flags, parameters)
@@ -188,18 +190,17 @@ class Edalizer:
                 _f = file
                 if file.get("copyto"):
                     _name = file["copyto"]
-                    dst = os.path.join(self.work_root, _name)
-                    _dstdir = os.path.dirname(dst)
-                    if not os.path.exists(_dstdir):
-                        os.makedirs(_dstdir)
-                    shutil.copy2(os.path.join(files_root, file["name"]), dst)
+                    dst = self.work_root / _name
+                    if not dst.exists():
+                        dst.mkdir(parents=True)
+                    shutil.copy2(Path(files_root) / file["name"], dst)
                     del _f["copyto"]
                 else:
-                    _name = os.path.join(rel_root, file["name"])
+                    _name = rel_root / file["name"]
                 _f["name"] = str(_name)
                 _f["core"] = str(core.name)
                 if file.get("include_path"):
-                    _f["include_path"] = os.path.join(rel_root, file["include_path"])
+                    _f["include_path"] = rel_root / file["include_path"]
 
                 _files.append(_f)
 
@@ -211,12 +212,8 @@ class Edalizer:
                 snippet["vpi"].append(
                     {
                         "name": _vpi["name"],
-                        "src_files": [
-                            os.path.join(rel_root, f) for f in _vpi["src_files"]
-                        ],
-                        "include_dirs": [
-                            os.path.join(rel_root, i) for i in _vpi["include_dirs"]
-                        ],
+                        "src_files": [(rel_root / f) for f in _vpi["src_files"]],
+                        "include_dirs": [(rel_root / i) for i in _vpi["include_dirs"]],
                         "libs": _vpi["libs"],
                     }
                 )
@@ -385,7 +382,7 @@ class Ttptttg:
         self.vlnv = Vlnv(vlnv_str)
 
         self.generator_input = {
-            "files_root": os.path.abspath(core.files_root),
+            "files_root": core.files_root.absolute(),
             "gapi": "1.0",
             "parameters": parameters,
             "vlnv": vlnv_str,
@@ -400,17 +397,16 @@ class Ttptttg:
         Returns:
             list: Cores created by the generator
         """
-        generator_cwd = os.path.join(cache_root, "generated", self.vlnv.sanitized_name)
-        generator_input_file = os.path.join(generator_cwd, self.name + "_input.yml")
+        generator_cwd = Path(cache_root) / "generated" / self.vlnv.sanitized_name
+        generator_input_file = generator_cwd / (self.name + "_input.yml")
 
         logger.info("Generating " + str(self.vlnv))
-        if not os.path.exists(generator_cwd):
-            os.makedirs(generator_cwd)
+        generator_cwd.mkdir(parents=True, exist_ok=True)
         utils.yaml_fwrite(generator_input_file, self.generator_input)
 
         args = [
-            os.path.join(os.path.abspath(self.generator.root), self.generator.command),
-            os.path.abspath(generator_input_file),
+            self.generator.root.absolute() / self.generator.command,
+            generator_input_file.absolute(),
         ]
 
         if self.generator.interpreter:
@@ -419,14 +415,14 @@ class Ttptttg:
         Launcher(args[0], args[1:], cwd=generator_cwd).run()
 
         cores = []
-        logger.debug("Looking for generated cores in " + generator_cwd)
-        for root, dirs, files in os.walk(generator_cwd):
-            for f in files:
-                if f.endswith(".core"):
-                    try:
-                        cores.append(Core(os.path.join(root, f)))
-                    except SyntaxError as e:
-                        w = "Failed to parse generated core file " + f + ": " + e.msg
-                        raise RuntimeError(w)
+        logger.debug(f"Looking for generated cores in {generator_cwd}")
+        for file in generator_cwd.glob("**/*"):
+            if file.suffix == ".core":
+                try:
+                    cores.append(Core(file))
+                except SyntaxError as e:
+                    raise RuntimeError(
+                        f"Failed to parse generated core file {file}: {e.msg}"
+                    )
         logger.debug("Found " + ", ".join(str(c.name) for c in cores))
         return cores
