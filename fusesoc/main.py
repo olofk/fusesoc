@@ -9,15 +9,14 @@ import signal
 import subprocess
 import sys
 import warnings
+from pathlib import Path
 
 from fusesoc import __version__
 
 # Check if this is run from a local installation
-fusesocdir = os.path.abspath(
-    os.path.join(os.path.dirname(os.path.realpath(__file__)), "..")
-)
-if os.path.exists(os.path.join(fusesocdir, "fusesoc")):
-    sys.path[0:0] = [fusesocdir]
+fusesocdir = Path(__file__).parents[1].absolute()
+if (fusesocdir / "fusesoc").exists():
+    sys.path[0:0] = [str(fusesocdir)]
 
 import logging
 
@@ -117,20 +116,19 @@ def init(cm, args):
     except NameError:
         pass
 
-    xdg_config_home = os.environ.get("XDG_CONFIG_HOME") or os.path.join(
-        os.path.expanduser("~"), ".config"
-    )
-    config_file = os.path.join(xdg_config_home, "fusesoc", "fusesoc.conf")
+    xdg_config_home = os.environ.get("XDG_CONFIG_HOME") or (Path.home() / ".config")
+    # Explicit conversion necessary if home came from env var
+    xdg_config_home = Path(xdg_config_home)
+    config_file = xdg_config_home / "fusesoc" / "fusesoc.conf"
 
-    if os.path.exists(config_file):
+    if config_file.exists():
         logger.warning(f"'{config_file}' already exists. Aborting")
         exit(1)
         # TODO. Prepend cores_root to file if it doesn't exist
         f = open(config_file, "w+")
     else:
         logger.info(f"Writing configuration file to '{config_file}'")
-        if not os.path.exists(os.path.dirname(config_file)):
-            os.makedirs(os.path.dirname(config_file))
+        config_file.parent.mkdir(exist_ok=True)
         f = open(config_file, "w+")
 
     config = Config(file=f)
@@ -139,7 +137,7 @@ def init(cm, args):
     for repo in REPOS:
         name = repo[0]
         uri = repo[1]
-        default_dir = os.path.join(cm._lm.library_root, name)
+        default_dir = cm._lm.library_root / name
         prompt = "Directory to use for {} ({}) [{}] : "
         if args.y:
             location = None
@@ -147,7 +145,7 @@ def init(cm, args):
             location = input(prompt.format(repo[0], repo[2], default_dir))
         if not location:
             location = default_dir
-        if os.path.exists(location):
+        if location.exists():
             logger.warning(
                 "'{}' already exists. This library will not be added to fusesoc.conf".format(
                     location
@@ -174,11 +172,11 @@ def add_library(cm, args):
     sync_uri = vars(args)["sync-uri"]
 
     if args.location:
-        location = args.location
+        location = Path(args.location)
     elif vars(args).get("global", False):
-        location = os.path.join(cm._lm.library_root, args.name)
+        location = cm._lm.library_root / args.name
     else:
-        location = os.path.join("fusesoc_libraries", args.name)
+        location = Path("fusesoc_libraries") / args.name
 
     if "sync-type" in vars(args):
         sync_type = vars(args)["sync-type"]
@@ -187,18 +185,19 @@ def add_library(cm, args):
 
     # Check if it's a dir. Otherwise fall back to git repo
     if not sync_type:
-        if os.path.isdir(sync_uri):
+        if Path(sync_uri).is_dir():
             sync_type = "local"
         else:
             sync_type = "git"
 
     if sync_type == "local":
+        sync_uri = Path(sync_uri)  # Converting here so logger shows path as interpreted
         logger.info(
             "Interpreting sync-uri '{}' as location for local provider.".format(
                 sync_uri
             )
         )
-        location = os.path.abspath(sync_uri)
+        location = sync_uri.absolute()
 
     auto_sync = not args.no_auto_sync
     library = Library(args.name, location, sync_type, sync_uri, auto_sync)
@@ -206,10 +205,10 @@ def add_library(cm, args):
     if args.config:
         config = Config(file=args.config)
     elif vars(args)["global"]:
-        xdg_config_home = os.environ.get("XDG_CONFIG_HOME") or os.path.join(
-            os.path.expanduser("~"), ".config"
-        )
-        config_file = os.path.join(xdg_config_home, "fusesoc", "fusesoc.conf")
+        xdg_config_home = os.environ.get("XDG_CONFIG_HOME") or (Path.home() / ".config")
+        # Explicit conversion necessary if home came from env var
+        xdg_config_home = Path(xdg_config_home)
+        config_file = xdg_config_home / "fusesoc" / "fusesoc.conf"
         config = Config(path=config_file)
     else:
         config = Config(path="fusesoc.conf")
@@ -224,10 +223,11 @@ def add_library(cm, args):
 def library_list(cm, args):
     lengths = [4, 8, 9, 8, 9]
     for lib in cm.get_libraries():
+        # str() required since Path has no len()
         lengths[0] = max(lengths[0], len(lib.name))
-        lengths[1] = max(lengths[1], len(lib.location))
+        lengths[1] = max(lengths[1], len(str(lib.location)))
         lengths[2] = max(lengths[2], len(lib.sync_type))
-        lengths[3] = max(lengths[3], len(lib.sync_uri or ""))
+        lengths[3] = max(lengths[3], len(str(lib.sync_uri) or ""))
     print(
         "{} : {} : {} : {} : {}".format(
             "Name".ljust(lengths[0]),
@@ -380,21 +380,20 @@ def run_backend(
         logger.error(tool_error.format(system))
         exit(1)
     flags["tool"] = tool
-    build_root = build_root_arg or os.path.join(
-        cm.config.build_root, core.name.sanitized_name
-    )
+    build_root = build_root_arg or (cm.config.build_root / core.name.sanitized_name)
+    build_root = Path(build_root)
     logger.debug(f"Setting build_root to {build_root}")
     if export:
-        export_root = os.path.join(build_root, "src")
+        export_root = build_root / "src"
     else:
         export_root = None
     try:
-        work_root = os.path.join(build_root, core.get_work_root(flags))
+        work_root = build_root / core.get_work_root(flags)
     except SyntaxError as e:
         logger.error(e.msg)
         exit(1)
-    eda_api_file = os.path.join(work_root, core.name.sanitized_name + ".eda.yml")
-    if not os.path.exists(eda_api_file):
+    eda_api_file = (work_root / core.name.sanitized_name).with_suffix(".eda.yml")
+    if not eda_api_file.exists():
         do_configure = True
 
     try:
