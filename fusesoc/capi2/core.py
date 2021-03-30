@@ -957,6 +957,7 @@ is_include_file bool Treats file as an include file when true
 include_path    str  Explicitly set an include directory, relative to core root, instead of the directory containing the file
 file_type       str  File type. Overrides the file_type set on the containing fileset
 logical_name    str  Logical name, i.e. library for VHDL/SystemVerilog. Overrides the logical_name set on the containing fileset
+copyto          str  Copy the source file to this path in the work directory.
 =============== ==== ===========
 
 Genparams
