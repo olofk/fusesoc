@@ -335,6 +335,10 @@ class Core:
             depends += [Vlnv(d) for d in self._parse_list(flags, fs.depend)]
         return depends
 
+    def get_errors(self, flags):
+        target = self._get_target(flags)
+        return self._parse_list(flags, target.errors) if target else []
+
     def get_files(self, flags):
         src_files = []
         for fs in self._get_filesets(flags):
@@ -768,6 +772,9 @@ Target:
       type : StringWithUseFlagsOrList
       desc : Top-level module. Normally a single module/entity but can be a list of several items
   lists:
+    - name : errors
+      type : StringWithUseFlags
+      desc : Error conditions. Any expression that evaluates to a non-empty string will cause FuseSoC to exit with the string as an error message
     - name : filesets
       type : StringWithUseFlags
       desc : File sets to use in target

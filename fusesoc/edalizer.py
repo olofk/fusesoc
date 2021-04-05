@@ -113,6 +113,10 @@ class Edalizer:
     def setup_cores(self):
         """ Setup cores: fetch resources, patch them, etc. """
         for core in self.cores:
+            flags = self._core_flags(core)
+            errors = core.get_errors(flags)
+            if errors:
+                raise RuntimeError("\n".join(errors))
             logger.info("Preparing " + str(core.name))
             core.setup()
 

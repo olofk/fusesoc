@@ -151,6 +151,30 @@ def test_capi2_get_depends():
         assert result[i] == expected[i]
 
 
+def test_capi2_errors():
+    from fusesoc.core import Core
+
+    core_file = os.path.join(tests_dir, "capi2_cores", "misc", "errors.core")
+    core = Core(core_file)
+
+    flags = {
+        "condition_is_false": False,
+        "condition_is_true": True,
+        "is_toplevel": True,
+        "target": "no_errors",
+    }
+    assert [] == core.get_errors(flags)
+
+    flags["target"] = "false_error"
+    assert [] == core.get_errors(flags)
+
+    flags["target"] = "true_error"
+    assert ["I am Error"] == core.get_errors(flags)
+
+    flags["target"] = "multiple_errors"
+    assert ["I am Error", "I am also Error"] == core.get_errors(flags)
+
+
 def test_capi2_get_files():
     from fusesoc.core import Core
 
