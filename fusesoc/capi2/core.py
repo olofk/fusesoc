@@ -156,6 +156,10 @@ class Core:
 
         return hooks
 
+    def get_errors(self, flags):
+        target_name, target = self._get_target(flags)
+        return target.get("errors", [])
+
     """ Get flags, including tool, from target """
 
     def get_flags(self, target_name):

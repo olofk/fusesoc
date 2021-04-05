@@ -1,0 +1,18 @@
+CAPI=2:
+# Copyright FuseSoC contributors
+# Licensed under the 2-Clause BSD License, see LICENSE for details.
+# SPDX-License-Identifier: BSD-2-Clause
+
+name : ::errors:0
+
+targets:
+  no_errors: {}
+  false_error:
+    errors: ["condition_is_false? (I am not Error)"]
+  true_error:
+    errors: ["condition_is_true? (I am Error)"]
+  multiple_errors:
+    errors:
+      - "condition_is_true? (I am Error)"
+      - "condition_is_false? (I am not Error)"
+      - "I am also Error"

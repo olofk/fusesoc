@@ -445,6 +445,13 @@ capi2_schema = """
               "description": "Description of the target",
               "type": "string"
             },
+            "^errors$": {
+              "description": "Error conditions. Any expression that evaluates to a non-empty string will cause FuseSoC to exit with the string as an error message.",
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
             "^flow$": {
               "description": "Edalize backend flow to use for target. Setting this key enables the flow API instead of the legacy Tool API.",
               "type": "string"
