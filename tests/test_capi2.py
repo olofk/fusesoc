@@ -198,6 +198,22 @@ def test_capi2_get_files():
     assert expected == result
 
 
+def test_capi2_get_flags():
+    from fusesoc.core import Core
+
+    core = Core(os.path.join(cores_dir, "flags.core"))
+
+    assert {} == core.get_flags("bad_target")
+    assert {} == core.get_flags("noflags")
+    assert {} == core.get_flags("emptyflags")
+    assert {"tool": "mytool"} == core.get_flags("emptyflagstool")
+    expected = {"flag1": False, "flag2": True, "flag3": True}
+    assert expected == core.get_flags("allflags")
+    expected["tool"] = "mytool"
+    expected.pop("flag3")
+    assert expected == core.get_flags("allflagstool")
+
+
 def test_capi2_get_generators():
     from fusesoc.core import Core
 

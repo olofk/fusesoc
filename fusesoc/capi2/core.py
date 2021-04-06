@@ -43,6 +43,11 @@ class Genparams(dict):
     pass
 
 
+class Any:
+    def __new__(self, thing):
+        return thing
+
+
 class StringWithUseFlags(str):
     """ A parsed string with support for use flags. """
 
@@ -122,7 +127,11 @@ class Section:
                         _d[_name] = globals()[self.dicts[k]](_items)
                     except AttributeError as e:
                         raise SyntaxError(f"Bad option '{_name}' in section '{k}'")
-                    setattr(_d[_name], "name", _name)
+                    try:
+                        setattr(_d[_name], "name", _name)
+                    except AttributeError:
+                        # e.g. bool objects can't set a "name" attribute
+                        pass
                 setattr(self, k, _d)
             else:
                 logger.warning(
@@ -268,6 +277,19 @@ class Core:
                         hooks[hook].append(self.scripts[script])
 
         return hooks
+
+    """ Get flags, including tool, from target """
+
+    def get_flags(self, target_name):
+        flags = {}
+        target = self.targets.get(target_name)
+
+        if target:
+            flags = target.flags.copy()
+            # Special case for tool as we get it from default_tool
+            if target.default_tool:
+                flags["tool"] = str(target.default_tool)
+        return flags
 
     def get_scripts(self, files_root, flags):
         self._debug("Getting hooks for flags '{}'".format(str(flags)))
@@ -788,6 +810,10 @@ Target:
     - name : vpi
       type : StringWithUseFlags
       desc : VPI modules to build and include for target
+  dicts:
+    - name : flags
+      type : Any
+      desc : Default values of flags
 
 Tools:
   description : The valid subsections of the Tools section and their options are defined by what Edalize backends are available at runtime. The sections listed here are the ones that were available when the documentation was generated.
