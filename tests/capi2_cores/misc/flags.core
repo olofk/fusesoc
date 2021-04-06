@@ -1,0 +1,18 @@
+CAPI=2:
+# Copyright FuseSoC contributors
+# Licensed under the 2-Clause BSD License, see LICENSE for details.
+# SPDX-License-Identifier: BSD-2-Clause
+
+name: ::flags:0
+targets:
+  noflags: {}
+  emptyflags:
+    flags : {}
+  allflags:
+    flags : {flag1 : false, flag2 : true, flag3 : true}
+  emptyflagstool:
+    default_tool : mytool
+    flags : {}
+  allflagstool:
+    default_tool : mytool
+    flags : {flag1 : false, flag2 : true, tool : notmytool}
