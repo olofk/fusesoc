@@ -310,24 +310,6 @@ class Core:
                 self._debug(_s.format(hook, str(_script)))
         return hooks
 
-    def get_tool(self, flags):
-        self._debug("Getting tool for flags {}".format(str(flags)))
-        tool = None
-        if flags.get("tool"):
-            tool = flags["tool"]
-        else:
-            _flags = flags.copy()
-            _flags["is_toplevel"] = True
-            target = self._get_target(_flags)
-            if target and target.default_tool:
-                tool = str(target.default_tool)
-
-        if tool:
-            self._debug(f" Matched tool {tool}")
-        else:
-            self._debug(" Matched no tool")
-        return tool
-
     def get_tool_options(self, flags):
         _flags = flags.copy()
 
@@ -529,23 +511,6 @@ class Core:
             }
             ttptttg.append(t)
         return ttptttg
-
-    def get_work_root(self, flags):
-        _flags = flags.copy()
-        _flags["is_toplevel"] = True
-        target = self._get_target(_flags)
-        if target:
-            _flags["target"] = target.name
-            tool = self.get_tool(_flags)
-            if tool:
-                return target.name + "-" + tool
-            else:
-                raise SyntaxError(
-                    "Failed to determine work root. Could not resolve tool for target "
-                    + target.name
-                )
-        else:
-            raise SyntaxError("Failed to determine work root. Could not resolve target")
 
     def _get_vpi(self, flags):
         vpi = {}

@@ -424,18 +424,6 @@ def test_capi2_get_scripts():
     assert expected == core.get_scripts("my_files_root", flags)
 
 
-def test_capi2_get_tool():
-    from fusesoc.core import Core
-
-    core_file = os.path.join(tests_dir, "capi2_cores", "misc", "tools.core")
-    core = Core(core_file)
-
-    assert None == core.get_tool({"tool": None})
-    assert "verilator" == core.get_tool({"tool": "verilator"})
-    assert "icarus" == core.get_tool({"target": "with_tool"})
-    assert "verilator" == core.get_tool({"target": "with_tool", "tool": "verilator"})
-
-
 def test_capi2_get_tool_options():
     from fusesoc.core import Core
 
@@ -540,24 +528,6 @@ def test_capi2_get_vpi():
     assert [] == core.get_vpi({"is_toplevel": True, "target": "invalid"})
     assert expected == core.get_vpi({"is_toplevel": True})
     assert expected == core.get_vpi({"is_toplevel": False})
-
-
-def test_capi2_get_work_root():
-    from fusesoc.core import Core
-
-    core_file = os.path.join(tests_dir, "capi2_cores", "misc", "targets.core")
-    core = Core(core_file)
-
-    with pytest.raises(SyntaxError):
-        core.get_work_root({})
-    assert "default-icarus" == core.get_work_root({"tool": "icarus"})
-    assert "default-vivado" == core.get_work_root({"tool": "vivado"})
-    assert "default-icarus" == core.get_work_root({"tool": "icarus", "target": None})
-    with pytest.raises(SyntaxError):
-        core.get_work_root({"tool": "icarus", "target": "invalid_target"})
-    assert "empty_target-icarus" == core.get_work_root(
-        {"tool": "icarus", "target": "empty_target"}
-    )
 
 
 def test_capi2_info():
