@@ -91,6 +91,7 @@ def pgm(cm, args):
         args.system,
         args.backendargs,
         None,
+        False,
     )
 
 
@@ -352,6 +353,7 @@ def run(cm, args):
         args.system,
         args.backendargs,
         args.build_root,
+        args.verbose,
     )
 
 
@@ -366,6 +368,7 @@ def run_backend(
     system,
     backendargs,
     build_root_arg,
+    verbose,
 ):
     tool_error = (
         "No tool was supplied on command line or found in '{}' core description"
@@ -434,7 +437,7 @@ def run_backend(
     # Frontend/backend separation
 
     try:
-        backend = backend_class(edam=edam, work_root=work_root)
+        backend = backend_class(edam=edam, work_root=work_root, verbose=verbose)
 
     except RuntimeError as e:
         logger.error(str(e))
