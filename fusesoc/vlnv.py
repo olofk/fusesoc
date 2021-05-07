@@ -15,6 +15,9 @@ class Vlnv:
         def _is_version(s):
             return s[0].isdigit()
 
+        if not s:
+            raise SyntaxError("Core name is empty string")
+
         if s.startswith("!"):
             self.conflict = True
             _s = s[1:]
