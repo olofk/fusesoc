@@ -1,5 +1,6 @@
 CORE INFO
-Name:      ::targets:0
+Name:        ::targets:0
+Description: <No description>
 
 Targets:
 default                  : <No description>

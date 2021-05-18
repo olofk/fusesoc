@@ -265,7 +265,13 @@ def list_cores(cm, args):
     print("=" * 80)
     for name in sorted(cores.keys()):
         core = cores[name]
-        print(name.ljust(maxlen) + " : " + core.cache_status().rjust(10) + " : " + (core.description or "<No description>"))
+        print(
+            name.ljust(maxlen)
+            + " : "
+            + core.cache_status().rjust(10)
+            + " : "
+            + (core.description or "<No description>")
+        )
 
 
 def gen_list(cm, args):

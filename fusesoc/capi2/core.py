@@ -564,8 +564,9 @@ class Core:
 
     def info(self):
         s = """CORE INFO
-Name:      {}
-Core root: {}
+Name:        {}
+Description: {}
+Core root:   {}
 
 Targets:
 {}"""
@@ -579,7 +580,12 @@ Targets:
                 )
         else:
             targets = "<No targets>"
-        return s.format(str(self.name), str(self.core_root), targets)
+        return s.format(
+            str(self.name),
+            str(self.description or "<No description>"),
+            str(self.core_root),
+            targets,
+        )
 
     def patch(self, dst_dir):
         # FIXME: Use native python patch instead
