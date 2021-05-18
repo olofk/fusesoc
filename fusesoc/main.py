@@ -261,11 +261,11 @@ def list_cores(cm, args):
             logger.error("No libraries registered")
         exit(1)
     maxlen = max(map(len, cores.keys()))
-    print("Core".ljust(maxlen) + "   Cache status")
+    print("Core".ljust(maxlen) + "  Cache status  Description")
     print("=" * 80)
     for name in sorted(cores.keys()):
         core = cores[name]
-        print(name.ljust(maxlen) + " : " + core.cache_status())
+        print(name.ljust(maxlen) + " : " + core.cache_status().rjust(10) + " : " + (core.description or "<No description>"))
 
 
 def gen_list(cm, args):
