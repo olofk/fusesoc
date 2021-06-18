@@ -98,14 +98,15 @@ Building the documentation
 The FuseSoC documentation (i.e., the thing you're reading right now) is built from files in the ``doc`` directory in the FuseSoC source repository.
 The documentation is written `reStructuredText <https://docutils.readthedocs.io/en/sphinx-docs/user/rst/quickstart.html>`_, and `Sphinx <https://www.sphinx-doc.org/>`_ is used to convert the documentation into different output formats, such as HTML or PDF.
 
-Use the following command to build the documentation on your machine after making changes to it.
-The rendered documentation can be previewed by pointing a browser to the output file as shown in the run output, typically ``.tox/docs_out/index.html`` in the current directory.
-
+The most convenient way of working on documentation is to have a browser window open with the rendered documentation next an editor where you work on the reStructuredText files.
+Run the following command to build the documentation:
 
 .. code-block:: bash
 
    cd fusesoc/source/directory
-   tox -e doc
+   tox -e doc-autobuild
 
-   # On Linux: Open the rendered documentaton with the standard browser
-   xdg-open .tox/docs_out/index.html
+The documentation is now built and can be accessed in a browser.
+Look for a line similar to ``[sphinx-autobuild] Serving on http://127.0.0.1:8000`` and point your browser to the link, e.g. ``http://127.0.0.1:8000``.
+
+Whenever a change to a documentation file is detected the documentation will be rebuilt automatically and the refreshed in the browser without the need for further manual action (it might take a couple seconds, though).
