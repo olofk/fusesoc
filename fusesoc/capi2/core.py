@@ -710,7 +710,7 @@ Root:
       desc : Available VPI modules
 
 Fileset:
-  description : A fileset represents a group of file with a common purpose. Each file in the fileset is required to have a file type and is allowed to have a logical_name which can be set for the whole fileset or individually for each file. A fileset can also have dependencies on other cores, specified in the depend section
+  description : A fileset represents a group of files with a common purpose. Each file in the fileset is required to have a file type and is allowed to have a logical_name which can be set for the whole fileset or individually for each file. A fileset can also have dependencies on other cores, specified in the depend section
   members:
     - name : file_type
       type : String
