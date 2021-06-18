@@ -9,6 +9,8 @@ Core files are written in :term:`YAML` syntax and follow the FuseSoC's own CAPI 
 Don't worry: using FuseSoC neither requires a full understanding of YAML, nor an up-front knowledge of CAPI.
 However, some key facts about YAML are important.
 
+.. _ug_build_system_core_files_yaml_intro:
+
 Things one should know about YAML
 ---------------------------------
 
@@ -24,29 +26,44 @@ Things one should know about YAML
 
   .. code-block:: yaml
 
-     [ item1, item2 ]
+     [ "item1", "item2" ]
 
   is semantically identical to
 
   .. code-block:: yaml
 
-     - item1
-     - item2
+     - "item1"
+     - "item2"
 
   The same is true for dictionaries (key/value pairs).
 
   .. code-block:: yaml
 
-     { key1: value1, key2: value2 }
+     { key1: "value1", key2: "value2" }
 
   is semantically identical to
 
   .. code-block:: yaml
 
-     key1: value1
-     key2: value2
+     key1: "value1"
+     key2: "value2"
 
   In most cases, the longer (second) form is preferred, as it is easier to make changes while keeping the diff easy to read.
+
+* **We recommend always adding double quotes around strings used as value.**
+  In most cases, strings in YAML do not need to be surrounded by (single or double) quotation marks.
+  However, the exact rules when quoting is needed are not easily summarized without in-depth understanding of the YAML language syntax.
+  At minimum quotation marks are *required* when strings start with an exclamation mark.
+  Always using double quotes avoids having to even think about the exact rules.
+
+  Examples:
+
+  .. code-block:: yaml
+
+     recommended: "quotedvalue"
+     required: "!tool_verilator (something)"
+     possible: unquotedvalue
+
 
 For a quick introduction into most of YAML's features have a look at `Learn YAML in Y minutes <https://learnxinyminutes.com/docs/yaml/>`_.
 The full YAML 1.2 specification is available at `yaml.org <https://yaml.org/spec/1.2/spec.html>`_ (it's not an easy read, though).

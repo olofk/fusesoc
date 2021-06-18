@@ -8,6 +8,11 @@ This glossary section explains some of the jargon used.
 .. glossary::
    :sorted:
 
+   CAPI2
+      Short for "Core API version 2."
+      The schema or "language" used in :term:`core files <core file>`.
+      The :ref:`ref_capi2` describes the syntax in detail.
+
    core
       A core is a reasonably self-contained, reusable piece of IP, such as a FIFO implementation.
       See also :ref:`ug_overview_cores`.
@@ -15,6 +20,8 @@ This glossary section explains some of the jargon used.
    core file
    core description file
       A file describing a :term:`core`, including source files, available targets, etc.
+      A core file is a :term:`YAML` file which follows :term:`CAPI2` schema.
+      Core files names must end in ``.core``.
 
    semantic versioning
    SemVer
