@@ -1,6 +1,8 @@
 # Python requirements needed to develop fusesoc
 # "End-user" dependencies (during build or install time) are listed in setup.py
 pre-commit>=2.9.0
+
+# It is recommended to run pytest through tox, in which case this dependency is
+# not needed.
 pytest>=3.3.0
-Sphinx
-sphinx_rtd_theme
+tox
