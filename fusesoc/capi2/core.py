@@ -984,12 +984,15 @@ StringWithUseFlags
 
 StringWithUseFlags is a string that can contain CAPI2 expressions that are evaluated during parsing.
 
-CAPI2 expressions are used to evaluate an expression only if a flag is set or unset.
-The general form is *flag_is_set ? ( expression )* to evaluate *expression* if flag is set or *!flag_is_set ? ( expression )* to evaluate *expression* if flag is not set.
+CAPI2 expressions return a value depending on a :ref:`flag <ug_build_system_flags>` being set or not.
 
-**Example** Only include fileset *verilator_tb* when the target is used with verilator
+* To test if a flag is set (true) and return ``my_string`` in that case, use the expression ``my_flag ? (my_string)``.
+* To test if a flag is not set (false) and return ``my_string`` in that case, use the expression ``!my_flag ? (my_string)``.
 
-``filesets : [rtl, tb, tool_verilator? (verilator_tb)]``
+.. note::
+   **Quotation marks are required** for strings starting with an exclamation mark (``!``), but :ref:`always recommended <ug_build_system_core_files_yaml_intro>`.
+
+Refer to the section :ref:`ug_build_system_flags` in the User Guide for more information on flags.
 
 StringWithUseFlagsOrDict
 ~~~~~~~~~~~~~~~~~~~~~~~~
