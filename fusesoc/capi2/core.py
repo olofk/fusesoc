@@ -65,6 +65,8 @@ class String(str):
             "https://github.com/olofk/fusesoc/issues/new."
         )
 
+class Integer(int):
+    pass
 
 class StringWithUseFlagsOrList:
     def __new__(cls, *args, **kwargs):
