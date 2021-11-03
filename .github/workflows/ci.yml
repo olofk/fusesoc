@@ -13,35 +13,40 @@ on:
 
 jobs:
   build-and-test:
-    name: Build and Test (Python ${{ matrix.python-version }} on ${{ matrix.os }})
     strategy:
       fail-fast: false
       matrix:
         os:
-          - ubuntu-20.04
-          - macos-latest
-          # CI is currently broken on Windows
-          # https://github.com/olofk/fusesoc/issues/528
-          #- windows-latest
-        python-version:
+        - { icon: 🐧, name: ubuntu-20.04 }
+        - { icon: 🍎, name: macos-latest }
+        # CI is currently broken on Windows
+        # https://github.com/olofk/fusesoc/issues/528
+        #- { icon: 🧊, name: windows-latest }
+        pyver:
           - '3.6'
           - '3.7'
           - '3.8'
           - '3.9'
           - '3.10'
-    runs-on: ${{ matrix.os }}
-
+    runs-on: ${{ matrix.os.name }}
+    name: ${{ matrix.os.icon }} ${{ matrix.os.name }} | ${{ matrix.pyver }}
     steps:
-    - uses: actions/checkout@v2
-    - name: Set up Python ${{ matrix.python-version }}
+
+    - name: 🧰 Repository Checkout
+      uses: actions/checkout@v2
+
+    - name: 🐍 Set up Python ${{ matrix.pyver }}
       uses: actions/setup-python@v2
       with:
-        python-version: ${{ matrix.python-version }}
+        python-version: ${{ matrix.pyver }}
+
     - name: Display Python version
       run: python -c "import sys; print(sys.version)"
-    - name: Install Tox and any other packages
+
+    - name: 🛠️ Install Tox and any other packages
       run: pip install tox tox-gh-actions
-    - name: Build package and run tests with tox
+
+    - name: 🚧 Build package and run tests with tox
       # XXX: Remove `-e py3-ci` and rely on the settings in tox.ini as soon as
       # https://github.com/ymyzk/tox-gh-actions/issues/44 is resolved.
       run: tox -e py3-ci
