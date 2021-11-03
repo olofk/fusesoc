@@ -8,6 +8,7 @@ jobs:
   build-and-test:
     name: Build and Test (Python ${{ matrix.python-version }} on ${{ matrix.os }})
     strategy:
+      fail-fast: false
       matrix:
         os:
           - ubuntu-20.04
