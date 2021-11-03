@@ -1,14 +1,8 @@
 name: CI
 
 on:
-  # Run CI on all pushes.
   push:
-    branches:
-      - master
-
   pull_request:
-    branches:
-      - master
 
 jobs:
   build-and-test:
