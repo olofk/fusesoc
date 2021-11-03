@@ -20,7 +20,9 @@ jobs:
         os:
           - ubuntu-20.04
           - macos-latest
-          - windows-latest
+          # CI is currently broken on Windows
+          # https://github.com/olofk/fusesoc/issues/528
+          #- windows-latest
         python-version:
           - '3.6'
           - '3.7'
