@@ -4,6 +4,13 @@ on:
   push:
   pull_request:
 
+  # Run CI once a week even without code changes to ensure tests pass with updated dependencies.
+  schedule:
+    - cron: '0 0 * * 5'
+
+  # Allow triggering a CI run from the web UI.
+  workflow_dispatch:
+
 jobs:
   build-and-test:
     name: Build and Test (Python ${{ matrix.python-version }} on ${{ matrix.os }})
