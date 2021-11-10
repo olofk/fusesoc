@@ -234,6 +234,7 @@ class Edalizer:
             "parameters": {},
             "tool_options": {},
             "toplevel": top_core.get_toplevel(self.flags),
+            "top_core": top_core.core_file,
             "vpi": [],
         }
 
