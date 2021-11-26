@@ -10,6 +10,7 @@ import signal
 import subprocess
 import sys
 import warnings
+from importlib import import_module
 
 from fusesoc import __version__
 
@@ -331,44 +332,65 @@ def run_backend(
     verbose,
 ):
     tool_error = (
-        "No tool was supplied on command line or found in '{}' core description"
+        "No flow or tool was supplied on command line or found in '{}' core description"
     )
     core = _get_core(cm, system)
 
     target = flags["target"]
+
+    flow = core.get_flow(flags)
     try:
         flags = dict(core.get_flags(target), **flags)
     except SyntaxError as e:
         logger.error(str(e))
         exit(1)
 
-    tool = flags.get("tool")
+    if flow:
+        logger.debug(f"Using flow API (flow={flow})")
+    else:
+        logger.debug("flow not set. Falling back to tool API")
+        if "tool" in flags:
+            tool = flags["tool"]
+        else:
+            logger.error(tool_error.format(system))
+            exit(1)
 
-    if not tool:
-        logger.error(tool_error.format(system))
-        exit(1)
     build_root = build_root_arg or os.path.join(
         cm.config.build_root, core.name.sanitized_name
     )
     logger.debug(f"Setting build_root to {build_root}")
+
+    work_root = os.path.join(build_root, f"{target}-{flow or tool}")
+    logger.debug(f"Setting work_root to {work_root}")
+
     if export:
         export_root = os.path.join(build_root, "src")
+        logger.debug(f"Setting export_root to {export_root}")
     else:
         export_root = None
-    try:
-        work_root = os.path.join(build_root, f"{target}-{tool}")
-    except SyntaxError as e:
-        logger.error(e.msg)
-        exit(1)
     edam_file = os.path.join(work_root, core.name.sanitized_name + ".eda.yml")
     if not os.path.exists(edam_file):
         do_configure = True
 
-    try:
-        backend_class = get_edatool(tool)
-    except ImportError:
-        logger.error(f"Backend {tool!r} not found")
-        exit(1)
+    backend_class = None
+    if flow:
+        try:
+            backend_class = getattr(
+                import_module(f"edalize.flows.{flow}"), flow.capitalize()
+            )
+        except ModuleNotFoundError:
+            logger.error(f"Flow {flow!r} not found")
+            exit(1)
+        except ImportError:
+            logger.error("Selected Edalize version does not support the flow API")
+            exit(1)
+
+    else:
+        try:
+            backend_class = get_edatool(tool)
+        except ImportError:
+            logger.error(f"Backend {tool!r} not found")
+            exit(1)
 
     edalizer = Edalizer(
         toplevel=core.name,
@@ -411,7 +433,7 @@ def run_backend(
 
     if do_configure:
         try:
-            backend.configure([])
+            backend.configure()
             print("")
         except RuntimeError as e:
             logger.error("Failed to configure the system")

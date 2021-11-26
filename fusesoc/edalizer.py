@@ -24,6 +24,17 @@ class FileAction(argparse.Action):
         setattr(namespace, self.dest, [path])
 
 
+def str2bool(v):
+    if isinstance(v, bool):
+        return v
+    if v.lower() in ("yes", "true", "t", "y", "1"):
+        return True
+    elif v.lower() in ("no", "false", "f", "n", "0"):
+        return False
+    else:
+        raise argparse.ArgumentTypeError("Boolean value expected.")
+
+
 class Edalizer:
     def __init__(
         self,
@@ -166,9 +177,13 @@ class Edalizer:
             merge_dict(parameters, snippet["parameters"])
 
             # Extract tool options
-            snippet["tool_options"] = {
-                self.flags["tool"]: core.get_tool_options(_flags)
-            }
+            if self.flags.get("tool"):
+                snippet["tool_options"] = {
+                    self.flags["tool"]: core.get_tool_options(_flags)
+                }
+
+            # Extract flow options
+            snippet["flow_options"] = core.get_flow_options(_flags)
 
             # Extract scripts
             snippet["hooks"] = core.get_scripts(rel_root, _flags)
@@ -252,7 +267,7 @@ class Edalizer:
 
     def _build_parser(self, backend_class, edam):
         typedict = {
-            "bool": {"action": "store_true"},
+            "bool": {"type": str2bool, "nargs": "?", "const": True},
             "file": {"type": str, "nargs": 1, "action": FileAction},
             "int": {"type": int, "nargs": 1},
             "str": {"type": str, "nargs": 1},
@@ -313,20 +328,54 @@ class Edalizer:
 
         # backend_args.
         backend_args = parser.add_argument_group("Backend arguments")
-        _opts = backend_class.get_doc(0)
 
-        for _opt in _opts.get("members", []) + _opts.get("lists", []):
-            backend_args.add_argument("--" + _opt["name"], help=_opt["desc"])
+        if hasattr(backend_class, "get_flow_options"):
+            for k, v in backend_class.get_flow_options().items():
+                backend_args.add_argument(
+                    "--" + k,
+                    help=v["desc"],
+                    **typedict[v["type"]],
+                )
+            for k, v in backend_class.get_tool_options(
+                self.activated_flow_options
+            ).items():
+                backend_args.add_argument(
+                    "--" + k,
+                    help=v["desc"],
+                    **typedict[v["type"]],
+                )
+        else:
+            _opts = backend_class.get_doc(0)
+            for _opt in _opts.get("members", []) + _opts.get("lists", []):
+                backend_args.add_argument("--" + _opt["name"], help=_opt["desc"])
+
         return parser
 
     def add_parsed_args(self, backend_class, parsed_args):
-        _opts = backend_class.get_doc(0)
-        # Parse arguments
-        backend_members = [x["name"] for x in _opts.get("members", [])]
-        backend_lists = [x["name"] for x in _opts.get("lists", [])]
+        if hasattr(backend_class, "get_flow_options"):
+            backend_members = []
+            backend_lists = []
+            for k, v in backend_class.get_flow_options().items():
+                if v.get("list"):
+                    backend_lists.append(k)
+                else:
+                    backend_members.append(k)
+            for k, v in backend_class.get_tool_options(
+                self.activated_flow_options
+            ).items():
+                if v.get("list"):
+                    backend_lists.append(k)
+                else:
+                    backend_members.append(k)
+            tool_options = self.edam["flow_options"]
+        else:
+            _opts = backend_class.get_doc(0)
+            # Parse arguments
+            backend_members = [x["name"] for x in _opts.get("members", [])]
+            backend_lists = [x["name"] for x in _opts.get("lists", [])]
 
-        tool = backend_class.__name__.lower()
-        tool_options = self.edam["tool_options"][tool]
+            tool = backend_class.__name__.lower()
+            tool_options = self.edam["tool_options"][tool]
 
         for key, value in sorted(parsed_args.items()):
             if value is None:
@@ -343,7 +392,68 @@ class Edalizer:
             else:
                 raise RuntimeError("Unknown parameter " + key)
 
+    def _parse_flow_options(self, backend_class, backendargs, edam):
+        available_flow_options = backend_class.get_flow_options()
+
+        # First we check which flow options that are set in the EDAM.
+        # edam["flow_options"] contain both flow and tool options, so
+        # we only pick the former here
+        flow_options = {}
+        for k, v in edam["flow_options"].items():
+            if k in available_flow_options:
+                flow_options[k] = v
+
+        # Next we build a parser and use it to parse the command-line
+        progname = "fusesoc run {}".format(edam["name"])
+        parser = argparse.ArgumentParser(
+            prog=progname, conflict_handler="resolve", add_help=False
+        )
+        backend_args = parser.add_argument_group("Flow options")
+        typedict = {
+            "bool": {"type": str2bool, "nargs": "?", "const": True},
+            "file": {"type": str, "nargs": 1, "action": FileAction},
+            "int": {"type": int, "nargs": 1},
+            "str": {"type": str, "nargs": 1},
+            "real": {"type": float, "nargs": 1},
+        }
+        for k, v in available_flow_options.items():
+            backend_args.add_argument(
+                "--" + k,
+                help=v["desc"],
+                **typedict[v["type"]],
+            )
+
+        # Parse known args (i.e. only flow options) from the command-line
+        parsed_args = parser.parse_known_args(backendargs)[0]
+
+        # Clean up parsed arguments object and convert to dict
+        parsed_args_dict = {}
+        for key, value in sorted(vars(parsed_args).items()):
+            # Remove arguments with value None, i.e. arguments not encountered
+            # on the command line
+            if value is None:
+                continue
+            _value = value[0] if type(value) == list else value
+
+            # If flow option is a list, we split up the parsed string
+            if "list" in available_flow_options[key]:
+                _value = _value.split(" ")
+            parsed_args_dict[key] = _value
+
+        # Add parsed args to the ones from the EDAM
+        merge_dict(flow_options, parsed_args_dict)
+
+        return flow_options
+
     def parse_args(self, backend_class, backendargs, edam):
+        # First we need to see which flow options are set,
+        # in order to know which tool options that are relevant
+        # for this configuration of the flow
+        if hasattr(backend_class, "get_flow_options"):
+            self.activated_flow_options = self._parse_flow_options(
+                backend_class, backendargs, edam
+            )
+
         parser = self._build_parser(backend_class, edam)
         parsed_args = parser.parse_args(backendargs)
 
