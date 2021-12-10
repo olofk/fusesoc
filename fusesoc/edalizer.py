@@ -179,7 +179,14 @@ class Edalizer:
                     _dstdir = os.path.dirname(dst)
                     if not os.path.exists(_dstdir):
                         os.makedirs(_dstdir)
-                    shutil.copy2(os.path.join(files_root, file["name"]), dst)
+                    try:
+                        shutil.copy2(os.path.join(files_root, file["name"]), dst)
+                    except IsADirectoryError:
+                        shutil.copytree(
+                            os.path.join(files_root, file["name"]),
+                            dst,
+                            dirs_exist_ok=True
+                        )
                     del _f["copyto"]
                 else:
                     _name = os.path.join(rel_root, file["name"])
