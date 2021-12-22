@@ -77,9 +77,6 @@ class Edalizer:
     def run(self):
         """ Run all steps to create a EDA API YAML file """
 
-        # Clean out old work root
-        self._prepare_work_root()
-
         # Run the setup task on all cores (fetch and patch them as needed)
         self.setup_cores()
 
@@ -99,16 +96,6 @@ class Edalizer:
         core_flags = self.flags.copy()
         core_flags["is_toplevel"] = core.name == self.toplevel
         return core_flags
-
-    def _prepare_work_root(self):
-        if os.path.exists(self.work_root):
-            for f in os.listdir(self.work_root):
-                if os.path.isdir(os.path.join(self.work_root, f)):
-                    shutil.rmtree(os.path.join(self.work_root, f))
-                else:
-                    os.remove(os.path.join(self.work_root, f))
-        else:
-            os.makedirs(self.work_root)
 
     def setup_cores(self):
         """ Setup cores: fetch resources, patch them, etc. """

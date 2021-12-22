@@ -5,6 +5,7 @@
 
 import argparse
 import os
+import shutil
 import signal
 import subprocess
 import sys
@@ -363,6 +364,18 @@ def run(cm, args):
     )
 
 
+# Clean out old work root
+def prepare_work_root(work_root):
+    if os.path.exists(work_root):
+        for f in os.listdir(work_root):
+            if os.path.isdir(os.path.join(work_root, f)):
+                shutil.rmtree(os.path.join(work_root, f))
+            else:
+                os.remove(os.path.join(work_root, f))
+    else:
+        os.makedirs(work_root)
+
+
 def run_backend(
     cm,
     export,
@@ -424,6 +437,7 @@ def run_backend(
 
     if do_configure:
         try:
+            prepare_work_root(work_root)
             edalizer.run()
             edam = edalizer.edalize
             parsed_args = edalizer.parse_args(backend_class, backendargs, edam)
