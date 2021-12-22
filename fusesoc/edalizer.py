@@ -6,6 +6,7 @@ import argparse
 import logging
 import os
 import shutil
+import tempfile
 
 from fusesoc import utils
 from fusesoc.coremanager import DependencyError
@@ -28,7 +29,6 @@ class Edalizer:
         self,
         toplevel,
         flags,
-        cache_root,
         work_root,
         core_manager,
         export_root=None,
@@ -38,7 +38,6 @@ class Edalizer:
 
         self.toplevel = toplevel
         self.flags = flags
-        self.cache_root = cache_root
         self.core_manager = core_manager
         self.work_root = work_root
         self.export_root = export_root
@@ -131,7 +130,7 @@ class Edalizer:
                         core,
                         self.generators,
                     )
-                    for gen_core in _ttptttg.generate(self.cache_root):
+                    for gen_core in _ttptttg.generate():
                         gen_core.pos = _ttptttg.pos
                         self._resolved_or_generated_cores.append(gen_core)
 
@@ -378,21 +377,16 @@ class Ttptttg:
             "vlnv": vlnv_str,
         }
 
-    def generate(self, cache_root):
+    def generate(self):
         """Run a parametrized generator
-
-        Args:
-            cache_root (str): The directory where to store the generated cores
 
         Returns:
             list: Cores created by the generator
         """
-        generator_cwd = os.path.join(cache_root, "generated", self.vlnv.sanitized_name)
+        generator_cwd = os.path.join(tempfile.mkdtemp(prefix=self.vlnv.sanitized_name))
         generator_input_file = os.path.join(generator_cwd, self.name + "_input.yml")
 
         logger.info("Generating " + str(self.vlnv))
-        if not os.path.exists(generator_cwd):
-            os.makedirs(generator_cwd)
         utils.yaml_fwrite(generator_input_file, self.generator_input)
 
         args = [

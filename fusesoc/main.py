@@ -429,7 +429,6 @@ def run_backend(
         toplevel=core.name,
         flags=flags,
         core_manager=cm,
-        cache_root=cm.config.cache_root,
         work_root=work_root,
         export_root=export_root,
         system_name=system_name,

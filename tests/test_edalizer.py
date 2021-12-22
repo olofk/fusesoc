@@ -24,27 +24,21 @@ def test_generators():
     core = cm.get_core(Vlnv("::generate"))
 
     build_root = tempfile.mkdtemp(prefix="export_")
-    cache_root = tempfile.mkdtemp(prefix="export_cache_")
     export_root = os.path.join(build_root, "exported_files")
 
     edalizer = Edalizer(
         toplevel=core.name,
         flags={"tool": "icarus"},
         core_manager=cm,
-        cache_root=cache_root,
         work_root=os.path.join(build_root, "work"),
         export_root=export_root,
         system_name=None,
     )
     edalizer.run()
 
-    gendir = os.path.join(
-        cache_root, "generated", "generate-testgenerate_without_params_0"
-    )
+    gendir = edalizer.cores[-3].core_root
     assert os.path.isfile(os.path.join(gendir, "generated.core"))
     assert os.path.isfile(os.path.join(gendir, "testgenerate_without_params_input.yml"))
-    gendir = os.path.join(
-        cache_root, "generated", "generate-testgenerate_with_params_0"
-    )
+    gendir = edalizer.cores[-2].core_root
     assert os.path.isfile(os.path.join(gendir, "generated.core"))
     assert os.path.isfile(os.path.join(gendir, "testgenerate_with_params_input.yml"))
