@@ -74,7 +74,7 @@ class Edalizer:
         return self.core_manager.db.find()
 
     def run(self):
-        """ Run all steps to create a EDA API YAML file """
+        """ Run all steps to create a EDAM file """
 
         # Run the setup task on all cores (fetch and patch them as needed)
         self.setup_cores()
@@ -87,7 +87,8 @@ class Edalizer:
         self.run_generators()
 
         # Create EDA API file contents
-        self.create_eda_api_struct()
+        self.create_edam()
+        return self.edam
 
     def _core_flags(self, core):
         """ Get flags for a specific core """
@@ -134,7 +135,7 @@ class Edalizer:
                         gen_core.pos = _ttptttg.pos
                         self._resolved_or_generated_cores.append(gen_core)
 
-    def create_eda_api_struct(self):
+    def create_edam(self):
         first_snippets = []
         snippets = []
         last_snippets = []
@@ -218,7 +219,7 @@ class Edalizer:
                 snippets.append(snippet)
 
         top_core = self.resolved_cores[-1]
-        self.edalize = {
+        self.edam = {
             "version": "0.2.1",
             "dependencies": {},
             "files": [],
@@ -231,7 +232,7 @@ class Edalizer:
         }
 
         for snippet in first_snippets + snippets + last_snippets:
-            merge_dict(self.edalize, snippet)
+            merge_dict(self.edam, snippet)
 
     def _build_parser(self, backend_class, edam):
         typedict = {
@@ -309,7 +310,7 @@ class Edalizer:
         backend_lists = [x["name"] for x in _opts.get("lists", [])]
 
         tool = backend_class.__name__.lower()
-        tool_options = self.edalize["tool_options"][tool]
+        tool_options = self.edam["tool_options"][tool]
 
         for key, value in sorted(parsed_args.items()):
             if value is None:
@@ -320,8 +321,8 @@ class Edalizer:
                 if not key in tool_options:
                     tool_options[key] = []
                 tool_options[key] += value.split(" ")
-            elif key in self.edalize["parameters"]:
-                _param = self.edalize["parameters"][key]
+            elif key in self.edam["parameters"]:
+                _param = self.edam["parameters"][key]
                 _param["default"] = value
             else:
                 raise RuntimeError("Unknown parameter " + key)
@@ -338,8 +339,8 @@ class Edalizer:
             args_dict[key] = _value
         return args_dict
 
-    def to_yaml(self, edalize_file):
-        return utils.yaml_fwrite(edalize_file, self.edalize)
+    def to_yaml(self, edam_file):
+        return utils.yaml_fwrite(edam_file, self.edam)
 
 
 from fusesoc.core import Core

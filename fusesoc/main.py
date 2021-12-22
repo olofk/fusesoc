@@ -415,8 +415,8 @@ def run_backend(
     except SyntaxError as e:
         logger.error(e.msg)
         exit(1)
-    eda_api_file = os.path.join(work_root, core.name.sanitized_name + ".eda.yml")
-    if not os.path.exists(eda_api_file):
+    edam_file = os.path.join(work_root, core.name.sanitized_name + ".eda.yml")
+    if not os.path.exists(edam_file):
         do_configure = True
 
     try:
@@ -437,8 +437,7 @@ def run_backend(
     if do_configure:
         try:
             prepare_work_root(work_root)
-            edalizer.run()
-            edam = edalizer.edalize
+            edam = edalizer.run()
             parsed_args = edalizer.parse_args(backend_class, backendargs, edam)
             edalizer.add_parsed_args(backend_class, parsed_args)
 
@@ -448,9 +447,9 @@ def run_backend(
         except RuntimeError as e:
             logger.error("Setup failed : {}".format(str(e)))
             exit(1)
-        edalizer.to_yaml(eda_api_file)
+        edalizer.to_yaml(edam_file)
     else:
-        edam = yaml_fread(eda_api_file)
+        edam = yaml_fread(edam_file)
         parsed_args = edalizer.parse_args(backend_class, backendargs, edam)
 
     # Frontend/backend separation

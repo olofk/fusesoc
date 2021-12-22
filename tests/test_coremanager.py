@@ -83,7 +83,7 @@ def test_deptree(tmp_path):
         work_root=work_root,
         core_manager=cm,
     )
-    edalizer.run()
+    edam = edalizer.run()
 
     # Check dependency tree (after running all generators)
     deps = cm.get_depends(root_core.name, {})
@@ -112,9 +112,7 @@ def test_deptree(tmp_path):
     # A generator-created core with "position: last"
     expected_filenames.append("generated-child-a-last.sv")
 
-    edalized_filenames = [
-        os.path.basename(f["name"]) for f in edalizer.edalize["files"]
-    ]
+    edalized_filenames = [os.path.basename(f["name"]) for f in edam["files"]]
 
     assert edalized_filenames == expected_filenames
 
@@ -149,11 +147,9 @@ def test_copyto():
         export_root=None,
         system_name=None,
     )
-    edalizer.run()
+    edam = edalizer.run()
 
-    eda_api = edalizer.edalize
-
-    assert eda_api["files"] == [
+    assert edam["files"] == [
         {
             "file_type": "user",
             "core": "::copytocore:0",
