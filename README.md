@@ -38,10 +38,12 @@ full list of system requirements and installation instructions in the
 To check if FuseSoC is working, and to get an initial feeling for how FuseSoC
 works, you can try to simulate a simple hardware design from our core libray.
 
-First, create and enter an empty workspace
+The `fusesoc` install is specific to a project directory, and not a system-wide feature.
 
-    mkdir workspace
-    cd workspace
+First, create and enter an empty workspace project directory where your `fusesoc.conf` and other project files will be stored.
+
+    mkdir myproject
+    cd myproject
 
 Install the FuseSoc base library into the workspace
 
