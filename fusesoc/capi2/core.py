@@ -245,13 +245,19 @@ class Core:
                 )
             if not os.path.isabs(f):
                 if os.path.exists(os.path.join(self.core_root, f)):
-                    shutil.copyfile(
-                        os.path.join(self.core_root, f), os.path.join(dst_dir, f)
-                    )
+                    src = os.path.join(self.core_root, f)
+                    dst = os.path.join(dst_dir, f)
+                    try:
+                        shutil.copyfile(src, dst)
+                    except IsADirectoryError:
+                        shutil.copytree(src, dst, dirs_exist_ok=True)
                 elif os.path.exists(os.path.join(self.files_root, f)):
-                    shutil.copyfile(
-                        os.path.join(self.files_root, f), os.path.join(dst_dir, f)
-                    )
+                    src = os.path.join(self.files_root, f)
+                    dst = os.path.join(dst_dir, f)
+                    try:
+                        shutil.copyfile(src, dst)
+                    except IsADirectoryError:
+                        shutil.copytree(src, dst, dirs_exist_ok=True)
                 else:
                     raise RuntimeError(
                         "Cannot find %s in :\n\t%s\n\t%s"
