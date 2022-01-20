@@ -185,7 +185,7 @@ class Edalizer:
                         shutil.copytree(
                             os.path.join(files_root, file["name"]),
                             dst,
-                            dirs_exist_ok=True
+                            dirs_exist_ok=True,
                         )
                     del _f["copyto"]
                 else:
