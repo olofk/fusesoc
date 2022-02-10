@@ -47,10 +47,7 @@ class Config:
                 self._path = files_read[-1]
         else:
             logger.debug("Using supplied config file")
-            if sys.version[0] == "2":
-                config.readfp(file)
-            else:
-                config.read_file(file)
+            config.read_file(file)
             file.seek(0)
             self._path = file.name
 
