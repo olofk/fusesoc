@@ -596,7 +596,7 @@ def get_parser():
     parser_library_add.add_argument(
         "--global",
         action="store_true",
-        help="Use the global FuseSoc config file in $XDG_CONFIG_HOME/fusesoc/fusesoc.conf",
+        help="Use the global FuseSoC config file in $XDG_CONFIG_HOME/fusesoc/fusesoc.conf",
     )
     parser_library_add.set_defaults(func=add_library)
 
