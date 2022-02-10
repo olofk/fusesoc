@@ -43,11 +43,8 @@ def _get_core(cm, name):
         exit(1)
     except DependencyError as e:
         logger.error(
-            "'"
-            + name
-            + "' or any of its dependencies requires '"
-            + e.value
-            + "', but this core was not found"
+            f"{name!r} or any of its dependencies requires {e.value!r}, but "
+            "this core was not found"
         )
         exit(1)
     return core
