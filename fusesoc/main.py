@@ -33,11 +33,6 @@ from fusesoc.vlnv import Vlnv
 
 logger = logging.getLogger(__name__)
 
-REPOS = [
-    ("orpsoc-cores", "https://github.com/openrisc/orpsoc-cores", "old base library"),
-    ("fusesoc-cores", "https://github.com/fusesoc/fusesoc-cores", "new base library"),
-]
-
 
 def _get_core(cm, name):
     core = None
@@ -72,27 +67,8 @@ signal.signal(signal.SIGINT, abort_handler)
 
 def pgm(cm, args):
     warnings.warn(
-        "The 'pgm' subcommand is deprecated and will be removed in the next "
-        "release. Use 'fusesoc run --target=synth --run' instead.",
-        FutureWarning,
-    )
-
-    do_configure = False
-    do_build = False
-    do_run = True
-    flags = {"target": "synth", "tool": None}
-    run_backend(
-        cm,
-        "build",
-        do_configure,
-        do_build,
-        do_run,
-        flags,
-        None,
-        args.system,
-        args.backendargs,
-        None,
-        False,
+        "The 'pgm' subcommand has been removed. "
+        "Use 'fusesoc run --target=synth --run' instead."
     )
 
 
@@ -108,63 +84,10 @@ def fetch(cm, args):
 
 def init(cm, args):
     warnings.warn(
-        "The 'init' subcommand is deprecated and will be removed in the next "
-        "release. It was intended to fetch the FuseSoC standard library. This can be done with 'fusesoc library add fusesoc_cores https://github.com/fusesoc/fusesoc-cores' instead.",
-        FutureWarning,
+        "The 'init' subcommand to fetch the FuseSoC standard library has been "
+        "removed. Use 'fusesoc library add fusesoc_cores "
+        "https://github.com/fusesoc/fusesoc-cores' instead."
     )
-    # Fix Python 2.x.
-    global input
-    try:
-        input = raw_input
-    except NameError:
-        pass
-
-    xdg_config_home = os.environ.get("XDG_CONFIG_HOME") or os.path.join(
-        os.path.expanduser("~"), ".config"
-    )
-    config_file = os.path.join(xdg_config_home, "fusesoc", "fusesoc.conf")
-
-    if os.path.exists(config_file):
-        logger.warning(f"'{config_file}' already exists. Aborting")
-        exit(1)
-        # TODO. Prepend cores_root to file if it doesn't exist
-        f = open(config_file, "w+")
-    else:
-        logger.info(f"Writing configuration file to '{config_file}'")
-        if not os.path.exists(os.path.dirname(config_file)):
-            os.makedirs(os.path.dirname(config_file))
-        f = open(config_file, "w+")
-
-    config = Config(file=f)
-
-    _repo_paths = []
-    for repo in REPOS:
-        name = repo[0]
-        uri = repo[1]
-        default_dir = os.path.join(cm._lm.library_root, name)
-        prompt = "Directory to use for {} ({}) [{}] : "
-        if args.y:
-            location = None
-        else:
-            location = input(prompt.format(repo[0], repo[2], default_dir))
-        if not location:
-            location = default_dir
-        if os.path.exists(location):
-            logger.warning(
-                "'{}' already exists. This library will not be added to fusesoc.conf".format(
-                    location
-                )
-            )
-            # TODO: Prompt for overwrite
-        else:
-            logger.info(f"Initializing {name}")
-            try:
-                library = Library(name, location, "git", uri, True)
-                config.add_library(library)
-            except RuntimeError as e:
-                logger.error("Init failed: " + str(e))
-                exit(1)
-    logger.info("FuseSoC is ready to use!")
 
 
 def list_paths(cm, args):
