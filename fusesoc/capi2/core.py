@@ -324,6 +324,24 @@ class Core:
                 flags["tool"] = str(target.default_tool)
         return flags
 
+    def get_flow(self, flags):
+        self._debug("Getting flow for flags {}".format(str(flags)))
+        flow = None
+        if flags.get("flow"):
+            flow = flags["flow"]
+        else:
+            _flags = flags.copy()
+            _flags["is_toplevel"] = True
+            target = self._get_target(_flags)
+            if target and target.flow:
+                flow = str(target.flow)
+
+        if flow:
+            self._debug(f" Matched flow {flow}")
+        else:
+            self._debug(" Matched no flow")
+        return flow
+
     def get_scripts(self, files_root, flags):
         self._debug("Getting hooks for flags '{}'".format(str(flags)))
         hooks = {}
@@ -368,6 +386,19 @@ class Core:
                         options[member] = [str(x) for x in _member]
         self._debug("Found tool options {}".format(str(options)))
         return options
+
+    def get_flow_options(self, flags):
+        _flags = flags.copy()
+
+        self._debug("Getting flow options for flags {}".format(str(_flags)))
+        target = self._get_target(_flags)
+
+        if target and target.flow_options:
+            self._debug(f"Found flow options {target.flow_options}")
+        else:
+            self._debug("Found no flow options")
+
+        return (target and target.flow_options) or {}
 
     def get_depends(self, flags):  # Add use flags?
         depends = []
@@ -794,6 +825,12 @@ Target:
     - name : description
       type : String
       desc : Description of the target
+    - name : flow
+      type : String
+      desc : Edalize backend flow to use for target
+    - name : flow_options
+      type : Any
+      desc : Tool- and flow-specific options
     - name : hooks
       type : Hooks
       desc : Script hooks to run when target is used
