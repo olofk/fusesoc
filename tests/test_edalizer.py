@@ -36,9 +36,12 @@ def test_generators():
     )
     edalizer.run()
 
-    gendir = edalizer.cores[-3].core_root
-    assert os.path.isfile(os.path.join(gendir, "generated.core"))
-    assert os.path.isfile(os.path.join(gendir, "testgenerate_without_params_input.yml"))
-    gendir = edalizer.cores[-2].core_root
-    assert os.path.isfile(os.path.join(gendir, "generated.core"))
-    assert os.path.isfile(os.path.join(gendir, "testgenerate_with_params_input.yml"))
+    name_to_core = {str(core.name): core for core in edalizer.cores}
+    for flavour in ["testgenerate_with_params", "testgenerate_without_params"]:
+        core_name = f"::generate-{flavour}:0"
+        assert core_name in name_to_core
+        core = name_to_core[core_name]
+
+        gendir = core.core_root
+        assert os.path.isfile(os.path.join(gendir, "generated.core"))
+        assert os.path.isfile(os.path.join(gendir, f"{flavour}_input.yml"))
