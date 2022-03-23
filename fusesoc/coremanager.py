@@ -254,6 +254,8 @@ class CoreManager:
                     except ImportError as e:
                         w = 'Failed to register "{}" due to unknown provider: {}'
                         logger.warning(w.format(core_file, str(e)))
+                    except ValueError as e:
+                        logger.warning(e)
         return found_cores
 
     def _detect_capi_version(self, core_file) -> int:
