@@ -1,0 +1,27 @@
+CAPI=2:
+name : ::flow:0
+targets:
+  nothing:
+    toplevel: unused
+  flowonly:
+    flow : icestorm
+    toplevel: unused
+  emptyflowoptions:
+    flow : lint
+    flow_options : {}
+    toplevel: unused
+  flowoptions:
+    flow : sim
+    flow_options:
+      tool1:
+        someoption : somevalue
+      tool2:
+        otheroption : [detroit, 442]
+    toplevel: unused
+  toolonly:
+    default_tool : icestorm
+    toplevel: unused
+  flowandtool:
+    default_tool : vivado
+    flow: icestorm
+    toplevel: unused

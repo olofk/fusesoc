@@ -3,6 +3,92 @@
 # SPDX-License-Identifier: BSD-2-Clause
 
 
+def test_tool_or_flow():
+    import os
+
+    from fusesoc.config import Config
+    from fusesoc.coremanager import CoreManager
+    from fusesoc.edalizer import Edalizer
+    from fusesoc.librarymanager import Library
+    from fusesoc.vlnv import Vlnv
+
+    tests_dir = os.path.dirname(__file__)
+    cores_dir = os.path.join(tests_dir, "capi2_cores", "misc")
+
+    lib = Library("edalizer", cores_dir)
+
+    cm = CoreManager(Config())
+    cm.add_library(lib, [])
+
+    core = cm.get_core(Vlnv("::flow"))
+
+    ref_edam = {
+        "version": "0.2.1",
+        "dependencies": {"::flow:0": []},
+        "files": [],
+        "hooks": {},
+        "name": "flow_0",
+        "parameters": {},
+        "tool_options": {},
+        "toplevel": "unused",
+        "vpi": [],
+        "flow_options": {},
+    }
+
+    edam = Edalizer(
+        toplevel=core.name,
+        flags={"target": "nothing"},
+        core_manager=cm,
+        work_root=".",
+    ).run()
+    assert edam == ref_edam
+
+    edam = Edalizer(
+        toplevel=core.name,
+        flags={"target": "flowonly"},
+        core_manager=cm,
+        work_root=".",
+    ).run()
+    assert edam == ref_edam
+
+    edam = Edalizer(
+        toplevel=core.name,
+        flags={"target": "emptyflowoptions"},
+        core_manager=cm,
+        work_root=".",
+    ).run()
+    assert edam == ref_edam
+
+    edam = Edalizer(
+        toplevel=core.name,
+        flags={"target": "toolonly"},
+        core_manager=cm,
+        work_root=".",
+    ).run()
+    assert edam == ref_edam
+
+    edam = Edalizer(
+        toplevel=core.name,
+        flags={"target": "flowandtool"},
+        core_manager=cm,
+        work_root=".",
+    ).run()
+    assert edam == ref_edam
+
+    edam = Edalizer(
+        toplevel=core.name,
+        flags={"target": "flowoptions"},
+        core_manager=cm,
+        work_root=".",
+    ).run()
+
+    ref_edam["flow_options"] = {
+        "tool1": {"someoption": "somevalue"},
+        "tool2": {"otheroption": ["detroit", 442]},
+    }
+    assert edam == ref_edam
+
+
 def test_generators():
     import os
     import tempfile
