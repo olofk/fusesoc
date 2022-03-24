@@ -237,7 +237,6 @@ def test_virtual():
     edalizer = Edalizer(
         toplevel=root_core.name,
         flags=flags,
-        cache_root=None,
         core_manager=cm,
         work_root=work_root,
     )
