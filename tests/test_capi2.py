@@ -3,6 +3,7 @@
 # SPDX-License-Identifier: BSD-2-Clause
 
 import os.path
+import warnings
 
 import pytest
 
@@ -29,9 +30,9 @@ def test_files_out_of_hierarchy():
     with pytest.warns(FutureWarning, match="not within the directory"):
         core.export(export_root, {"target": "bad", "is_toplevel": True})
 
-    with pytest.warns(None) as record:
+    with warnings.catch_warnings(record=True) as record:
         core.export(export_root, {"target": "good", "is_toplevel": True})
-    assert not record
+        assert not record
 
 
 def test_empty_core():
