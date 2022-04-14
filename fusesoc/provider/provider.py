@@ -20,7 +20,20 @@ class Provider:
         self.patches = config.get("patches", [])
 
     def clean_cache(self):
+        def _make_tree_writable(topdir):
+            # Ensure all files and directories under topdir are writable
+            # (and readable) by owner.
+            for d, _, files in os.walk(topdir):
+                os.chmod(d, os.stat(d).st_mode | stat.S_IWRITE | stat.S_IREAD)
+                for fname in files:
+                    fpath = os.path.join(d, fname)
+                    if os.path.isfile(fpath):
+                        os.chmod(
+                            fpath, os.stat(fpath).st_mode | stat.S_IWRITE | stat.S_IREAD
+                        )
+
         if os.path.exists(self.files_root):
+            _make_tree_writable(self.files_root)
             shutil.rmtree(self.files_root)
 
     def fetch(self):
