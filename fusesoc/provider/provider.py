@@ -5,6 +5,7 @@
 import logging
 import os
 import shutil
+import stat
 
 from fusesoc.utils import Launcher
 
