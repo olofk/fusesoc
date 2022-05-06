@@ -25,7 +25,7 @@ sync-uri = https://github.com/fusesoc/fusesoc-cores
 """
 
 
-def test_config_path():
+def test_config():
     tcf = tempfile.NamedTemporaryFile(mode="w+")
     tcf.write(
         EXAMPLE_CONFIG.format(
@@ -40,6 +40,25 @@ def test_config_path():
     conf = Config(tcf.name)
 
     assert conf.library_root == library_root
+
+
+def test_config_relative_path():
+    with tempfile.TemporaryDirectory() as td:
+        config_path = os.path.join(td, "fusesoc.conf")
+        with open(config_path, "w") as tcf:
+            tcf.write(
+                EXAMPLE_CONFIG.format(
+                    build_root="build_root",
+                    cache_root="cache_root",
+                    cores_root="cores_root",
+                    library_root="library_root",
+                )
+            )
+
+        conf = Config(tcf.name)
+        for name in ["build_root", "cache_root", "library_root"]:
+            abs_td = os.path.abspath(td)
+            assert getattr(conf, name) == os.path.join(abs_td, name)
 
 
 def test_config_libraries():

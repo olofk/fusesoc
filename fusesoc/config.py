@@ -35,8 +35,7 @@ class Config:
         logger.debug("Looking for config files from " + ":".join(config_files))
         files_read = config.read(config_files)
         logger.debug("Found config files in " + ":".join(files_read))
-        if files_read:
-            self._path = files_read[-1]
+        self._path = files_read[-1] if files_read else None
 
         self.build_root = self._get_build_root(config)
         self.cache_root = self._get_cache_root(config)
@@ -90,13 +89,27 @@ class Config:
         logger.debug("cache_root=" + self.cache_root)
         logger.debug("library_root=" + self.library_root)
 
+    def _resolve_path_from_cfg(self, path):
+        # We only call resolve_path_from_cfg if config.get(...) returned
+        # something. That, in turn, only happens if we actually managed to read
+        # a config file, meaning that files_read will have been nonempty in the
+        # constructor and self._path will not be None.
+        assert self._path is not None
+
+        expanded = os.path.expanduser(path)
+        if os.path.isabs(expanded):
+            return expanded
+        else:
+            cfg_file_dir = os.path.dirname(self._path)
+            return os.path.join(cfg_file_dir, expanded)
+
     def _path_from_cfg(self, config, name):
-        from_cfg = config.get("main", name, fallback=None)
-        return os.path.expanduser(from_cfg) if from_cfg is not None else None
+        as_str = config.get("main", name, fallback=None)
+        return self._resolve_path_from_cfg(as_str) if as_str is not None else None
 
     def _paths_from_cfg(self, config, name):
         paths = config.get("main", name, fallback="")
-        return [os.path.expanduser(p) for p in paths.split()]
+        return [self._resolve_path_from_cfg(p) for p in paths.split()]
 
     def _get_build_root(self, config):
         from_cfg = self._path_from_cfg(config, "build_root")
