@@ -288,7 +288,7 @@ class CoreManager:
             self.db.add(core, library)
 
     def add_library(self, library):
-        """ Register a library """
+        """Register a library"""
         abspath = os.path.abspath(os.path.expanduser(library.location))
         _library = self._lm.get_library(abspath, "location")
         if _library:
@@ -300,7 +300,7 @@ class CoreManager:
         self._lm.add_library(library)
 
     def get_libraries(self):
-        """ Get all registered libraries """
+        """Get all registered libraries"""
         return self._lm.get_libraries()
 
     def get_depends(self, core, flags):
@@ -325,17 +325,17 @@ class CoreManager:
         return deps
 
     def get_cores(self):
-        """ Get a dict with all cores, indexed by the core name """
+        """Get a dict with all cores, indexed by the core name"""
         return {str(x.name): x for x in self.db.find()}
 
     def get_core(self, name):
-        """ Get a core with a given name """
+        """Get a core with a given name"""
         c = self.db.find(name)
         c.name.relation = "=="
         return c
 
     def get_generators(self):
-        """ Get a dict with all registered generators, indexed by name """
+        """Get a dict with all registered generators, indexed by name"""
         generators = {}
         for core in self.db.find():
             if hasattr(core, "get_generators"):
