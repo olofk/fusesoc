@@ -49,7 +49,7 @@ class Any:
 
 
 class StringWithUseFlags(str):
-    """ A parsed string with support for use flags. """
+    """A parsed string with support for use flags."""
 
     def __init__(self, string):
         self.exprs = None
@@ -61,7 +61,7 @@ class StringWithUseFlags(str):
 
 
 class String(str):
-    """ A plain (unparsed) string. """
+    """A plain (unparsed) string."""
 
     def parse(self, flags):
         raise RuntimeError(
@@ -373,7 +373,7 @@ class Core:
         return generators
 
     def get_virtuals(self):
-        """ Get a list of "virtual" VLNVs provided by this core. """
+        """Get a list of "virtual" VLNVs provided by this core."""
         return self.virtual
 
     def get_parameters(self, flags={}, ext_parameters={}):
