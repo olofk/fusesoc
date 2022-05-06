@@ -5,7 +5,6 @@
 import configparser
 import logging
 import os
-import sys
 from configparser import ConfigParser as CP
 
 from fusesoc.librarymanager import Library
@@ -163,7 +162,7 @@ class Config:
 
         try:
             provider = get_provider(library.sync_type)
-        except ImportError as e:
+        except ImportError:
             raise RuntimeError("Invalid sync-type '{}'".format(library["sync-type"]))
 
         provider.init_library(library)
