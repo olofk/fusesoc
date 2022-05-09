@@ -19,7 +19,7 @@ def test_generators():
     lib = Library("edalizer", cores_dir)
 
     cm = CoreManager(Config())
-    cm.add_library(lib)
+    cm.add_library(lib, [])
 
     core = cm.get_core(Vlnv("::generate"))
 

@@ -448,7 +448,7 @@ def init_coremanager(config, args_cores_root):
     # Add libraries from config file, env var and command-line
     for library in config.libraries + args_libs:
         try:
-            cm.add_library(library)
+            cm.add_library(library, config.ignored_dirs)
         except (RuntimeError, OSError) as e:
             _s = "Failed to register library '{}'"
             logger.warning(_s.format(str(e)))
