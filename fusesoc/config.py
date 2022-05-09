@@ -42,6 +42,7 @@ class Config:
         cores_root = self._get_cores_root(config)
         systems_root = self._get_systems_root(config)
         self.library_root = self._get_library_root(config)
+        self.ignored_dirs = self._get_ignored_dirs(config)
 
         os.makedirs(self.cache_root, exist_ok=True)
 
@@ -159,6 +160,9 @@ class Config:
             os.path.expanduser("~"), ".local/share"
         )
         return os.path.join(xdg_data_home, "fusesoc")
+
+    def _get_ignored_dirs(self, config):
+        return self._paths_from_cfg(config, "ignored_dirs")
 
     def add_library(self, library):
         from fusesoc.provider import get_provider

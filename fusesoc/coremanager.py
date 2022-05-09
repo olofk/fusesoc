@@ -209,7 +209,7 @@ class CoreManager:
         self.db = CoreDB()
         self._lm = LibraryManager(config.library_root)
 
-    def find_cores(self, library):
+    def find_cores(self, library, ignored_dirs):
         found_cores = []
         path = os.path.expanduser(library.location)
         exclude = {".git"}
@@ -217,9 +217,13 @@ class CoreManager:
             raise OSError(path + " is not a directory")
         logger.debug("Checking for cores in " + path)
         for root, dirs, files in os.walk(path, followlinks=True):
-            if "FUSESOC_IGNORE" in files:
+            ignore_tree = ("FUSESOC_IGNORE" in files) or (
+                os.path.abspath(root) in ignored_dirs
+            )
+            if ignore_tree:
                 del dirs[:]
                 continue
+
             dirs[:] = [directory for directory in dirs if directory not in exclude]
             for f in files:
                 if f.endswith(".core"):
@@ -282,12 +286,12 @@ class CoreManager:
                     )
                 )
 
-    def _load_cores(self, library):
-        found_cores = self.find_cores(library)
+    def _load_cores(self, library, ignored_dirs):
+        found_cores = self.find_cores(library, ignored_dirs)
         for core in found_cores:
             self.db.add(core, library)
 
-    def add_library(self, library):
+    def add_library(self, library, ignored_dirs):
         """Register a library"""
         abspath = os.path.abspath(os.path.expanduser(library.location))
         _library = self._lm.get_library(abspath, "location")
@@ -296,7 +300,7 @@ class CoreManager:
             logger.warning(_s.format(library.name, abspath, _library.name))
             return
 
-        self._load_cores(library)
+        self._load_cores(library, ignored_dirs)
         self._lm.add_library(library)
 
     def get_libraries(self):
