@@ -129,15 +129,15 @@ def add_library(cm, args):
     library = Library(args.name, location, sync_type, sync_uri, auto_sync)
 
     if args.config:
-        config = Config(file=args.config)
+        config = Config(args.config)
     elif vars(args)["global"]:
         xdg_config_home = os.environ.get("XDG_CONFIG_HOME") or os.path.join(
             os.path.expanduser("~"), ".config"
         )
         config_file = os.path.join(xdg_config_home, "fusesoc", "fusesoc.conf")
-        config = Config(path=config_file)
+        config = Config(config_file)
     else:
-        config = Config(path="fusesoc.conf")
+        config = Config("fusesoc.conf")
 
     try:
         config.add_library(library)
@@ -475,9 +475,7 @@ def get_parser():
         default=[],
         action="append",
     )
-    parser.add_argument(
-        "--config", help="Specify the config file to use", type=argparse.FileType("r")
-    )
+    parser.add_argument("--config", help="Specify the config file to use")
     parser.add_argument(
         "--monochrome",
         help="Don't use color for messages",
@@ -681,7 +679,7 @@ def parse_args(argv):
 
 def fusesoc(args):
     init_logging(args.verbose, args.monochrome, args.log_file)
-    config = Config(file=args.config)
+    config = Config(args.config)
 
     cm = init_coremanager(config, args.cores_root)
     # Run the function
