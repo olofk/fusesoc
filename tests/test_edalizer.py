@@ -42,6 +42,5 @@ def test_generators():
         assert core_name in name_to_core
         core = name_to_core[core_name]
 
-        gendir = core.core_root
-        assert os.path.isfile(os.path.join(gendir, "generated.core"))
-        assert os.path.isfile(os.path.join(gendir, f"{flavour}_input.yml"))
+        # ttptttg temporary directory should be removed by now
+        assert not os.path.isdir(core.core_root)
