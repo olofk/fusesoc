@@ -246,7 +246,7 @@ class Edalizer:
 
     def clean_temp_dirs(self):
         for core in self.cores:
-            if core.core_root.startswith(tempfile.gettempdir()):
+            if core.is_generated:
                 logger.debug(f"Removing {core.core_root} ttptttg temporary directory")
                 shutil.rmtree(core.core_root)
 
@@ -422,7 +422,7 @@ class Ttptttg:
             for f in files:
                 if f.endswith(".core"):
                     try:
-                        cores.append(Core(os.path.join(root, f)))
+                        cores.append(Core(os.path.join(root, f), generated=True))
                     except SyntaxError as e:
                         w = "Failed to parse generated core file " + f + ": " + e.msg
                         raise RuntimeError(w)
