@@ -22,7 +22,10 @@ if os.path.exists(os.path.join(fusesocdir, "fusesoc")):
 
 import logging
 
-from edalize import get_edatool
+try:
+    from edalize.edatool import get_edatool
+except ImportError:
+    from edalize import get_edatool
 
 from fusesoc.config import Config
 from fusesoc.coremanager import CoreManager, DependencyError

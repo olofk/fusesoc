@@ -9,7 +9,11 @@ import shutil
 import warnings
 
 import yaml
-from edalize import get_edatools
+
+try:
+    from edalize.edatool import get_edatools
+except ImportError:
+    from edalize import get_edatools
 
 from fusesoc import utils
 from fusesoc.capi2.exprs import Exprs
