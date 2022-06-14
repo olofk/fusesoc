@@ -158,7 +158,7 @@ class Provider:
 class Core:
     capi_version = 2
 
-    def __init__(self, core_file, cache_root=""):
+    def __init__(self, core_file, cache_root="", generated=False):
         self.core_file = core_file
 
         basename = os.path.basename(self.core_file)
@@ -206,6 +206,8 @@ class Core:
             self.provider.files_root = self.files_root
         else:
             self.files_root = self.core_root
+
+        self.is_generated = generated
 
     def __repr__(self):
         return str(self.name)

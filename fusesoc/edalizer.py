@@ -88,6 +88,10 @@ class Edalizer:
 
         # Create EDA API file contents
         self.create_edam()
+
+        # Clean up ttptttg temporary directories
+        self.clean_temp_dirs()
+
         return self.edam
 
     def _core_flags(self, core):
@@ -239,6 +243,12 @@ class Edalizer:
 
         for snippet in first_snippets + snippets + last_snippets:
             merge_dict(self.edam, snippet)
+
+    def clean_temp_dirs(self):
+        for core in self.cores:
+            if core.is_generated:
+                logger.debug(f"Removing {core.core_root} ttptttg temporary directory")
+                shutil.rmtree(core.core_root)
 
     def _build_parser(self, backend_class, edam):
         typedict = {
@@ -412,7 +422,7 @@ class Ttptttg:
             for f in files:
                 if f.endswith(".core"):
                     try:
-                        cores.append(Core(os.path.join(root, f)))
+                        cores.append(Core(os.path.join(root, f), generated=True))
                     except SyntaxError as e:
                         w = "Failed to parse generated core file " + f + ": " + e.msg
                         raise RuntimeError(w)
