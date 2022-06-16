@@ -331,19 +331,24 @@ def run_backend(
     if not tool:
         logger.error(tool_error.format(system))
         exit(1)
+
     build_root = build_root_arg or os.path.join(
         cm.config.build_root, core.name.sanitized_name
     )
     logger.debug(f"Setting build_root to {build_root}")
-    if export:
+
+    no_export = flags.get("no_export", False)
+    if export and not no_export:
         export_root = os.path.join(build_root, "src")
     else:
         export_root = None
+
     try:
         work_root = os.path.join(build_root, f"{target}-{tool}")
     except SyntaxError as e:
         logger.error(e.msg)
         exit(1)
+
     edam_file = os.path.join(work_root, core.name.sanitized_name + ".eda.yml")
     if not os.path.exists(edam_file):
         do_configure = True
