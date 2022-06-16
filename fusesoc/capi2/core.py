@@ -322,6 +322,8 @@ class Core:
             # Special case for tool as we get it from default_tool
             if target.default_tool:
                 flags["tool"] = str(target.default_tool)
+            if target.no_export:
+                flags["no_export"] = target.no_export
         return flags
 
     def get_flow(self, flags):
@@ -840,6 +842,9 @@ Target:
     - name : toplevel
       type : StringWithUseFlagsOrList
       desc : Top-level module. Normally a single module/entity but can be a list of several items
+    - name : no_export
+      type : String
+      desc : Same behaviour as ``--no-export`` command line argument. Value should be *true* or *false*.
   lists:
     - name : filesets
       type : StringWithUseFlags
