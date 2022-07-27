@@ -47,6 +47,10 @@ class Genparams(dict):
     pass
 
 
+class AnyType(str):
+    pass
+
+
 class Any:
     def __new__(self, thing):
         return thing
@@ -98,6 +102,15 @@ class StringWithUseFlagsOrDict:
             self.name = StringWithUseFlags(tree)
 
 
+type_mapping = {
+    "String": [str],
+    "StringWithUseFlags": [str],
+    "StringWithUseFlagsOrDict": [str, dict],
+    "StringWithUseFlagsOrList": [str, list],
+    "Vlnv": [str],
+}
+
+
 class Section:
     members = {}
     lists = {}
@@ -108,8 +121,16 @@ class Section:
             if v is None:
                 continue
             if k in self.members:
+                if self.members[k] in type_mapping.keys() and not any(
+                    isinstance(v, t) for t in type_mapping[self.members[k]]
+                ):
+                    raise SyntaxError(
+                        f"Object in {k} section must be a {self.members[k]}"
+                    )
                 setattr(self, k, globals()[self.members[k]](v))
             elif k in self.lists:
+                if not isinstance(v, list):
+                    raise SyntaxError("Object in '{}' section must be a list".format(k))
                 if k.endswith("_append"):
                     _k = k[:-7]
                     _l = getattr(self, _k, [])[:]
@@ -826,7 +847,7 @@ Parameter:
       type : String
       desc : Parameter datatype. Legal values are *bool*, *file*, *int*, *str*. *file* is same as *str*, but prefixed with the current directory that FuseSoC runs from
     - name : default
-      type : String
+      type : AnyType
       desc : Default value
     - name : description
       type : String
