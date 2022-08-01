@@ -47,7 +47,8 @@ setup(
     ],
     entry_points={"console_scripts": ["fusesoc = fusesoc.main:main"]},
     setup_requires=[
-        "setuptools_scm",
+        "setuptools_scm < 7.0; python_version<'3.7'",
+        "setuptools_scm; python_version>='3.7'",
     ],
     install_requires=[
         "edalize>=0.2.3",
