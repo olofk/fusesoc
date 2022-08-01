@@ -1,0 +1,26 @@
+CAPI=2:
+# Copyright FuseSoC contributors
+# Licensed under the 2-Clause BSD License, see LICENSE for details.
+# SPDX-License-Identifier: BSD-2-Clause
+
+name: ::typecheck:0
+filesets:
+  correct_fileset:
+    files:
+      - vlogfile : {logical_name : overridden_logical_name}
+      - vhdlfile
+    file_type : vhdlSource
+
+  correct_fileset_2:
+    files:
+      - subdir/dummy.extra: {copyto : copied.file, file_type : user}
+      - dummy.tcl: {copyto : subdir/another.file}
+    file_type : tclSource
+
+  incorrect_fileset:
+    files:
+      - dummy.tcl: {copyto : subdir/another.file}
+    file_type : 
+      - tclSource
+
+

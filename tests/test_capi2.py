@@ -208,6 +208,18 @@ def test_capi2_get_files():
     assert expected == result
 
 
+def test_capi2_type_check():
+    from fusesoc.core import Core
+
+    core_file = os.path.join(tests_dir, "capi2_cores", "misc", "typecheck.core")
+
+    with pytest.raises(SyntaxError) as excinfo:
+        core = Core(core_file)
+    assert (
+        "Object in file_type section must be a String"
+        in str(excinfo.value)
+    )
+
 def test_capi2_get_flags():
     from fusesoc.core import Core
 
