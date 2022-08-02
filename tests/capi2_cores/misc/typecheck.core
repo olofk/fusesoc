@@ -20,7 +20,5 @@ filesets:
   incorrect_fileset:
     files:
       - dummy.tcl: {copyto : subdir/another.file}
-    file_type : 
+    file_type :
       - tclSource
-
-
