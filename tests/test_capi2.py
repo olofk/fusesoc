@@ -215,10 +215,8 @@ def test_capi2_type_check():
 
     with pytest.raises(SyntaxError) as excinfo:
         core = Core(core_file)
-    assert (
-        "Object in file_type section must be a String"
-        in str(excinfo.value)
-    )
+    assert "Object in file_type section must be a String" in str(excinfo.value)
+
 
 def test_capi2_get_flags():
     from fusesoc.core import Core

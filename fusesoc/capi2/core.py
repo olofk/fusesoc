@@ -130,7 +130,7 @@ class Section:
                 setattr(self, k, globals()[self.members[k]](v))
             elif k in self.lists:
                 if not isinstance(v, list):
-                    raise SyntaxError("Object in '{}' section must be a list".format(k))
+                    raise SyntaxError(f"Object in '{k}' section must be a list")
                 if k.endswith("_append"):
                     _k = k[:-7]
                     _l = getattr(self, _k, [])[:]
