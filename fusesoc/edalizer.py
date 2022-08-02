@@ -56,7 +56,7 @@ class Edalizer:
 
     @property
     def resolved_cores(self):
-        """ Get a list of all "used" cores after the dependency resolution """
+        """Get a list of all "used" cores after the dependency resolution"""
         try:
             return self.core_manager.get_depends(self.toplevel, self.flags)
         except DependencyError as e:
@@ -70,11 +70,11 @@ class Edalizer:
 
     @property
     def discovered_cores(self):
-        """ Get a list of all cores found by fusesoc """
+        """Get a list of all cores found by fusesoc"""
         return self.core_manager.db.find()
 
     def run(self):
-        """ Run all steps to create a EDAM file """
+        """Run all steps to create a EDAM file"""
 
         # Run the setup task on all cores (fetch and patch them as needed)
         self.setup_cores()
@@ -95,20 +95,20 @@ class Edalizer:
         return self.edam
 
     def _core_flags(self, core):
-        """ Get flags for a specific core """
+        """Get flags for a specific core"""
 
         core_flags = self.flags.copy()
         core_flags["is_toplevel"] = core.name == self.toplevel
         return core_flags
 
     def setup_cores(self):
-        """ Setup cores: fetch resources, patch them, etc. """
+        """Setup cores: fetch resources, patch them, etc."""
         for core in self.cores:
             logger.info("Preparing " + str(core.name))
             core.setup()
 
     def extract_generators(self):
-        """ Get all registered generators from the cores """
+        """Get all registered generators from the cores"""
         generators = {}
         for core in self.cores:
             logger.debug("Searching for generators in " + str(core.name))
@@ -121,7 +121,7 @@ class Edalizer:
         self.generators = generators
 
     def run_generators(self):
-        """ Run all generators """
+        """Run all generators"""
         self._resolved_or_generated_cores = []
         for core in self.cores:
             logger.debug("Running generators in " + str(core.name))
