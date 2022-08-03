@@ -5,7 +5,6 @@
 import configparser
 import logging
 import os
-import sys
 from configparser import ConfigParser as CP
 
 from fusesoc.librarymanager import Library
@@ -14,84 +13,38 @@ logger = logging.getLogger(__name__)
 
 
 class Config:
-    def __init__(self, path=None, file=None):
-        self.build_root = None
-        self.cache_root = None
-        cores_root = []
-        systems_root = []
-        self.library_root = None
-        self.libraries = []
-
+    def __init__(self, path=None):
         config = CP()
-        if file is None:
-            if path is None:
-                xdg_config_home = os.environ.get("XDG_CONFIG_HOME") or os.path.join(
-                    os.path.expanduser("~"), ".config"
-                )
-                config_files = [
-                    "/etc/fusesoc/fusesoc.conf",
-                    os.path.join(xdg_config_home, "fusesoc", "fusesoc.conf"),
-                    "fusesoc.conf",
-                ]
-            else:
-                logger.debug(f"Using config file '{path}'")
-                if not os.path.isfile(path):
-                    with open(path, "a"):
-                        pass
-                config_files = [path]
 
-            logger.debug("Looking for config files from " + ":".join(config_files))
-            files_read = config.read(config_files)
-            logger.debug("Found config files in " + ":".join(files_read))
-            if files_read:
-                self._path = files_read[-1]
+        if path is None:
+            xdg_config_home = os.environ.get("XDG_CONFIG_HOME") or os.path.join(
+                os.path.expanduser("~"), ".config"
+            )
+            config_files = [
+                "/etc/fusesoc/fusesoc.conf",
+                os.path.join(xdg_config_home, "fusesoc", "fusesoc.conf"),
+                "fusesoc.conf",
+            ]
         else:
-            logger.debug("Using supplied config file")
-            config.read_file(file)
-            file.seek(0)
-            self._path = file.name
+            logger.debug(f"Using config file '{path}'")
+            if not os.path.isfile(path):
+                with open(path, "a"):
+                    pass
+            config_files = [path]
 
-        for item in ["build_root", "cache_root", "systems_root", "library_root"]:
-            try:
-                setattr(self, item, os.path.expanduser(config.get("main", item)))
-                if item == "systems_root":
-                    systems_root = [os.path.expanduser(config.get("main", item))]
-                    logger.warning(
-                        "The systems_root option in fusesoc.conf is deprecated. Please migrate to libraries instead"
-                    )
-            except configparser.NoOptionError:
-                pass
-            except configparser.NoSectionError:
-                pass
+        logger.debug("Looking for config files from " + ":".join(config_files))
+        files_read = config.read(config_files)
+        logger.debug("Found config files in " + ":".join(files_read))
+        self._path = files_read[-1] if files_read else None
 
-        try:
-            cores_root = config.get("main", "cores_root").split()
-            logger.warning(
-                "The cores_root option in fusesoc.conf is deprecated. Please migrate to libraries instead"
-            )
-        except configparser.NoOptionError:
-            pass
-        except configparser.NoSectionError:
-            pass
+        self.build_root = self._get_build_root(config)
+        self.cache_root = self._get_cache_root(config)
+        cores_root = self._get_cores_root(config)
+        systems_root = self._get_systems_root(config)
+        self.library_root = self._get_library_root(config)
+        self.ignored_dirs = self._get_ignored_dirs(config)
 
-        # Set fallback values
-        if self.build_root is None:
-            self.build_root = os.path.abspath("build")
-        if self.cache_root is None:
-            xdg_cache_home = os.environ.get("XDG_CACHE_HOME") or os.path.join(
-                os.path.expanduser("~"), ".cache"
-            )
-            self.cache_root = os.path.join(xdg_cache_home, "fusesoc")
-            os.makedirs(self.cache_root, exist_ok=True)
-        if not cores_root and os.path.exists("cores"):
-            cores_root = [os.path.abspath("cores")]
-        if (not systems_root) and os.path.exists("systems"):
-            systems_root = [os.path.abspath("systems")]
-        if self.library_root is None:
-            xdg_data_home = os.environ.get("XDG_DATA_HOME") or os.path.join(
-                os.path.expanduser("~"), ".local/share"
-            )
-            self.library_root = os.path.join(xdg_data_home, "fusesoc")
+        os.makedirs(self.cache_root, exist_ok=True)
 
         # Parse library sections
         libraries = []
@@ -130,13 +83,86 @@ class Config:
             env_cores_root = os.getenv("FUSESOC_CORES").split(":")
             env_cores_root.reverse()
 
-        for root in cores_root + systems_root + env_cores_root:
-            self.libraries.append(Library(root, root))
+        all_core_roots = cores_root + systems_root + env_cores_root
 
-        self.libraries += libraries
+        self.libraries = [Library(root, root) for root in all_core_roots] + libraries
 
         logger.debug("cache_root=" + self.cache_root)
         logger.debug("library_root=" + self.library_root)
+
+    def _resolve_path_from_cfg(self, path):
+        # We only call resolve_path_from_cfg if config.get(...) returned
+        # something. That, in turn, only happens if we actually managed to read
+        # a config file, meaning that files_read will have been nonempty in the
+        # constructor and self._path will not be None.
+        assert self._path is not None
+
+        expanded = os.path.expanduser(path)
+        if os.path.isabs(expanded):
+            return expanded
+        else:
+            cfg_file_dir = os.path.dirname(self._path)
+            return os.path.join(cfg_file_dir, expanded)
+
+    def _path_from_cfg(self, config, name):
+        as_str = config.get("main", name, fallback=None)
+        return self._resolve_path_from_cfg(as_str) if as_str is not None else None
+
+    def _paths_from_cfg(self, config, name):
+        paths = config.get("main", name, fallback="")
+        return [self._resolve_path_from_cfg(p) for p in paths.split()]
+
+    def _get_build_root(self, config):
+        from_cfg = self._path_from_cfg(config, "build_root")
+        if from_cfg is not None:
+            return from_cfg
+
+        return os.path.abspath("build")
+
+    def _get_cache_root(self, config):
+        from_cfg = self._path_from_cfg(config, "cache_root")
+        if from_cfg is not None:
+            return from_cfg
+
+        xdg_cache_home = os.environ.get("XDG_CACHE_HOME") or os.path.join(
+            os.path.expanduser("~"), ".cache"
+        )
+        return os.path.join(xdg_cache_home, "fusesoc")
+
+    def _get_cores_root(self, config):
+        from_cfg = self._paths_from_cfg(config, "cores_root")
+        if from_cfg:
+            logger.warning(
+                "The cores_root option in fusesoc.conf is deprecated. "
+                "Please migrate to libraries instead"
+            )
+            return from_cfg
+
+        return [os.path.abspath("cores")] if os.path.exists("cores") else []
+
+    def _get_systems_root(self, config):
+        from_cfg = self._paths_from_cfg(config, "systems_root")
+        if from_cfg:
+            logger.warning(
+                "The systems_root option in fusesoc.conf is deprecated. "
+                "Please migrate to libraries instead"
+            )
+            return from_cfg
+
+        return [os.path.abspath("systems")] if os.path.exists("systems") else []
+
+    def _get_library_root(self, config):
+        from_cfg = self._path_from_cfg(config, "library_root")
+        if from_cfg is not None:
+            return from_cfg
+
+        xdg_data_home = os.environ.get("XDG_DATA_HOME") or os.path.join(
+            os.path.expanduser("~"), ".local/share"
+        )
+        return os.path.join(xdg_data_home, "fusesoc")
+
+    def _get_ignored_dirs(self, config):
+        return self._paths_from_cfg(config, "ignored_dirs")
 
     def add_library(self, library):
         from fusesoc.provider import get_provider
@@ -168,7 +194,7 @@ class Config:
 
         try:
             provider = get_provider(library.sync_type)
-        except ImportError as e:
+        except ImportError:
             raise RuntimeError("Invalid sync-type '{}'".format(library["sync-type"]))
 
         provider.init_library(library)

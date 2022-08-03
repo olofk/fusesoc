@@ -21,7 +21,7 @@ def test_deptree(tmp_path):
     lib = Library("deptree", deptree_cores_dir)
 
     cm = CoreManager(Config())
-    cm.add_library(lib)
+    cm.add_library(lib, [])
 
     root_core = cm.get_core(Vlnv("::deptree-root"))
 
@@ -135,7 +135,7 @@ def test_copyto():
     lib = Library("misc", core_dir)
 
     cm = CoreManager(Config())
-    cm.add_library(lib)
+    cm.add_library(lib, [])
 
     core = cm.get_core(Vlnv("::copytocore"))
 
@@ -184,7 +184,7 @@ def test_export():
     core_dir = os.path.join(os.path.dirname(__file__), "cores")
 
     cm = CoreManager(Config())
-    cm.add_library(Library("cores", core_dir))
+    cm.add_library(Library("cores", core_dir), [])
 
     core = cm.get_core(Vlnv("::wb_intercon"))
 
@@ -230,7 +230,7 @@ def test_virtual():
     core_dir = os.path.join(os.path.dirname(__file__), "capi2_cores", "virtual")
 
     cm = CoreManager(Config())
-    cm.add_library(Library("virtual", core_dir))
+    cm.add_library(Library("virtual", core_dir), [])
 
     root_core = cm.get_core(Vlnv("::user"))
 
