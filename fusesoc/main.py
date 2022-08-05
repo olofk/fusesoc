@@ -198,6 +198,22 @@ def list_cores(cm, args):
         )
 
 
+def list_tools(cm, args):
+    from edalize.edatool import walk_tool_packages
+
+    _tp = list(walk_tool_packages())
+    maxlen = max(map(len, _tp))
+
+    for tool_name in _tp:
+        try:
+            tool_class = get_edatool(tool_name)
+            desc = tool_class.get_doc(0)["description"]
+            print(f"{tool_name:{maxlen}} : {desc}")
+        # Ignore any misbehaving backends
+        except Exception:
+            pass
+
+
 def gen_list(cm, args):
     cores = cm.get_generators()
     if not cores:
@@ -527,6 +543,17 @@ def get_parser():
     )
     parser_core_show.add_argument("core", help="Name of the core to show")
     parser_core_show.set_defaults(func=core_info)
+
+    # tool subparser
+    parser_tool = subparsers.add_parser(
+        "tool", help="Subcommands for dealing with tools"
+    )
+    tool_subparsers = parser_tool.add_subparsers()
+    parser_tool.set_defaults(subparser=parser_tool)
+
+    # tool list subparser
+    parser_tool_list = tool_subparsers.add_parser("list", help="List available tools")
+    parser_tool_list.set_defaults(func=list_tools)
 
     # list-cores subparser
     parser_list_cores = subparsers.add_parser("list-cores", help="List available cores")

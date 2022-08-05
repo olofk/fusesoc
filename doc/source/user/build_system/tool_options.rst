@@ -5,7 +5,7 @@ Passing options to tools
 
 .. note::
 
-   Refer to the :ref:`CAPI2 reference documentation <ref_capi2>` for a list of all available tools and their options.
+   Refer to the :ref:`CAPI2 reference documentation <ref_capi2>` or run ``fusesoc tool list`` for a list of all available tools and their options.
 
 FuseSoC abstracts away many differences between :term:`tools <tool>` and tries to provide sane defaults to build many designs out of the box with no further configuration required.
 However, not all tool-specific details can be hidden.
