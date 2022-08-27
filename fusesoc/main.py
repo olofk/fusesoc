@@ -342,7 +342,7 @@ def run_backend(
         logger.error(str(e))
         exit(1)
 
-    tool = flags["tool"]
+    tool = flags.get("tool")
 
     if not tool:
         logger.error(tool_error.format(system))
