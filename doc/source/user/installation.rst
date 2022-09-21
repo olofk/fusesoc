@@ -76,10 +76,17 @@ Use ``pip`` to remove FuseSoC from your system.
 Installation under Windows
 ==========================
 
-.. todo::
+Install the latest version of python, either from https://www.python.org/downloads/ or from the Windows store.
 
-    Add Windows installation instructions.
+Open up a shell (cmd, powershell, gitbash etc.) and run:
 
+.. code-block:: shell-session
+
+   $ python --version
+
+If the output is something along the lines of ``Python 3.10.7``, python has been successfully installed.
+
+From this point, follow the instructions for installation under Linux above. If only installing for the local user, ensure that the scripts directory (example: ``C:/Users/youruser/AppData/Local/Programs/Python/Python310/Scripts``) folder is added to the search path (``PATH``).
 
 Installation under macOS
 ========================
