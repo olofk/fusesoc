@@ -76,9 +76,46 @@ Use ``pip`` to remove FuseSoC from your system.
 Installation under Windows
 ==========================
 
-.. todo::
+FuseSoC is provided as ``fusesoc`` Python package and installed through pip, the Python package manager.
+Python is not installed by default on Windows, so doing that is the first step.
+Install the latest version of Python, either from `python.org <https://www.python.org/downloads/>`_ or from the Windows store.
 
-    Add Windows installation instructions.
+Open up a shell (cmd, powershell, gitbash etc.) and run:
+
+.. code-block:: shell-session
+
+   $ python --version
+
+If the output is something along the lines of ``Python 3.10.7``, Python has been successfully installed.
+
+
+Installation for the current user
+---------------------------------
+
+To install the current stable version of FuseSoC for the current user, open a shell and run the following command.
+If an older version of FuseSoC is found, this version is upgraded to the latest stable release.
+
+.. code-block:: shell-session
+
+   $ pip3 install --upgrade fusesoc
+
+Check that the installation worked by running
+
+.. command-output:: fusesoc --version
+
+
+If this command works FuseSoC is installed properly and ready to be used.
+
+The ``fusesoc.exe`` file should be installed in the Python ``Scripts`` directory (example: ``C:/Users/youruser/AppData/Local/Python/Python310/Scripts``) folder, which should have been automatically added to the search path (``PATH``) when Python was installed.
+
+Uninstalling FuseSoC
+--------------------
+
+Use ``pip`` to remove FuseSoC from your system.
+
+.. code-block:: shell-session
+
+   $ pip3 uninstall fusesoc
 
 
 Installation under macOS
