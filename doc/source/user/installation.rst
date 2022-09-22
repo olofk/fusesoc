@@ -76,7 +76,7 @@ Use ``pip`` to remove FuseSoC from your system.
 Installation under Windows
 ==========================
 
-Install the latest version of python, either from https://www.python.org/downloads/ or from the Windows store.
+Install the latest version of Python, either from `python.org <https://www.python.org/downloads/>`_ or from the Windows store.
 
 Open up a shell (cmd, powershell, gitbash etc.) and run:
 
