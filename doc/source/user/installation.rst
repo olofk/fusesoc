@@ -76,6 +76,8 @@ Use ``pip`` to remove FuseSoC from your system.
 Installation under Windows
 ==========================
 
+FuseSoC is provided as ``fusesoc`` Python package and installed through pip, the Python package manager.
+Python is not installed by default on Windows, so doing that is the first step.
 Install the latest version of Python, either from `python.org <https://www.python.org/downloads/>`_ or from the Windows store.
 
 Open up a shell (cmd, powershell, gitbash etc.) and run:
@@ -86,8 +88,45 @@ Open up a shell (cmd, powershell, gitbash etc.) and run:
 
 If the output is something along the lines of ``Python 3.10.7``, Python has been successfully installed.
 
-From this point, follow the instructions for installation under Linux above. 
-If only installing for the local user, ensure that the ``Scripts`` directory (example: ``C:/Users/youruser/AppData/Local/Programs/Python/Python310/Scripts``) folder is added to the search path (``PATH``).
+
+Installation for the current user
+---------------------------------
+
+To install the current stable version of FuseSoC for the current user, open a shell and run the following command.
+If an older version of FuseSoC is found, this version is upgraded to the latest stable release.
+
+.. code-block:: shell-session
+
+   $ pip3 install --upgrade --user fusesoc
+
+Check that the installation worked by running
+
+.. command-output:: fusesoc --version
+
+
+If this command works FuseSoC is installed properly and ready to be used.
+
+If the shell reports an error about the command not being found verify that the ``Scripts`` directory (example: ``C:/Users/youruser/AppData/Roaming/Python/Python310/Scripts``) folder is added to the search path (``PATH``).
+
+
+System-wide installation
+------------------------
+
+FuseSoC can be installed for all users on a system.
+
+.. code-block:: shell-session
+
+   $ pip3 install --upgrade fusesoc
+
+Uninstalling FuseSoC
+--------------------
+
+Use ``pip`` to remove FuseSoC from your system.
+
+.. code-block:: shell-session
+
+   $ pip3 uninstall fusesoc
+
 
 Installation under macOS
 ========================
