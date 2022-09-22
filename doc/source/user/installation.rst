@@ -97,7 +97,7 @@ If an older version of FuseSoC is found, this version is upgraded to the latest 
 
 .. code-block:: shell-session
 
-   $ pip3 install --upgrade --user fusesoc
+   $ pip3 install --upgrade fusesoc
 
 Check that the installation worked by running
 
@@ -106,17 +106,7 @@ Check that the installation worked by running
 
 If this command works FuseSoC is installed properly and ready to be used.
 
-If the shell reports an error about the command not being found verify that the ``Scripts`` directory (example: ``C:/Users/youruser/AppData/Roaming/Python/Python310/Scripts``) folder is added to the search path (``PATH``).
-
-
-System-wide installation
-------------------------
-
-FuseSoC can be installed for all users on a system.
-
-.. code-block:: shell-session
-
-   $ pip3 install --upgrade fusesoc
+The ``fusesoc.exe`` file should be installed in the Python ``Scripts`` directory (example: ``C:/Users/youruser/AppData/Local/Python/Python310/Scripts``) folder, which should have been automatically added to the search path (``PATH``) when Python was installed.
 
 Uninstalling FuseSoC
 --------------------
