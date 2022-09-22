@@ -86,7 +86,8 @@ Open up a shell (cmd, powershell, gitbash etc.) and run:
 
 If the output is something along the lines of ``Python 3.10.7``, Python has been successfully installed.
 
-From this point, follow the instructions for installation under Linux above. If only installing for the local user, ensure that the scripts directory (example: ``C:/Users/youruser/AppData/Local/Programs/Python/Python310/Scripts``) folder is added to the search path (``PATH``).
+From this point, follow the instructions for installation under Linux above. 
+If only installing for the local user, ensure that the ``Scripts`` directory (example: ``C:/Users/youruser/AppData/Local/Programs/Python/Python310/Scripts``) folder is added to the search path (``PATH``).
 
 Installation under macOS
 ========================
