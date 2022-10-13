@@ -5,7 +5,7 @@ Running FuseSoC
 ***************
 
 FuseSoC is a command-line tool; this section explains how to use it.
-The following content is aiming at users who already have a hardware design which uses FuseSoC.
+The following content is aimed at users who already have a hardware design which uses FuseSoC.
 
 Build a design
 ==============

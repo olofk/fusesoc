@@ -55,7 +55,7 @@ From a file list to a synthesized design: EDAlize it!
 After the build system has collected all source files and parameters of the design, it is time to hand off to the build tool, such as Xilinx Vivado for FPGA synthesis, Verilator for Verilog simulation, and so on.
 
 How exactly the hand-off is performed is highly tool-dependent, but FuseSoC abstracts these differences away and users typically don't need to worry about them.
-For example, in for Vivado, FuseSoC creates a Vivado project file and then executes Vivado to run through the synthesis and place and route steps until a final bitstream is produced.
+For example, when using Vivado FuseSoC creates a Vivado project file and then executes Vivado to run through the synthesis and place and route steps until a final bitstream is produced.
 For Verilator, it creates a Makefile and then calls Verilator to do its job.
 
 FuseSoC supports many of the proprietary and open source EDA tools commonly used, and can be easily extended to support further ones.
@@ -63,7 +63,7 @@ FuseSoC supports many of the proprietary and open source EDA tools commonly used
 Concepts of the FuseSoC build system
 ====================================
 
-To understand how FuseSoC builds a design it is necessary to understand three basic concepts: targets, tool flows, and build stages.
+To understand how FuseSoC builds a design it is necessary to understand three basic concepts: tool flows, targets, and build stages.
 
 .. _ug_overview_toolflows:
 
@@ -75,7 +75,7 @@ Common categories of tools are simulators, synthesis tools, or static analysis t
 For example, Verilator is a tool (a simulation and static analysis tool), as is Xilinx Vivado (an FPGA tool flow), or Synopsys Design Compiler (an ASIC synthesis tool).
 
 FuseSoC tries its best to hide differences between tools to make switching between them as easy as possible.
-For example, it often only requires a different command line invocation of FuseSoC to simulate a design with Synopsys VCS instead of with Icarus Verilog.
+For example, it often only requires a change in the command line invocation of FuseSoC to simulate a design with Synopsys VCS instead of Icarus Verilog.
 Of course, customization options for individual tools are still available for when they are needed.
 
 .. _ug_overview_targets:
@@ -106,7 +106,7 @@ FuseSoC builds a design in three stages: setup, build, and run.
       Cores produced by generators are inserted into the dependency tree as well.
    #. The dependency tree is resolved to produce a flattened view of the design.
       All design information is written into an EDAM file.
-   #. Tool-flow specific setup routines are being called.
+   #. Tool-flow specific setup routines are called.
 
 #. The **build** stage runs the tool flow until some form of output file has been produced.
 #. The **run** stage somehow "executes" the build output.

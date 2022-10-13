@@ -8,18 +8,17 @@ The FuseSoC build system pieces together a hardware design from individual cores
 
 *Building a design* in FuseSoC means *calling a tool flow to produce some output, and execute it.*
 Depending on the :term:`target` and the :term:`tool flow` chosen, the build process can do and produce very different things:
-it could produce a runnable simulation, an FPGA bitstream, or run a static analysis tool to check for common programming errors.
+it could produce a runnable simulation, generate an FPGA bitstream, or run a static analysis tool to check for common programming errors.
 
-To build a hardware design with FuseSoC two steps are required:
+Two steps are required to build a hardware design with FuseSoC:
 
-#. Write one or multiple FuseSoC core description file(s).
-   Read on in this section for information on how to do that.
+#. Write one or more FuseSoC core description files.
+   See :ref:`ug_build_system_core_files` for information on how to write core description files.
 #. Call ``fusesoc run``.
    FuseSoC is a command-line tool and accessible through the ``fusesoc`` command.
    See :ref:`ug_cli` for information on how to use the ``fusesoc`` command.
 
 Typically, FuseSoC support can be added to an existing design without changes to the directory structure or the source files.
-The following sections explain how to do it.
 
 The first three sections are recommended reading for all users of FuseSoC.
 The first section :ref:`ug_build_system_core_files` is an introduction into :term:`core description files <core file>` and how to write them.
