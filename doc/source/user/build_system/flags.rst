@@ -20,7 +20,7 @@ Setting flags
 -------------
 
 Built-in flags are made available automatically.
-User-defined flags can be set on the command line and override built-in flags.
+User-defined flags can be set as a dict of key/value pairs in the flags section of a target. These are turned into flags called `<key>_<value>` internally. This is intended to set default values for flags that normally needs to have them define. Finally, flags can be applied on the command line and these override user-defined flags in targets and built-in flags.
 
 Built-in flags
 ~~~~~~~~~~~~~~
@@ -65,6 +65,18 @@ Examples:
   Order matters!
   The FuseSoC command line is "context sensitive."
   Place the ``--flags`` argument after the ``run`` command, but before the name of the core you are building.
+
+Default values for flags can be set directly in the flags section of a target, like this.
+
+.. code-block:: yaml
+
+   # An excerpt from a core file.
+   targets:
+     sim:
+       # ...
+       flags:
+         fpu : true # Always enable the FPU for simulations. This will turn into a flag called fpu
+         sram : sim # Use simulation models for SRAM. This will turn into a flag called sram_sim
 
 
 Using flags
