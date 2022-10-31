@@ -9,5 +9,5 @@ name : ::url_simple_with_user_agent:0
 provider:
   name       : url
   filetype   : simple
-  url        : https://github.com/olofk/fusesoc/raw/master/tests/test_provider/file.v
+  url        : https://github.com/olofk/fusesoc/raw/main/tests/test_provider/file.v
   user-agent : FuseSoC
