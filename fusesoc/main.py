@@ -360,11 +360,14 @@ def run_backend(
     )
     logger.debug(f"Setting build_root to {build_root}")
 
-    work_root = os.path.join(build_root, f"{target}-{flow or tool}")
+    if flow:
+        work_root = os.path.join(build_root, target)
+    else:
+        work_root = os.path.join(build_root, f"{target}-{tool}")
     logger.debug(f"Setting work_root to {work_root}")
 
     if export:
-        export_root = os.path.join(build_root, "src")
+        export_root = os.path.join(work_root, "src")
         logger.debug(f"Setting export_root to {export_root}")
     else:
         export_root = None
