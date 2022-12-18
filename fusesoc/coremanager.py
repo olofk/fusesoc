@@ -216,6 +216,7 @@ class CoreManager:
         if os.path.isdir(path) == False:
             raise OSError(path + " is not a directory")
         logger.debug("Checking for cores in " + path)
+        visited = set()
         for root, dirs, files in os.walk(path, followlinks=True):
             ignore_tree = ("FUSESOC_IGNORE" in files) or (
                 os.path.abspath(root) in ignored_dirs
@@ -224,7 +225,23 @@ class CoreManager:
                 del dirs[:]
                 continue
 
-            dirs[:] = [directory for directory in dirs if directory not in exclude]
+            keep_dirs = []
+            for _d in dirs:
+                # Ignore sub dirs in the exclude set
+                if _d in exclude:
+                    continue
+
+                st = os.stat(os.path.join(root, _d))
+                dirkey = st.st_dev, st.st_ino
+                # Ignore dirs we already visited. Protects against endless symlink recursion
+                if dirkey in visited:
+                    continue
+
+                visited.add(dirkey)
+                keep_dirs.append(_d)
+
+            dirs[:] = keep_dirs
+
             for f in files:
                 if f.endswith(".core"):
                     core_file = os.path.join(root, f)
