@@ -378,12 +378,14 @@ class Core:
                 if hasattr(section, member):
                     _member = getattr(section, member)
                     if _member:
-                        options[member] = str(_member)
+                        options[member] = StringWithUseFlags(_member).parse(flags)
             for member in section.lists:
                 if hasattr(section, member):
                     _member = getattr(section, member)
                     if _member:
-                        options[member] = [str(x) for x in _member]
+                        options[member] = self._parse_list(
+                            flags, [StringWithUseFlags(x) for x in _member]
+                        )
         self._debug("Found tool options {}".format(str(options)))
         return options
 
