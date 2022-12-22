@@ -204,10 +204,11 @@ class CoreDB:
 
 
 class CoreManager:
-    def __init__(self, config):
+    def __init__(self, config, resolve_env_vars=False):
         self.config = config
         self.db = CoreDB()
         self._lm = LibraryManager(config.library_root)
+        self.resolve_env_vars = resolve_env_vars
 
     def find_cores(self, library, ignored_dirs):
         found_cores = []
@@ -261,8 +262,9 @@ class CoreManager:
                             continue
 
                         core = Core(
-                            core_file,
-                            self.config.cache_root,
+                            core_file=core_file,
+                            cache_root=self.config.cache_root,
+                            resolve_env_vars=self.resolve_env_vars,
                         )
                         found_cores.append(core)
                     except SyntaxError as e:

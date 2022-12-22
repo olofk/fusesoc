@@ -154,13 +154,19 @@ def yaml_fwrite(filepath, content, preamble=""):
         f.write(yaml.dump(content, Dumper=YamlDumper))
 
 
-def yaml_fread(filepath):
+def yaml_fread(filepath, resolve_env_vars=False):
     with open(filepath) as f:
-        return yaml.load(f, Loader=YamlLoader)
+        if resolve_env_vars:
+            return yaml.load(os.path.expandvars(f.read()), Loader=YamlLoader)
+        else:
+            return yaml.load(f.read(), Loader=YamlLoader)
 
 
-def yaml_read(data):
-    return yaml.load(data, Loader=YamlLoader)
+def yaml_read(data, resolve_env_vars=False):
+    if resolve_env_vars:
+        return yaml.load(os.path.expandvars(data.read()), Loader=YamlLoader)
+    else:
+        return yaml.load(data, Loader=YamlLoader)
 
 
 def merge_dict(d1, d2):

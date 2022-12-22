@@ -44,6 +44,7 @@ class Edalizer:
         core_manager,
         export_root=None,
         system_name=None,
+        resolve_env_vars=False,
     ):
         logger.debug("Building EDA API")
 
@@ -53,6 +54,7 @@ class Edalizer:
         self.work_root = work_root
         self.export_root = export_root
         self.system_name = system_name
+        self.resolve_env_vars = resolve_env_vars
 
         self.generators = {}
 
@@ -144,6 +146,7 @@ class Edalizer:
                         ttptttg_data,
                         core,
                         self.generators,
+                        resolve_env_vars=self.resolve_env_vars,
                     )
                     for gen_core in _ttptttg.generate():
                         gen_core.pos = _ttptttg.pos
@@ -474,7 +477,7 @@ from fusesoc.utils import Launcher
 
 
 class Ttptttg:
-    def __init__(self, ttptttg, core, generators):
+    def __init__(self, ttptttg, core, generators, resolve_env_vars=False):
         generator_name = ttptttg["generator"]
         if not generator_name in generators:
             raise RuntimeError(
@@ -485,6 +488,7 @@ class Ttptttg:
         self.generator = generators[generator_name]
         self.name = ttptttg["name"]
         self.pos = ttptttg["pos"]
+        self.resolve_env_vars = resolve_env_vars
         parameters = ttptttg["config"]
 
         vlnv_str = ":".join(
@@ -532,7 +536,13 @@ class Ttptttg:
             for f in files:
                 if f.endswith(".core"):
                     try:
-                        cores.append(Core(os.path.join(root, f), generated=True))
+                        cores.append(
+                            Core(
+                                os.path.join(root, f),
+                                generated=True,
+                                resolve_env_vars=self.resolve_env_vars,
+                            )
+                        )
                     except SyntaxError as e:
                         w = "Failed to parse generated core file " + f + ": " + e.msg
                         raise RuntimeError(w)
