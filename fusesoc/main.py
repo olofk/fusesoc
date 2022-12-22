@@ -303,6 +303,7 @@ def run(cm, args):
         args.backendargs,
         args.build_root,
         args.verbose,
+        args.resolve_env_vars_early,
     )
 
 
@@ -330,6 +331,7 @@ def run_backend(
     backendargs,
     build_root_arg,
     verbose,
+    resolve_env_vars=False,
 ):
     tool_error = (
         "No flow or tool was supplied on command line or found in '{}' core description"
@@ -402,6 +404,7 @@ def run_backend(
         work_root=work_root,
         export_root=export_root,
         system_name=system_name,
+        resolve_env_vars=resolve_env_vars,
     )
 
     if do_configure:
@@ -419,7 +422,7 @@ def run_backend(
             exit(1)
         edalizer.to_yaml(edam_file)
     else:
-        edam = yaml_fread(edam_file)
+        edam = yaml_fread(edam_file, resolve_env_vars)
         parsed_args = edalizer.parse_args(backend_class, backendargs, edam)
 
     # Frontend/backend separation
@@ -481,9 +484,9 @@ def init_logging(verbose, monochrome, log_file=None):
         logger.debug("Colorful output")
 
 
-def init_coremanager(config, args_cores_root):
+def init_coremanager(config, args_cores_root, args_resolve_env_vars=False):
     logger.debug("Initializing core manager")
-    cm = CoreManager(config)
+    cm = CoreManager(config, resolve_env_vars=args_resolve_env_vars)
 
     args_libs = [Library(acr, acr) for acr in args_cores_root]
     # Add libraries from config file, env var and command-line
@@ -690,6 +693,11 @@ def get_parser():
         default=[],
     )
     parser_run.add_argument(
+        "--resolve-env-vars-early",
+        action="store_true",
+        help="Resolve environment variables in FuseSoC (defaults to no resolution)",
+    )
+    parser_run.add_argument(
         "--system-name", help="Override default VLNV name for system"
     )
     parser_run.add_argument("system", help="Select a system to operate on")
@@ -733,7 +741,15 @@ def fusesoc(args):
     init_logging(args.verbose, args.monochrome, args.log_file)
     config = Config(args.config)
 
-    cm = init_coremanager(config, args.cores_root)
+    resolve_env_vars_early = False
+    if hasattr(args, "resolve_env_vars_early"):
+        resolve_env_vars_early = args.resolve_env_vars_early
+
+    cm = init_coremanager(
+        config,
+        args.cores_root,
+        resolve_env_vars_early,
+    )
     # Run the function
     args.func(cm, args)
 

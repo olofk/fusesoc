@@ -12,9 +12,9 @@ class Generator:
     parameters = {}
     targets = {}
 
-    def __init__(self, data=None):
+    def __init__(self, data=None, resolve_env_vars=False):
         if data is None:
-            data = utils.yaml_fread(sys.argv[1])
+            data = utils.yaml_fread(sys.argv[1], resolve_env_vars)
 
         self.config = data.get("parameters")
         self.files_root = data.get("files_root")

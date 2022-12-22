@@ -179,18 +179,22 @@ class Provider:
 class Core:
     capi_version = 2
 
-    def __init__(self, core_file, cache_root="", generated=False):
+    def __init__(
+        self, core_file, cache_root="", generated=False, resolve_env_vars=False
+    ):
         self.core_file = core_file
 
         basename = os.path.basename(self.core_file)
 
         self.core_root = os.path.dirname(self.core_file)
 
+        self.resolve_env_vars = resolve_env_vars
+
         # Populated by CoreDB._solve(). TODO: Find a better solution for that.
         self.direct_deps = []
 
         try:
-            _root = Root(utils.yaml_fread(self.core_file))
+            _root = Root(utils.yaml_fread(self.core_file, self.resolve_env_vars))
         except KeyError as e:
             raise SyntaxError(f"Unknown item {e}")
         except (yaml.scanner.ScannerError, yaml.constructor.ConstructorError) as e:
