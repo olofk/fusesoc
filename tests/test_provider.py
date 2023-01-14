@@ -88,6 +88,7 @@ def test_logicore_provider():
         assert f.read() == "-mode batch -source dummy.tcl\n"
 
 
+@pytest.mark.skip(reason="Problems connecting to OpenCores SVN")
 def test_opencores_provider():
     cache_root = tempfile.mkdtemp("opencores_")
     core = Core(os.path.join(cores_root, "misc", "opencorescore.core"), cache_root)
@@ -115,6 +116,7 @@ def test_uncachable():
     assert core.cache_status() == "outofdate"
 
 
+@pytest.mark.skip(reason="Problems connecting to OpenCores SVN")
 def test_cachable():
     cache_root = tempfile.mkdtemp("opencores_")
     core = Core(os.path.join(cores_root, "misc", "opencorescore.core"), cache_root)
