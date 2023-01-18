@@ -105,21 +105,14 @@ You can file bug reports and propose changes in the [olofk/fusesoc repository on
 
 ## Further reading
 
--   A Scalable Approach to IP Management with FuseSoC paper and slides
-    from OSDA 2019 <https://osda.gitlab.io/19/kindgren.pdf>
-    <https://osda.gitlab.io/19/kindgren-slides.pdf>
--   Antmicro blog post on how to use FuseSoC as a linter
-    <https://antmicro.com/blog/2020/04/systemverilog-linter-and-formatter-in-fusesoc/>
--   FuseSoC-related posts on the Tales from Beyond the Register Map blog
-    <http://olofkindgren.blogspot.com/search/label/FuseSoC>
--   Presentation from Latch-Up Portland 2019
-    <https://www.youtube.com/watch?v=7eWRAOK9mns>
--   Presentation from WOSH 2019
-    <https://www.youtube.com/watch?v=HOFYplIBSWM>
--   Presentation from ORConf 2017
-    <https://www.youtube.com/watch?v=iPpT9k_H67k>
--   Presentation from ORConf 2016
-    <https://www.youtube.com/watch?v=pKlJWe_HKPM>
+* A Scalable Approach to IP Management with FuseSoC [paper](https://osda.gitlab.io/19/kindgren.pdf) and [slides](https://osda.gitlab.io/19/kindgren-slides.pdf) from OSDA 2019
+* Antmicro blog post on [how to use FuseSoC as a linter](https://antmicro.com/blog/2020/04/systemverilog-linter-and-formatter-in-fusesoc/)
+* [FuseSoC-related posts on the Tales from Beyond the Register Map blog](https://blog.award-winning.me/search/label/FuseSoC)
+* [Presentation from RISC-V Week 2022](https://www.award-winning.me/fusesoc-rvweek22)
+* [Presentation from Latch-Up Portland 2019](https://www.youtube.com/watch?v=7eWRAOK9mns)
+* [Presentation from WOSH 2019](https://www.youtube.com/watch?v=HOFYplIBSWM)
+* [Presentation from ORConf 2017](https://www.youtube.com/watch?v=iPpT9k_H67k)
+* [Presentation from ORConf 2016](https://www.youtube.com/watch?v=pKlJWe_HKPM)
 
 ## License
 
