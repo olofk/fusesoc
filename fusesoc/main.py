@@ -83,14 +83,6 @@ def fetch(cm, args):
         exit(1)
 
 
-def init(cm, args):
-    warnings.warn(
-        "The 'init' subcommand to fetch the FuseSoC standard library has been "
-        "removed. Use 'fusesoc library add fusesoc_cores "
-        "https://github.com/fusesoc/fusesoc-cores' instead."
-    )
-
-
 def list_paths(cm, args):
     cores_root = [x.location for x in cm.get_libraries()]
     print("\n".join(cores_root))
@@ -462,9 +454,6 @@ def run_backend(
 
 
 def update(cm, args):
-    if "warn" in args:
-        logger.warning(args.warn)
-
     cm._lm.update(args.libraries)
 
 
@@ -528,24 +517,6 @@ def get_parser():
     )
     parser.add_argument("--verbose", help="More info messages", action="store_true")
     parser.add_argument("--log-file", help="Write log messages to file")
-
-    # init subparser
-    parser_init = subparsers.add_parser(
-        "init", help="Initialize the FuseSoC core libraries. DEPRECATED"
-    )
-    parser_init.add_argument(
-        "-y", action="store_true", help="Skip user input and use default settings"
-    )
-    parser_init.set_defaults(func=init)
-
-    # pgm subparser
-    parser_pgm = subparsers.add_parser(
-        "pgm",
-        help="Program an FPGA with a system configuration. DEPRECATED, use 'run' instead.",
-    )
-    parser_pgm.add_argument("system")
-    parser_pgm.add_argument("backendargs", nargs=argparse.REMAINDER)
-    parser_pgm.set_defaults(func=pgm)
 
     # fetch subparser
     parser_fetch = subparsers.add_parser(
@@ -705,20 +676,6 @@ def get_parser():
         "backendargs", nargs=argparse.REMAINDER, help="arguments to be sent to backend"
     )
     parser_run.set_defaults(func=run)
-
-    # update subparser
-    parser_update = subparsers.add_parser(
-        "update", help="Update the FuseSoC core libraries"
-    )
-    parser_update.add_argument(
-        "libraries",
-        nargs="*",
-        help="The libraries (or core roots) to update (defaults to all)",
-    )
-    parser_update.set_defaults(func=update)
-    parser_update.set_defaults(
-        warn="'fusesoc update' is deprecated. Use 'fusesoc library update' instead"
-    )
 
     return parser
 
