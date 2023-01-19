@@ -1,7 +1,7 @@
 .. _ug_build_system_tool_options:
 
-Passing options to tools
-========================
+Edalize tool API
+================
 
 .. note::
 
@@ -42,11 +42,3 @@ The example below shows how tool options for Icarus Verilog (``icarus``) and Men
          modelsim:
            vlog_options:
              - -timescale=1ns/1ns
-
-.. note::
-
-   Where to find tool-specific code in FuseSoC
-
-   The tool-specific code is provided by the `edalize library <https://github.com/olofk/edalize>`_.
-   Most files, such as project files and Makefiles, are templates within edalize and can be improved easily if necessary.
-   Please open an issue at the `edalize issue tracker on GitHub <https://github.com/olofk/edalize/issues>`_ to suggest improvements to tool-specific code.

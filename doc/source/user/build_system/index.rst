@@ -22,11 +22,7 @@ Typically, FuseSoC support can be added to an existing design without changes to
 
 The first three sections are recommended reading for all users of FuseSoC.
 The first section :ref:`ug_build_system_core_files` is an introduction into :term:`core description files <core file>` and how to write them.
-The second and third section, :ref:`ug_build_system_flow_options` and :ref:`ug_build_system_dependencies` look at how to customize what the (EDA) :term:`tools <tool>` are doing, and how cores can be combined to form a larger system.
-
-.. note::
-
-   Edalize has two different APIs for running EDA tool flows. The new flow API is described in :ref:`ug_build_system_flow_options` and will become the default API. However, not all Edalize backends have been converted to the new API, so the old tool API remains in use and is described in :ref:`ug_build_system_tool_options`. If FuseSoC encounters a `flow` key in the target, it will use the flow API. Otherwise it will fall back to the tool API
+The second and third section, :ref:`ug_build_system_eda_flows` and :ref:`ug_build_system_dependencies` look at how to customize what the (EDA) :term:`tools <tool>` are doing, and how cores can be combined to form a larger system.
 
 The subsequent sections are advanced topics, which are only relevant in some projects.
 
@@ -37,7 +33,7 @@ A full reference documentation on the CAPI2 core file format can be found in the
    :caption: In this section
 
    core_files.rst
-   tool_options.rst
+   eda_flows.rst
    dependencies.rst
    flags.rst
    generators.rst
