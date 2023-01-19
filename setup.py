@@ -51,7 +51,7 @@ setup(
         "setuptools_scm; python_version>='3.7'",
     ],
     install_requires=[
-        "edalize>=0.3.3",
+        "edalize>=0.4.1",
         "pyparsing",
         "pyyaml",
         "simplesat>=0.8.0",
