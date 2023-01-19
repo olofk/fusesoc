@@ -1,3 +1,44 @@
+2.0 2023-01-19 Olof Kindgren <olof.kindgren@gmail.com>
+======================================================
+* Better usability as a module
+* Require Python 3.6
+* git provider : Use shallow clones
+* Remove CAPI1 support
+* Improved documentation
+* Support Integer type in tool options
+* Run generators in unique temp directories
+* Support copying directories with copyto
+* Support setting flags in targets
+* Remove fusesoc pgm, update and init commands
+* Support virtual packages in CAPI2
+* Add config file option to ignore directories
+* Add CLI command to list Edalize backends
+* Add support for Edalize flow API
+* Put source in work_root subdirectory in the build tree
+* Avoid endless symlink recursion
+* Enable use flags in tool options
+* Add CLI flag to evaluate env vars in core files
+* Remove deprecated cores_root and systems_root config file options
+* Remove deprecated logicore and coregen providers
+
+Contributors:
+Alper Yazar <alperyazar@gmail.com>
+Anonymous
+Francesco Antognazza <francesco.antognazza@gmail.com>
+Jannis Schönleber <joennlae@gmail.com>
+Jonathan Balkind <jbalkind@ucsb.edu>
+Joshua Edgcombe <joshedgcombe@gmail.com>
+Michael Schwander <michael.schwander@nanotronic.ch>
+Michał Kruszewski <mkru@protonmail.com>
+MohammadHossein Askari Hemmat <m.h.askari.hemmat@gmail.com>
+Olof Kindgren <olof.kindgren@gmail.com>
+Per Lenander  <orkaboy@gmail.com>
+Philipp Wagner <mail@philipp-wagner.com>
+Rupert Swarbrick <rswarbrick@gmail.com>
+Shareef Jalloq <shareef.jalloq@idexbiometrics.com>
+Stefan Wallentowitz <stefan.wallentowitz.hm.edu>
+Unai Martinez-Corral <unai.martinezcorral@ehu.eus>
+
 1.12.0 2021-02-25 Olof Kindgren <olof.kindgren@gmail.com>
 ======================================================
 * fusesoc pgm and init are deprecated
