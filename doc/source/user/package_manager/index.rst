@@ -2,10 +2,6 @@
 The FuseSoC package manager
 ***************************
 
-.. todo::
-
-   This section of the documentation is copied over from previous documentation and needs to be edited in style and extended.
-
 Core libraries
 ---------------
 
@@ -28,10 +24,6 @@ contents:
 
 ::
 
-   [library.orpsoc-cores]
-   sync-uri = https://github.com/openrisc/orpsoc-cores
-   sync-type = git
-
    [library.fusesoc-cores]
    sync-uri = https://github.com/fusesoc/fusesoc-cores
    sync-type = git
@@ -39,11 +31,25 @@ contents:
 Core search order
 -----------------
 
-Once FuseSoC has found its configuration file, it will parse the
-``cores_root`` option in the ``[main]`` section of ``fusesoc.conf``.
-This option is a space-separated list of library locations which are
-searched in the order they appear. Additional library locations can be
-added on the command line by setting the ``--cores-root`` parameter when
+Once FuseSoC has found its configuration file, it will parse the library sections in the order they appear in the file. Library sections are all sections named `library.<library name>`. The following keys are valid in the library sections.
+
+location
+~~~~~~~~
+Specifies the library's location in the file system (required)
+
+auto-sync
+~~~~~~~~~
+Boolean value specifying if the library should be automatically updated when running `fusesoc library update` (optional. defaults to `true`)
+
+sync-uri
+~~~~~~~~
+The URI for non-local libraries where to fetch the library (optional)
+
+sync-type
+~~~~~~~~~
+The type of library. Can be set to `git` or `local`. A missing value indicates a `local` library. (optional)
+
+Additional library locations can be added on the command line by setting the ``--cores-root`` parameter when
 FuseSoC is launched. The library locations specified from the
 command-line will be parsed after those in ``fusesoc.conf``
 
@@ -58,3 +64,5 @@ replace the former. This can be used to override cores in a library with an
 alternative core in another library by specifying them in a library that will be
 parsed later, either temporarily by adding ``--cores-root`` to the command-line,
 or permanently by adding the other library at the end of fusesoc.conf
+
+If FuseSoC encounters a file called `FUSESOC_IGNORE` in a directory, this directory and all subdirectories will be ignored.
