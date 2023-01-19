@@ -14,23 +14,6 @@ from fusesoc.core import Core
 cores_root = os.path.join(tests_dir, "cores")
 
 
-def test_coregen_provider():
-
-    cache_root = tempfile.mkdtemp("coregen_")
-    core = Core(os.path.join(cores_root, "misc", "coregencore.core"), cache_root)
-
-    os.environ["PATH"] = (
-        os.path.join(tests_dir, "mock_commands") + ":" + os.environ["PATH"]
-    )
-    core.setup()
-
-    for f in ["dummy.cgp", "dummy.xco", os.path.join("subdir", "dummy.extra")]:
-        assert os.path.isfile(os.path.join(core.files_root, f))
-
-    with open(os.path.join(core.files_root, "run.cmd")) as f:
-        assert f.read() == "-r -b dummy.xco -p dummy.cgp\n"
-
-
 def test_git_provider():
     cache_root = tempfile.mkdtemp("git_")
     core = Core(os.path.join(cores_root, "misc", "gitcore.core"), cache_root)
@@ -69,23 +52,6 @@ def test_github_provider():
         os.path.join(core.files_root, f)
     ) as fgen:
         assert fref.read() == fgen.read(), f
-
-
-def test_logicore_provider():
-
-    cache_root = tempfile.mkdtemp("logicore_")
-    core = Core(os.path.join(cores_root, "misc", "logicorecore.core"), cache_root)
-
-    os.environ["PATH"] = (
-        os.path.join(tests_dir, "mock_commands") + ":" + os.environ["PATH"]
-    )
-    core.setup()
-
-    for f in ["dummy.tcl", "dummy.xci", os.path.join("subdir", "dummy.extra")]:
-        assert os.path.isfile(os.path.join(core.files_root, f))
-
-    with open(os.path.join(core.files_root, "vivado.cmd")) as f:
-        assert f.read() == "-mode batch -source dummy.tcl\n"
 
 
 @pytest.mark.skip(reason="Problems connecting to OpenCores SVN")
