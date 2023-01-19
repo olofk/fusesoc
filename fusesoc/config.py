@@ -39,8 +39,6 @@ class Config:
 
         self.build_root = self._get_build_root(config)
         self.cache_root = self._get_cache_root(config)
-        cores_root = self._get_cores_root(config)
-        systems_root = self._get_systems_root(config)
         self.library_root = self._get_library_root(config)
         self.ignored_dirs = self._get_ignored_dirs(config)
 
@@ -83,9 +81,7 @@ class Config:
             env_cores_root = os.getenv("FUSESOC_CORES").split(":")
             env_cores_root.reverse()
 
-        all_core_roots = cores_root + systems_root + env_cores_root
-
-        self.libraries = [Library(root, root) for root in all_core_roots] + libraries
+        self.libraries = [Library(root, root) for root in env_cores_root] + libraries
 
         logger.debug("cache_root=" + self.cache_root)
         logger.debug("library_root=" + self.library_root)
@@ -128,28 +124,6 @@ class Config:
             os.path.expanduser("~"), ".cache"
         )
         return os.path.join(xdg_cache_home, "fusesoc")
-
-    def _get_cores_root(self, config):
-        from_cfg = self._paths_from_cfg(config, "cores_root")
-        if from_cfg:
-            logger.warning(
-                "The cores_root option in fusesoc.conf is deprecated. "
-                "Please migrate to libraries instead"
-            )
-            return from_cfg
-
-        return [os.path.abspath("cores")] if os.path.exists("cores") else []
-
-    def _get_systems_root(self, config):
-        from_cfg = self._paths_from_cfg(config, "systems_root")
-        if from_cfg:
-            logger.warning(
-                "The systems_root option in fusesoc.conf is deprecated. "
-                "Please migrate to libraries instead"
-            )
-            return from_cfg
-
-        return [os.path.abspath("systems")] if os.path.exists("systems") else []
 
     def _get_library_root(self, config):
         from_cfg = self._path_from_cfg(config, "library_root")
