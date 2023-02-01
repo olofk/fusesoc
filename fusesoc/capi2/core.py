@@ -83,6 +83,17 @@ class Integer(int):
     pass
 
 
+class Bool:
+    def __init__(self, val):
+        self._val = val
+
+    def is_true(self):
+        return self._val
+
+    def __bool__(self):
+        return self._val
+
+
 class StringWithUseFlagsOrList:
     def __new__(cls, *args, **kwargs):
         if type(args[0]) == list:
@@ -108,6 +119,7 @@ type_mapping = {
     "StringWithUseFlagsOrDict": [str, dict],
     "StringWithUseFlagsOrList": [str, list],
     "Vlnv": [str],
+    "Bool": [bool],
 }
 
 
@@ -183,6 +195,8 @@ class Core:
         self, core_file, cache_root="", generated=False, resolve_env_vars=False
     ):
         self.core_file = core_file
+
+        self.cache_root = cache_root
 
         basename = os.path.basename(self.core_file)
 
@@ -815,6 +829,12 @@ Generators:
     - name : interpreter
       type : String
       desc : If the command needs a custom interpreter (such as python) this will be inserted as the first argument before command when calling the generator. The interpreter needs to be on the system PATH.
+    - name : cache_type
+      type : String
+      desc : If the result of the generator should be considered cacheable. Legal values are *none*, *input* or *generator*.
+    - name : file_input_parameters
+      type : String
+      desc : All parameters that are file inputs to the generator. This option can be used when *cache_type* is set to *input* if fusesoc should track if these files change.
     - name : description
       type : String
       desc : Short description of the generator, as shown with ``fusesoc gen list``

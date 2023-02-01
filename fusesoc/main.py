@@ -253,6 +253,12 @@ def core_info(cm, args):
     print(core.info())
 
 
+def gen_clean(cm, args):
+    cachedir = os.path.join(cm.config.cache_root, "generator_cache")
+    shutil.rmtree(cachedir, ignore_errors=True)
+    print(f"Cleaned generator cache: {cachedir}")
+
+
 def run(cm, args):
     stages = (args.setup, args.build, args.run)
 
@@ -584,6 +590,12 @@ def get_parser():
     )
     parser_gen_show.add_argument("generator", help="Name of the generator to show")
     parser_gen_show.set_defaults(func=gen_show)
+
+    # gen clean subparser
+    parser_gen_clean = gen_subparsers.add_parser(
+        "clean", help="Clean generator cache directory"
+    )
+    parser_gen_clean.set_defaults(func=gen_clean)
 
     # list-paths subparser
     parser_list_paths = subparsers.add_parser(

@@ -63,8 +63,14 @@ The generators section contain a map of generator sections so that each core is 
 
 The following keys are valid in a generator section.
 
-command: The command to run (relative to the core root) to invoke the generator. FuseSoC will pass a yaml configuration file as the first argument when calling the command.
-interpreter: If the command requires an interpreter (e.g. python or perl), this will be used called, with the string specified in `command` as the first argument, and the yaml file as the second argument.
+===================== ===========
+Key                   Description
+===================== ===========
+command               The command to run (relative to the core root) to invoke the generator. FuseSoC will pass a yaml configuration file as the first argument when calling the command.
+interpreter           If the command requires an interpreter (e.g. python or perl), this will be used called, with the string specified in `command` as the first argument, and the yaml file as the second argument.
+cache_type            If the result of the generator should be considered cacheable. Legal values are `none`, `input` or `generator`.
+file_input_parameters All parameters that are file inputs to the generator. This option can be used when `cache_type` is set to `input` if fusesoc should track if these files change.
+===================== ===========
 
 Example generator section from a CAPI2 core file
 
@@ -149,8 +155,51 @@ When FuseSoC is launched and a core target using a generator is processed, the f
 
 1. A key lookup is performed in the core file's `generate` section to find the generator configuration
 2. FuseSoC checks that it has registered a generator by the name specified in the `generator` entry of the configuration.
-3. FuseSoC calculates a unique VLNV for the generator instance by taking the calling core's VLNV and concatinating the name field with the generator instance name.
-4. A directory is created under <cache_root>/generated with a sanitized version of the calculated VLNV. This directory is where the output from the generator eventually will appear.
-5. A yaml configuration file is created in the generator output directory. The parameters from the instance are passed on to this file. FuseSoC will set the files root of the calling core as `files_root` and add the calculated vlnv.
-6. FuseSoC will switch working directory to the generator output directory and call the generator, using the command found in the generator's `command` field and with the created yaml file as command-line argument.
-7. When the generator has successfully completed, FuseSoC will scan the generator output directory for new .core files. These will be injected in the dependency tree right after the calling core and will be treated just like regular cores, except that any extra dependencies listed in the generated core will be ignored.
+3. FuseSoC calculates a unique VLNV for the generator instance by taking the calling core's VLNV and concatenating the name field with the generator instance name.
+4. A directory is created under <cache_root>/generator_cache with a sanitized version of the calculated VLNV along with a SHA256 hash of the input yaml file data appended. This directory is where the output from the generator eventually will appear.
+5. If the generator has `cache_type` set to `input` fusesoc will check if a cached output already exists. In this case item 6 and 7 will be omitted. See section :ref:`Generator Cache <ug_generator_cache>` for more information.
+6. A yaml configuration file is created in the generator output directory. The parameters from the instance are passed on to this file. FuseSoC will set the files root of the calling core as `files_root` and add the calculated vlnv.
+7. FuseSoC will switch working directory to the generator output directory and call the generator, using the command found in the generator's `command` field and with the created yaml file as command-line argument.
+8. When the generator has successfully completed (or a cached run already exists), FuseSoC will scan the generator output directory for new .core files. These will be injected in the dependency tree right after the calling core and will be treated just like regular cores, except that any extra dependencies listed in the generated core will be ignored.
+9. If the generator is marked as set as cacheable (`input` or `generator`) the directory (along with content) created under item 4 will be kept, otherwise it will be deleted.
+
+.. _ug_generator_cache:
+
+Generator Cache
+---------------
+Instead of fusesoc rerunning a generator each time and producing the same result it is possible to configure fusesoc to cache generator output and try to detect if a new run would produce the same output. Since there is no generic way of doing this that will fit all generators a couple of different methods for caching and detecting changes are available.
+
+The `generators` option `cache_type` is used for configuring type of caching. If set to `none` (or if option is omitted) no caching will be used. If set to `input` fusesoc will calculate a SHA256 hash of the generator input yaml file data and use this hash for detecting if something has changed and a rerun would be needed. This would happen if some data in the core file `generate` section, for instance `paramaters`, has changed.
+
+If `cache_type` is set to `generator` fusesoc will pass the responsibility for detecting if the previous run to the generator is still up to date. In this mode the generator will always be called and the output directory will be saved.
+
+In addition, when `cache_type` is set to `input` it is also possible to configure fusesoc to detect changes in file input data to a generator. This is done by using the `generators` option `file_input_parameters` which tells fusesoc which parameters are used to pass input files to the generator.
+
+Example `generators` section with `cache_type` and `file_input_parameters`:
+
+.. code:: yaml
+
+    generators:
+      mytest_gen:
+        interpreter: python
+        command: mytest_gen.py
+        cache_type: input
+        file_input_parameters: file_input_param1 file_input_param2
+
+
+Example `generate` section using the above generator.
+
+.. code:: yaml
+
+    generate:
+      mytest:
+        generator: mytest_gen
+        parameters:
+          some_param: 123
+          file_input_param1: input_file_1
+          file_input_param2: /path/to/input_file_2
+
+
+In the above example fusesoc would calculate the SHA256 hash for `input_file_1` (relative `files_root`) and `/path/to/input_file_2` (absolute path). This hash would then be saved in the generator cache directory in a file called `.fusesoc_file_input_hash`. During subsequent runs fusesoc would then compare the current input hash with the saved hash to determine if the generator output still is valid or if the generator needs to be run again.
+
+If needed, the `generator_cache` directory under `cache_root` can be cleaned by running `fusesoc gen clean`.

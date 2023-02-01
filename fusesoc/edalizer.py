@@ -3,10 +3,11 @@
 # SPDX-License-Identifier: BSD-2-Clause
 
 import argparse
+import hashlib
 import logging
 import os
+import pathlib
 import shutil
-import tempfile
 
 from fusesoc import utils
 from fusesoc.coremanager import DependencyError
@@ -136,6 +137,7 @@ class Edalizer:
     def run_generators(self):
         """Run all generators"""
         self._resolved_or_generated_cores = []
+        self._generated_core_dirs_to_remove = []
         for core in self.cores:
             logger.debug("Running generators in " + str(core.name))
             core_flags = self._core_flags(core)
@@ -151,6 +153,13 @@ class Edalizer:
                     for gen_core in _ttptttg.generate():
                         gen_core.pos = _ttptttg.pos
                         self._resolved_or_generated_cores.append(gen_core)
+                        if not (
+                            _ttptttg.is_generator_cacheable()
+                            or _ttptttg.is_input_cacheable()
+                        ):
+                            self._generated_core_dirs_to_remove.append(
+                                gen_core.core_root
+                            )
 
     def create_edam(self):
         first_snippets = []
@@ -263,10 +272,9 @@ class Edalizer:
             merge_dict(self.edam, snippet)
 
     def clean_temp_dirs(self):
-        for core in self.cores:
-            if core.is_generated:
-                logger.debug(f"Removing {core.core_root} ttptttg temporary directory")
-                shutil.rmtree(core.core_root)
+        for coredir in self._generated_core_dirs_to_remove:
+            logger.debug(f"Removing {coredir} ttptttg temporary directory")
+            shutil.rmtree(coredir)
 
     def _build_parser(self, backend_class, edam):
         typedict = {
@@ -485,6 +493,7 @@ class Ttptttg:
                     generator_name, core.name
                 )
             )
+        self.core = core
         self.generator = generators[generator_name]
         self.name = ttptttg["name"]
         self.pos = ttptttg["pos"]
@@ -508,16 +517,54 @@ class Ttptttg:
             "vlnv": vlnv_str,
         }
 
-    def generate(self):
-        """Run a parametrized generator
+    def _sha256_input_yaml_hexdigest(self):
+        return hashlib.sha256(
+            utils.yaml_dump(self.generator_input).encode()
+        ).hexdigest()
 
-        Returns:
-            list: Cores created by the generator
-        """
-        generator_cwd = os.path.join(tempfile.mkdtemp(prefix=self.vlnv.sanitized_name))
+    def _sha256_file_input_hexdigest(self):
+        input_files = []
+        logger.debug(
+            "Configured file_input_parameters: " + self.generator.file_input_parameters
+        )
+        for param in self.generator.file_input_parameters.split():
+            try:
+                input_files.append(self.generator_input["parameters"][param])
+            except KeyError:
+                logger.debug(
+                    f"Parameter {param} does not exist in parameters. File input will not be included in file input hash calculation."
+                )
+
+        logger.debug("Found input files: " + str(input_files))
+
+        hash = hashlib.sha256()
+
+        for f in input_files:
+            abs_f = os.path.join(self.generator_input["files_root"], f)
+            try:
+                hash.update(pathlib.Path(abs_f).read_bytes())
+            except Exception as e:
+                raise RuntimeError("Unable to hash file: " + str(e))
+
+        return hash.hexdigest()
+
+    def _fwrite_hash(self, hashfile, data):
+        with open(hashfile, "w") as f:
+            f.write(data)
+
+    def _fread_hash(self, hashfile):
+        data = ""
+        with open(hashfile) as f:
+            data = f.read()
+
+        return data
+
+    def _run(self, generator_cwd):
+        logger.info("Generating " + str(self.vlnv))
+
         generator_input_file = os.path.join(generator_cwd, self.name + "_input.yml")
 
-        logger.info("Generating " + str(self.vlnv))
+        pathlib.Path(generator_cwd).mkdir(parents=True, exist_ok=True)
         utils.yaml_fwrite(generator_input_file, self.generator_input)
 
         args = [
@@ -530,8 +577,93 @@ class Ttptttg:
 
         Launcher(args[0], args[1:], cwd=generator_cwd).run()
 
+    def is_input_cacheable(self):
+        return self.generator.cache_type and self.generator.cache_type == "input"
+
+    def is_generator_cacheable(self):
+        return self.generator.cache_type and self.generator.cache_type == "generator"
+
+    def generate(self):
+        """Run a parametrized generator
+
+        Returns:
+            list: Cores created by the generator
+        """
+
+        hexdigest = self._sha256_input_yaml_hexdigest()
+
+        logger.debug("Generator input yaml hash: " + hexdigest)
+
+        generator_cwd = os.path.join(
+            self.core.cache_root,
+            "generator_cache",
+            self.vlnv.sanitized_name + "-" + hexdigest,
+        )
+
+        if os.path.lexists(generator_cwd) and not os.path.isdir(generator_cwd):
+            raise RuntimeError(
+                "Unable to create generator working directory since it already exists and is not a directory: "
+                + generator_cwd
+                + "\n"
+                + "Remove it manually or run 'fusesoc gen clean'"
+            )
+
+        if self.is_input_cacheable():
+            # Input cache enabled. Check if cached output already exists in generator_cwd.
+            logger.debug("Input cache enabled.")
+
+            # If file_input_parameters has been configured in the generator
+            # parameters will be iterated to look for files to add to the
+            # input files hash calculation.
+            if self.generator.file_input_parameters:
+                file_input_hash = self._sha256_file_input_hexdigest()
+
+                logger.debug("Generator file input hash: " + file_input_hash)
+
+                hashfile = os.path.join(generator_cwd, ".fusesoc_file_input_hash")
+
+                rerun = False
+
+                if os.path.isfile(hashfile):
+                    cached_hash = self._fread_hash(hashfile)
+                    logger.debug("Cached file input hash: " + cached_hash)
+
+                    if not file_input_hash == cached_hash:
+                        logger.debug("File input has changed.")
+                        rerun = True
+                    else:
+                        logger.info("Found cached output for " + str(self.vlnv))
+
+                else:
+                    logger.debug("File input hash file does not exist: " + hashfile)
+                    rerun = True
+
+                if rerun:
+                    shutil.rmtree(generator_cwd, ignore_errors=True)
+                    self._run(generator_cwd)
+                    self._fwrite_hash(hashfile, file_input_hash)
+
+            elif os.path.isdir(generator_cwd):
+                logger.info("Found cached output for " + str(self.vlnv))
+            else:
+                # No directory found. Run generator.
+                self._run(generator_cwd)
+
+        elif self.is_generator_cacheable():
+            # Generator cache enabled. Call the generator and let it
+            # decide if the old output still is valid.
+            logger.debug("Generator cache enabled.")
+            self._run(generator_cwd)
+        else:
+            # No caching enabled. Try to remove directory if it already exists.
+            # This could happen if a generator that has been configured with
+            # caching is changed to no caching.
+            logger.debug("Generator cache is not enabled.")
+            shutil.rmtree(generator_cwd, ignore_errors=True)
+            self._run(generator_cwd)
+
         cores = []
-        logger.debug("Looking for generated cores in " + generator_cwd)
+        logger.debug("Looking for generated or cached cores in " + generator_cwd)
         for root, dirs, files in os.walk(generator_cwd):
             for f in files:
                 if f.endswith(".core"):

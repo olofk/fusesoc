@@ -169,6 +169,10 @@ def yaml_read(data, resolve_env_vars=False):
         return yaml.load(data, Loader=YamlLoader)
 
 
+def yaml_dump(data):
+    return yaml.dump(data)
+
+
 def merge_dict(d1, d2):
     for key, value in d2.items():
         if isinstance(value, dict):
