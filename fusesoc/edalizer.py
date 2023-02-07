@@ -103,8 +103,7 @@ class Edalizer:
         # Create EDA API file contents
         self.create_edam()
 
-        # Clean up ttptttg temporary directories
-        self.clean_temp_dirs()
+        self.export()
 
         return self.edam
 
@@ -161,6 +160,26 @@ class Edalizer:
                                 gen_core.core_root
                             )
 
+    def export(self):
+        for core in self.cores:
+            _flags = self._core_flags(core)
+
+            # Export core files
+            if self.export_root:
+                files_root = os.path.join(self.export_root, core.sanitized_name)
+                core.export(files_root, _flags)
+            else:
+                files_root = core.files_root
+
+            # Add copyto files
+            for file in core.get_files(_flags):
+                if file.get("copyto"):
+                    src = os.path.join(files_root, file["name"])
+                    self._copyto(src, file.get("copyto"))
+
+        # Clean up ttptttg temporary directories
+        self.clean_temp_dirs()
+
     def _copyto(self, src, name):
         dst = os.path.join(self.work_root, name)
         os.makedirs(os.path.dirname(dst), exist_ok=True)
@@ -191,7 +210,6 @@ class Edalizer:
             # Extract files
             if self.export_root:
                 files_root = os.path.join(self.export_root, core.sanitized_name)
-                core.export(files_root, _flags)
             else:
                 files_root = core.files_root
 
@@ -217,16 +235,18 @@ class Edalizer:
             for file in core.get_files(_flags):
                 # Copy original file object to be put into EDAM
                 _f = file.copy()
-                _name = file.get("copyto", os.path.join(rel_root, file["name"]))
 
-                if file.get("copyto"):
-                    src = os.path.join(files_root, file["name"])
-                    self._copyto(src, _name)
-                    # copyto tag shouldn't be in EDAM
-                    del _f["copyto"]
+                # copyto tag shouldn't be in EDAM
+                _f.pop("copyto", None)
 
-                _f["name"] = str(_name)
+                # Reparent file path
+                _f["name"] = str(
+                    file.get("copyto", os.path.join(rel_root, file["name"]))
+                )
+
+                # Set owning core
                 _f["core"] = str(core.name)
+
                 # Reparent include paths
                 if file.get("include_path"):
                     _f["include_path"] = os.path.join(rel_root, file["include_path"])
