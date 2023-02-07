@@ -161,6 +161,19 @@ class Edalizer:
                                 gen_core.core_root
                             )
 
+    def _copyto(self, src, name):
+        dst = os.path.join(self.work_root, name)
+        os.makedirs(os.path.dirname(dst), exist_ok=True)
+
+        try:
+            shutil.copy2(src, dst)
+        except IsADirectoryError:
+            shutil.copytree(
+                src,
+                dst,
+                dirs_exist_ok=True,
+            )
+
     def create_edam(self):
         first_snippets = []
         snippets = []
@@ -202,26 +215,19 @@ class Edalizer:
 
             _files = []
             for file in core.get_files(_flags):
-                _f = file
+                # Copy original file object to be put into EDAM
+                _f = file.copy()
+                _name = file.get("copyto", os.path.join(rel_root, file["name"]))
+
                 if file.get("copyto"):
-                    _name = file["copyto"]
-                    dst = os.path.join(self.work_root, _name)
-                    _dstdir = os.path.dirname(dst)
-                    if not os.path.exists(_dstdir):
-                        os.makedirs(_dstdir)
-                    try:
-                        shutil.copy2(os.path.join(files_root, file["name"]), dst)
-                    except IsADirectoryError:
-                        shutil.copytree(
-                            os.path.join(files_root, file["name"]),
-                            dst,
-                            dirs_exist_ok=True,
-                        )
+                    src = os.path.join(files_root, file["name"])
+                    self._copyto(src, _name)
+                    # copyto tag shouldn't be in EDAM
                     del _f["copyto"]
-                else:
-                    _name = os.path.join(rel_root, file["name"])
+
                 _f["name"] = str(_name)
                 _f["core"] = str(core.name)
+                # Reparent include paths
                 if file.get("include_path"):
                     _f["include_path"] = os.path.join(rel_root, file["include_path"])
 
