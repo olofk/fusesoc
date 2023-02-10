@@ -100,6 +100,50 @@ def test_capi2_export():
     assert expected == sorted(result)
 
 
+def test_capi2_export_no_overwrite():
+    import os
+    import tempfile
+    from filecmp import cmp
+
+    from fusesoc.core import Core
+
+    core_file = os.path.join(tests_dir, "capi2_cores", "misc", "files.core")
+    core = Core(core_file)
+
+    export_root = tempfile.mkdtemp(prefix="capi2_export_")
+
+    expected = [
+        "dontpickthisfile",
+        "dummy.tcl",
+        "scriptfile",
+        "subdir/dummy.extra",
+        "vhdlfile",
+        "vlogfile",
+        "vpifile",
+    ]
+
+    result = []
+
+    # Export and check all dst files are equal to src files
+    core.export(export_root)
+    for f in expected:
+        assert cmp(os.path.join(core.files_root, f), os.path.join(export_root, f))
+
+    # Change one file in dst and...
+    with open(os.path.join(export_root, "scriptfile"), "w") as f:
+        f.write("Some random value")
+
+    # ...verify that file is actually changed
+    for f in expected:
+        val = cmp(os.path.join(core.files_root, f), os.path.join(export_root, f))
+        assert not val if f == "scriptfile" else val
+
+    # Re-export and check for equality
+    core.export(export_root)
+    for f in expected:
+        assert cmp(os.path.join(core.files_root, f), os.path.join(export_root, f))
+
+
 def test_capi2_append():
     from fusesoc.core import Core
 

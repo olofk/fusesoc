@@ -7,6 +7,7 @@ import logging
 import os
 import shutil
 import warnings
+from filecmp import cmp
 
 import yaml
 
@@ -258,9 +259,6 @@ class Core:
             return "local"
 
     def export(self, dst_dir, flags={}):
-        if os.path.exists(dst_dir):
-            shutil.rmtree(dst_dir)
-
         src_files = [f["name"] for f in self.get_files(flags)]
 
         for k, v in self._get_vpi(flags).items():
@@ -289,25 +287,31 @@ class Core:
                     FutureWarning,
                 )
             if not os.path.isabs(f):
+
                 if os.path.exists(os.path.join(self.core_root, f)):
                     src = os.path.join(self.core_root, f)
-                    dst = os.path.join(dst_dir, f)
-                    try:
-                        shutil.copyfile(src, dst)
-                    except IsADirectoryError:
-                        shutil.copytree(src, dst, dirs_exist_ok=True)
                 elif os.path.exists(os.path.join(self.files_root, f)):
                     src = os.path.join(self.files_root, f)
-                    dst = os.path.join(dst_dir, f)
+                else:
+                    _dirs = self.core_root
+                    if self.files_root != self.core_root:
+                        _dirs += " or " + self.files_root
+                    raise RuntimeError(f"Cannot find {f} in {_dirs}")
+
+                dst = os.path.join(dst_dir, f)
+                # Only update if file is changed or doesn't exist
+                if not os.path.exists(dst) or not cmp(src, dst):
                     try:
-                        shutil.copyfile(src, dst)
+                        shutil.copy2(src, dst)
                     except IsADirectoryError:
                         shutil.copytree(src, dst, dirs_exist_ok=True)
-                else:
-                    raise RuntimeError(
-                        "Cannot find %s in :\n\t%s\n\t%s"
-                        % (f, self.files_root, self.core_root)
-                    )
+
+        # Clean out leftover files from previous builds
+        for root, dirs, files in os.walk(dst_dir):
+            for f in files:
+                _abs_f = os.path.join(root, f)
+                if not os.path.relpath(_abs_f, dst_dir) in src_files:
+                    os.remove(_abs_f)
 
     def _get_script_names(self, flags):
         target = self._get_target(flags)

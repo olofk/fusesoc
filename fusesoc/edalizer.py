@@ -8,6 +8,7 @@ import logging
 import os
 import pathlib
 import shutil
+from filecmp import cmp
 
 from fusesoc import utils
 from fusesoc.coremanager import DependencyError
@@ -182,14 +183,15 @@ class Edalizer:
         dst = os.path.join(self.work_root, name)
         os.makedirs(os.path.dirname(dst), exist_ok=True)
 
-        try:
-            shutil.copy2(src, dst)
-        except IsADirectoryError:
-            shutil.copytree(
-                src,
-                dst,
-                dirs_exist_ok=True,
-            )
+        if not os.path.exists(dst) or not cmp(src, dst):
+            try:
+                shutil.copy2(src, dst)
+            except IsADirectoryError:
+                shutil.copytree(
+                    src,
+                    dst,
+                    dirs_exist_ok=True,
+                )
 
     def create_edam(self):
         first_snippets = []
