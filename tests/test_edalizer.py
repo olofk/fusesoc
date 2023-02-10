@@ -122,6 +122,7 @@ def test_generators():
         system_name=None,
     )
     edalizer.run()
+    edalizer.export()
 
     name_to_core = {str(core.name): core for core in edalizer.cores}
     for flavour in ["testgenerate_with_params", "testgenerate_without_params"]:

@@ -103,8 +103,6 @@ class Edalizer:
         # Create EDA API file contents
         self.create_edam()
 
-        self.export()
-
         return self.edam
 
     def _core_flags(self, core):
@@ -500,7 +498,8 @@ class Edalizer:
                 continue
             _value = value[0] if type(value) == list else value
             args_dict[key] = _value
-        return args_dict
+
+        self.add_parsed_args(backend_class, args_dict)
 
     def to_yaml(self, edam_file):
         return utils.yaml_fwrite(edam_file, self.edam)

@@ -148,6 +148,7 @@ def test_copyto():
         system_name=None,
     )
     edam = edalizer.run()
+    edalizer.export()
 
     assert edam["files"] == [
         {
@@ -197,6 +198,7 @@ def test_export():
         system_name=None,
     )
     edalizer.run()
+    edalizer.export()
 
     for f in [
         "wb_intercon_1.0/dummy_icarus.v",

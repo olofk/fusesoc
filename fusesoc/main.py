@@ -365,6 +365,9 @@ def run_backend(
         work_root = os.path.join(build_root, target)
     else:
         work_root = os.path.join(build_root, f"{target}-{tool}")
+
+    edam_file = os.path.join(work_root, core.name.sanitized_name + ".eda.yml")
+
     logger.debug(f"Setting work_root to {work_root}")
 
     if export:
@@ -372,9 +375,6 @@ def run_backend(
         logger.debug(f"Setting export_root to {export_root}")
     else:
         export_root = None
-    edam_file = os.path.join(work_root, core.name.sanitized_name + ".eda.yml")
-    if not os.path.exists(edam_file):
-        do_configure = True
 
     backend_class = None
     if flow:
@@ -406,23 +406,24 @@ def run_backend(
         resolve_env_vars=resolve_env_vars,
     )
 
-    if do_configure:
-        try:
-            prepare_work_root(work_root)
-            edam = edalizer.run()
-            parsed_args = edalizer.parse_args(backend_class, backendargs, edam)
-            edalizer.add_parsed_args(backend_class, parsed_args)
+    try:
+        edam = edalizer.run()
+        edalizer.parse_args(backend_class, backendargs, edam)
+        edalizer.export()
+    except SyntaxError as e:
+        logger.error(e.msg)
+        exit(1)
+    except RuntimeError as e:
+        logger.error("Setup failed : {}".format(str(e)))
+        exit(1)
 
-        except SyntaxError as e:
-            logger.error(e.msg)
-            exit(1)
-        except RuntimeError as e:
-            logger.error("Setup failed : {}".format(str(e)))
-            exit(1)
-        edalizer.to_yaml(edam_file)
+    if os.path.exists(edam_file):
+        old_edam = yaml_fread(edam_file, resolve_env_vars)
     else:
-        edam = yaml_fread(edam_file, resolve_env_vars)
-        parsed_args = edalizer.parse_args(backend_class, backendargs, edam)
+        old_edam = None
+
+    if edam != old_edam:
+        edalizer.to_yaml(edam_file)
 
     # Frontend/backend separation
 
@@ -436,10 +437,14 @@ def run_backend(
         logger.error(f'Could not find EDA API file "{e.filename}"')
         exit(1)
 
+    makefile = os.path.join(work_root, "Makefile")
+    do_configure = not os.path.exists(makefile) or (
+        os.path.getmtime(makefile) < os.path.getmtime(edam_file)
+    )
+
     if do_configure:
         try:
             backend.configure()
-            print("")
         except RuntimeError as e:
             logger.error("Failed to configure the system")
             logger.error(str(e))
@@ -454,7 +459,7 @@ def run_backend(
 
     if do_run:
         try:
-            backend.run(parsed_args)
+            backend.run()
         except RuntimeError as e:
             logger.error("Failed to run {} : {}".format(str(core.name), str(e)))
             exit(1)
