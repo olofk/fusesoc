@@ -37,8 +37,12 @@ class Git(Provider):
         # TODO : Sanitize URL
         repo = self.config.get("repo")
         logger.info("Checking out " + repo + " to " + local_dir)
-        args = ["clone", "-q", "--depth", "1", "--no-single-branch", repo, local_dir]
-        Launcher("git", args).run()
+        try:
+            args = ["clone", "-q", "--depth", "1", "--no-single-branch", repo, local_dir]
+            Launcher("git", args).run()
+        except:
+            args = ["clone", "-q", "--no-single-branch", repo, local_dir]
+            Launcher("git", args).run()
         if version:
             args = ["-C", local_dir, "checkout", "-q", version]
             Launcher("git", args).run()
