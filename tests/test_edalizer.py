@@ -91,6 +91,7 @@ def test_tool_or_flow():
 
 def test_generators():
     import os
+    import shutil
     import tempfile
 
     from fusesoc.config import Config
@@ -130,3 +131,18 @@ def test_generators():
 
         # ttptttg temporary directory should be removed by now
         assert not os.path.isdir(core.core_root)
+
+    # Test generator input cache and file_input_params
+    core_name = f"::generate-testgenerate_with_cache:0"
+    assert core_name in name_to_core
+    core = name_to_core[core_name]
+    assert os.path.isdir(core.core_root)
+
+    hash = ""
+    with open(os.path.join(core.core_root, ".fusesoc_file_input_hash")) as f:
+        hash = f.read()
+
+    # SHA256 hash of test file content
+    assert hash == "da265f9dccc9d9e64d059f677508f9550b403c99e6ce5df07c6fb1d711d0ee99"
+
+    shutil.rmtree(core.core_root, ignore_errors=True)

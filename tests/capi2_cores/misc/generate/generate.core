@@ -14,7 +14,7 @@ targets:
   default:
     filesets :
       - default
-    generate : [testgenerate_without_params, testgenerate_with_params, testgenerate_with_override : {the_value : 138}]
+    generate : [testgenerate_without_params, testgenerate_with_params, testgenerate_with_override : {the_value : 138}, testgenerate_with_cache]
     toplevel : na
 
   nogenerate: {generate : []}
@@ -36,3 +36,8 @@ generate:
     generator: generator1
     parameters:
       the_value : 1234
+
+  testgenerate_with_cache:
+    generator: generator2
+    parameters:
+      file_in_param1: file_cachetest

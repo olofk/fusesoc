@@ -240,8 +240,11 @@ def test_capi2_get_generators():
     core = Core(os.path.join(cores_dir, "generate", "generators.core"))
 
     generators = core.get_generators()
-    assert len(generators) == 1
+    assert len(generators) == 2
     assert generators["generator1"].command == "testgen.py"
+    assert generators["generator2"].command == "testgen.py"
+    assert generators["generator2"].cache_type == "input"
+    assert generators["generator2"].file_input_parameters == "file_in_param1"
 
 
 def test_capi2_get_parameters():
@@ -510,6 +513,12 @@ def test_capi2_get_ttptttg():
             "generator": "generator1",
             "pos": "append",
             "config": {"the_value": 138},
+        },
+        {
+            "name": "testgenerate_with_cache",
+            "generator": "generator2",
+            "pos": "append",
+            "config": {"file_in_param1": "file_cachetest"},
         },
     ]
     assert expected == core.get_ttptttg(flags)
