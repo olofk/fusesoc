@@ -25,7 +25,7 @@ repos:
         # for now don't force to change from %-operator to {}
         args: [--keep-percent-format, --py3-plus, --py36-plus]
   - repo: https://github.com/PyCQA/isort
-    rev: "5.7.0"
+    rev: "5.11.5"
     hooks:
       - id: isort
         args: ["--profile", "black", "--filter-files"]
