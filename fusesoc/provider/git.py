@@ -52,7 +52,15 @@ class Git(Provider):
         repo = self.config.get("repo")
         logger.info("Checking out " + repo + " to " + local_dir)
         try:
-            args = ["clone", "-q", "--depth", "1", "--no-single-branch", repo, local_dir]
+            args = [
+                "clone",
+                "-q",
+                "--depth",
+                "1",
+                "--no-single-branch",
+                repo,
+                local_dir,
+            ]
             Launcher("git", args).run()
         except RuntimeError as e:
             try:
