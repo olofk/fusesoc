@@ -75,7 +75,7 @@ def _get_parser():
     if _PARSER is not None:
         return _PARSER
 
-    word = Word(alphanums + ":<>.[]_-,=~/^+")
+    word = Word(alphanums + "`:<>.[]_-,=~/^+")
     exprs = Forward()
 
     conditional = (
