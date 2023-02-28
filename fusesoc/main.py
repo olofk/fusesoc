@@ -144,7 +144,7 @@ def library_list(cm, args):
         lengths[1] = max(lengths[1], len(lib.location))
         lengths[2] = max(lengths[2], len(lib.sync_type))
         lengths[3] = max(lengths[3], len(lib.sync_uri or ""))
-        lengths[4] = max(lengths[4], len(lib.sync_version))
+        lengths[4] = max(lengths[4], len(lib.sync_version or ""))
     print(
         "{} : {} : {} : {} : {} : {}".format(
             "Name".ljust(lengths[0]),
