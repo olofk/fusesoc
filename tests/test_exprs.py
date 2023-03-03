@@ -26,6 +26,7 @@ def test_exprs():
     check_parses_to("a ? (b ? (c))", [(False, "a", [(False, "b", ["c"])])])
     check_parses_to("!a ? (b)", [(True, "a", ["b"])])
     check_parses_to("a b ? (c)", ["a", (False, "b", ["c"])])
+    check_parses_to('a"b"', ['a"b"'])
 
     check_parse_error("!a")
     check_parse_error("a ? b")

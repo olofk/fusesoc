@@ -12,7 +12,7 @@ FuseSoC core files allow strings matching the following pseudo-BNF:
   expr ::= word
          | conditional
 
-  word ::= [a-zA-Z0-9:<>.\[\]_-,=~/^+]+    (one or more alphanum/special chars)
+  word ::= [a-zA-Z0-9:<>.\[\]_-,=~/^+"]+    (one or more alphanum/special chars)
 
   conditional ::= condition "?" "(" exprs ")"
 
@@ -75,7 +75,7 @@ def _get_parser():
     if _PARSER is not None:
         return _PARSER
 
-    word = Word(alphanums + "`:<>.[]_-,=~/^+")
+    word = Word(alphanums + '`:<>.[]_-,=~/^+"')
     exprs = Forward()
 
     conditional = (
