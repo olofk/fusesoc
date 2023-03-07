@@ -151,7 +151,7 @@ def setup_logging(level, monchrome=False, log_file=None):
 def yaml_fwrite(filepath, content, preamble=""):
     with open(filepath, "w") as f:
         f.write(preamble)
-        f.write(yaml.dump(content, Dumper=YamlDumper))
+        f.write(yaml.dump(content, Dumper=YamlDumper, sort_keys=False))
 
 
 def yaml_fread(filepath, resolve_env_vars=False):
