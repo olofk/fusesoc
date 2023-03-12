@@ -408,6 +408,11 @@ class Core:
                         options[member] = self._parse_list(
                             flags, [StringWithUseFlags(x) for x in _member]
                         )
+            for member in section.dicts:
+                if hasattr(section, member):
+                    _member = getattr(section, member)
+                    if _member:
+                        options[member] = {key: str(value) for key, value in _member.items()}
         self._debug("Found tool options {}".format(str(options)))
         return options
 
