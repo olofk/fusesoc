@@ -485,9 +485,18 @@ def init_logging(verbose, monochrome, log_file=None):
         logger.debug("Colorful output")
 
 
-def init_coremanager(config, args_cores_root, args_resolve_env_vars=False):
+def init_coremanager(
+    config,
+    args_cores_root,
+    args_resolve_env_vars=False,
+    args_allow_additional_properties=False,
+):
     logger.debug("Initializing core manager")
-    cm = CoreManager(config, resolve_env_vars=args_resolve_env_vars)
+    cm = CoreManager(
+        config,
+        resolve_env_vars=args_resolve_env_vars,
+        allow_additional_properties=args_allow_additional_properties,
+    )
 
     args_libs = [Library(acr, acr) for acr in args_cores_root]
     # Add libraries from config file, env var and command-line
@@ -695,6 +704,11 @@ def get_parser():
     parser_run.add_argument(
         "--system-name", help="Override default VLNV name for system"
     )
+    parser_run.add_argument(
+        "--allow-additional-properties",
+        action="store_true",
+        help="Allow additional properties in core files",
+    )
     parser_run.add_argument("system", help="Select a system to operate on")
     parser_run.add_argument(
         "backendargs", nargs=argparse.REMAINDER, help="arguments to be sent to backend"
@@ -726,10 +740,12 @@ def fusesoc(args):
     if hasattr(args, "resolve_env_vars_early"):
         resolve_env_vars_early = args.resolve_env_vars_early
 
+    allow_additional_properties = False
+    if hasattr(args, "allow_additional_properties"):
+        allow_additional_properties = args.allow_additional_properties
+
     cm = init_coremanager(
-        config,
-        args.cores_root,
-        resolve_env_vars_early,
+        config, args.cores_root, resolve_env_vars_early, allow_additional_properties
     )
     # Run the function
     args.func(cm, args)
