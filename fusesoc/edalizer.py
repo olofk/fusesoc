@@ -11,6 +11,7 @@ import shutil
 from filecmp import cmp
 
 from fusesoc import utils
+from fusesoc.capi2.coreparser import Core2Parser
 from fusesoc.coremanager import DependencyError
 from fusesoc.utils import merge_dict
 from fusesoc.vlnv import Vlnv
@@ -123,6 +124,7 @@ class Edalizer:
         """Get all registered generators from the cores"""
         generators = {}
         for core in self.cores:
+            _flags = self._core_flags(core)
             logger.debug("Searching for generators in " + str(core.name))
             if hasattr(core, "get_generators"):
                 core_generators = core.get_generators()
@@ -233,25 +235,23 @@ class Edalizer:
 
             _files = []
             for file in core.get_files(_flags):
-                # Copy original file object to be put into EDAM
-                _f = file.copy()
-
-                # copyto tag shouldn't be in EDAM
-                _f.pop("copyto", None)
 
                 # Reparent file path
-                _f["name"] = str(
+                file["name"] = str(
                     file.get("copyto", os.path.join(rel_root, file["name"]))
                 )
 
                 # Set owning core
-                _f["core"] = str(core.name)
+                file["core"] = str(core.name)
+
+                # copyto tag shouldn't be in EDAM
+                file.pop("copyto", None)
 
                 # Reparent include paths
                 if file.get("include_path"):
-                    _f["include_path"] = os.path.join(rel_root, file["include_path"])
+                    file["include_path"] = os.path.join(rel_root, file["include_path"])
 
-                _files.append(_f)
+                _files.append(file)
 
             snippet["files"] = _files
 
@@ -552,9 +552,10 @@ class Ttptttg:
     def _sha256_file_input_hexdigest(self):
         input_files = []
         logger.debug(
-            "Configured file_input_parameters: " + self.generator.file_input_parameters
+            "Configured file_input_parameters: "
+            + self.generator["file_input_parameters"]
         )
-        for param in self.generator.file_input_parameters.split():
+        for param in self.generator["file_input_parameters"].split():
             try:
                 input_files.append(self.generator_input["parameters"][param])
             except KeyError:
@@ -595,20 +596,27 @@ class Ttptttg:
         utils.yaml_fwrite(generator_input_file, self.generator_input)
 
         args = [
-            os.path.join(os.path.abspath(self.generator.root), self.generator.command),
+            os.path.join(
+                os.path.abspath(self.generator["root"]), self.generator["command"]
+            ),
             os.path.abspath(generator_input_file),
         ]
 
-        if self.generator.interpreter:
-            args[0:0] = [self.generator.interpreter]
+        if "interpreter" in self.generator:
+            args[0:0] = [self.generator["interpreter"]]
 
         Launcher(args[0], args[1:], cwd=generator_cwd).run()
 
     def is_input_cacheable(self):
-        return self.generator.cache_type and self.generator.cache_type == "input"
+        return (
+            "cache_type" in self.generator and self.generator["cache_type"] == "input"
+        )
 
     def is_generator_cacheable(self):
-        return self.generator.cache_type and self.generator.cache_type == "generator"
+        return (
+            "cache_type" in self.generator
+            and self.generator["cache_type"] == "generator"
+        )
 
     def generate(self):
         """Run a parametrized generator
@@ -642,7 +650,7 @@ class Ttptttg:
             # If file_input_parameters has been configured in the generator
             # parameters will be iterated to look for files to add to the
             # input files hash calculation.
-            if self.generator.file_input_parameters:
+            if "file_input_parameters" in self.generator:
                 file_input_hash = self._sha256_file_input_hexdigest()
 
                 logger.debug("Generator file input hash: " + file_input_hash)
@@ -691,15 +699,16 @@ class Ttptttg:
 
         cores = []
         logger.debug("Looking for generated or cached cores in " + generator_cwd)
+        parser = Core2Parser(self.resolve_env_vars, allow_additional_properties=False)
         for root, dirs, files in os.walk(generator_cwd):
             for f in files:
                 if f.endswith(".core"):
                     try:
                         cores.append(
                             Core(
+                                parser,
                                 os.path.join(root, f),
                                 generated=True,
-                                resolve_env_vars=self.resolve_env_vars,
                             )
                         )
                     except SyntaxError as e:

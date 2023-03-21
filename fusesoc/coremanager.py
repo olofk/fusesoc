@@ -13,6 +13,7 @@ from simplesat.pool import Pool
 from simplesat.repository import Repository
 from simplesat.request import Request
 
+from fusesoc.capi2.coreparser import Core2Parser
 from fusesoc.core import Core
 from fusesoc.librarymanager import LibraryManager
 
@@ -207,12 +208,14 @@ class CoreDB:
 
 class CoreManager:
     def __init__(
-        self, config, resolve_env_vars=False
+        self, config, resolve_env_vars=False, allow_additional_properties=False
     ):
         self.config = config
         self.db = CoreDB()
         self._lm = LibraryManager(config.library_root)
         self.resolve_env_vars = resolve_env_vars
+        self.allow_additional_properties = allow_additional_properties
+        self.core2parser = Core2Parser(resolve_env_vars, allow_additional_properties)
 
     def find_cores(self, library, ignored_dirs):
         found_cores = []
@@ -266,9 +269,9 @@ class CoreManager:
                             continue
 
                         core = Core(
+                            parser=self.core2parser,
                             core_file=core_file,
                             cache_root=self.config.cache_root,
-                            resolve_env_vars=self.resolve_env_vars,
                         )
                         found_cores.append(core)
                     except SyntaxError as e:

@@ -188,7 +188,7 @@ def list_cores(cm, args):
             + " : "
             + core.cache_status().rjust(10)
             + " : "
-            + (core.description or "<No description>")
+            + (core.get_description() or "<No description>")
         )
 
 
@@ -223,7 +223,7 @@ def gen_list(cm, args):
                     "{} : {} : {}".format(
                         core.ljust(maxlen),
                         generator_name,
-                        generator_data.description or "<No description>",
+                        generator_data["description"] or "<No description>",
                     )
                 )
 
@@ -243,8 +243,8 @@ Usage       :
 {}""".format(
                         core,
                         generator_name,
-                        generator_data.description or "<No description>",
-                        generator_data.usage or "",
+                        generator_data["description"] or "<No description>",
+                        generator_data["usage"] or "",
                     )
                 )
 

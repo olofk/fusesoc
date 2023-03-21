@@ -56,4 +56,4 @@ class Generator:
             "parameters": self.parameters,
             "targets": self.targets,
         }
-        return utils.yaml_fwrite(self.core_file, coredata, "CAPI=2:\n")
+        return utils.yaml_fwrite(self.core_file, coredata, "CAPI=2:")

@@ -15,6 +15,7 @@ def test_files_out_of_hierarchy():
     import os
     import tempfile
 
+    from fusesoc.capi2.coreparser import Core2Parser
     from fusesoc.core import Core
 
     core_file = os.path.join(
@@ -24,7 +25,7 @@ def test_files_out_of_hierarchy():
         "subdir",
         "files_out_of_hierarchy.core",
     )
-    core = Core(core_file)
+    core = Core(Core2Parser(), core_file)
     export_root = tempfile.mkdtemp(prefix="capi2_files_out_of_hierarchy_")
 
     with pytest.warns(FutureWarning, match="not within the directory"):
@@ -39,20 +40,22 @@ def test_empty_core():
     import os
     import tempfile
 
+    from fusesoc.capi2.coreparser import Core2Parser
     from fusesoc.core import Core
 
     core_file = os.path.join(tests_dir, "capi2_cores", "misc", "empty.core")
     with pytest.raises(SyntaxError) as excinfo:
-        core = Core(core_file)
-    assert "Error while trying to parse the core file" in str(excinfo.value)
+        core = Core(Core2Parser(), core_file)
+    assert "Core name is empty string" in str(excinfo.value)
 
 
 def test_virtual():
+    from fusesoc.capi2.coreparser import Core2Parser
     from fusesoc.core import Core
     from fusesoc.vlnv import Vlnv
 
     core_file = os.path.join(tests_dir, "capi2_cores", "virtual", "impl1.core")
-    core = Core(core_file)
+    core = Core(Core2Parser(), core_file)
     assert core.get_virtuals() == [Vlnv("::someinterface:0")]
 
 
@@ -60,10 +63,11 @@ def test_capi2_export():
     import os
     import tempfile
 
+    from fusesoc.capi2.coreparser import Core2Parser
     from fusesoc.core import Core
 
     core_file = os.path.join(tests_dir, "capi2_cores", "misc", "files.core")
-    core = Core(core_file)
+    core = Core(Core2Parser(), core_file)
 
     export_root = tempfile.mkdtemp(prefix="capi2_export_")
 
@@ -105,10 +109,11 @@ def test_capi2_export_no_overwrite():
     import tempfile
     from filecmp import cmp
 
+    from fusesoc.capi2.coreparser import Core2Parser
     from fusesoc.core import Core
 
     core_file = os.path.join(tests_dir, "capi2_cores", "misc", "files.core")
-    core = Core(core_file)
+    core = Core(Core2Parser(), core_file)
 
     export_root = tempfile.mkdtemp(prefix="capi2_export_")
 
@@ -145,9 +150,10 @@ def test_capi2_export_no_overwrite():
 
 
 def test_capi2_append():
+    from fusesoc.capi2.coreparser import Core2Parser
     from fusesoc.core import Core
 
-    core = Core(os.path.join(cores_dir, "append.core"))
+    core = Core(Core2Parser(), os.path.join(cores_dir, "append.core"))
 
     flags = {"is_toplevel": True}
 
@@ -173,10 +179,13 @@ def test_capi2_append():
 
 
 def test_capi2_get_depends():
+    from fusesoc.capi2.coreparser import Core2Parser
     from fusesoc.core import Core
     from fusesoc.vlnv import Vlnv
 
-    core = Core(os.path.join(tests_dir, "capi2_cores", "misc", "depends.core"))
+    core = Core(
+        Core2Parser(), os.path.join(tests_dir, "capi2_cores", "misc", "depends.core")
+    )
     flags = {}
     result = core.get_depends(flags)
 
@@ -206,10 +215,11 @@ def test_capi2_get_depends():
 
 
 def test_capi2_get_files():
+    from fusesoc.capi2.coreparser import Core2Parser
     from fusesoc.core import Core
 
     core_file = os.path.join(tests_dir, "capi2_cores", "misc", "files.core")
-    core = Core(core_file)
+    core = Core(Core2Parser(), core_file)
 
     expected = [
         {
@@ -249,23 +259,26 @@ def test_capi2_get_files():
 
     flags = {"tool": "icarus"}
     result = core.get_files(flags)
+
     assert expected == result
 
 
 def test_capi2_type_check():
+    from fusesoc.capi2.coreparser import Core2Parser
     from fusesoc.core import Core
 
     core_file = os.path.join(tests_dir, "capi2_cores", "misc", "typecheck.core")
 
     with pytest.raises(SyntaxError) as excinfo:
-        core = Core(core_file)
-    assert "Object in file_type section must be a String" in str(excinfo.value)
+        core = Core(Core2Parser(), core_file)
+    assert "Error validating" in str(excinfo.value)
 
 
 def test_capi2_get_flags():
+    from fusesoc.capi2.coreparser import Core2Parser
     from fusesoc.core import Core
 
-    core = Core(os.path.join(cores_dir, "flags.core"))
+    core = Core(Core2Parser(), os.path.join(cores_dir, "flags.core"))
 
     assert {} == core.get_flags("bad_target")
     assert {} == core.get_flags("noflags")
@@ -279,24 +292,25 @@ def test_capi2_get_flags():
 
 
 def test_capi2_get_generators():
+    from fusesoc.capi2.coreparser import Core2Parser
     from fusesoc.core import Core
 
-    core = Core(os.path.join(cores_dir, "generate", "generators.core"))
+    core = Core(Core2Parser(), os.path.join(cores_dir, "generate", "generators.core"))
 
     generators = core.get_generators()
     assert len(generators) == 2
-    assert generators["generator1"].command == "testgen.py"
-    assert generators["generator2"].command == "testgen.py"
-    assert generators["generator2"].cache_type == "input"
-    assert generators["generator2"].file_input_parameters == "file_in_param1"
+    assert generators["generator1"]["command"] == "testgen.py"
+    assert generators["generator2"]["command"] == "testgen.py"
+    assert generators["generator2"]["cache_type"] == "input"
+    assert generators["generator2"]["file_input_parameters"] == "file_in_param1"
 
 
 def test_capi2_get_parameters():
-    from fusesoc.capi2.core import Generators
+    from fusesoc.capi2.coreparser import Core2Parser
     from fusesoc.core import Core
 
     core_file = os.path.join(tests_dir, "capi2_cores", "misc", "parameters.core")
-    core = Core(core_file)
+    core = Core(Core2Parser(), core_file)
 
     param1 = {
         "datatype": "str",
@@ -418,6 +432,7 @@ def test_capi2_get_parameters():
 
 
 def test_capi2_get_scripts():
+    from fusesoc.capi2.coreparser import Core2Parser
     from fusesoc.core import Core
 
     simple1 = {
@@ -451,7 +466,7 @@ def test_capi2_get_scripts():
         "name": "multi_cmd",
     }
     core_file = os.path.join(tests_dir, "capi2_cores", "misc", "hooks.core")
-    core = Core(core_file)
+    core = Core(Core2Parser(), core_file)
 
     flags = {"is_toplevel": True}
     expected = {"pre_build": [simple1]}
@@ -492,10 +507,11 @@ def test_capi2_get_scripts():
 
 
 def test_capi2_get_tool_options():
+    from fusesoc.capi2.coreparser import Core2Parser
     from fusesoc.core import Core
 
     core_file = os.path.join(tests_dir, "capi2_cores", "misc", "targets.core")
-    core = Core(core_file)
+    core = Core(Core2Parser(), core_file)
 
     with pytest.raises(KeyError):
         core.get_tool_options({})
@@ -517,10 +533,11 @@ def test_capi2_get_tool_options():
 
 
 def test_capi2_get_toplevel():
+    from fusesoc.capi2.coreparser import Core2Parser
     from fusesoc.core import Core
 
     core_file = os.path.join(tests_dir, "capi2_cores", "misc", "toplevel.core")
-    core = Core(core_file)
+    core = Core(Core2Parser(), core_file)
 
     flags = {"target": "no_toplevel"}
     with pytest.raises(SyntaxError):
@@ -534,9 +551,10 @@ def test_capi2_get_toplevel():
 
 
 def test_capi2_get_ttptttg():
+    from fusesoc.capi2.coreparser import Core2Parser
     from fusesoc.core import Core
 
-    core = Core(os.path.join(cores_dir, "generate", "generate.core"))
+    core = Core(Core2Parser(), os.path.join(cores_dir, "generate", "generate.core"))
 
     flags = {"is_toplevel": True}
     expected = [
@@ -583,10 +601,11 @@ def test_capi2_get_ttptttg():
 
 
 def test_capi2_get_vpi():
+    from fusesoc.capi2.coreparser import Core2Parser
     from fusesoc.core import Core
 
     core_file = os.path.join(tests_dir, "capi2_cores", "misc", "vpi.core")
-    core = Core(core_file)
+    core = Core(Core2Parser(), core_file)
 
     expected = [
         {
@@ -604,6 +623,7 @@ def test_capi2_get_vpi():
 
 
 def test_capi2_info():
+    from fusesoc.capi2.coreparser import Core2Parser
     from fusesoc.core import Core
 
     dirs_and_corenames = [("", "targets"), ("generate", "generators")]
@@ -612,10 +632,90 @@ def test_capi2_info():
         core_file = os.path.join(
             tests_dir, "capi2_cores", "misc", subdir, core_name + ".core"
         )
-        core = Core(core_file)
+        core = Core(Core2Parser(), core_file)
 
         gen_info = "\n".join(
             [x for x in core.info().split("\n") if not "Core root" in x]
         )
         with open(os.path.join(tests_dir, __name__, core_name + ".info")) as f:
             assert f.read() == gen_info, core_name
+
+
+def test_core2parser():
+    import os
+    import tempfile
+
+    from fusesoc.capi2.coreparser import Core2Parser
+
+    core_file = os.path.join(
+        tests_dir, "capi2_cores", "parser", "no_additional_properties.core"
+    )
+
+    parser = Core2Parser(allow_additional_properties=False)
+    assert parser.get_version() == 2
+    assert parser.get_allow_additional_properties() == False
+    assert parser.get_preamble() == "CAPI=2:"
+
+    expected = {
+        "name": "::noadditionalproperties:0",
+        "filesets": {
+            "somename": {
+                "files": ["somefile1", {"someincludefile1": {"is_include_file": True}}]
+            }
+        },
+        "targets": {"default": {"filesets": ["somename"]}},
+    }
+
+    capi2_data = parser.read(core_file)
+    assert expected == capi2_data
+
+    tmpfile = tempfile.mktemp(prefix="capi2_parser_")
+    parser.write(tmpfile, capi2_data)
+    capi2_readback_data = parser.read(tmpfile)
+    os.remove(tmpfile)
+    assert capi2_data == capi2_readback_data
+
+    capi2_data["mycustomprop1"] = {
+        "one": "mystring",
+        "two": ["list_item_1", "list_item_2"],
+    }
+
+    with pytest.raises(SyntaxError) as excinfo:
+        parser.write(tmpfile, capi2_data)
+    assert "Error validating" in str(excinfo.value)
+
+    core_file = os.path.join(
+        tests_dir, "capi2_cores", "parser", "with_additional_properties.core"
+    )
+
+    with pytest.raises(SyntaxError) as excinfo:
+        parser.read(core_file)
+    assert "Error validating" in str(excinfo.value)
+
+    parser = Core2Parser(allow_additional_properties=True)
+    assert parser.get_allow_additional_properties() == True
+
+    expected = {
+        "name": "::withadditionalproperties:0",
+        "filesets": {
+            "somename": {
+                "files": ["somefile1", {"someincludefile1": {"is_include_file": True}}],
+                "mycustomprop1": "this is a custom property",
+                "mycustomprop2": 1,
+            }
+        },
+        "targets": {"default": {"filesets": ["somename"]}},
+        "mycustomprop3": {
+            "subitem1": "mystring",
+            "subitem2": ["list_item_1", "list_item_2"],
+        },
+    }
+
+    capi2_data = parser.read(core_file)
+    assert expected == capi2_data
+
+    capi2_data["mycustomprop4"] = "new string"
+    parser.write(tmpfile, capi2_data)
+    capi2_readback_data = parser.read(tmpfile)
+    os.remove(tmpfile)
+    assert capi2_data == capi2_readback_data

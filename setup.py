@@ -13,7 +13,7 @@ def read(fname):
 
 setup(
     name="fusesoc",
-    packages=["fusesoc", "fusesoc.capi2", "fusesoc.provider"],
+    packages=["fusesoc", "fusesoc.capi2", "fusesoc.provider", "fusesoc.parser"],
     use_scm_version={
         "relative_to": __file__,
         "write_to": "fusesoc/version.py",
@@ -55,6 +55,7 @@ setup(
         "pyparsing",
         "pyyaml",
         "simplesat>=0.8.0",
+        "fastjsonschema",
     ],
     # Supported Python versions: 3.6+
     python_requires=">=3.6, <4",

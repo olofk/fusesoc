@@ -61,7 +61,7 @@ import os
 
 
 def unique_dirs(file_list):
-    return list({os.path.dirname(f.name) for f in file_list})
+    return list({os.path.dirname(f) for f in file_list})
 
 
 # With help from:
@@ -150,12 +150,15 @@ def setup_logging(level, monchrome=False, log_file=None):
 
 def yaml_fwrite(filepath, content, preamble=""):
     with open(filepath, "w") as f:
-        f.write(preamble)
-        f.write(yaml.dump(content, Dumper=YamlDumper))
+        if len(preamble) > 0:
+            f.write(preamble + "\n")
+        f.write(yaml.dump(content, Dumper=YamlDumper, sort_keys=False))
 
 
-def yaml_fread(filepath, resolve_env_vars=False):
+def yaml_fread(filepath, resolve_env_vars=False, remove_preamble=False):
     with open(filepath) as f:
+        if remove_preamble:
+            f.readline()
         if resolve_env_vars:
             return yaml.load(os.path.expandvars(f.read()), Loader=YamlLoader)
         else:
