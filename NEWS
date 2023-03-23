@@ -1,3 +1,18 @@
+2.1 2023-03-23 Olof Kindgren <olof.kindgren@gmail.com>
+======================================================
+* Add caching of generators
+* Allow setting library version when adding libraries
+* Allow cloning repos that don't support shallow clones
+* Avoid cleaning out existing work roots
+* Only re-export changed files
+* + improved error handling, bug fixes and refactoring
+
+Contributors:
+Anonymous
+Erik Waling <erik.waling@gmail.com>
+Olof Kindgren <olof.kindgren@gmail.com>
+Shareef Jalloq <shareef@jalloq.co.uk>
+
 2.0 2023-01-19 Olof Kindgren <olof.kindgren@gmail.com>
 ======================================================
 * Better usability as a module
