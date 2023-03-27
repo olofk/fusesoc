@@ -10,5 +10,4 @@ targets:
 
 provider:
   name     : local
-  path     : /not/relevant/to/test
   cachable : False
