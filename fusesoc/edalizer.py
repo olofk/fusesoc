@@ -126,11 +126,9 @@ class Edalizer:
         for core in self.cores:
             _flags = self._core_flags(core)
             logger.debug("Searching for generators in " + str(core.name))
-            if hasattr(core, "get_generators"):
-                core_generators = core.get_generators()
-                if core_generators:
-                    logger.debug(f"Found generators: {core_generators.keys()}")
-                generators.update(core_generators)
+            core_generators = core.get_generators(_flags)
+            logger.debug(f"Found generators: {core_generators.keys()}")
+            generators.update(core_generators)
 
         self.generators = generators
 
@@ -142,24 +140,21 @@ class Edalizer:
             logger.debug("Running generators in " + str(core.name))
             core_flags = self._core_flags(core)
             self._resolved_or_generated_cores.append(core)
-            if hasattr(core, "get_ttptttg"):
-                for ttptttg_data in core.get_ttptttg(core_flags):
-                    _ttptttg = Ttptttg(
-                        ttptttg_data,
-                        core,
-                        self.generators,
-                        resolve_env_vars=self.resolve_env_vars,
-                    )
-                    for gen_core in _ttptttg.generate():
-                        gen_core.pos = _ttptttg.pos
-                        self._resolved_or_generated_cores.append(gen_core)
-                        if not (
-                            _ttptttg.is_generator_cacheable()
-                            or _ttptttg.is_input_cacheable()
-                        ):
-                            self._generated_core_dirs_to_remove.append(
-                                gen_core.core_root
-                            )
+            for ttptttg_data in core.get_ttptttg(core_flags):
+                _ttptttg = Ttptttg(
+                    ttptttg_data,
+                    core,
+                    self.generators,
+                    resolve_env_vars=self.resolve_env_vars,
+                )
+                for gen_core in _ttptttg.generate():
+                    gen_core.pos = _ttptttg.pos
+                    self._resolved_or_generated_cores.append(gen_core)
+                    if not (
+                        _ttptttg.is_generator_cacheable()
+                        or _ttptttg.is_input_cacheable()
+                    ):
+                        self._generated_core_dirs_to_remove.append(gen_core.core_root)
 
     def export(self):
         for core in self.cores:
