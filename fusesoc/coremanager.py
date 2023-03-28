@@ -136,7 +136,7 @@ class CoreDB:
                     [eq_vln(core.name, top_core)]
                     + [
                         eq_vln(virtual_vlnv, top_core)
-                        for virtual_vlnv in core.get_virtuals()
+                        for virtual_vlnv in core.get_virtuals(_flags)
                     ]
                 ):
                     continue
@@ -149,7 +149,7 @@ class CoreDB:
                 core.name.revision,
             )
 
-            _virtuals = core.get_virtuals()
+            _virtuals = core.get_virtuals(_flags)
             if _virtuals:
                 _s = "; provides ( {} )"
                 package_str += _s.format(self._parse_virtual(_virtuals))

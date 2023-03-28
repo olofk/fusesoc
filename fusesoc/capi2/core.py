@@ -274,8 +274,8 @@ class Core:
                 _src_files.append(attributes)
         return _src_files
 
-    def get_generators(self):
-        cd_generators = self._coredata.get_generators()
+    def get_generators(self, flags={}):
+        cd_generators = self._coredata.get_generators(flags)
         generators = {}
         for k, v in cd_generators.items():
             v.update({"root": self.files_root})
@@ -283,10 +283,10 @@ class Core:
 
         return generators
 
-    def get_virtuals(self):
+    def get_virtuals(self, flags={}):
         """Get a list of "virtual" VLNVs provided by this core."""
 
-        return [Vlnv(x) for x in self._coredata.get_virtual()]
+        return [Vlnv(x) for x in self._coredata.get_virtual(flags)]
 
     def get_parameters(self, flags={}, ext_parameters={}):
         def _parse_param_value(name, datatype, default):
@@ -435,7 +435,7 @@ class Core:
             self._debug(f" Matched generator instances {_ttptttg}")
         for gen in _ttptttg:
             gen_name = gen["name"]
-            cd_generate = self._coredata.get_generate()
+            cd_generate = self._coredata.get_generate(flags)
             if not gen_name in cd_generate:
                 raise SyntaxError(
                     "Generator instance '{}', requested by target '{}', was not found".format(
@@ -470,7 +470,7 @@ class Core:
         cd_filesets = self._coredata.get_filesets(flags)
 
         for vpi_name in target.get("vpi", []):
-            cd_vpi_lib = self._coredata.get_vpi()
+            cd_vpi_lib = self._coredata.get_vpi(flags)
             files = []
             incfiles = []  # Really do this automatically?
             libs = []
