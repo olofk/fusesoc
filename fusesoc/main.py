@@ -375,6 +375,7 @@ def run_backend(
         logger.debug(f"Setting export_root to {export_root}")
     else:
         export_root = None
+        os.system(f"mkdir -p {work_root}")
 
     backend_class = None
     if flow:
