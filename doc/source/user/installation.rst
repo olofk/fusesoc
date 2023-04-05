@@ -121,6 +121,8 @@ Use ``pip`` to remove FuseSoC from your system.
 Installation under macOS
 ========================
 
-.. todo::
+You can use ``pip`` to install as same as Linux.
 
-    Add macOS installation instructions.
+.. code-block:: shell-session
+
+   $ pip3 install --upgrade --user fusesoc
