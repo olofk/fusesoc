@@ -145,12 +145,13 @@ class Edalizer:
                     ttptttg_data,
                     core,
                     self.generators,
+                    self.work_root if not self.export_root else None,
                     resolve_env_vars=self.resolve_env_vars,
                 )
                 for gen_core in _ttptttg.generate():
                     gen_core.pos = _ttptttg.pos
                     self._resolved_or_generated_cores.append(gen_core)
-                    if not (
+                    if self.export_root and not (
                         _ttptttg.is_generator_cacheable()
                         or _ttptttg.is_input_cacheable()
                     ):
@@ -507,7 +508,7 @@ from fusesoc.utils import Launcher
 
 
 class Ttptttg:
-    def __init__(self, ttptttg, core, generators, resolve_env_vars=False):
+    def __init__(self, ttptttg, core, generators, gen_root, resolve_env_vars=False):
         generator_name = ttptttg["generator"]
         if not generator_name in generators:
             raise RuntimeError(
@@ -519,6 +520,7 @@ class Ttptttg:
         self.generator = generators[generator_name]
         self.name = ttptttg["name"]
         self.pos = ttptttg["pos"]
+        self.gen_root = gen_root
         self.resolve_env_vars = resolve_env_vars
         parameters = ttptttg["config"]
 
@@ -625,7 +627,7 @@ class Ttptttg:
         logger.debug("Generator input yaml hash: " + hexdigest)
 
         generator_cwd = os.path.join(
-            self.core.cache_root,
+            self.gen_root or self.core.cache_root,
             "generator_cache",
             self.vlnv.sanitized_name + "-" + hexdigest,
         )
