@@ -165,7 +165,7 @@ class Edalizer:
 
             # Export core files
             if self.export_root:
-                files_root = os.path.join(self.export_root, core.sanitized_name)
+                files_root = os.path.join(self.export_root, core.name.sanitized_name)
                 core.export(files_root, _flags)
             else:
                 files_root = core.files_root
@@ -209,7 +209,7 @@ class Edalizer:
 
             # Extract files
             if self.export_root:
-                files_root = os.path.join(self.export_root, core.sanitized_name)
+                files_root = os.path.join(self.export_root, core.name.sanitized_name)
             else:
                 files_root = core.files_root
 
@@ -287,7 +287,7 @@ class Edalizer:
             "dependencies": {},
             "files": [],
             "hooks": {},
-            "name": self.system_name or top_core.sanitized_name,
+            "name": self.system_name or top_core.name.sanitized_name,
             "parameters": {},
             "tool_options": {},
             "toplevel": top_core.get_toplevel(self.flags),
