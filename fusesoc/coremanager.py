@@ -143,7 +143,9 @@ class CoreDB:
             # Build a "pretty" package string in a format expected by
             # PrettyPackageStringParser()
             package_str = "{} {}-{}".format(
-                self._package_name(core.name), core.name.version, core.name.revision
+                self._package_name(core.name),
+                core.name.version,
+                core.name.revision,
             )
 
             _virtuals = core.get_virtuals()
@@ -204,7 +206,9 @@ class CoreDB:
 
 
 class CoreManager:
-    def __init__(self, config, resolve_env_vars=False):
+    def __init__(
+        self, config, resolve_env_vars=False
+    ):
         self.config = config
         self.db = CoreDB()
         self._lm = LibraryManager(config.library_root)
