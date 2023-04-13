@@ -406,6 +406,11 @@ def run_backend(
         resolve_env_vars=resolve_env_vars,
     )
 
+    # Unconditionally clean out the work root on fresh builds
+    # if we use the old tool API
+    if do_configure and not flow:
+        prepare_work_root(work_root)
+
     try:
         edam = edalizer.run()
         edalizer.parse_args(backend_class, backendargs, edam)
