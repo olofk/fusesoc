@@ -500,6 +500,7 @@ class Edalizer:
         self.add_parsed_args(backend_class, args_dict)
 
     def to_yaml(self, edam_file):
+        pathlib.Path(edam_file).parent.mkdir(parents=True, exist_ok=True)
         return utils.yaml_fwrite(edam_file, self.edam)
 
 
