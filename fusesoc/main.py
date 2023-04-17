@@ -10,7 +10,6 @@ import signal
 import subprocess
 import sys
 import warnings
-from importlib import import_module
 
 from fusesoc import __version__
 
@@ -23,35 +22,11 @@ if os.path.exists(os.path.join(fusesocdir, "fusesoc")):
 
 import logging
 
-try:
-    from edalize.edatool import get_edatool
-except ImportError:
-    from edalize import get_edatool
-
 from fusesoc.config import Config
-from fusesoc.coremanager import CoreManager, DependencyError
-from fusesoc.edalizer import Edalizer
+from fusesoc.fusesoc import Fusesoc
 from fusesoc.librarymanager import Library
-from fusesoc.utils import Launcher, setup_logging, yaml_fread
-from fusesoc.vlnv import Vlnv
 
 logger = logging.getLogger(__name__)
-
-
-def _get_core(cm, name):
-    core = None
-    try:
-        core = cm.get_core(Vlnv(name))
-    except RuntimeError as e:
-        logger.error(str(e))
-        exit(1)
-    except DependencyError as e:
-        logger.error(
-            f"{name!r} or any of its dependencies requires {e.value!r}, but "
-            "this core was not found"
-        )
-        exit(1)
-    return core
 
 
 def abort_handler(signal, frame):
@@ -66,15 +41,15 @@ def abort_handler(signal, frame):
 signal.signal(signal.SIGINT, abort_handler)
 
 
-def pgm(cm, args):
+def pgm(fs, args):
     warnings.warn(
         "The 'pgm' subcommand has been removed. "
         "Use 'fusesoc run --target=synth --run' instead."
     )
 
 
-def fetch(cm, args):
-    core = _get_core(cm, args.core)
+def fetch(fs, args):
+    core = fs.get_core(args.core)
 
     try:
         core.setup()
@@ -83,18 +58,18 @@ def fetch(cm, args):
         exit(1)
 
 
-def list_paths(cm, args):
-    cores_root = [x.location for x in cm.get_libraries()]
+def list_paths(fs, args):
+    cores_root = [x.location for x in fs.get_libraries()]
     print("\n".join(cores_root))
 
 
-def add_library(cm, args):
+def add_library(fs, args):
     sync_uri = vars(args)["sync-uri"]
 
     if args.location:
         location = args.location
     elif vars(args).get("global", False):
-        location = os.path.join(cm._lm.library_root, args.name)
+        location = os.path.join(fs.config.library_root, args.name)
     else:
         location = os.path.join("fusesoc_libraries", args.name)
 
@@ -137,9 +112,9 @@ def add_library(cm, args):
         exit(1)
 
 
-def library_list(cm, args):
+def library_list(fs, args):
     lengths = [4, 8, 9, 8, 12, 9]
-    for lib in cm.get_libraries():
+    for lib in fs.get_libraries():
         lengths[0] = max(lengths[0], len(lib.name))
         lengths[1] = max(lengths[1], len(lib.location))
         lengths[2] = max(lengths[2], len(lib.sync_type))
@@ -155,7 +130,7 @@ def library_list(cm, args):
             "Auto sync".ljust(lengths[5]),
         )
     )
-    for lib in cm.get_libraries():
+    for lib in fs.get_libraries():
         print(
             "{} : {} : {} : {} : {} : {}".format(
                 lib.name.ljust(lengths[0]),
@@ -168,11 +143,11 @@ def library_list(cm, args):
         )
 
 
-def list_cores(cm, args):
-    cores = cm.get_cores()
+def list_cores(fs, args):
+    cores = fs.get_cores()
     print("\nAvailable cores:\n")
     if not cores:
-        cores_root = cm.get_libraries()
+        cores_root = fs.get_libraries()
         if cores_root:
             logger.error("No cores found in any library")
         else:
@@ -192,7 +167,7 @@ def list_cores(cm, args):
         )
 
 
-def list_tools(cm, args):
+def list_tools(fs, args):
     from edalize.edatool import walk_tool_packages
 
     _tp = list(walk_tool_packages())
@@ -208,8 +183,8 @@ def list_tools(cm, args):
             pass
 
 
-def gen_list(cm, args):
-    cores = cm.get_generators()
+def gen_list(fs, args):
+    cores = fs.get_generators()
     if not cores:
         print("\nNo available generators\n")
     else:
@@ -228,8 +203,8 @@ def gen_list(cm, args):
                 )
 
 
-def gen_show(cm, args):
-    cores = cm.get_generators()
+def gen_show(fs, args):
+    cores = fs.get_generators()
     for core in sorted(cores.keys()):
         for generator_name, generator_data in cores[core].items():
             if generator_name == args.generator:
@@ -249,18 +224,30 @@ Usage       :
                 )
 
 
-def core_info(cm, args):
-    core = _get_core(cm, args.core)
+def core_info(fs, args):
+    core = None
+    try:
+        core = fs.get_core(args.core)
+    except RuntimeError as e:
+        logger.error(str(e))
+        exit(1)
+    except DependencyError as e:
+        logger.error(
+            f"{name!r} or any of its dependencies requires {e.value!r}, but "
+            "this core was not found"
+        )
+        exit(1)
+
     print(core.info())
 
 
-def gen_clean(cm, args):
-    cachedir = os.path.join(cm.config.cache_root, "generator_cache")
+def gen_clean(fs, args):
+    cachedir = os.path.join(fs.config.cache_root, "generator_cache")
     shutil.rmtree(cachedir, ignore_errors=True)
     print(f"Cleaned generator cache: {cachedir}")
 
 
-def run(cm, args):
+def run(fs, args):
     stages = (args.setup, args.build, args.run)
 
     # Always run setup if build is true
@@ -290,23 +277,60 @@ def run(cm, args):
         else:
             flags[flag] = True
 
-    run_backend(
-        cm,
-        not args.no_export,
-        do_configure,
-        do_build,
-        do_run,
-        flags,
-        args.system_name,
-        args.system,
-        args.backendargs,
-        args.build_root,
-        args.verbose,
-        args.resolve_env_vars_early,
+    core = fs.get_core(args.system)
+
+    try:
+        flags = dict(core.get_flags(flags["target"]), **flags)
+    except SyntaxError as e:
+        logger.error(str(e))
+        exit(1)
+
+    # Unconditionally clean out the work root on fresh builds
+    # if we use the old tool API
+    if do_configure and not core.get_flow(flags):
+        prepare_work_root(fs.get_work_root(core, flags))
+
+    # Frontend/backend separation
+
+    try:
+        edam_file, backend = fs.get_backend(core, flags, args.backendargs)
+
+    except RuntimeError as e:
+        logger.error(str(e))
+        exit(1)
+    except FileNotFoundError as e:
+        logger.error(f'Could not find EDA API file "{e.filename}"')
+        exit(1)
+
+    makefile = os.path.join(backend.work_root, "Makefile")
+    do_configure = not os.path.exists(makefile) or (
+        os.path.getmtime(makefile) < os.path.getmtime(edam_file)
     )
 
+    if do_configure:
+        try:
+            backend.configure()
+        except RuntimeError as e:
+            logger.error("Failed to configure the system")
+            logger.error(str(e))
+            exit(1)
 
-def config(cm, args):
+    if do_build:
+        try:
+            backend.build()
+        except RuntimeError as e:
+            logger.error("Failed to build {} : {}".format(str(core.name), str(e)))
+            exit(1)
+
+    if do_run:
+        try:
+            backend.run()
+        except RuntimeError as e:
+            logger.error("Failed to run {} : {}".format(str(core.name), str(e)))
+            exit(1)
+
+
+def config(fs, args):
 
     conf = Config(path=args.config if args.config else None)
 
@@ -337,201 +361,8 @@ def prepare_work_root(work_root):
         os.makedirs(work_root)
 
 
-def run_backend(
-    cm,
-    export,
-    do_configure,
-    do_build,
-    do_run,
-    flags,
-    system_name,
-    system,
-    backendargs,
-    build_root_arg,
-    verbose,
-    resolve_env_vars=False,
-):
-    tool_error = (
-        "No flow or tool was supplied on command line or found in '{}' core description"
-    )
-    core = _get_core(cm, system)
-
-    target = flags["target"]
-
-    flow = core.get_flow(flags)
-    try:
-        flags = dict(core.get_flags(target), **flags)
-    except SyntaxError as e:
-        logger.error(str(e))
-        exit(1)
-
-    if flow:
-        logger.debug(f"Using flow API (flow={flow})")
-    else:
-        logger.debug("flow not set. Falling back to tool API")
-        if "tool" in flags:
-            tool = flags["tool"]
-        else:
-            logger.error(tool_error.format(system))
-            exit(1)
-
-    build_root = build_root_arg or os.path.join(
-        cm.config.build_root, core.name.sanitized_name
-    )
-    logger.debug(f"Setting build_root to {build_root}")
-
-    if flow:
-        work_root = os.path.join(build_root, target)
-    else:
-        work_root = os.path.join(build_root, f"{target}-{tool}")
-
-    edam_file = os.path.join(work_root, core.name.sanitized_name + ".eda.yml")
-
-    logger.debug(f"Setting work_root to {work_root}")
-
-    if export:
-        export_root = os.path.join(work_root, "src")
-        logger.debug(f"Setting export_root to {export_root}")
-    else:
-        export_root = None
-
-    backend_class = None
-    if flow:
-        try:
-            backend_class = getattr(
-                import_module(f"edalize.flows.{flow}"), flow.capitalize()
-            )
-        except ModuleNotFoundError:
-            logger.error(f"Flow {flow!r} not found")
-            exit(1)
-        except ImportError:
-            logger.error("Selected Edalize version does not support the flow API")
-            exit(1)
-
-    else:
-        try:
-            backend_class = get_edatool(tool)
-        except ImportError:
-            logger.error(f"Backend {tool!r} not found")
-            exit(1)
-
-    edalizer = Edalizer(
-        toplevel=core.name,
-        flags=flags,
-        core_manager=cm,
-        work_root=work_root,
-        export_root=export_root,
-        system_name=system_name,
-        resolve_env_vars=resolve_env_vars,
-    )
-
-    # Unconditionally clean out the work root on fresh builds
-    # if we use the old tool API
-    if do_configure and not flow:
-        prepare_work_root(work_root)
-
-    try:
-        edam = edalizer.run()
-        edalizer.parse_args(backend_class, backendargs, edam)
-        edalizer.export()
-    except SyntaxError as e:
-        logger.error(e.msg)
-        exit(1)
-    except RuntimeError as e:
-        logger.error("Setup failed : {}".format(str(e)))
-        exit(1)
-
-    if os.path.exists(edam_file):
-        old_edam = yaml_fread(edam_file, resolve_env_vars)
-    else:
-        old_edam = None
-
-    if edam != old_edam:
-        edalizer.to_yaml(edam_file)
-
-    # Frontend/backend separation
-
-    try:
-        backend = backend_class(edam=edam, work_root=work_root, verbose=verbose)
-
-    except RuntimeError as e:
-        logger.error(str(e))
-        exit(1)
-    except FileNotFoundError as e:
-        logger.error(f'Could not find EDA API file "{e.filename}"')
-        exit(1)
-
-    makefile = os.path.join(work_root, "Makefile")
-    do_configure = not os.path.exists(makefile) or (
-        os.path.getmtime(makefile) < os.path.getmtime(edam_file)
-    )
-
-    if do_configure:
-        try:
-            backend.configure()
-        except RuntimeError as e:
-            logger.error("Failed to configure the system")
-            logger.error(str(e))
-            exit(1)
-
-    if do_build:
-        try:
-            backend.build()
-        except RuntimeError as e:
-            logger.error("Failed to build {} : {}".format(str(core.name), str(e)))
-            exit(1)
-
-    if do_run:
-        try:
-            backend.run()
-        except RuntimeError as e:
-            logger.error("Failed to run {} : {}".format(str(core.name), str(e)))
-            exit(1)
-
-
-def update(cm, args):
-    cm._lm.update(args.libraries)
-
-
-def init_logging(verbose, monochrome, log_file=None):
-    level = logging.DEBUG if verbose else logging.INFO
-
-    setup_logging(level, monochrome, log_file)
-
-    if verbose:
-        logger.debug("Verbose output")
-    else:
-        logger.debug("Concise output")
-
-    if monochrome:
-        logger.debug("Monochrome output")
-    else:
-        logger.debug("Colorful output")
-
-
-def init_coremanager(
-    config,
-    args_cores_root,
-    args_resolve_env_vars=False,
-    args_allow_additional_properties=False,
-):
-    logger.debug("Initializing core manager")
-    cm = CoreManager(
-        config,
-        resolve_env_vars=args_resolve_env_vars,
-        allow_additional_properties=args_allow_additional_properties,
-    )
-
-    args_libs = [Library(acr, acr) for acr in args_cores_root]
-    # Add libraries from config file, env var and command-line
-    for library in config.libraries + args_libs:
-        try:
-            cm.add_library(library, config.ignored_dirs)
-        except (RuntimeError, OSError) as e:
-            _s = "Failed to register library '{}'"
-            logger.warning(_s.format(str(e)))
-
-    return cm
+def update(fs, args):
+    fs.update_libraries(args.libraries)
 
 
 def get_parser():
@@ -767,23 +598,42 @@ def parse_args(argv):
         return None
 
 
+def args_to_config(args, config):
+
+    if hasattr(args, "resolve_env_vars_early") and args.resolve_env_vars_early:
+        setattr(config, "args_resolve_env_vars_early", args.resolve_env_vars_early)
+
+    if hasattr(args, "allow_additional_propertis") and args.allow_additional_properties:
+        setattr(
+            config, "args_allow_additional_properties", args.allow_additional_properties
+        )
+
+    if args.verbose:
+        setattr(config, "args_verbose", args.verbose)
+
+    if hasattr(args, "no_export") and args.no_export:
+        setattr(config, "args_no_export", args.no_export)
+
+    if hasattr(args, "build_root") and args.build_root and len(args.build_root) > 0:
+        setattr(config, "args_build_root", args.build_root)
+
+    if hasattr(args, "cores_root") and args.cores_root and len(args.cores_root) > 0:
+        setattr(config, "args_cores_root", args.cores_root)
+
+    if hasattr(args, "system_name") and args.system_name and len(args.system_name) > 0:
+        setattr(config, "args_system_name", args.system_name)
+
+
 def fusesoc(args):
-    init_logging(args.verbose, args.monochrome, args.log_file)
+    Fusesoc.init_logging(args.verbose, args.monochrome, args.log_file)
+
     config = Config(args.config)
+    args_to_config(args, config)
 
-    resolve_env_vars_early = False
-    if hasattr(args, "resolve_env_vars_early"):
-        resolve_env_vars_early = args.resolve_env_vars_early
+    fs = Fusesoc(config)
 
-    allow_additional_properties = False
-    if hasattr(args, "allow_additional_properties"):
-        allow_additional_properties = args.allow_additional_properties
-
-    cm = init_coremanager(
-        config, args.cores_root, resolve_env_vars_early, allow_additional_properties
-    )
     # Run the function
-    args.func(cm, args)
+    args.func(fs, args)
 
 
 def main():
