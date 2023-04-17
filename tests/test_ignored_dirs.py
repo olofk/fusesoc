@@ -6,7 +6,7 @@ import os
 import tempfile
 
 from fusesoc.config import Config
-from fusesoc.main import init_coremanager
+from fusesoc.fusesoc import Fusesoc
 
 build_root = "test_build_root"
 
@@ -43,10 +43,13 @@ def test_ignored_dirs():
 
         conf0 = Config(conf_path0)
         assert len(conf0.ignored_dirs) == 0
-        cm0 = init_coremanager(conf0, [td])
-        assert len(cm0.get_cores()) == 2
+        conf0.cores_root = td
+        conf0.write()
+        fs0 = Fusesoc(conf0)
+        assert len(fs0.get_cores()) == 2
 
         conf1 = Config(conf_path1)
         assert len(conf1.ignored_dirs) == 2
-        cm1 = init_coremanager(conf1, [td])
-        assert len(cm1.get_cores()) == 1
+        conf1.cores_root = td
+        fs1 = Fusesoc(conf1)
+        assert len(fs1.get_cores()) == 1
