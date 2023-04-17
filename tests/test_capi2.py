@@ -46,7 +46,7 @@ def test_empty_core():
     core_file = os.path.join(tests_dir, "capi2_cores", "misc", "empty.core")
     with pytest.raises(SyntaxError) as excinfo:
         core = Core(Core2Parser(), core_file)
-    assert "Core name is empty string" in str(excinfo.value)
+    assert "Error validating" in str(excinfo.value)
 
 
 def test_virtual():
