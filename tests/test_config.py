@@ -2,6 +2,7 @@
 # Licensed under the 2-Clause BSD License, see LICENSE for details.
 # SPDX-License-Identifier: BSD-2-Clause
 
+import os
 import os.path
 import tempfile
 
@@ -84,3 +85,24 @@ def test_config_libraries():
     assert lib.location == os.path.join(library_root, "test_lib")
     assert lib.sync_uri == "https://github.com/fusesoc/fusesoc-cores"
     assert not lib.auto_sync
+
+
+def test_config_write():
+    tcf = tempfile.NamedTemporaryFile(mode="w+", delete=False)
+    tcf.write(
+        EXAMPLE_CONFIG.format(
+            build_root=build_root,
+            cache_root=cache_root,
+            cores_root=cores_root,
+            library_root=library_root,
+        )
+    )
+    tcf.flush()
+
+    with Config(tcf.name) as c:
+        c.build_root = "/tmp"
+
+    conf = Config(tcf.name)
+
+    assert conf.build_root == "/tmp"
+    os.remove(tcf.name)
