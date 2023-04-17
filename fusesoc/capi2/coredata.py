@@ -98,9 +98,12 @@ class CoreData:
             "is_include_file": False,
             "include_path": "",
             "logical_name": "",
+            "tags": [],
         }
 
-        # Check if file_type or logical_name are present globally in fileset
+        # Check if tag, file_type or logical_name are present globally in fileset
+        if "tags" in fs:
+            d["tags"] = fs["tags"][:]
         if "file_type" in fs:
             d["file_type"] = fs["file_type"]
         if "logical_name" in fs:

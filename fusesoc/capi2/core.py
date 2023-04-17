@@ -269,6 +269,7 @@ class Core:
                     for k, v in attributes.items()
                     if (type(v) == bool and v == True)
                     or (type(v) == str and len(v)) > 0
+                    or (type(v) == list and len(v)) > 0
                 }
 
                 _src_files.append(attributes)

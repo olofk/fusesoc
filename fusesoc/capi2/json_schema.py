@@ -203,6 +203,13 @@ capi2_schema = """
               "description": "Default logical_name (i.e. library) for files in fileset",
               "type": "string"
             },
+            "^tags$": {
+              "description": "Default tags for files in fileset",
+               "type": "array",
+               "items": {
+                 "type": "string"
+               }
+            },
             "^files(_append)?$": {
               "description": "Files in fileset",
               "type": "array",
@@ -236,6 +243,13 @@ capi2_schema = """
                           "logical_name": {
                             "description": "Logical name, i.e. library for VHDL/SystemVerilog. Overrides the logical_name set on the containing fileset",
                             "type": "string"
+                          },
+                          "tags": {
+                            "description": "Tags, special file-specific hints for the backends. Appends the tags set on the containing fileset",
+                            "type": "array",
+                            "items": {
+                              "type": "string"
+                            }
                           },
                           "copyto": {
                             "description": "Copy the source file to this path in the work directory",
