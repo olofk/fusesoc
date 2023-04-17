@@ -41,6 +41,20 @@ class Config:
 
         os.makedirs(self.cache_root, exist_ok=True)
 
+        # Get the environment variable for further cores
+        env_cores_root = []
+        if os.getenv("FUSESOC_CORES"):
+            env_cores_root = os.getenv("FUSESOC_CORES").split(":")
+            env_cores_root.reverse()
+
+        self.libraries = [
+            Library(root, root) for root in env_cores_root
+        ] + self._parse_library()
+
+        logger.debug("cache_root=" + self.cache_root)
+        logger.debug("library_root=" + self.library_root)
+
+    def _parse_library(self):
         # Parse library sections
         libraries = []
         library_sections = [x for x in self._cp.sections() if x.startswith("library")]
@@ -67,16 +81,8 @@ class Config:
             libraries.append(
                 Library(name, location, sync_type, sync_uri, sync_version, auto_sync)
             )
-        # Get the environment variable for further cores
-        env_cores_root = []
-        if os.getenv("FUSESOC_CORES"):
-            env_cores_root = os.getenv("FUSESOC_CORES").split(":")
-            env_cores_root.reverse()
 
-        self.libraries = [Library(root, root) for root in env_cores_root] + libraries
-
-        logger.debug("cache_root=" + self.cache_root)
-        logger.debug("library_root=" + self.library_root)
+        return libraries
 
     def __enter__(self):
         return self
