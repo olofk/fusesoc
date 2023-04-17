@@ -306,6 +306,25 @@ def run(cm, args):
     )
 
 
+def config(cm, args):
+
+    conf = Config(path=args.config if args.config else None)
+
+    if not hasattr(conf, args.key):
+        logger.error(f"Invalid config parameter: {args.key}")
+        exit(1)
+
+    if not args.value:
+        # Read
+        if hasattr(conf, args.key):
+            print(getattr(conf, args.key))
+    else:
+        # Write
+        if hasattr(conf, args.key):
+            setattr(conf, args.key, args.value)
+            conf.write()
+
+
 # Clean out old work root
 def prepare_work_root(work_root):
     if os.path.exists(work_root):
@@ -719,6 +738,17 @@ def get_parser():
         "backendargs", nargs=argparse.REMAINDER, help="arguments to be sent to backend"
     )
     parser_run.set_defaults(func=run)
+
+    # config subparser
+    parser_config = subparsers.add_parser(
+        "config",
+        help="Read/write config default section [" + Config.default_section + "]",
+    )
+    parser_config.set_defaults(func=config)
+    parser_config.add_argument("key", help="Config parameter")
+    parser_config.add_argument(
+        "value", nargs=argparse.OPTIONAL, help="Config parameter"
+    )
 
     return parser
 
