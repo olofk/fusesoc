@@ -92,7 +92,7 @@ class Fusesoc:
 
         if flow:
             logger.debug(f"Using flow API (flow={flow})")
-            work_root = os.path.join(build_root, target)
+            work_root = self.config.work_root or os.path.join(build_root, target)
         else:
             logger.debug("flow not set. Falling back to tool API")
             if "tool" in flags:
@@ -101,7 +101,9 @@ class Fusesoc:
                 tool_error = "No flow or tool was supplied on command line or found in '{}' core description"
                 raise RuntimeError(tool_error.format(core.name.sanitized_name))
 
-            work_root = os.path.join(build_root, f"{target}-{tool}")
+            work_root = self.config.work_root or os.path.join(
+                build_root, f"{target}-{tool}"
+            )
 
         return work_root
 

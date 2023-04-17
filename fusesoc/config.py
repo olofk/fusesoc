@@ -160,6 +160,14 @@ class Config:
         self._set_default_section("build_root", val)
 
     @property
+    def work_root(self):
+        return self._arg_or_val("args_work_root", self._path_from_cfg("work_root"))
+
+    @work_root.setter
+    def work_root(self, val):
+        self._set_default_section("work_root", val)
+
+    @property
     def cache_root(self):
         return self._get_cache_root()
 

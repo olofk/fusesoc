@@ -538,7 +538,12 @@ def get_parser():
         help="Reference source files from their current location instead of exporting to a build tree",
     )
     parser_run.add_argument(
-        "--build-root", help="Output directory for build. Defaults to build/$VLNV"
+        "--build-root",
+        help="Output directory for build. VLNV will be appended (defaults to build/)",
+    )
+    parser_run.add_argument(
+        "--work-root",
+        help="Output directory for build. VLNV will not be appended (overrides build-root)",
     )
     parser_run.add_argument("--setup", action="store_true", help="Execute setup stage")
     parser_run.add_argument("--build", action="store_true", help="Execute build stage")
@@ -616,6 +621,9 @@ def args_to_config(args, config):
 
     if hasattr(args, "build_root") and args.build_root and len(args.build_root) > 0:
         setattr(config, "args_build_root", args.build_root)
+
+    if hasattr(args, "work_root") and args.work_root and len(args.work_root) > 0:
+        setattr(config, "args_work_root", args.work_root)
 
     if hasattr(args, "cores_root") and args.cores_root and len(args.cores_root) > 0:
         setattr(config, "args_cores_root", args.cores_root)
