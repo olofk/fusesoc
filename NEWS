@@ -1,3 +1,15 @@
+2.2 2023-04-18 Olof Kindgren <olof.kindgren@gmail.com>
+======================================================
+* Use jsonschema to describe anv validate CAPI2 files
+* Add switch to allow additional CAPI2 properties
+* Support use expansion everywhere
+* Support setting tags on files
+
+Contributors:
+Erik Waling <erik.waling@gmail.com>
+Olof Kindgren <olof.kindgren@gmail.com>
+Patcharapol Sankaew <meen.sankaew@gmail.com>
+
 2.1 2023-03-23 Olof Kindgren <olof.kindgren@gmail.com>
 ======================================================
 * Add caching of generators
