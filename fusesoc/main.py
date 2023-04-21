@@ -370,7 +370,7 @@ def run_backend(
 
     logger.debug(f"Setting work_root to {work_root}")
 
-    if export:
+    if export and not "no_export" in flags.keys():
         export_root = os.path.join(work_root, "src")
         logger.debug(f"Setting export_root to {export_root}")
     else:
