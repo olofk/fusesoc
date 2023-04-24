@@ -25,7 +25,7 @@ class CoreData:
                 # issues with strings containing for instance parentheses
                 if type(v) == str and len(v) > 0 and "?" in v:
                     data[k] = Exprs(v).expand(flags)
-                if type(k) == str:
+                if type(k) == str and "?" in k:
                     expanded_k = Exprs(k).expand(flags)
                     if len(expanded_k) == 0:
                         remove.append(k)
