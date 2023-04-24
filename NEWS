@@ -1,9 +1,10 @@
 2.2 2023-04-18 Olof Kindgren <olof.kindgren@gmail.com>
 ======================================================
-* Use jsonschema to describe anv validate CAPI2 files
+* Use jsonschema to describe and validate CAPI2 files
 * Add switch to allow additional CAPI2 properties
 * Support use expansion everywhere
 * Support setting tags on files
+* + improved error handling, bug fixes and refactoring
 
 Contributors:
 Erik Waling <erik.waling@gmail.com>
