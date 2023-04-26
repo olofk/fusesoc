@@ -14,8 +14,11 @@ import sys
 from datetime import datetime
 from distutils.version import LooseVersion
 
+import jsonschema2md
+
 import fusesoc
-from fusesoc.capi2.core import gen_doc
+from fusesoc.capi2.json_schema import capi2_schema
+from fusesoc.utils import yaml_read
 
 # -- Path setup --------------------------------------------------------------
 
@@ -56,6 +59,7 @@ extensions = [
     "sphinx.ext.intersphinx",
     "sphinx.ext.todo",
     "sphinxcontrib.programoutput",
+    "myst_parser",
 ]
 
 intersphinx_mapping = {"https://docs.python.org/3": None}
@@ -67,8 +71,7 @@ templates_path = ["_templates"]
 # The suffix(es) of source filenames.
 # You can specify multiple suffix as a list of string:
 #
-# source_suffix = ['.rst', '.md']
-source_suffix = ".rst"
+source_suffix = [".rst", ".md"]
 
 # The master toctree document.
 master_doc = "index"
@@ -203,7 +206,11 @@ texinfo_documents = [
 
 # -- Extension configuration -------------------------------------------------
 
+p = jsonschema2md.Parser(
+    examples_as_yaml=False,
+    show_examples="all",
+)
+md_lines = p.parse_schema(yaml_read(capi2_schema))
 
-s = gen_doc()
-with open(os.path.join(os.path.abspath("."), "ref/capi2.rst"), "w") as f:
-    f.write(s)
+with open(os.path.join(os.path.abspath("."), "ref/capi2.md"), "w") as f:
+    f.write("".join(md_lines))
