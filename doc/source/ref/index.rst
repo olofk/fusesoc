@@ -6,6 +6,6 @@ FuseSoC Reference Manual
    :maxdepth: 2
    :caption: Contents
 
-   capi2.rst
+   capi2.md
    migrations.rst
    glossary.rst
