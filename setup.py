@@ -57,7 +57,7 @@ setup(
         "simplesat>=0.8.0",
         "fastjsonschema",
         "jsonschema2md",
-        "myst_parser",
+        "myst_parser>=1.0.0",
     ],
     # Supported Python versions: 3.6+
     python_requires=">=3.6, <4",
