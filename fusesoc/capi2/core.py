@@ -261,6 +261,7 @@ class Core:
         for f in src_files:
             for filename, attributes in f.items():
                 attributes["name"] = filename
+                attributes["core"] = self.name
 
                 # Remove all key-value-pairs with values that are either bool with
                 # value False or str of length 0
