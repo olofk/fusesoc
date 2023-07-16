@@ -282,7 +282,10 @@ class Config:
 
         self._cp.add_section(section_name)
 
-        self._cp.set(section_name, "location", library.location)
+        # Libraries in special environmental folders may not have a fixed location, but
+        # if they aren't set up to auto-sync they should
+        if library.sync_type not in ["env"] or not library.auto_sync:
+            self._cp.set(section_name, "location", library.location)
 
         if library.sync_type:
             self._cp.set(section_name, "sync-uri", library.sync_uri)

@@ -500,7 +500,7 @@ def get_parser():
     parser_library_add.add_argument(
         "--sync-type",
         help="The provider type for the library. Defaults to 'git'.",
-        choices=["git", "local"],
+        choices=["git", "local", "env"],
         dest="sync-type",
     )
     parser_library_add.add_argument(

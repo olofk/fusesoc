@@ -221,7 +221,14 @@ class CoreManager:
 
     def find_cores(self, library, ignored_dirs):
         found_cores = []
+
+        # Resolve any environmentally-special library locations
         path = os.path.expanduser(library.location)
+        if library.sync_type in ["env"]:
+            from fusesoc.provider import get_provider
+
+            path = get_provider(library.sync_type).resolve(library)
+
         exclude = {".git"}
         if os.path.isdir(path) == False:
             raise OSError(path + " is not a directory")
