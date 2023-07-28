@@ -207,15 +207,17 @@ class CoreDB:
 
 
 class CoreManager:
-    def __init__(
-        self, config, resolve_env_vars=False, allow_additional_properties=False
-    ):
+    def __init__(self, config, library_manager=None):
         self.config = config
         self.db = CoreDB()
-        self._lm = LibraryManager(config.library_root)
-        self.resolve_env_vars = resolve_env_vars
-        self.allow_additional_properties = allow_additional_properties
-        self.core2parser = Core2Parser(resolve_env_vars, allow_additional_properties)
+        self._lm = (
+            LibraryManager(config.library_root)
+            if library_manager == None
+            else library_manager
+        )
+        self.core2parser = Core2Parser(
+            config.resolve_env_vars_early, config.allow_additional_properties
+        )
 
     def find_cores(self, library, ignored_dirs):
         found_cores = []

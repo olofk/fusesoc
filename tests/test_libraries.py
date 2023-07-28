@@ -12,6 +12,8 @@ from argparse import Namespace
 from test_common import cache_root, cores_root, library_root
 
 from fusesoc.config import Config
+from fusesoc.fusesoc import Fusesoc
+from fusesoc.librarymanager import Library
 
 build_root = "test_build_root"
 
@@ -32,7 +34,6 @@ sync_uri = "https://github.com/fusesoc/fusesoc-cores"
 
 
 def test_library_location():
-    from fusesoc.main import _get_core, init_coremanager
 
     with tempfile.NamedTemporaryFile(mode="w+") as tcf:
         tcf.write(
@@ -50,10 +51,10 @@ def test_library_location():
 
         conf = Config(tcf.name)
 
-    cm = init_coremanager(conf, [])
+    fs = Fusesoc(conf)
 
-    _get_core(cm, "mor1kx-generic")
-    _get_core(cm, "atlys")
+    fs.get_core("mor1kx-generic")
+    fs.get_core("atlys")
 
 
 def test_library_add(caplog):
@@ -155,7 +156,6 @@ auto-sync = true""".format(
 
 
 def test_library_update(caplog):
-    from fusesoc.main import init_coremanager, init_logging, update
 
     clone_target = tempfile.mkdtemp()
 
@@ -179,34 +179,28 @@ def test_library_update(caplog):
 
     args = Namespace()
 
-    init_logging(False, False)
-    cm = init_coremanager(conf, [])
-
-    # TODO find a better way to set up these defaults
-    args.libraries = []
+    Fusesoc.init_logging(False, False)
+    fs = Fusesoc(conf)
 
     with caplog.at_level(logging.INFO):
-        update(cm, args)
+        fs.update_libraries([])
 
     assert "test_lib : auto-sync disabled. Ignoring update" in caplog.text
 
     caplog.clear()
 
-    args.libraries = ["test_lib"]
-
     with caplog.at_level(logging.INFO):
-        update(cm, args)
+        fs.update_libraries(["test_lib"])
 
     assert "test_lib : Updating..." in caplog.text
 
     caplog.clear()
 
-    args.libraries = []
-    _library = cm._lm.get_library("test_lib")
+    _library = fs.get_library("test_lib")
     _library.auto_sync = True
 
     with caplog.at_level(logging.INFO):
-        update(cm, args)
+        fs.update_libraries([])
 
     assert "test_lib : Updating..." in caplog.text
 
@@ -216,9 +210,7 @@ def test_library_update(caplog):
 
     _library.sync_type = "local"
 
-    args.libraries = []
-
     with caplog.at_level(logging.INFO):
-        update(cm, args)
+        fs.update_libraries([])
 
     assert "test_lib : sync-type is local. Ignoring update" in caplog.text
