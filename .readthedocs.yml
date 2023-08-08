@@ -16,3 +16,8 @@ python:
     - requirements: doc/requirements.txt
     - method: pip
       path: .
+
+build:
+  jobs:
+    post_checkout:
+      - git fetch --unshallow  || true
