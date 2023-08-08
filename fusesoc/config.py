@@ -6,6 +6,7 @@ import configparser
 import logging
 import os
 from configparser import ConfigParser as CP
+from pathlib import Path
 
 from fusesoc.librarymanager import Library
 
@@ -24,12 +25,13 @@ class Config:
             )
             config_files = [
                 "/etc/fusesoc/fusesoc.conf",
-                os.path.join(xdg_config_home, "fusesoc", "fusesoc.conf"),
+                str(Path(xdg_config_home) / "fusesoc" / "fusesoc.conf"),
                 "fusesoc.conf",
             ]
         else:
             logger.debug(f"Using config file '{path}'")
             if not os.path.isfile(path):
+                Path(path).parent.mkdir(parents=True, exist_ok=True)
                 with open(path, "a"):
                     pass
             config_files = [path]
@@ -127,7 +129,7 @@ class Config:
         xdg_cache_home = os.environ.get("XDG_CACHE_HOME") or os.path.join(
             os.path.expanduser("~"), ".cache"
         )
-        return os.path.join(xdg_cache_home, "fusesoc")
+        return str(Path(xdg_cache_home) / "fusesoc")
 
     def _get_library_root(self):
         from_cfg = self._path_from_cfg("library_root")
@@ -137,7 +139,7 @@ class Config:
         xdg_data_home = os.environ.get("XDG_DATA_HOME") or os.path.join(
             os.path.expanduser("~"), ".local/share"
         )
-        return os.path.join(xdg_data_home, "fusesoc")
+        return str(Path(xdg_data_home) / "fusesoc")
 
     def _get_ignored_dirs(self):
         return self._paths_from_cfg("ignored_dirs")
