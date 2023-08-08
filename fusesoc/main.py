@@ -7,9 +7,9 @@ import argparse
 import os
 import shutil
 import signal
-import subprocess
 import sys
 import warnings
+from pathlib import Path
 
 from fusesoc import __version__
 
@@ -131,9 +131,7 @@ def add_library(fs, args):
     if args.config:
         config = Config(args.config)
     elif vars(args)["global"]:
-        xdg_config_home = os.environ.get("XDG_CONFIG_HOME") or os.path.join(
-            os.path.expanduser("~"), ".config"
-        )
+        xdg_config_home = Path(os.getenv("XDG_CONFIG_HOME", Path.home() / ".config"))
         config_file = os.path.join(xdg_config_home, "fusesoc", "fusesoc.conf")
         config = Config(config_file)
     else:
