@@ -52,12 +52,12 @@ setup(
     ],
     install_requires=[
         "edalize>=0.4.1",
-        "pyparsing",
-        "pyyaml",
+        "pyparsing>=2.3.1",
+        "pyyaml>=6.0",
         "simplesat>=0.8.0",
         "fastjsonschema",
         "jsonschema2md",
-        "myst_parser",
+        "myst_parser>=0.18.0",
     ],
     # Supported Python versions: 3.6+
     python_requires=">=3.6, <4",
