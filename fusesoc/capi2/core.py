@@ -33,8 +33,7 @@ class Core:
 
         self.cache_root = cache_root
 
-        basename = os.path.basename(self.core_file)
-
+        self.core_basename = os.path.basename(self.core_file)
         self.core_root = os.path.dirname(self.core_file)
 
         # Populated by CoreDB._solve(). TODO: Find a better solution for that.
@@ -516,6 +515,7 @@ class Core:
 Name:        {}
 Description: {}
 Core root:   {}
+Core file:   {}
 
 Targets:
 {}"""
@@ -539,6 +539,7 @@ Targets:
             str(self.name),
             str(self.get_description() or "<No description>"),
             str(self.core_root),
+            str(self.core_basename),
             targets,
         )
 

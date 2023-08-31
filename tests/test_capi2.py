@@ -635,7 +635,11 @@ def test_capi2_info():
         core = Core(Core2Parser(), core_file)
 
         gen_info = "\n".join(
-            [x for x in core.info().split("\n") if not "Core root" in x]
+            [
+                x
+                for x in core.info().split("\n")
+                if not any([y in x for y in ["Core root", "Core file"]])
+            ]
         )
         with open(os.path.join(tests_dir, __name__, core_name + ".info")) as f:
             assert f.read() == gen_info, core_name
