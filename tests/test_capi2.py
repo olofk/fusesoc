@@ -734,3 +734,57 @@ def test_syntax_error():
     with pytest.raises(SyntaxError) as excinfo:
         parser.read(core_file)
     assert "did not find expected node content" in str(excinfo.value)
+
+
+def test_inheritance():
+    import os
+
+    from fusesoc.capi2.coreparser import Core2Parser
+
+    core_file = os.path.join(tests_dir, "capi2_cores", "parser", "inheritance.core")
+
+    parser = Core2Parser()
+    assert parser.get_version() == 2
+    assert parser.get_preamble() == "CAPI=2:"
+
+    expected = {
+        "name": "::inheritance:0",
+        "filesets": {
+            "fileset_a": {"files": ["1.txt", "2.txt", "3.txt"]},
+            "fileset_b": {"files": ["4.txt", "5.txt", "6.txt"]},
+            "fileset_c": {"files": ["7.txt", "8.txt", "9.txt"]},
+        },
+        "targets": {
+            "default": {"filesets": ["fileset_a"]},
+            "child": {"filesets": ["fileset_a"], "filesets_append": ["fileset_b"]},
+            "grandchild": {
+                "filesets": ["fileset_a"],
+                "filesets_append": ["fileset_b", "fileset_c"],
+            },
+            "child2": {"filesets": ["fileset_b"], "filesets_append": ["fileset_c"]},
+            "subfield": {
+                "tools": {
+                    "verilator": {"mode": "cc", "verilator_options": ["--timing"]}
+                }
+            },
+            "subfield_child": {
+                "tools": {
+                    "verilator": {
+                        "mode": "lint-only",
+                        "verilator_options": ["--timing"],
+                    }
+                }
+            },
+            "merge_test1": {"filesets": ["fileset_a"]},
+            "merge_test2<<": {"tools": {"2<<": {}}},
+            "<<merge_test3": {"tools": {"<<3": {}}},
+            "merge_test4": {
+                "tools": {"t4": {"t44": "<<4", "filesets": ["fileset_a"]}},
+                "filesets": ["fileset_a"],
+            },
+            "merge_test5": {"filesets": ["fileset_a"]},
+        },
+    }
+
+    capi2_data = parser.read(core_file)
+    assert expected == capi2_data

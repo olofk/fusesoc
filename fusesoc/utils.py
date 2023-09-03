@@ -16,6 +16,8 @@ except ImportError:
     from yaml import SafeDumper as YamlDumper
     from yaml import SafeLoader as YamlLoader
 
+from fusesoc.capi2.inheritance import Inheritance
+
 logger = logging.getLogger(__name__)
 
 
@@ -159,15 +161,18 @@ def yaml_fread(filepath, resolve_env_vars=False, remove_preamble=False):
     with open(filepath) as f:
         if remove_preamble:
             f.readline()
-        return yaml_read(f, resolve_env_vars)
+        return yaml_read(f.read(), resolve_env_vars)
 
 
 def yaml_read(data, resolve_env_vars=False):
     try:
+        data = Inheritance.yaml_merge_2_fusesoc_merge(data)
+        capi_data = {}
         if resolve_env_vars:
-            return yaml.load(os.path.expandvars(data.read()), Loader=YamlLoader)
+            capi_data = yaml.load(os.path.expandvars(data), Loader=YamlLoader)
         else:
-            return yaml.load(data, Loader=YamlLoader)
+            capi_data = yaml.load(data, Loader=YamlLoader)
+        return Inheritance.elaborate_inheritance(capi_data)
     except (yaml.parser.ParserError, yaml.scanner.ScannerError) as e:
         raise SyntaxError(str(e))
 
@@ -176,11 +181,13 @@ def yaml_dump(data):
     return yaml.dump(data)
 
 
-def merge_dict(d1, d2):
+def merge_dict(d1, d2, concat_list_appends_only=False):
     for key, value in d2.items():
         if isinstance(value, dict):
             d1[key] = merge_dict(d1.get(key, {}), value)
-        elif isinstance(value, list):
+        elif isinstance(value, list) and (
+            not concat_list_appends_only or key.endswith("_append")
+        ):
             d1[key] = d1.get(key, []) + value
         else:
             d1[key] = value
