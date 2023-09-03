@@ -1,0 +1,59 @@
+CAPI=2:
+# Copyright FuseSoC contributors
+# Licensed under the 2-Clause BSD License, see LICENSE for details.
+# SPDX-License-Identifier: BSD-2-Clause
+
+name: ::inheritance:0
+filesets:
+  fileset_a:
+    files:
+      - 1.txt
+      - 2.txt
+      - 3.txt
+  fileset_b:
+    files:
+      - 4.txt
+      - 5.txt
+      - 6.txt
+  fileset_c:
+    files:
+      - 7.txt
+      - 8.txt
+      - 9.txt
+
+targets:
+  default: &default
+    filesets:
+      - fileset_a
+  child: &child
+    <<: *default
+    filesets_append:
+      - fileset_b
+  grandchild: &grandchild
+    <<: *child
+    filesets_append:
+      - fileset_c
+  child2: &child2
+    <<: *default
+    filesets:
+      - fileset_b
+    filesets_append:
+      - fileset_c
+
+  subfield: &subfield
+    tools:
+      verilator:
+        mode: cc
+        verilator_options:
+          - --timing
+  subfield_child:
+    <<: *subfield
+    tools:
+      verilator:
+        mode: lint-only
+
+  merge_test1: {<<: *default}
+  merge_test2<<: {tools: {2<<: {}}}
+  <<merge_test3: {tools: {<<3: {}}}
+  merge_test4: {tools: {t4: {t44: <<4, <<: *default}}, <<: *default}
+  merge_test5: {<<__FUSESOC_MERGE_OVERLOAD__<<: *default}
