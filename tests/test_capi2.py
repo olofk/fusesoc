@@ -723,3 +723,14 @@ def test_core2parser():
     capi2_readback_data = parser.read(tmpfile)
     os.remove(tmpfile)
     assert capi2_data == capi2_readback_data
+
+
+def test_syntax_error():
+    from fusesoc.capi2.coreparser import Core2Parser
+
+    core_file = os.path.join(tests_dir, "capi2_cores", "misc", "syntax_error.core")
+
+    parser = Core2Parser()
+    with pytest.raises(SyntaxError) as excinfo:
+        parser.read(core_file)
+    assert "did not find expected node content" in str(excinfo.value)

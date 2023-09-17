@@ -159,17 +159,17 @@ def yaml_fread(filepath, resolve_env_vars=False, remove_preamble=False):
     with open(filepath) as f:
         if remove_preamble:
             f.readline()
-        if resolve_env_vars:
-            return yaml.load(os.path.expandvars(f.read()), Loader=YamlLoader)
-        else:
-            return yaml.load(f.read(), Loader=YamlLoader)
+        return yaml_read(f, resolve_env_vars)
 
 
 def yaml_read(data, resolve_env_vars=False):
-    if resolve_env_vars:
-        return yaml.load(os.path.expandvars(data.read()), Loader=YamlLoader)
-    else:
-        return yaml.load(data, Loader=YamlLoader)
+    try:
+        if resolve_env_vars:
+            return yaml.load(os.path.expandvars(data.read()), Loader=YamlLoader)
+        else:
+            return yaml.load(data, Loader=YamlLoader)
+    except (yaml.parser.ParserError, yaml.scanner.ScannerError) as e:
+        raise SyntaxError(str(e))
 
 
 def yaml_dump(data):

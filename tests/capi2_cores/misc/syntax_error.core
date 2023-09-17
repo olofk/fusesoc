@@ -1,0 +1,6 @@
+CAPI=2:
+name : ::syntax_error:0
+
+targets:
+  parse_error:
+    toplevel : [
