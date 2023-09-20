@@ -521,6 +521,7 @@ class Ttptttg:
         self.generator = generators[generator_name]
         self.name = ttptttg["name"]
         self.pos = ttptttg["pos"]
+        self.gen_name = generator_name
         self.gen_root = gen_root
         self.resolve_env_vars = resolve_env_vars
         parameters = ttptttg["config"]
@@ -601,7 +602,14 @@ class Ttptttg:
         ]
 
         if "interpreter" in self.generator:
-            args[0:0] = [self.generator["interpreter"]]
+            interp = self.generator["interpreter"]
+            interppath = shutil.which(interp)
+            if not interppath:
+                raise RuntimeError(
+                    f"Could not find generator interpreter '{interp}' using shutil.which.\n"
+                    f"Interpreter requested by generator {self.gen_name}, requested by core {self.core}.\n"
+                )
+            args[0:0] = [interppath]
 
         Launcher(args[0], args[1:], cwd=generator_cwd).run()
 

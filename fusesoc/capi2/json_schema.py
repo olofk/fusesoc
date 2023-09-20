@@ -317,7 +317,7 @@ capi2_schema = """
               "type": "string"
             },
             "interpreter": {
-              "description": "If the command needs a custom interpreter (such as python) this will be inserted as the first argument before command when calling the generator. The interpreter needs to be on the system PATH.",
+              "description": "If the command needs a custom interpreter (such as python) this will be inserted as the first argument before command when calling the generator. The interpreter needs to be on the system PATH; specifically, shutil.which needs to be able to find the interpreter).",
               "type": "string"
             },
             "cache_type": {
