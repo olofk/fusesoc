@@ -10,6 +10,7 @@ repos:
       - id: check-docstring-first
       - id: requirements-txt-fixer
       - id: check-yaml
+        exclude: ^tests/capi2_cores/misc/syntax_error\.core$
         types: [file]
         files: ^tests/capi2_cores/.+\.core$
       - id: end-of-file-fixer
