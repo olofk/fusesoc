@@ -34,10 +34,10 @@ jobs:
     steps:
 
     - name: 🧰 Repository Checkout
-      uses: actions/checkout@v2
+      uses: actions/checkout@v3
 
     - name: 🐍 Set up Python ${{ matrix.pyver }}
-      uses: actions/setup-python@v2
+      uses: actions/setup-python@v4
       with:
         python-version: ${{ matrix.pyver }}
 
