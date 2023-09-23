@@ -23,10 +23,27 @@ if os.path.exists(os.path.join(fusesocdir, "fusesoc")):
 import logging
 
 from fusesoc.config import Config
+from fusesoc.coremanager import DependencyError
 from fusesoc.fusesoc import Fusesoc
 from fusesoc.librarymanager import Library
 
 logger = logging.getLogger(__name__)
+
+
+def _get_core(cm, name):
+    core = None
+    try:
+        core = cm.get_core(name)
+    except RuntimeError as e:
+        logger.error(str(e))
+        exit(1)
+    except DependencyError as e:
+        logger.error(
+            f"{name!r} or any of its dependencies requires {e.value!r}, but "
+            "this core was not found"
+        )
+        exit(1)
+    return core
 
 
 def abort_handler(signal, frame):
@@ -49,7 +66,7 @@ def pgm(fs, args):
 
 
 def fetch(fs, args):
-    core = fs.get_core(args.core)
+    core = _get_core(fs, args.core)
 
     try:
         core.setup()
@@ -225,19 +242,7 @@ Usage       :
 
 
 def core_info(fs, args):
-    core = None
-    try:
-        core = fs.get_core(args.core)
-    except RuntimeError as e:
-        logger.error(str(e))
-        exit(1)
-    except DependencyError as e:
-        logger.error(
-            f"{name!r} or any of its dependencies requires {e.value!r}, but "
-            "this core was not found"
-        )
-        exit(1)
-
+    core = _get_core(fs, args.core)
     print(core.info())
 
 
@@ -277,7 +282,7 @@ def run(fs, args):
         else:
             flags[flag] = True
 
-    core = fs.get_core(args.system)
+    core = _get_core(fs, args.system)
 
     try:
         flags = dict(core.get_flags(flags["target"]), **flags)
