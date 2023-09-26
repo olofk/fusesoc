@@ -31,6 +31,20 @@ logger = logging.getLogger(__name__)
 
 
 def _get_core(cm, name):
+    matches = set()
+    if not ":" in name:
+        for core in cm.get_cores():
+            (v, l, n, _) = core.split(":")
+            if n.lower() == name.lower():
+                matches.add(f"{v}:{l}:{n}")
+        if len(matches) == 1:
+            name = matches.pop()
+        elif len(matches) > 1:
+            _s = f"'{name}' is ambiguous. Potential matches: "
+            _s += ", ".join(f"'{x}'" for x in matches)
+            logger.error(_s)
+            exit(1)
+
     core = None
     try:
         core = cm.get_core(name)
@@ -42,6 +56,9 @@ def _get_core(cm, name):
             f"{name!r} or any of its dependencies requires {e.value!r}, but "
             "this core was not found"
         )
+        exit(1)
+    except SyntaxError as e:
+        logger.error(str(e))
         exit(1)
     return core
 
@@ -336,7 +353,6 @@ def run(fs, args):
 
 
 def config(fs, args):
-
     conf = Config(path=args.config if args.config else None)
 
     if not hasattr(conf, args.key):
@@ -609,7 +625,6 @@ def parse_args(argv):
 
 
 def args_to_config(args, config):
-
     if hasattr(args, "resolve_env_vars_early") and args.resolve_env_vars_early:
         setattr(config, "args_resolve_env_vars_early", args.resolve_env_vars_early)
 
