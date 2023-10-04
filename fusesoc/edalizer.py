@@ -288,6 +288,7 @@ class Edalizer:
             "tool_options": {},
             "toplevel": top_core.get_toplevel(self.flags),
             "vpi": [],
+            "export_files": self.export_root is not None,
         }
 
         for snippet in first_snippets + snippets + last_snippets:
