@@ -71,7 +71,7 @@ class CoreDB:
         logger.debug("Adding core " + name)
         if name in self._cores:
             _s = "Replacing {} in {} with the version found in {}"
-            logger.debug(
+            logger.warning(
                 _s.format(name, self._cores[name]["core"].core_root, core.core_root)
             )
         self._cores[name] = {"core": core, "library": library}

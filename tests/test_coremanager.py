@@ -213,6 +213,26 @@ def test_export():
     ]:
         assert os.path.isfile(os.path.join(export_root, f))
 
+def test_override(caplog):
+    import logging
+    import os
+    from fusesoc.config import Config
+    from fusesoc.coremanager import CoreManager
+    from fusesoc.librarymanager import Library
+    from fusesoc.vlnv import Vlnv
+
+    core_base_dir = os.path.join(os.path.dirname(__file__), "capi2_cores", "override")
+    cm = CoreManager(Config())
+    with caplog.at_level(logging.WARNING):
+        cm.add_library(Library("1", os.path.join(core_base_dir,"1")), [])
+    assert caplog.text == ""
+
+    with caplog.at_level(logging.WARNING):
+        cm.add_library(Library("2", os.path.join(core_base_dir,"2")), [])
+    assert "Replacing ::basic:0 in" in caplog.text
+
+    core = cm.get_core(Vlnv("::basic"))
+    assert core.core_root.endswith("2")
 
 def test_virtual():
     import os
