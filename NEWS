@@ -1,3 +1,25 @@
+2.3 2023-11-17 Olof Kindgren <olof.kindgren@gmail.com>
+======================================================
+* Add CLI to read/write config settings
+* Separate CLI from library to ease integration
+* Add --work-root to directly set output dir
+* Show core filename with "fusesoc core show"
+* Allow matching against only "name" component in VLNV
+* Improve inheritance rules between targets
+* Warn on duplicate cores
+* Support prepend keyword for generators
+* Reenable Windows tests
+* + improved error handling, bug fixes and refactoring
+
+Contributors:
+Benjamin Hallenrud <Benjamin.hallenrud@gmail.com>
+Erik Waling <erik.waling@gmail.com>
+Ethan Sifferman <ethan@sifferman.dev>
+Mykyta Haranko <mykyta.haranko@gmail.com>
+Olof Kindgren <olof.kindgren@gmail.com>
+Shareef Jalloq <shareef.jalloq@idexbiometrics.com>
+William D. Jones <thor0505@comcast.net>
+
 2.2 2023-04-18 Olof Kindgren <olof.kindgren@gmail.com>
 ======================================================
 * Use jsonschema to describe and validate CAPI2 files
