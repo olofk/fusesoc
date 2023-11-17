@@ -257,10 +257,9 @@ class Config:
         self._set_default_section("system_name", val)
 
     def write(self):
-        if not hasattr(self, "_path"):
-            raise RuntimeError("No FuseSoC config file found - can't write config")
+        conf_file_name = getattr(self, "_path", None) or "fusesoc.conf"
 
-        with open(self._path, "w") as conf_file:
+        with open(conf_file_name, "w") as conf_file:
             self._cp.write(conf_file)
 
     def add_library(self, library):
