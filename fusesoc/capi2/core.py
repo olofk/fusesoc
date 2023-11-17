@@ -106,7 +106,6 @@ class Core:
                     FutureWarning,
                 )
             if not os.path.isabs(f):
-
                 if os.path.exists(os.path.join(self.core_root, f)):
                     src = os.path.join(self.core_root, f)
                 elif os.path.exists(os.path.join(self.files_root, f)):
@@ -129,7 +128,7 @@ class Core:
         for root, dirs, files in os.walk(dst_dir):
             for f in files:
                 _abs_f = os.path.join(root, f)
-                if not os.path.relpath(_abs_f, dst_dir) in src_files:
+                if not os.path.relpath(_abs_f, dst_dir).replace("\\", "/") in src_files:
                     os.remove(_abs_f)
 
     def _get_script_names(self, flags):
