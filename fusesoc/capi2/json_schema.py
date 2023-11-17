@@ -289,9 +289,9 @@ capi2_schema = """
               "type": "string"
             },
             "position": {
-              "description": "Where to insert the generated core. Legal values are *first*, *append* or *last*. *append* will insert core after the core that called the generator",
+              "description": "Where to insert the generated core. Legal values are *first*, *prepend*, *append* or *last*. *prepend* (*append*) will insert core before (after) the core that called the generator",
               "type": "string",
-              "pattern": "^first|append|last$"
+              "pattern": "^first|prepend|append|last$"
             },
             "parameters": {
               "description": "Generator-specific parameters. ``fusesoc gen show $generator`` might show available parameters. ",

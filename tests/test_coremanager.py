@@ -61,7 +61,9 @@ def test_deptree(tmp_path):
             # This is because generated files are often dependent on files
             # that are not generated, and it convenient to be able to
             # include them in the same core.
+            # However, for peculiar cases when non-generated files actually depend on generated, "position: prepend" is also available
             "child-a2.sv",
+            "generated-child-a-prepend.sv",
             "generated-child-a.sv",
             "generated-child-a-append.sv",
         ),

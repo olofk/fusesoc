@@ -20,6 +20,12 @@ generate:
     parameters:
       filename: generated-child-a.sv
 
+  generated-child-a-generate-position-prepend:
+    generator: generated-child-a-generator
+    parameters:
+      filename: generated-child-a-prepend.sv
+    position: prepend
+
   generated-child-a-generate-position-append:
     generator: generated-child-a-generator
     parameters:
@@ -49,6 +55,7 @@ targets:
       - fs1
     generate:
       - generated-child-a-generate
+      - generated-child-a-generate-position-prepend
       - generated-child-a-generate-position-append
       - generated-child-a-generate-position-last
       - generated-child-a-generate-position-first

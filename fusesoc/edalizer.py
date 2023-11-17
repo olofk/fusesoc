@@ -272,6 +272,8 @@ class Edalizer:
                     first_snippets.append(snippet)
                 elif core.pos == "last":
                     last_snippets.append(snippet)
+                elif core.pos == "prepend" and len(snippets) > 0:
+                    snippets.insert(len(snippets) - 1, snippet)
                 else:
                     snippets.append(snippet)
             else:
