@@ -43,6 +43,36 @@ def test_config():
     assert conf.library_root == library_root
 
 
+import pytest
+
+
+@pytest.mark.parametrize("from_cli", [False, True])
+@pytest.mark.parametrize("from_config", [False, True])
+def test_config_filters(from_cli, from_config):
+    import tempfile
+
+    from fusesoc.config import Config
+
+    if from_config:
+        tcf = tempfile.NamedTemporaryFile(mode="w+")
+        tcf.write("[main]\nfilters = configfilter1 configfilter2\n")
+        tcf.seek(0)
+        config = Config(tcf.name)
+    else:
+        config = Config()
+
+    if from_cli:
+        config.args_filters = ["clifilter1", "clifilter2"]
+
+    expected = {
+        (False, False): [],
+        (False, True): ["configfilter1", "configfilter2"],
+        (True, False): ["clifilter1", "clifilter2"],
+        (True, True): ["configfilter1", "configfilter2", "clifilter1", "clifilter2"],
+    }
+    assert config.filters == expected[(from_cli, from_config)]
+
+
 def test_config_relative_path():
     with tempfile.TemporaryDirectory() as td:
         config_path = os.path.join(td, "fusesoc.conf")

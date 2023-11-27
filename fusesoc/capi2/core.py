@@ -176,6 +176,10 @@ class Core:
             raise RuntimeError(f"'{self.name}' has no target '{target_name}'")
         return flags
 
+    def get_filters(self, flags):
+        target_name, target = self._get_target(flags)
+        return target.get("filters", [])
+
     def get_flow(self, flags):
         self._debug("Getting flow for flags {}".format(str(flags)))
         flow = None

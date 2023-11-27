@@ -35,6 +35,7 @@ A full reference documentation on the CAPI2 core file format can be found in the
    core_files.rst
    eda_flows.rst
    dependencies.rst
+   filters.rst
    flags.rst
    generators.rst
    hooks.rst

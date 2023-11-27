@@ -274,6 +274,18 @@ def test_capi2_type_check():
     assert "Error validating" in str(excinfo.value)
 
 
+def test_capi2_get_filters():
+    from fusesoc.capi2.coreparser import Core2Parser
+    from fusesoc.core import Core
+
+    core = Core(Core2Parser(), os.path.join(cores_dir, "filters.core"))
+    assert [] == core.get_filters({"is_toplevel": True, "target": "nofilters"})
+    assert [] == core.get_filters({"is_toplevel": True, "target": "emptyfilters"})
+    assert ["corefilter1", "corefilter2"] == core.get_filters(
+        {"is_toplevel": True, "target": "filters"}
+    )
+
+
 def test_capi2_get_flags():
     from fusesoc.capi2.coreparser import Core2Parser
     from fusesoc.core import Core

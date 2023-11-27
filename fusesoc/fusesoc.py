@@ -153,6 +153,7 @@ class Fusesoc:
         try:
             edalizer.run()
             edalizer.export()
+            edalizer.apply_filters(self.config.filters)
             edalizer.parse_args(backend_class, backendargs)
         except SyntaxError as e:
             raise RuntimeError(e.msg)

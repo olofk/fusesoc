@@ -508,6 +508,13 @@ capi2_schema = """
                 "type": "string"
               }
             },
+            "^filters(_append)?$": {
+              "description": "EDAM filters to apply",
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
             "^generate(_append)?$": {
               "description": "Parameterized generators to run for this target with optional parametrization",
               "type": "array",

@@ -581,6 +581,12 @@ def get_parser():
         "--work-root",
         help="Output directory for build. VLNV will not be appended (overrides build-root)",
     )
+    parser_run.add_argument(
+        "--filter",
+        help="Add filter. Can be specified multiple times to add multiple filters",
+        action="append",
+        default=[],
+    )
     parser_run.add_argument("--setup", action="store_true", help="Execute setup stage")
     parser_run.add_argument("--build", action="store_true", help="Execute build stage")
     parser_run.add_argument("--run", action="store_true", help="Execute run stage")
@@ -666,13 +672,15 @@ def args_to_config(args, config):
     if hasattr(args, "system_name") and args.system_name and len(args.system_name) > 0:
         setattr(config, "args_system_name", args.system_name)
 
+    if hasattr(args, "filter"):
+        config.args_filters = args.filter
+
 
 def fusesoc(args):
     Fusesoc.init_logging(args.verbose, args.monochrome, args.log_file)
 
     config = Config(args.config)
     args_to_config(args, config)
-
     fs = Fusesoc(config)
 
     # Run the function

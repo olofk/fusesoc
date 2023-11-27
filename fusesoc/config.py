@@ -154,6 +154,16 @@ class Config:
             return val
 
     @property
+    def filters(self):
+        return self._cp.get(
+            Config.default_section, "filters", fallback=""
+        ).split() + getattr(self, "args_filters", [])
+
+    @filters.setter
+    def filters(self, val):
+        self._set_default_section("filters", val)
+
+    @property
     def build_root(self):
         return self._arg_or_val("args_build_root", self._get_build_root())
 
