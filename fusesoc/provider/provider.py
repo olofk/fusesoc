@@ -11,6 +11,12 @@ from fusesoc.utils import Launcher
 
 logger = logging.getLogger(__name__)
 
+from importlib import import_module
+
+
+def get_provider(name):
+    return getattr(import_module(f"fusesoc.provider.{name}"), name.capitalize())
+
 
 class Provider:
     def __init__(self, config, core_root, files_root):

@@ -5,7 +5,7 @@
 import logging
 import os
 
-from fusesoc.provider import get_provider
+from fusesoc.provider.provider import get_provider
 
 logger = logging.getLogger(__name__)
 

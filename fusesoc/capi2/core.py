@@ -13,7 +13,7 @@ from filecmp import cmp
 
 from fusesoc import utils
 from fusesoc.capi2.coredata import CoreData
-from fusesoc.provider import get_provider
+from fusesoc.provider.provider import get_provider
 from fusesoc.vlnv import Vlnv
 
 logger = logging.getLogger(__name__)

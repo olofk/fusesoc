@@ -11,7 +11,10 @@ import sys
 import warnings
 from pathlib import Path
 
-from fusesoc import __version__
+try:
+    from fusesoc.version import version as __version__
+except ImportError:
+    __version__ = "unknown"
 
 # Check if this is run from a local installation
 fusesocdir = os.path.abspath(

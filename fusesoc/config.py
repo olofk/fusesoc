@@ -263,7 +263,7 @@ class Config:
             self._cp.write(conf_file)
 
     def add_library(self, library):
-        from fusesoc.provider import get_provider
+        from fusesoc.provider.provider import get_provider
 
         section_name = "library." + library.name
 

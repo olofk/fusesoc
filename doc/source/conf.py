@@ -36,7 +36,12 @@ copyright = f"2018-{datetime.now().year}, Olof Kindgren"
 author = "Olof Kindgren"
 
 # The full version, including alpha/beta/rc tags.
-release = fusesoc.__version__
+try:
+    from fusesoc.version import version as __version__
+except ImportError:
+    __version__ = "unknown"
+
+release = __version__
 # The short X.Y version.
 v_major, v_minor = LooseVersion(release).version[:2]
 version = f"{v_major}.{v_minor}"
