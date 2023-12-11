@@ -280,7 +280,9 @@ def test_capi2_get_flags():
 
     core = Core(Core2Parser(), os.path.join(cores_dir, "flags.core"))
 
-    assert {} == core.get_flags("bad_target")
+    with pytest.raises(RuntimeError) as e:
+        core.get_flags("bad_target")
+    assert "::flags:0' has no target 'bad_target'" in str(e.value)
     assert {} == core.get_flags("noflags")
     assert {} == core.get_flags("emptyflags")
     assert {"tool": "mytool"} == core.get_flags("emptyflagstool")

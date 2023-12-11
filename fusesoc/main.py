@@ -304,6 +304,9 @@ def run(fs, args):
     except SyntaxError as e:
         logger.error(str(e))
         exit(1)
+    except RuntimeError as e:
+        logger.error(str(e))
+        exit(1)
 
     # Unconditionally clean out the work root on fresh builds
     # if we use the old tool API

@@ -172,6 +172,8 @@ class Core:
                     # Special case for tool as we get it from default_tool
                     flags["tool"] = str(target["default_tool"])
 
+        else:
+            raise RuntimeError(f"'{self.name}' has no target '{target_name}'")
         return flags
 
     def get_flow(self, flags):
