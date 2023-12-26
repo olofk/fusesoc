@@ -200,7 +200,7 @@ def list_cores(fs, args):
 
 
 def list_tools(fs, args):
-    from edalize.edatool import walk_tool_packages
+    from edalize.edatool import get_edatool, walk_tool_packages
 
     _tp = list(walk_tool_packages())
     maxlen = max(map(len, _tp))
