@@ -7,5 +7,6 @@ FuseSoC Reference Manual
    :caption: Contents
 
    capi2.md
+   capi2_demo.rst
    migrations.rst
    glossary.rst
