@@ -282,14 +282,8 @@ class Edalizer:
         top_core = self.resolved_cores[-1]
         self.edam = {
             "version": "0.2.1",
-            "dependencies": {},
-            "files": [],
-            "hooks": {},
             "name": self.system_name or top_core.name.sanitized_name,
-            "parameters": {},
-            "tool_options": {},
             "toplevel": top_core.get_toplevel(self.flags),
-            "vpi": [],
         }
 
         for snippet in first_snippets + snippets + last_snippets:

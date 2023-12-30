@@ -29,7 +29,6 @@ def test_tool_or_flow():
         "hooks": {},
         "name": "flow_0",
         "parameters": {},
-        "tool_options": {},
         "toplevel": "unused",
         "vpi": [],
         "flow_options": {},
