@@ -49,7 +49,7 @@ class Edalizer:
         system_name=None,
         resolve_env_vars=False,
     ):
-        logger.debug("Building EDA API")
+        logger.debug("Building EDAM structure")
 
         self.toplevel = toplevel
         self.flags = flags
@@ -102,7 +102,7 @@ class Edalizer:
         # to the list of available cores.
         self.run_generators()
 
-        # Create EDA API file contents
+        # Create EDAM file contents
         self.create_edam()
 
         return self.edam
@@ -199,7 +199,7 @@ class Edalizer:
         for core in self.cores:
             snippet = {}
 
-            logger.debug("Collecting EDA API parameters from {}".format(str(core.name)))
+            logger.debug("Collecting EDAM parameters from {}".format(str(core.name)))
             _flags = self._core_flags(core)
 
             # Extract direct dependencies
@@ -474,16 +474,16 @@ class Edalizer:
 
         return flow_options
 
-    def parse_args(self, backend_class, backendargs, edam):
+    def parse_args(self, backend_class, backendargs):
         # First we need to see which flow options are set,
         # in order to know which tool options that are relevant
         # for this configuration of the flow
         if hasattr(backend_class, "get_flow_options"):
             self.activated_flow_options = self._parse_flow_options(
-                backend_class, backendargs, edam
+                backend_class, backendargs, self.edam
             )
 
-        parser = self._build_parser(backend_class, edam)
+        parser = self._build_parser(backend_class, self.edam)
         parsed_args = parser.parse_args(backendargs)
 
         args_dict = {}

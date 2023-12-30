@@ -151,9 +151,9 @@ class Fusesoc:
         )
 
         try:
-            edam = edalizer.run()
-            edalizer.parse_args(backend_class, backendargs, edam)
+            edalizer.run()
             edalizer.export()
+            edalizer.parse_args(backend_class, backendargs)
         except SyntaxError as e:
             raise RuntimeError(e.msg)
         except RuntimeError as e:
@@ -164,9 +164,9 @@ class Fusesoc:
         else:
             old_edam = None
 
-        if edam != old_edam:
+        if edalizer.edam != old_edam:
             edalizer.to_yaml(edam_file)
 
         return edam_file, backend_class(
-            edam=edam, work_root=work_root, verbose=self.config.verbose
+            edam=edalizer.edam, work_root=work_root, verbose=self.config.verbose
         )
