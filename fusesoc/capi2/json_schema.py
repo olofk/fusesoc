@@ -110,7 +110,7 @@ capi2_schema = """
           "additionalProperties": false,
           "required": [
             "name",
-            "repo",
+            "repo"
           ]
         },
         {
@@ -272,7 +272,7 @@ capi2_schema = """
               }
             }
           },
-          "additionalProperties": false,
+          "additionalProperties": false
         }
       },
       "additionalProperties": false
@@ -375,7 +375,7 @@ capi2_schema = """
               }
             }
           },
-          "additionalProperties": false,
+          "additionalProperties": false
         }
       }
     },
