@@ -386,7 +386,7 @@ capi2_schema = """
         "^.+$": {
           "patternProperties": {
             "^default_tool$": {
-              "description": "Default tool to use unless overridden with ``--tool=``",
+              "description": "Default tool to use unless overridden with ``--tool=`` This key is used by the Edalize Tool API and is ignored if the Flow API is used instead.",
               "type": "string"
             },
             "^description$": {
@@ -394,11 +394,11 @@ capi2_schema = """
               "type": "string"
             },
             "^flow$": {
-              "description": "Edalize backend flow to use for target",
+              "description": "Edalize backend flow to use for target. Setting this key enables the flow API instead of the legacy Tool API.",
               "type": "string"
             },
             "^flow_options$": {
-              "description": "Tool- and flow-specific options",
+              "description": "Tool- and flow-specific options. Used by the Flow API. The Edalize documentation contains information on available options for different flows (https://edalize.readthedocs.io/en/latest/edam/api.html#flow-options)",
               "type": "object",
               "patternProperties": {
                 "^.+$": {
@@ -458,7 +458,7 @@ capi2_schema = """
               "additionalProperties": false
             },
             "^tools$": {
-              "description": "Tool-specific options for target",
+              "description": "Tool-specific options for target. Used by the legacy Tool API. The contents of this section is handled by Edalize, and a list of available tool options for each tool can be found in the Edalize documentation (https://edalize.readthedocs.io/en/latest/edam/api.html#tool-options)",
               "type": "object",
               "patternProperties": {
                 "^.+$": {
