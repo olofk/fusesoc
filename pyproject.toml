@@ -1,3 +1,54 @@
 [build-system]
-requires = ["setuptools"]
+requires = ["setuptools>=64.0", "setuptools_scm>=8.0"]
 build-backend = "setuptools.build_meta"
+
+[project]
+name = "fusesoc"
+authors = [
+    { name = "Olof Kindgren", email = "olof.kindgren@gmail.com" },
+]
+description = "FuseSoC is a package manager and a set of build tools for HDL (Hardware Description Language) code."
+readme = "README.md"
+requires-python = ">=3.6, <4"
+license = { text = "BSD-3-Clause" }
+keywords = [
+    "VHDL",
+    "verilog",
+    "hdl",
+    "rtl",
+    "synthesis",
+    "FPGA",
+    "simulation",
+    "Xilinx",
+    "Altera",
+]
+classifiers = [
+    "Development Status :: 5 - Production/Stable",
+    "Topic :: Utilities",
+    "Topic :: Software Development :: Build Tools",
+    "License :: OSI Approved :: BSD License",
+]
+dependencies = [
+    "edalize>=0.4.1",
+    "pyparsing>=2.3.1",
+    "pyyaml>=6.0",
+    "simplesat>=0.8.0",
+    "fastjsonschema",
+    "jsonschema2md",
+]
+dynamic = ["version"]
+
+[tool.setuptools]
+packages = ["fusesoc", "fusesoc.capi2", "fusesoc.provider", "fusesoc.parser"]
+
+[tool.setuptools_scm]
+version_file = "fusesoc/version.py"
+
+[project.scripts]
+fusesoc = "fusesoc.main:main"
+
+[project.urls]
+Homepage = "https://github.com/olofk/fusesoc"
+Documentation = "https://fusesoc.readthedocs.io/en/stable/index.html"
+Repository = "https://github.com/olofk/fusesoc.git"
+Issues = "https://github.com/olofk/fusesoc/issues"
