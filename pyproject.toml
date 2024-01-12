@@ -1,5 +1,5 @@
 [build-system]
-requires = ["setuptools>=45", "setuptools_scm[toml]>=6.2"]
+requires = ["setuptools>=42", "setuptools_scm[toml]>=6.0"]
 build-backend = "setuptools.build_meta"
 
 [project]
@@ -42,7 +42,7 @@ dynamic = ["version"]
 packages = ["fusesoc", "fusesoc.capi2", "fusesoc.provider", "fusesoc.parser"]
 
 [tool.setuptools_scm]
-version_file = "fusesoc/version.py"
+write_to = "fusesoc/version.py"
 
 [project.scripts]
 fusesoc = "fusesoc.main:main"
