@@ -113,6 +113,35 @@ class CoreDB:
     def solve(self, top_core, flags):
         return self._solve(top_core, flags)
 
+    def _get_conflict_map(self):
+        """Return a map of cores to their conflicts
+
+        Only one core that implements a virtual VLNV may be selected in a
+        dependency tree. For each core that implements a virtual VLNV, create a
+        set representing all other cores that implement one of the same virtual
+        VLNVs. In the resulting package definitions, these must get "conflicts"
+        constraints.
+        """
+        conflict_map = {}
+        virtual_map = {}
+        for core_data in self._cores.values():
+            core = core_data["core"]
+            _virtuals = core.get_virtuals()
+            for virtual in _virtuals:
+                for simple in virtual.simpleVLNVs():
+                    virtual_pkg = self._package_name(simple)
+                    # FIXME: The real package should include version info
+                    real_pkg = self._package_name(core.name)
+                    virtual_set = virtual_map.setdefault(virtual_pkg, set())
+                    virtual_set.add(real_pkg)
+        for virtual_pkg, virtual_set in virtual_map.items():
+            for real_pkg in virtual_set:
+                conflict_set = conflict_map.setdefault(real_pkg, set())
+                conflict_set |= virtual_set
+        for real_pkg, conflict_set in conflict_map.items():
+            conflict_set.remove(real_pkg)
+        return conflict_map
+
     def _solve(self, top_core, flags={}, only_matching_vlnv=False):
         def eq_vln(this, that):
             return (
@@ -130,6 +159,8 @@ class CoreDB:
         repo = Repository()
         _flags = flags.copy()
         cores = [x["core"] for x in self._cores.values()]
+        conflict_map = self._get_conflict_map()
+
         for core in cores:
             if only_matching_vlnv:
                 if not any(
@@ -153,6 +184,10 @@ class CoreDB:
             if _virtuals:
                 _s = "; provides ( {} )"
                 package_str += _s.format(self._parse_virtual(_virtuals))
+            conflict_set = conflict_map.get(self._package_name(core.name), set())
+            if len(conflict_set) > 0:
+                _s = "; conflicts ( {} )"
+                package_str += _s.format(", ".join(list(conflict_set)))
 
             # Add dependencies only if we want to build the whole dependency
             # tree.
