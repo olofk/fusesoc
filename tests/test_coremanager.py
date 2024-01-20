@@ -259,17 +259,22 @@ def test_virtual():
     cm = CoreManager(Config())
     cm.add_library(Library("virtual", core_dir), [])
 
-    root_core = cm.get_core(Vlnv("::user"))
+    test_vectors = {
+        "::top_impl1": ["::impl1:0", "::user:0", "::top_impl1:0"],
+        "::top_impl2": ["::impl2:0", "::user:0", "::top_impl2:0"],
+    }
+    for top_vlnv, expected_deps in test_vectors.items():
+        root_core = cm.get_core(Vlnv(top_vlnv))
 
-    edalizer = Edalizer(
-        toplevel=root_core.name,
-        flags=flags,
-        core_manager=cm,
-        work_root=work_root,
-    )
-    edalizer.run()
+        edalizer = Edalizer(
+            toplevel=root_core.name,
+            flags=flags,
+            core_manager=cm,
+            work_root=work_root,
+        )
+        edalizer.run()
 
-    deps = cm.get_depends(root_core.name, {})
-    deps_names = [str(c) for c in deps]
+        deps = cm.get_depends(root_core.name, {})
+        deps_names = [str(c) for c in deps]
 
-    assert deps_names == ["::impl2:0", "::user:0"]
+        assert deps_names == expected_deps
