@@ -1,9 +1,11 @@
 #!/usr/bin/env python
+# PYTHON_ARGCOMPLETE_OK
 # Copyright FuseSoC contributors
 # Licensed under the 2-Clause BSD License, see LICENSE for details.
 # SPDX-License-Identifier: BSD-2-Clause
 
 import argparse
+import argcomplete
 import os
 import shutil
 import signal
@@ -390,6 +392,40 @@ def update(fs, args):
     fs.update_libraries(args.libraries)
 
 
+class CoreCompleter(object):
+    def __call__(self, parsed_args, **kwargs):
+        config = Config(parsed_args.config)
+        args_to_config(parsed_args, config)
+        fs = Fusesoc(config)
+        cores = fs.get_cores()
+        return cores
+
+
+class ToolCompleter(object):
+    def __call__(self, parsed_args, **kwargs):
+        from edalize.edatool import get_edatool, walk_tool_packages
+        _tp = list(walk_tool_packages())
+        tools = []
+        for tool_name in _tp:
+            try:
+                tool_class = get_edatool(tool_name)
+                if tool_class.get_doc(0)["description"]:
+                    tools += [tool_name]
+            # Ignore any misbehaving backends
+            except Exception:
+                pass
+        return tools
+
+
+class GenCompleter(object):
+    def __call__(self, parsed_args, **kwargs):
+        config = Config(parsed_args.config)
+        args_to_config(parsed_args, config)
+        fs = Fusesoc(config)
+        cores = fs.get_generators()
+        return cores
+
+
 def get_parser():
     parser = argparse.ArgumentParser()
     subparsers = parser.add_subparsers()
@@ -441,7 +477,7 @@ def get_parser():
     parser_core_show = core_subparsers.add_parser(
         "show", help="Show information about a core"
     )
-    parser_core_show.add_argument("core", help="Name of the core to show")
+    parser_core_show.add_argument("core", help="Name of the core to show").completer = CoreCompleter()
     parser_core_show.set_defaults(func=core_info)
 
     # tool subparser
@@ -463,7 +499,7 @@ def get_parser():
     parser_core_info = subparsers.add_parser(
         "core-info", help="Display details about a core"
     )
-    parser_core_info.add_argument("core")
+    parser_core_info.add_argument("core").completer = CoreCompleter()
     parser_core_info.set_defaults(func=core_info)
 
     # gen subparser
@@ -483,7 +519,7 @@ def get_parser():
     parser_gen_show = gen_subparsers.add_parser(
         "show", help="Show information about a generator"
     )
-    parser_gen_show.add_argument("generator", help="Name of the generator to show")
+    parser_gen_show.add_argument("generator", help="Name of the generator to show").completer = GenCompleter()
     parser_gen_show.set_defaults(func=gen_show)
 
     # gen clean subparser
@@ -574,7 +610,7 @@ def get_parser():
     parser_run.add_argument("--build", action="store_true", help="Execute build stage")
     parser_run.add_argument("--run", action="store_true", help="Execute run stage")
     parser_run.add_argument("--target", help="Override default target")
-    parser_run.add_argument("--tool", help="Override default tool for target")
+    parser_run.add_argument("--tool", help="Override default tool for target").completer = ToolCompleter()
     parser_run.add_argument(
         "--flag",
         help="Set custom use flags. Can be specified multiple times",
@@ -594,7 +630,7 @@ def get_parser():
         action="store_true",
         help="Allow additional properties in core files",
     )
-    parser_run.add_argument("system", help="Select a system to operate on")
+    parser_run.add_argument("system", help="Select a system to operate on").completer = CoreCompleter()
     parser_run.add_argument(
         "backendargs", nargs=argparse.REMAINDER, help="arguments to be sent to backend"
     )
@@ -617,6 +653,7 @@ def get_parser():
 def parse_args(argv):
     parser = get_parser()
 
+    argcomplete.autocomplete(parser, always_complete_options=False)
     args = parser.parse_args(argv)
 
     if hasattr(args, "func"):
