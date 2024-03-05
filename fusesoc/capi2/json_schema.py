@@ -149,6 +149,39 @@ capi2_schema = """
           ]
         },
         {
+          "description": "svn Provider",
+          "type": "object",
+          "properties": {
+            "name": {
+              "type": "string",
+              "pattern": "^svn$"
+            },
+            "url": {
+              "type": "string"
+            },
+            "revision": {
+              "type": "string"
+            },
+            "ignore_externals": {
+              "type": "boolean"
+            },
+            "patches": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "cachable": {
+              "type": "boolean"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "name",
+            "url"
+          ]
+        },
+        {
           "description": "url Provider",
           "type": "object",
           "properties": {
