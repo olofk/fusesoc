@@ -121,6 +121,34 @@ def test_generators():
         system_name=None,
     )
     edalizer.run()
+
+    ref_edam = {
+        "version": "0.2.1",
+        "name": "generate_0",
+        "toplevel": "na",
+        "dependencies": {
+            "::generators:0": [],
+            "::generate:0": [
+                "::generators:0",
+                "::generate-testgenerate_without_params:0",
+                "::generate-testgenerate_with_params:0",
+                "::generate-testgenerate_with_override:0",
+                "::generate-testgenerate_with_cache:0",
+            ],
+            "::generate-testgenerate_without_params:0": [],
+            "::generate-testgenerate_with_params:0": [],
+            "::generate-testgenerate_with_override:0": [],
+            "::generate-testgenerate_with_cache:0": [],
+        },
+        "parameters": {"p": {"datatype": "str", "paramtype": "vlogparam"}},
+        "tool_options": {"icarus": {}},
+        "flow_options": {},
+        "hooks": {},
+        "files": [],
+        "vpi": [],
+    }
+
+    assert ref_edam == edalizer.edam
     edalizer.export()
 
     name_to_core = {str(core.name): core for core in edalizer.cores}

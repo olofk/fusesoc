@@ -149,6 +149,7 @@ class Edalizer:
                     resolve_env_vars=self.resolve_env_vars,
                 )
                 for gen_core in _ttptttg.generate():
+                    core.direct_deps.append(str(gen_core.name))
                     gen_core.pos = _ttptttg.pos
                     self._resolved_or_generated_cores.append(gen_core)
                     if self.export_root and not (
