@@ -103,12 +103,15 @@ def list_paths(fs, args):
 def add_library(fs, args):
     sync_uri = vars(args)["sync-uri"]
 
+    name = args.name or os.path.basename(sync_uri.rstrip("/"))
+
+    # Check where to store the library
     if args.location:
         location = args.location
     elif vars(args).get("global", False):
-        location = os.path.join(fs.config.library_root, args.name)
+        location = os.path.join(fs.config.library_root, name)
     else:
-        location = os.path.join("fusesoc_libraries", args.name)
+        location = os.path.join("fusesoc_libraries", name)
 
     sync_type = vars(args).get("sync-type")
     sync_version = vars(args).get("sync-version")
@@ -129,7 +132,7 @@ def add_library(fs, args):
         location = os.path.abspath(sync_uri)
 
     auto_sync = not args.no_auto_sync
-    library = Library(args.name, location, sync_type, sync_uri, sync_version, auto_sync)
+    library = Library(name, location, sync_type, sync_uri, sync_version, auto_sync)
 
     if args.config:
         config = Config(args.config)
@@ -509,7 +512,11 @@ def get_parser():
     parser_library_add = library_subparsers.add_parser(
         "add", help="Add new library to fusesoc.conf"
     )
-    parser_library_add.add_argument("name", help="A friendly name  for the library")
+    parser_library_add.add_argument(
+        "name",
+        nargs="?",
+        help="A friendly name  for the library. Defaults to last part of sync-uri if not specified.",
+    )
     parser_library_add.add_argument(
         "sync-uri", help="The URI source for the library (can be a file system path)"
     )
@@ -520,7 +527,7 @@ def get_parser():
     )
     parser_library_add.add_argument(
         "--location",
-        help="The location to store the library into (defaults to $XDG_DATA_HOME/[name])",
+        help="The location to store the library into (defaults to fusesoc_libraries/[name] or $XDG_DATA_HOME/[name] when --global is set)",
     )
     parser_library_add.add_argument(
         "--sync-type",
