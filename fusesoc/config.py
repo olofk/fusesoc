@@ -266,7 +266,6 @@ class Config:
         from fusesoc.provider.provider import get_provider
 
         section_name = "library." + library.name
-
         if section_name in self._cp.sections():
             logger.warning(
                 "Not adding library. {} already exists in configuration file".format(
@@ -275,9 +274,19 @@ class Config:
             )
             return
 
+        try:
+            provider = get_provider(library.sync_type)
+        except ImportError:
+            raise RuntimeError("Invalid sync-type '{}'".format(library["sync-type"]))
+
+        provider.init_library(library)
+
         self._cp.add_section(section_name)
 
-        self._cp.set(section_name, "location", library.location)
+        # Libraries in special environmental folders may not have a fixed location, but
+        # if they aren't set up to auto-sync they should
+        if library.sync_type not in ["env"] or not library.auto_sync:
+            self._cp.set(section_name, "location", library.location)
 
         if library.sync_type:
             self._cp.set(section_name, "sync-uri", library.sync_uri)
@@ -288,12 +297,5 @@ class Config:
             self._cp.set(section_name, "sync-type", library.sync_type)
             _auto_sync = "true" if library.auto_sync else "false"
             self._cp.set(section_name, "auto-sync", _auto_sync)
-
-        try:
-            provider = get_provider(library.sync_type)
-        except ImportError:
-            raise RuntimeError("Invalid sync-type '{}'".format(library["sync-type"]))
-
-        provider.init_library(library)
 
         self.write()
