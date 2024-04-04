@@ -12,7 +12,7 @@ This section explains how dependencies are specified, how they are resolved by F
 A dependency example: DualBlinky
 --------------------------------
 
-We introduced the basic FuseSoC features by creating an reusable core called Blinky.
+We introduced the basic FuseSoC features by creating a reusable core called Blinky.
 To illustrate the concept of dependencies in FuseSoC we employ another example: DualBlinky, the "dual-core" version of Blinky.
 Again, all source code is available in the `FuseSoC source tree <https://github.com/olofk/fusesoc>`_ in the ``tests/userguide/dualblinky`` directory.
 
@@ -71,14 +71,14 @@ The following rules apply.
 
 * Files from dependencies are inserted into the file list before the files in the file set where the dependency is declared.
 * The order in which dependencies are listed in the ``depend`` section does not imply any ordering.
-  That is, specifiying ``depend: [A, B]`` does not guarantee that files from core ``A`` are included before the ones from core ``B``.
+  That is, specifying ``depend: [A, B]`` does not guarantee that files from core ``A`` are included before the ones from core ``B``.
   (If such an order is desired, make core ``B`` depend on ``A``.)
 
 What happens if a dependency is specified?
 ------------------------------------------
 
 Declaring a dependency includes the dependent core in the build.
-More specificially, the following sections specified in the ``default`` target of the dependent core are included:
+More specifically, the following sections specified in the ``default`` target of the dependent core are included:
 
 * ``filesets``: File sets to include.
 * ``hooks``: A list of hooks to execute.
@@ -94,7 +94,7 @@ Version constraints
 
 Version constraints specify which version of a dependent core can be used, and which versions are incompatible.
 
-Within a :term:`core file`, version constraints are expressed by prefixing a core name with a version comparision operator.
+Within a :term:`core file`, version constraints are expressed by prefixing a core name with a version comparison operator.
 The following version comparison operators are available.
 
 .. list-table:: Version comparison operators

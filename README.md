@@ -35,7 +35,7 @@ full list of system requirements and installation instructions in the
 ### Quick start
 
 To check if FuseSoC is working, and to get an initial feeling for how FuseSoC
-works, you can try to simulate a simple hardware design from our core libray.
+works, you can try to simulate a simple hardware design from our core library.
 
 First, create and enter an empty workspace
 
@@ -61,7 +61,7 @@ add e.g. `--tool=modelsim` or `--tool=xcelium` between `run` and `i2c`.
 Did it work? Great! FuseSoC can be used to create FPGA images, perform
 linting, manage your IP libraries or do formal verification as well.
 Check out the [online documentation](https://fusesoc.readthedocs.io/en/stable/)
-documentation to learn more about creating your own core files and using
+to learn more about creating your own core files and using
 existing ones. If it didn't work, please get in touch (see below).
 
 ## Next steps

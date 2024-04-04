@@ -20,7 +20,7 @@ Its main purpose is to increase reuse of IP (Intellectual Property) cores and be
 
 - set up continuous integration
 
-**FuseSoC is non-intrusive** Most existing designs doesn't need any changes to work with FuseSoC. Any FuseSoC-specific patches can be applied on the fly during implementation or simulation
+**FuseSoC is non-intrusive** Most existing designs don't need any changes to work with FuseSoC. Any FuseSoC-specific patches can be applied on the fly during implementation or simulation
 
 **FuseSoC is modular** It can be used as an end-to-end flow, to create initial project files for an EDA tool or integrate with your custom workflow
 
