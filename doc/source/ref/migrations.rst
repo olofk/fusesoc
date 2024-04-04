@@ -278,7 +278,7 @@ Why
 ---
 As an aid for scripts executed during the build process, a number of environment variables were defined. Unfortunately this was done without too much thought and as time moved on, some of these turned out to be a maintenance burden without bringing much benefit, and in some cases without ever being used.
 
-At the same time, the introduction of VLNV and dependency ranges has introduced non-determinism in where the output of a build ends up. For these reasons, it was determined to redefine the rarely used `build_root` variable to point to the the directory containing the work root and exported files. A `--build-root` command-line switch is introduced to explictly set a build_root. Setting `build_root` in `fusesoc.conf` will keep working the same way as before, but the command-line switch takes precedence. CAPI1 cores will no longer export the `BUILD_ROOT` environment variable.
+At the same time, the introduction of VLNV and dependency ranges has introduced non-determinism in where the output of a build ends up. For these reasons, it was determined to redefine the rarely used `build_root` variable to point to the the directory containing the work root and exported files. A `--build-root` command-line switch is introduced to explicitly set a build_root. Setting `build_root` in `fusesoc.conf` will keep working the same way as before, but the command-line switch takes precedence. CAPI1 cores will no longer export the `BUILD_ROOT` environment variable.
 
 These changes affects the following cases:
 

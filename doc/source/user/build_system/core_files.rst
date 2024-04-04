@@ -168,9 +168,9 @@ Source files
 Source files are resolved relative to the location of the core file and must be stored in the same directory as the core file, or in a subdirectory of it.
 Source file names cannot be absolute paths, or start with ``../``.
 
-Optionally, source files can have attributes; the file ``macros.vh`` is an example of that.
+Optionally, source files can have attributes; the file ``macros.svh`` is an example of that.
 When specifying attributes, end the file name with a colon (``:``), and specify attributes as key-value pairs below it.
-(Alternatively, the equivalent short form syntax can be used, e.g. ``macros.vh: {is_include_file: true}``.)
+(Alternatively, the equivalent short form syntax can be used, e.g. ``macros.svh: {is_include_file: true}``.)
 
 The most common attributes are:
 

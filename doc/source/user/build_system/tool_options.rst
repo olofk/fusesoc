@@ -26,7 +26,7 @@ Typically, these keys are called ``BINARYNAME_options``, and they take a list of
 The example below shows how tool options for Icarus Verilog (``icarus``) and Mentor ModelSim (``modelsim``) are set.
 
 * The ``iverilog`` binary will be called with the ``-g2012`` command-line argument, indicating that SystemVerilog 2012 support should be enabled.
-* Similarily, for ModelSim the argument ``-timescale=1ns/1ns`` will be passed to the ``vlog`` binary, which elaborates the design.
+* Similarly, for ModelSim the argument ``-timescale=1ns/1ns`` will be passed to the ``vlog`` binary, which elaborates the design.
 
 .. code-block:: yaml
 

@@ -135,7 +135,7 @@ The final piece of the generators machinery is to run a generator with some spec
               offset: 0xf0000000
               size: 1024
 
-The above core file snippet will register a parametrized generator instance with the name wb_intercon. It will use the generator called `wb_intercon_gen` which FuseSoC has previously found in the depedency tree. Everything listed under the `parameters` key is instance-specific configuration to be sent to the generator.
+The above core file snippet will register a parametrized generator instance with the name wb_intercon. It will use the generator called `wb_intercon_gen` which FuseSoC has previously found in the dependency tree. Everything listed under the `parameters` key is instance-specific configuration to be sent to the generator.
 
 Just registering a generate section will not cause the generator to be invoked. It must also be listed in the target and the generator to be used must be in the dependency tree. The following snippet adds the parameterized generator to the `default` target and adds an explicit dependency on the core that contains the generator. As CAPI2 cores only allow filesets to have dependencies, an empty fileset for this purpose must be created
 
@@ -169,7 +169,7 @@ Generator Cache
 ---------------
 Instead of fusesoc rerunning a generator each time and producing the same result it is possible to configure fusesoc to cache generator output and try to detect if a new run would produce the same output. Since there is no generic way of doing this that will fit all generators a couple of different methods for caching and detecting changes are available.
 
-The `generators` option `cache_type` is used for configuring type of caching. If set to `none` (or if option is omitted) no caching will be used. If set to `input` fusesoc will calculate a SHA256 hash of the generator input yaml file data and use this hash for detecting if something has changed and a rerun would be needed. This would happen if some data in the core file `generate` section, for instance `paramaters`, has changed.
+The `generators` option `cache_type` is used for configuring type of caching. If set to `none` (or if option is omitted) no caching will be used. If set to `input` fusesoc will calculate a SHA256 hash of the generator input yaml file data and use this hash for detecting if something has changed and a rerun would be needed. This would happen if some data in the core file `generate` section, for instance `parameters`, has changed.
 
 If `cache_type` is set to `generator` fusesoc will pass the responsibility for detecting if the previous run to the generator is still up to date. In this mode the generator will always be called and the output directory will be saved.
 
