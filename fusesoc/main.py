@@ -317,7 +317,11 @@ def run(fs, args):
     # Unconditionally clean out the work root on fresh builds
     # if we use the old tool API
     if do_configure and not core.get_flow(flags):
-        prepare_work_root(fs.get_work_root(core, flags))
+        try:
+            prepare_work_root(fs.get_work_root(core, flags))
+        except RuntimeError as e:
+            logger.error(e)
+            exit(1)
 
     # Frontend/backend separation
 
