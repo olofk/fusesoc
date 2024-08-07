@@ -54,7 +54,7 @@ FuseSoC is launched. The library locations specified from the
 command-line will be parsed after those in ``fusesoc.conf``
 
 For each library location, FuseSoC will recursively search for files
-with a *.core* suffix. Each of these files will be parsed and addded to
+with a *.core* suffix. Each of these files will be parsed and added to
 the in-memory FuseSoC database if they are valid ``.core`` files.
 
 Several ``.core`` files can reside in the same directory and they will all be parsed.

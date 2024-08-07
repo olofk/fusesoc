@@ -361,7 +361,7 @@ main
      - Supported simulators. Valid values are
        icarus, modelsim, verilator, isim and
        xsim. Each simulator have a dedicated
-       section desribed elsewhere in this
+       section described elsewhere in this
        document
 
 
