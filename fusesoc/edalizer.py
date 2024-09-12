@@ -175,10 +175,7 @@ class Edalizer:
                     core.direct_deps.append(str(gen_core.name))
                     gen_core.pos = _ttptttg.pos
                     self._resolved_or_generated_cores.append(gen_core)
-                    if self.export_root and not (
-                        _ttptttg.is_generator_cacheable()
-                        or _ttptttg.is_input_cacheable()
-                    ):
+                    if self.export_root and not _ttptttg.is_cacheable():
                         self._generated_core_dirs_to_remove.append(gen_core.core_root)
 
     def export(self):
@@ -532,7 +529,9 @@ from fusesoc.utils import Launcher
 
 
 class Ttptttg:
-    def __init__(self, ttptttg, core, generators, gen_root, resolve_env_vars=False):
+    def __init__(
+        self, ttptttg, core, generators, temp_gen_root, resolve_env_vars=False
+    ):
         generator_name = ttptttg["generator"]
         if not generator_name in generators:
             raise RuntimeError(
@@ -545,7 +544,11 @@ class Ttptttg:
         self.name = ttptttg["name"]
         self.pos = ttptttg["pos"]
         self.gen_name = generator_name
-        self.gen_root = gen_root
+        self.gen_root = (
+            temp_gen_root
+            if temp_gen_root and not self.is_cacheable()
+            else self.core.cache_root
+        )
         self.resolve_env_vars = resolve_env_vars
         parameters = ttptttg["config"]
 
@@ -652,6 +655,9 @@ class Ttptttg:
             and self.generator["cache_type"] == "generator"
         )
 
+    def is_cacheable(self):
+        return self.is_input_cacheable() or self.is_generator_cacheable()
+
     def generate(self):
         """Run a parametrized generator
 
@@ -664,7 +670,7 @@ class Ttptttg:
         logger.debug("Generator input yaml hash: " + hexdigest)
 
         generator_cwd = os.path.join(
-            self.gen_root or self.core.cache_root,
+            self.gen_root,
             "generator_cache",
             self.vlnv.sanitized_name + "-" + hexdigest,
         )
