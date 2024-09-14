@@ -23,21 +23,28 @@ jobs:
         # https://github.com/olofk/fusesoc/issues/528
         #- { icon: 🧊, name: windows-latest }
         pyver:
-          - '3.6'
           - '3.7'
           - '3.8'
           - '3.9'
           - '3.10'
-          - '3.11.0-alpha - 3.11.0'
+          - '3.11'
+          - '3.12'
+        exclude:
+          #Fails because github can't find an arm64 image for Python 3.7???
+          - os: {name: macos-latest}
+            pyver: '3.7'
+          #Fails because one test expects a different output during an exception
+          - os: {name: macos-latest}
+            pyver: '3.8'
     runs-on: ${{ matrix.os.name }}
     name: ${{ matrix.os.icon }} ${{ matrix.os.name }} | ${{ matrix.pyver }}
     steps:
 
     - name: 🧰 Repository Checkout
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
 
     - name: 🐍 Set up Python ${{ matrix.pyver }}
-      uses: actions/setup-python@v4
+      uses: actions/setup-python@v5
       with:
         python-version: ${{ matrix.pyver }}
 
