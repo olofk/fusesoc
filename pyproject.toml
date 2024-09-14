@@ -1,3 +1,61 @@
 [build-system]
-requires = ["setuptools"]
+requires = ["setuptools>=64"]
 build-backend = "setuptools.build_meta"
+
+[project]
+name = "fusesoc"
+description = "Award-winnning package manager and build abstraction tool for HDL code"
+readme = "README.md"
+authors = [
+  {name = "Olof Kindgren", email = "olof@award-winning.me"},
+]
+maintainers = [
+  {name = "Olof Kindgren", email = "olof@award-winning.me"},
+]
+
+keywords=["VHDL", "verilog", "hdl", "rtl", "synthesis", "FPGA", "simulation", "ASIC"]
+
+classifiers = [
+  "Development Status :: 5 - Production/Stable",
+  "Topic :: Utilities",
+  "Topic :: Software Development :: Build Tools",
+  "License :: OSI Approved :: BSD License",
+]
+
+dynamic = ["version"]
+
+dependencies = [
+  "edalize>=0.4.1",
+  "pyparsing>=2.3.1",
+  "pyyaml>=6.0",
+  "simplesat>=0.8.0",
+  "fastjsonschema",
+  "jsonschema2md",
+]
+requires-python = ">=3.6, <4"
+
+[project.urls]
+Homepage = "https://fusesoc.net"
+Documentation = "https://fusesoc.readthedocs.io"
+Repository = "https://github.com/olofk/fusesoc"
+Issues = "https://github.com/olofk/fusesoc/issues"
+Changelog = "https://github.com/olofk/fusesoc/blob/main/NEWS"
+
+[tool.setuptools_scm]
+version_file = "fusesoc/version.py"
+
+[tool.setuptools.packages.find]
+include = ["fusesoc", "fusesoc.capi2", "fusesoc.provider", "fusesoc.parser"]
+
+[project.scripts]
+fusesoc = "fusesoc.main:main"
+
+[tool.tox]
+legacy_tox_ini = """
+[tox]
+envlist = py3
+
+[testenv]
+deps = pytest
+commands = pytest
+"""
