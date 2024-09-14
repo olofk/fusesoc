@@ -163,7 +163,15 @@ class Edalizer:
                     self.work_root if not self.export_root else None,
                     resolve_env_vars=self.resolve_env_vars,
                 )
-                for gen_core in _ttptttg.generate():
+                try:
+                    gen_cores = _ttptttg.generate()
+                except RuntimeError as e:
+                    logger.error(e)
+                    raise RuntimeError(
+                        f"Failed to run generator '{ttptttg_data['name']}'"
+                    )
+                    gen_cores = []
+                for gen_core in gen_cores:
                     core.direct_deps.append(str(gen_core.name))
                     gen_core.pos = _ttptttg.pos
                     self._resolved_or_generated_cores.append(gen_core)
