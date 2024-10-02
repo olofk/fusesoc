@@ -1,3 +1,19 @@
+2.4 2024-10-02 Olof Kindgren <olof.kindgren@gmail.com>
+======================================================
+* Add conflict handling for virtual cores
+* Connect generated cores in EDAM dependency graph
+* Support implicit name in library add command
+* Migrate from setup.py to pyproject.toml
+* Add support for EDAM filter plugins
+
+Contributors:
+Alexander Williams <awill@opentitan.org>
+Alfred E Neuman <quinky@gmx.ch>
+Daniel Copley <djcopley@users.noreply.github.com>
+Jelle van der Waa <jelle@vdwaa.nl>
+Olof Kindgren <olof.kindgren@gmail.com>
+Phillipe Jean-Jumeau <pljeanjumeau@gmail.com>
+
 2.3 2023-11-17 Olof Kindgren <olof.kindgren@gmail.com>
 ======================================================
 * Add CLI to read/write config settings
