@@ -43,8 +43,9 @@ except ImportError:
 
 release = __version__
 # The short X.Y version.
-v_major, v_minor = LooseVersion(release).version[:2]
-version = f"{v_major}.{v_minor}"
+# v_major, v_minor = LooseVersion(release).version[:2]
+# version = f"{v_major}.{v_minor}"
+version = "2.4"
 
 # -- General configuration ---------------------------------------------------
 
@@ -67,7 +68,7 @@ extensions = [
     "myst_parser",
 ]
 
-intersphinx_mapping = {"https://docs.python.org/3": None}
+intersphinx_mapping = {"python": ("https://docs.python.org/3", None)}
 
 
 # Add any paths that contain templates here, relative to this directory.
