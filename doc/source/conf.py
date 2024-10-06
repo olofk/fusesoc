@@ -12,7 +12,6 @@
 import os
 import sys
 from datetime import datetime
-from distutils.version import LooseVersion
 
 import jsonschema2md
 
@@ -35,16 +34,13 @@ project = "FuseSoC"
 copyright = f"2018-{datetime.now().year}, Olof Kindgren"
 author = "Olof Kindgren"
 
-# The full version, including alpha/beta/rc tags.
-try:
-    from fusesoc.version import version as __version__
-except ImportError:
-    __version__ = "unknown"
+from importlib.metadata import version as get_version
 
-release = __version__
+# The full version, including alpha/beta/rc tags.
+release: str = get_version("fusesoc")
+
 # The short X.Y version.
-v_major, v_minor = LooseVersion(release).version[:2]
-version = f"{v_major}.{v_minor}"
+version: str = ".".join(release.split(".")[:2])
 
 # -- General configuration ---------------------------------------------------
 
@@ -67,7 +63,7 @@ extensions = [
     "myst_parser",
 ]
 
-intersphinx_mapping = {"https://docs.python.org/3": None}
+intersphinx_mapping = {"python": ("https://docs.python.org/3", None)}
 
 
 # Add any paths that contain templates here, relative to this directory.
