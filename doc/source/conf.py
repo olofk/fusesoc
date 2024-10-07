@@ -42,7 +42,7 @@ except ImportError:
 
 from importlib.metadata import version as get_version
 
-release: str = get_version("package-name")
+release: str = get_version("fusesoc")
 # for example take major/minor
 version: str = ".".join(release.split(".")[:2])
 
