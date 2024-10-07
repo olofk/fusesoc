@@ -12,7 +12,6 @@
 import os
 import sys
 from datetime import datetime
-from distutils.version import LooseVersion
 
 import jsonschema2md
 
@@ -43,9 +42,7 @@ except ImportError:
 
 release = __version__
 # The short X.Y version.
-# v_major, v_minor = LooseVersion(release).version[:2]
-# version = f"{v_major}.{v_minor}"
-version = "2.4"
+version = f"{release.split('.')[0]}.{release.split('.')[1]}"
 
 # -- General configuration ---------------------------------------------------
 
