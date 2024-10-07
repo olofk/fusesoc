@@ -1,3 +1,11 @@
+2.4.1 2024-10-07 Olof Kindgren <olof.kindgren@gmail.com>
+======================================================
+
+* Fix broken documentation builds
+
+Contributors:
+Olof Kindgren <olof.kindgren@gmail.com>
+
 2.4 2024-10-02 Olof Kindgren <olof.kindgren@gmail.com>
 ======================================================
 * Add conflict handling for virtual cores
