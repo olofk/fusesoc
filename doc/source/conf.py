@@ -41,6 +41,7 @@ except ImportError:
     __version__ = "unknown"
 
 release = __version__
+print(f"Release is '{release}'")
 # The short X.Y version.
 version = f"{release.split('.')[0]}.{release.split('.')[1]}"
 
