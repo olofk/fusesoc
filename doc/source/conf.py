@@ -40,10 +40,11 @@ try:
 except ImportError:
     __version__ = "unknown"
 
-release = __version__
-print(f"Release is '{release}'")
-# The short X.Y version.
-version = f"{release.split('.')[0]}.{release.split('.')[1]}"
+from importlib.metadata import version as get_version
+
+release: str = get_version("package-name")
+# for example take major/minor
+version: str = ".".join(release.split(".")[:2])
 
 # -- General configuration ---------------------------------------------------
 
