@@ -38,10 +38,10 @@ class Git(Provider):
 
     @staticmethod
     def update_library(library):
-        git_args = ["-C", library.location, "pull"]
+        git_args = ["-C", library.location, "fetch", "--all"]
         try:
-            Git._checkout_library_version(library)
             Launcher("git", git_args).run()
+            Git._checkout_library_version(library)
         except subprocess.CalledProcessError as e:
             raise RuntimeError(str(e))
 
