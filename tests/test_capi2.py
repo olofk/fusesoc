@@ -262,6 +262,18 @@ def test_capi2_get_files():
 
     assert expected == result
 
+    core_file = os.path.join(tests_dir, "capi2_cores", "misc", "fileattrs.core")
+    core = Core(Core2Parser(), core_file)
+    flags = {"is_toplevel": True, "target": "defines"}
+    result = core.get_files(flags)
+    expected = [
+        {"name": "hasdefines", "define": {"key1": "value1", "key2": "value2"}},
+        {
+            "name": "nodefines",
+        },
+    ]
+    assert expected == result
+
 
 def test_capi2_type_check():
     from fusesoc.capi2.coreparser import Core2Parser

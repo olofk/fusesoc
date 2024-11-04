@@ -228,6 +228,25 @@ capi2_schema = """
                         "description": "Path to file",
                         "type": "object",
                         "properties": {
+                          "define": {
+                            "description": "Defines to be used for this file. These defines will be added to those specified in the target parameters section. If a define is specified both here and in the target parameter section, the value specified here will take precedence.  The parameter default value can be set here with ``param=value``",
+                            "type": "object",
+                            "patternProperties": {
+                              "^.+$": {
+                                "anyOf": [
+                                  {
+                                    "type": "string"
+                                  },
+                                  {
+                                    "type": "number"
+                                  },
+                                  {
+                                    "type": "boolean"
+                                  },
+                                ]
+                              }
+                            }
+                          },
                           "is_include_file": {
                             "description": "Treats file as an include file when true",
                             "type": "boolean"

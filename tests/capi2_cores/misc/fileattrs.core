@@ -1,0 +1,12 @@
+CAPI=2:
+
+name : ::fileattrs:0
+
+filesets:
+  defines:
+    files:
+      - hasdefines : {define : {key1 : value1, key2 : value2}}
+      - nodefines
+
+targets:
+  defines: {filesets : [defines]}
