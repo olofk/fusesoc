@@ -59,6 +59,18 @@ def test_github_provider():
         assert fref.read() == fgen.read(), f
 
 
+def test_svn_provider():
+    cache_root = tempfile.mkdtemp("svn_")
+    core = Core(
+        Core2Parser(),
+        os.path.join(cores_root, "misc", "svn.core"),
+        cache_root,
+    )
+
+    core.setup()
+    assert os.path.isfile(os.path.join(core.files_root, "gtkwave.desktop"))
+
+
 @pytest.mark.skip(reason="Problems connecting to OpenCores SVN")
 def test_opencores_provider():
     cache_root = tempfile.mkdtemp("opencores_")
