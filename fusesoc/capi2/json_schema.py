@@ -346,7 +346,7 @@ capi2_schema = """
       }
     },
     "^scripts$": {
-      "description": "A script specifies how to run an external command that is called by the hooks section together with the actual files needed to run the script. Scripts are alway executed from the work root",
+      "description": "A script specifies how to run an external command that is called by the hooks section together with the actual files needed to run the script. Scripts are always executed from the work root",
       "type": "object",
       "patternProperties": {
         "^.+$": {
