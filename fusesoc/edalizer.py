@@ -590,11 +590,16 @@ class Ttptttg:
         hash = hashlib.sha256()
 
         for f in input_files:
-            abs_f = os.path.join(self.generator_input["files_root"], f)
-            try:
-                hash.update(pathlib.Path(abs_f).read_bytes())
-            except Exception as e:
-                raise RuntimeError("Unable to hash file: " + str(e))
+            if type(f) == list:
+                files = f
+            else:
+                files = [f]
+            for ff in files:
+                abs_f = os.path.join(self.generator_input["files_root"], ff)
+                try:
+                    hash.update(pathlib.Path(abs_f).read_bytes())
+                except Exception as e:
+                    raise RuntimeError("Unable to hash file: " + str(e))
 
         return hash.hexdigest()
 
