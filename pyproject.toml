@@ -1,5 +1,5 @@
 [build-system]
-requires = ["setuptools>=64", "setuptools_scm>=8"]
+requires = ["setuptools>=64", "setuptools_scm>=7.1"]
 build-backend = "setuptools.build_meta"
 
 [project]
@@ -42,7 +42,7 @@ Issues = "https://github.com/olofk/fusesoc/issues"
 Changelog = "https://github.com/olofk/fusesoc/blob/main/NEWS"
 
 [tool.setuptools_scm]
-version_file = "fusesoc/version.py"
+write_to = "fusesoc/version.py"
 
 [tool.setuptools.packages.find]
 include = ["fusesoc", "fusesoc.capi2", "fusesoc.provider", "fusesoc.parser", "fusesoc.filters"]
