@@ -93,7 +93,8 @@ class Core:
 
         dirs = list(set(map(os.path.dirname, src_files)))
         for d in dirs:
-            os.makedirs(os.path.join(dst_dir, d), exist_ok=True)
+            if not os.path.isabs(d):
+                os.makedirs(os.path.join(dst_dir, d), exist_ok=True)
 
         for f in src_files:
             if f.startswith(".."):
