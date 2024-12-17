@@ -1,0 +1,22 @@
+CAPI=2:
+# Copyright FuseSoC contributors
+# Licensed under the 2-Clause BSD License, see LICENSE for details.
+# SPDX-License-Identifier: BSD-2-Clause
+
+name: ::top_conflict:0
+filesets:
+  rtl:
+    depend:
+      - ::user:0
+      - ::impl1:0
+      - ::impl2:0
+    files:
+      - top_conflict.sv
+    file_type: systemVerilogSource
+
+
+targets:
+  default:
+    filesets:
+      - rtl
+    toplevel: top_impl2
