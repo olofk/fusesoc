@@ -74,16 +74,7 @@ class Edalizer:
     @property
     def resolved_cores(self):
         """Get a list of all "used" cores after the dependency resolution"""
-        try:
-            return self.core_manager.get_depends(self.toplevel, self.flags)
-        except DependencyError as e:
-            logger.error(
-                e.msg + f"\nFailed to resolve dependencies for {self.toplevel}"
-            )
-            exit(1)
-        except SyntaxError as e:
-            logger.error(e.msg)
-            exit(1)
+        return self.core_manager.get_depends(self.toplevel, self.flags)
 
     @property
     def discovered_cores(self):
