@@ -20,7 +20,7 @@ class Library:
         sync_version=None,
         auto_sync=True,
     ):
-        if sync_type and not sync_type in ["local", "git"]:
+        if sync_type and not sync_type in ["local", "git", "env"]:
             raise ValueError(
                 "Library {} ({}) Invalid sync-type '{}'".format(
                     name, location, sync_type
@@ -46,8 +46,8 @@ class Library:
         def l(s):
             return self.name + " : " + s
 
-        if self.sync_type == "local":
-            logger.info(l("sync-type is local. Ignoring update"))
+        if self.sync_type in ["local", "env"]:
+            logger.info(l(f"sync-type is {self.sync_type}. Ignoring update"))
             return
 
         # FIXME: Do an initial checkout if missing
