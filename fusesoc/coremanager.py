@@ -225,14 +225,36 @@ class CoreDB:
         except NoPackageFound as e:
             raise DependencyError(top_core.name)
 
+        virtual_selection = {}
         objdict = {}
         if len(transaction.operations) > 1:
             for op in transaction.operations:
+                package_name = self._package_name(op.package.core.name)
+                virtuals = op.package.core.get_virtuals(_flags)
                 for p in op.package.provides:
+                    for virtual in virtuals:
+                        if p[0] == self._package_name(virtual):
+                            # Add virtual core selection to dictionary
+                            virtual_selection[package_name] = (
+                                op.package.core.name,
+                                virtual,
+                            )
                     objdict[p[0]] = str(op.package.core.name)
+                for p in op.package.install_requires:
+                    if p[0] in virtual_selection:
+                        # If package that implements a virtual core is required, remove from the dictionary
+                        del virtual_selection[p[0]]
                 op.package.core.direct_deps = [
                     objdict[n[0]] for n in op.package.install_requires
                 ]
+        # Print a warning for all virtual selections that has no concrete requirement selection
+        for virtual in virtual_selection.values():
+            logger.warning(
+                "Non-deterministic selection of virtual core {} selected {}".format(
+                    virtual[1], virtual[0]
+                )
+            )
+
         result = [op.package.core for op in transaction.operations]
 
         # Cache the solution for further lookups
