@@ -160,9 +160,7 @@ class Fusesoc:
         except RuntimeError as e:
             raise RuntimeError("Setup failed : {}".format(str(e)))
         except DependencyError as e:
-            raise RuntimeError(
-                "Failed to resolve dependencies. " + e.msg
-            )
+            raise RuntimeError("Failed to resolve dependencies. " + e.msg)
 
         if os.path.exists(edam_file):
             old_edam = yaml_fread(edam_file, self.config.resolve_env_vars_early)

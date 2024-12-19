@@ -649,7 +649,10 @@ def args_to_config(args, config):
     if hasattr(args, "resolve_env_vars_early") and args.resolve_env_vars_early:
         setattr(config, "args_resolve_env_vars_early", args.resolve_env_vars_early)
 
-    if hasattr(args, "allow_additional_properties") and args.allow_additional_properties:
+    if (
+        hasattr(args, "allow_additional_properties")
+        and args.allow_additional_properties
+    ):
         setattr(
             config, "args_allow_additional_properties", args.allow_additional_properties
         )
