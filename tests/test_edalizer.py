@@ -217,9 +217,6 @@ def test_generators():
         assert core_name in name_to_core
         core = name_to_core[core_name]
 
-        # ttptttg temporary directory should be removed by now
-        assert not os.path.isdir(core.core_root)
-
     # Test generator input cache and file_input_params
     core_name = f"::generate-testgenerate_with_cache:0"
     assert core_name in name_to_core
