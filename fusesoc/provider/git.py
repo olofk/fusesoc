@@ -44,6 +44,8 @@ class Git(Provider):
             Launcher("git", git_args).run()
         except subprocess.CalledProcessError as e:
             raise RuntimeError(str(e))
+        except RuntimeError as e:
+            pass
 
     def _checkout(self, local_dir):
         version = self.config.get("version", None)
