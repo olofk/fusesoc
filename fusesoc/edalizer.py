@@ -141,7 +141,6 @@ class Edalizer:
     def run_generators(self):
         """Run all generators"""
         self._resolved_or_generated_cores = []
-        self._generated_core_dirs_to_remove = []
         for core in self.cores:
             logger.debug("Running generators in " + str(core.name))
             core_flags = self._core_flags(core)
@@ -151,7 +150,7 @@ class Edalizer:
                     ttptttg_data,
                     core,
                     self.generators,
-                    self.work_root if not self.export_root else None,
+                    self.work_root,
                     resolve_env_vars=self.resolve_env_vars,
                 )
                 try:
@@ -166,8 +165,6 @@ class Edalizer:
                     core.direct_deps.append(str(gen_core.name))
                     gen_core.pos = _ttptttg.pos
                     self._resolved_or_generated_cores.append(gen_core)
-                    if self.export_root and not _ttptttg.is_cacheable():
-                        self._generated_core_dirs_to_remove.append(gen_core.core_root)
 
     def export(self):
         for core in self.cores:
@@ -185,9 +182,6 @@ class Edalizer:
                 if file.get("copyto"):
                     src = os.path.join(files_root, file["name"])
                     self._copyto(src, file.get("copyto"))
-
-        # Clean up ttptttg temporary directories
-        self.clean_temp_dirs()
 
     def _copyto(self, src, name):
         dst = os.path.join(self.work_root, name)
@@ -303,11 +297,6 @@ class Edalizer:
 
         for snippet in first_snippets + snippets + last_snippets:
             merge_dict(self.edam, snippet)
-
-    def clean_temp_dirs(self):
-        for coredir in self._generated_core_dirs_to_remove:
-            logger.debug(f"Removing {coredir} ttptttg temporary directory")
-            shutil.rmtree(coredir)
 
     def _build_parser(self, backend_class, edam):
         typedict = {
@@ -520,9 +509,7 @@ from fusesoc.utils import Launcher
 
 
 class Ttptttg:
-    def __init__(
-        self, ttptttg, core, generators, temp_gen_root, resolve_env_vars=False
-    ):
+    def __init__(self, ttptttg, core, generators, work_root, resolve_env_vars=False):
         generator_name = ttptttg["generator"]
         if not generator_name in generators:
             raise RuntimeError(
@@ -535,11 +522,7 @@ class Ttptttg:
         self.name = ttptttg["name"]
         self.pos = ttptttg["pos"]
         self.gen_name = generator_name
-        self.gen_root = (
-            temp_gen_root
-            if temp_gen_root and not self.is_cacheable()
-            else self.core.cache_root
-        )
+        self.gen_root = self.core.cache_root if self.is_cacheable() else work_root
         self.resolve_env_vars = resolve_env_vars
         parameters = ttptttg["config"]
 
