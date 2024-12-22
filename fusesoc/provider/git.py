@@ -29,7 +29,7 @@ class Git(Provider):
     @staticmethod
     def init_library(library):
         logger.info(f"Cloning library into {library.location}")
-        git_args = ["clone", library.sync_uri, library.location]
+        git_args = ["clone", *library.sync_uri.split(), library.location]
         try:
             Launcher("git", git_args).run()
             Git._checkout_library_version(library)
