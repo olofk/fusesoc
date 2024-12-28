@@ -148,9 +148,9 @@ def test_tool_or_flow():
 
 
 def test_generators():
-    import os
     import shutil
     import tempfile
+    from pathlib import Path
 
     from fusesoc.config import Config
     from fusesoc.coremanager import CoreManager
@@ -158,8 +158,8 @@ def test_generators():
     from fusesoc.librarymanager import Library
     from fusesoc.vlnv import Vlnv
 
-    tests_dir = os.path.dirname(__file__)
-    cores_dir = os.path.join(tests_dir, "capi2_cores", "misc", "generate")
+    tests_dir = Path(__file__).parent
+    cores_dir = tests_dir / "capi2_cores" / "misc" / "generate"
 
     lib = Library("edalizer", cores_dir)
 
@@ -168,14 +168,14 @@ def test_generators():
 
     core = cm.get_core(Vlnv("::generate"))
 
-    build_root = tempfile.mkdtemp(prefix="export_")
-    export_root = os.path.join(build_root, "exported_files")
+    build_root = Path(tempfile.mkdtemp(prefix="export_"))
+    export_root = build_root / "exported_files"
 
     edalizer = Edalizer(
         toplevel=core.name,
         flags={"tool": "icarus"},
         core_manager=cm,
-        work_root=os.path.join(build_root, "work"),
+        work_root=build_root / "work",
         export_root=export_root,
         system_name=None,
     )
@@ -193,11 +193,13 @@ def test_generators():
                 "::generate-testgenerate_with_params:0",
                 "::generate-testgenerate_with_override:0",
                 "::generate-testgenerate_with_cache:0",
+                "::generate-testgenerate_with_file_cache:0",
             ],
             "::generate-testgenerate_without_params:0": [],
             "::generate-testgenerate_with_params:0": [],
             "::generate-testgenerate_with_override:0": [],
             "::generate-testgenerate_with_cache:0": [],
+            "::generate-testgenerate_with_file_cache:0": [],
         },
         "parameters": {"p": {"datatype": "str", "paramtype": "vlogparam"}},
         "tool_options": {"icarus": {}},
@@ -209,7 +211,6 @@ def test_generators():
     }
 
     assert ref_edam == edalizer.edam
-    edalizer.export()
 
     name_to_core = {str(core.name): core for core in edalizer.cores}
     for flavour in ["testgenerate_with_params", "testgenerate_without_params"]:
@@ -217,17 +218,32 @@ def test_generators():
         assert core_name in name_to_core
         core = name_to_core[core_name]
 
-    # Test generator input cache and file_input_params
-    core_name = f"::generate-testgenerate_with_cache:0"
+    # Test generator input without file_input_params
+    core_name = "::generate-testgenerate_with_cache:0"
     assert core_name in name_to_core
     core = name_to_core[core_name]
-    assert os.path.isdir(core.core_root)
 
-    hash = ""
-    with open(os.path.join(core.core_root, ".fusesoc_file_input_hash")) as f:
-        hash = f.read()
+    core_root = Path(core.core_root)
+    assert core_root.is_dir()
+    assert (
+        core_root.name
+        == "generate-testgenerate_with_cache_0-616d6cf151dba72fcd893c08a8e18e6dba2b81ee25dec08c92e0177064dfc18c"
+    )
+    shutil.rmtree(core.core_root, ignore_errors=True)
 
-    # SHA256 hash of test file content
-    assert hash == "da265f9dccc9d9e64d059f677508f9550b403c99e6ce5df07c6fb1d711d0ee99"
+    # Test generator input file_input_params
+    core_name = "::generate-testgenerate_with_file_cache:0"
+    assert core_name in name_to_core
+    core = name_to_core[core_name]
+    core_root = Path(core.core_root)
 
+    assert core_root.is_dir()
+    assert (
+        core_root.name
+        == "da265f9dccc9d9e64d059f677508f9550b403c99e6ce5df07c6fb1d711d0ee99"
+    )
+    assert (
+        core_root.parent.name
+        == "generate-testgenerate_with_file_cache_0-f3d9e1e462ef1f7113fafbacd62d6335dd684e69332f75498fb01bfaaa7c11ee"
+    )
     shutil.rmtree(core.core_root, ignore_errors=True)

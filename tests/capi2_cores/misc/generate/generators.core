@@ -14,4 +14,9 @@ generators:
     interpreter: python3
     command: testgen.py
     cache_type: input
+
+  generator3:
+    interpreter: python3
+    command: testgen.py
+    cache_type: input
     file_input_parameters: file_in_param1

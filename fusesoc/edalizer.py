@@ -581,17 +581,6 @@ class Ttptttg:
 
         return hash.hexdigest()
 
-    def _fwrite_hash(self, hashfile, data):
-        with open(hashfile, "w") as f:
-            f.write(data)
-
-    def _fread_hash(self, hashfile):
-        data = ""
-        with open(hashfile) as f:
-            data = f.read()
-
-        return data
-
     def _run(self, generator_cwd):
         logger.info("Generating " + str(self.vlnv))
 
@@ -633,6 +622,11 @@ class Ttptttg:
     def is_cacheable(self):
         return self.is_input_cacheable() or self.is_generator_cacheable()
 
+    def acquire_cache_lock(self):
+        have_lock = False
+        # while not have_lock:
+        #    if
+
     def generate(self):
         """Run a parametrized generator
 
@@ -642,13 +636,23 @@ class Ttptttg:
 
         hexdigest = self._sha256_input_yaml_hexdigest()
 
-        logger.debug("Generator input yaml hash: " + hexdigest)
+        logger.debug("Generator parameters hash: " + hexdigest)
 
         generator_cwd = os.path.join(
             self.gen_root,
             "generator_cache",
             self.vlnv.sanitized_name + "-" + hexdigest,
         )
+
+        if "file_input_parameters" in self.generator:
+            # If file_input_parameters has been configured in the generator
+            # parameters will be iterated to look for files to add to the
+            # input files hash calculation.
+            file_input_hash = self._sha256_file_input_hexdigest()
+            generator_cwd = os.path.join(generator_cwd, file_input_hash)
+            logger.debug("Generator input files hash: " + file_input_hash)
+
+        logger.debug("Generator cwd: " + generator_cwd)
 
         if os.path.lexists(generator_cwd) and not os.path.isdir(generator_cwd):
             raise RuntimeError(
@@ -658,59 +662,18 @@ class Ttptttg:
                 + "Remove it manually or run 'fusesoc gen clean'"
             )
 
-        if self.is_input_cacheable():
-            # Input cache enabled. Check if cached output already exists in generator_cwd.
-            logger.debug("Input cache enabled.")
-
-            # If file_input_parameters has been configured in the generator
-            # parameters will be iterated to look for files to add to the
-            # input files hash calculation.
-            if "file_input_parameters" in self.generator:
-                file_input_hash = self._sha256_file_input_hexdigest()
-
-                logger.debug("Generator file input hash: " + file_input_hash)
-
-                hashfile = os.path.join(generator_cwd, ".fusesoc_file_input_hash")
-
-                rerun = False
-
-                if os.path.isfile(hashfile):
-                    cached_hash = self._fread_hash(hashfile)
-                    logger.debug("Cached file input hash: " + cached_hash)
-
-                    if not file_input_hash == cached_hash:
-                        logger.debug("File input has changed.")
-                        rerun = True
-                    else:
-                        logger.info("Found cached output for " + str(self.vlnv))
-
-                else:
-                    logger.debug("File input hash file does not exist: " + hashfile)
-                    rerun = True
-
-                if rerun:
-                    shutil.rmtree(generator_cwd, ignore_errors=True)
-                    self._run(generator_cwd)
-                    self._fwrite_hash(hashfile, file_input_hash)
-
-            elif os.path.isdir(generator_cwd):
-                logger.info("Found cached output for " + str(self.vlnv))
-            else:
-                # No directory found. Run generator.
-                self._run(generator_cwd)
-
-        elif self.is_generator_cacheable():
-            # Generator cache enabled. Call the generator and let it
-            # decide if the old output still is valid.
-            logger.debug("Generator cache enabled.")
-            self._run(generator_cwd)
+        if self.is_input_cacheable() and os.path.isdir(generator_cwd):
+            logger.info("Found cached output for " + str(self.vlnv))
         else:
-            # No caching enabled. Try to remove directory if it already exists.
-            # This could happen if a generator that has been configured with
-            # caching is changed to no caching.
-            logger.debug("Generator cache is not enabled.")
-            shutil.rmtree(generator_cwd, ignore_errors=True)
+            # TODO: Acquire a lock here to ensure that we are the only users
+            if self.is_generator_cacheable():
+                logger.warning(
+                    "Support for generator-side cachable cores are deprecated and will be removed"
+                )
+            else:
+                shutil.rmtree(generator_cwd, ignore_errors=True)
             self._run(generator_cwd)
+            # TODO: Release cache lock
 
         cores = []
         logger.debug("Looking for generated or cached cores in " + generator_cwd)
