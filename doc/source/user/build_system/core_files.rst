@@ -165,7 +165,7 @@ For each named file set, several keys are supported:
 Source files
 ~~~~~~~~~~~~
 
-Source files are resolved relative to the location of the core file and must be stored in the same directory as the core file, or in a subdirectory of it.
+For local cores, source files are resolved relative to the location of the core file and must be stored in the same directory as the core file, or in a subdirectory of it. For remote cores, file names are typically relative to the repository or archive root.
 Source file names cannot be absolute paths, or start with ``../``.
 
 Optionally, source files can have attributes; the file ``macros.svh`` is an example of that.
