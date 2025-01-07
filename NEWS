@@ -1,3 +1,21 @@
+2.4.2 2024-01-07 Olof Kindgren <olof.kindgren@gmail.com>
+======================================================
+
+* Support lists in file_input_parameters
+* Add SVN provider
+* Support file-specific defines
+* Always build non-cached generators in work_root
+* Add splitlib filter
+* Warn about non-deterministic virtual cores
+
+Contributors:
+Erik Bånvik <erik.public@gmail.com>
+James Wainwright <james.wainwright@lowrisc.org>
+Mario Werner <nioshd@gmail.com>
+Nazar Kazakov <nazar.kazakov@codethink.co.uk>
+Nico Rumpeltin <nico@rumpeltin.de>
+Olof Kindgren <olof.kindgren@gmail.com>
+
 2.4.1 2024-10-07 Olof Kindgren <olof.kindgren@gmail.com>
 ======================================================
 
