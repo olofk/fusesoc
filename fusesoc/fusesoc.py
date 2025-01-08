@@ -37,8 +37,16 @@ class Fusesoc:
             try:
                 self.add_library(library)
             except (RuntimeError, OSError) as e:
-                _s = "Failed to register library '{}'"
-                logger.warning(_s.format(str(e)))
+                try:
+                    temporary_lm = LibraryManager(self.config.library_root)
+                    # try to initialize library
+                    temporary_lm.add_library(library)
+                    temporary_lm.update([library.name])
+                    # the initialization worked, now register it properly
+                    self.add_library(library)
+                except (RuntimeError, OSError) as e:
+                    _s = "Failed to register library '{}'"
+                    logger.warning(_s.format(str(e)))
 
     @staticmethod
     def init_logging(verbose, monochrome, log_file=None):
