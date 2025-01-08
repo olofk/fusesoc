@@ -43,22 +43,18 @@ class CoreData:
 
         if type(data) == list:
             remove = []
-            append = []
-            for i in data:
+            for idx, i in enumerate(data):
                 if type(i) == str and len(i) > 0 and "?" in i:
                     expanded = Exprs(i).expand(flags)
                     if i != expanded:
-                        remove.append(i)
                         if len(expanded) > 0:
-                            append.append(expanded)
+                            data[idx] = expanded
+                        else:
+                            remove.append(idx)
                 elif type(i) == dict or type(i) == list:
                     self._expand_use(i, flags)
-
-            for i in remove:
-                data.remove(i)
-
-            for i in append:
-                data.append(i)
+            for i in reversed(remove):
+                data.pop(i)
 
     def _append_lists(self, data):
         if type(data) == list:
