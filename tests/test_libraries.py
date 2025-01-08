@@ -214,3 +214,36 @@ def test_library_update(caplog):
         fs.update_libraries([])
 
     assert "test_lib : sync-type is local. Ignoring update" in caplog.text
+
+
+def test_library_update_with_initialize(caplog):
+    with tempfile.TemporaryDirectory() as library:
+
+        with tempfile.NamedTemporaryFile(mode="w+") as tcf:
+            tcf.write(
+                f"""[main]
+library_root = {library}
+
+[library.vlog_tb_utils]
+location = fusesoc_libraries/vlog_tb_utils
+sync-uri = https://github.com/fusesoc/vlog_tb_utils
+sync-type = git
+auto-sync = true
+
+"""
+            )
+            tcf.flush()
+
+            conf = Config(tcf.name)
+
+        args = Namespace()
+
+        Fusesoc.init_logging(False, False)
+        fs = Fusesoc(conf)
+
+        with caplog.at_level(logging.INFO):
+            fs.update_libraries([])
+
+        assert "vlog_tb_utils does not exist. Trying a checkout" in caplog.text
+        assert "Cloning library into fusesoc_libraries/vlog_tb_utils" in caplog.text
+        assert "Updating..." in caplog.text
