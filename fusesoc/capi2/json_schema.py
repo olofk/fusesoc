@@ -4,25 +4,25 @@ capi2_schema = """
   "title": "CAPI2",
   "description": "Core API Version 2",
   "type": "object",
-  "patternProperties": {
-    "^description$": {
+  "properties": {
+    "description": {
       "description": "Short description of core",
       "type": "string"
     },
-    "^filesets$": { "$ref": "#/$defs/filesets" },
-    "^generate$": { "$ref": "#/$defs/generate" },
-    "^generators$": { "$ref": "#/$defs/generators" },
-    "^name$": {
+    "filesets": { "$ref": "#/$defs/filesets" },
+    "generate": { "$ref": "#/$defs/generate" },
+    "generators": { "$ref": "#/$defs/generators" },
+    "name": {
       "description": "VLNV identifier for core",
       "type": "string",
       "minProperties" : 1,
       "maxProperties" : 1
     },
-    "^parameters$": { "$ref": "#/$defs/parameters" },
-    "^provider$": { "$ref": "#/$defs/provider" },
-    "^scripts$": { "$ref": "#/$defs/scripts" },
-    "^targets$": { "$ref": "#/$defs/targets" },
-    "^vpi$": {
+    "parameters": { "$ref": "#/$defs/parameters" },
+    "provider": { "$ref": "#/$defs/provider" },
+    "scripts": { "$ref": "#/$defs/scripts" },
+    "targets": { "$ref": "#/$defs/targets" },
+    "vpi": {
       "description": "A VPI (Verilog Procedural Interface) library is a shared object that is built and loaded by a simulator to provide extra Verilog system calls. This section describes what files and external libraries to use for building a VPI library",
       "type": "object",
       "patternProperties": {
@@ -46,7 +46,7 @@ capi2_schema = """
         }
       }
     },
-    "^virtual(_append)?$": {
+    "virtual": {
       "description": "VLNV of a virtual core provided by this core. Versions are currently not supported, only the VLN part is used.",
       "type": "array",
       "items": {
