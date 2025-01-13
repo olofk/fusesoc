@@ -544,9 +544,10 @@ class Ttptttg:
         }
 
     def _sha256_input_yaml_hexdigest(self):
-        return hashlib.sha256(
-            utils.yaml_dump(self.generator_input).encode()
-        ).hexdigest()
+        data = self.generator_input.copy()
+        # Remove files_root since that is not deterministic
+        data.pop("files_root")
+        return hashlib.sha256(utils.yaml_dump(data).encode()).hexdigest()
 
     def _sha256_file_input_hexdigest(self):
         input_files = []
