@@ -161,3 +161,47 @@ class Vlnv:
             other.name,
             other.version,
         )
+
+    def vln_str(self):
+        """Returns a string with <vendor>:<library>:<name>"""
+        return f"{self.vendor}:{self.library}:{self.name}"
+
+
+def compare_relation(vlvn_a: Vlnv, relation: str, vlvn_b: Vlnv):
+    """Compare two VLVNs with the provided relation. Returns boolan."""
+    from okonomiyaki.versions import EnpkgVersion
+
+    valid_version = False
+    version_str = lambda v: f"{v.version}-{v.revision}"
+    if vlvn_a.vln_str() == vlvn_b.vln_str():
+        ver_a = EnpkgVersion.from_string(version_str(vlvn_a))
+        ver_b = EnpkgVersion.from_string(version_str(vlvn_b))
+        if relation == "==":
+            valid_version = ver_a == ver_b
+        elif relation == ">":
+            valid_version = ver_a > ver_b
+        elif relation == "<":
+            valid_version = ver_a < ver_b
+        elif relation == ">=":
+            valid_version = ver_a >= ver_b
+        elif relation == "<=":
+            valid_version = ver_a <= ver_b
+        elif relation == "^":
+            nextversion = list(map(int, vlvn_a.version.split(".")))
+            for pos in range(len(nextversion)):
+                if pos == 0:
+                    nextversion[pos] += 1
+                else:
+                    nextversion[pos] = 0
+            nextversion = EnpkgVersion.from_string(".".join(map(str, nextversion)))
+            valid_version = ver_a <= ver_b and ver_b < nextversion
+        elif relation == "~":
+            nextversion = list(map(int, vlvn_a.version.split(".")))
+            for pos in range(len(nextversion)):
+                if pos == 1:
+                    nextversion[pos] += 1
+                elif pos > 1:
+                    nextversion[pos] = 0
+            nextversion = EnpkgVersion.from_string(".".join(map(str, nextversion)))
+            valid_version = ver_a <= ver_b and ver_b < nextversion
+    return valid_version

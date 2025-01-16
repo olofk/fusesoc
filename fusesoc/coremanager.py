@@ -4,6 +4,7 @@
 
 import logging
 import os
+import pathlib
 
 from okonomiyaki.versions import EnpkgVersion
 from simplesat.constraints import PrettyPackageStringParser, Requirement
@@ -16,6 +17,8 @@ from simplesat.request import Request
 from fusesoc.capi2.coreparser import Core2Parser
 from fusesoc.core import Core
 from fusesoc.librarymanager import LibraryManager
+from fusesoc.lockfile import load_lockfile
+from fusesoc.vlnv import Vlnv, compare_relation
 
 logger = logging.getLogger(__name__)
 
@@ -33,6 +36,7 @@ class CoreDB:
     def __init__(self):
         self._cores = {}
         self._solver_cache = {}
+        self._lockfile = None
 
     # simplesat doesn't allow ':', '-' or leading '_'
     def _package_name(self, vlnv):
@@ -45,6 +49,7 @@ class CoreDB:
     def _parse_depend(self, depends):
         # FIXME: Handle conflicts
         deps = []
+
         _s = "{} {} {}"
         for d in depends:
             for simple in d.simpleVLNVs():
@@ -83,6 +88,9 @@ class CoreDB:
             found = list([core["core"] for core in self._cores.values()])
         return found
 
+    def load_lockfile(self, filepath: pathlib.Path):
+        self._lockfile = load_lockfile(filepath)
+
     def _solver_cache_lookup(self, key):
         if key in self._solver_cache:
             return self._solver_cache[key]
@@ -109,6 +117,27 @@ class CoreDB:
         for pair in sorted(flags.items()):
             h ^= hash(pair)
         return h
+
+    def _lockfile_replace(self, core: Vlnv):
+        """Try to pin the core version from cores defined in the lock file"""
+        if self._lockfile:
+            for locked_core in self._lockfile["cores"]:
+                if locked_core.vln_str() == core.vln_str():
+                    valid_version = compare_relation(locked_core, core.relation, core)
+                    if valid_version:
+                        core.version = locked_core.version
+                        core.revision = locked_core.revision
+                        core.relation = "=="
+                    else:
+                        # Invalid version in lockfile
+                        logger.warning(
+                            "Failed to pin core {} outside of dependency version {} {} {}".format(
+                                str(locked_core),
+                                core.vln_str(),
+                                core.relation,
+                                core.version,
+                            )
+                        )
 
     def solve(self, top_core, flags):
         return self._solve(top_core, flags)
@@ -195,8 +224,12 @@ class CoreDB:
                 _flags["is_toplevel"] = core.name == top_core
                 _depends = core.get_depends(_flags)
                 if _depends:
+                    for depend in _depends:
+                        self._lockfile_replace(depend)
                     _s = "; depends ( {} )"
                     package_str += _s.format(self._parse_depend(_depends))
+            else:
+                self._lockfile_replace(top_core)
 
             parser = PrettyPackageStringParser(EnpkgVersion.from_string)
 
@@ -226,6 +259,7 @@ class CoreDB:
             raise DependencyError(top_core.name)
 
         virtual_selection = {}
+        partial_lockfile = False
         objdict = {}
         if len(transaction.operations) > 1:
             for op in transaction.operations:
@@ -244,6 +278,11 @@ class CoreDB:
                     if p[0] in virtual_selection:
                         # If package that implements a virtual core is required, remove from the dictionary
                         del virtual_selection[p[0]]
+                if (
+                    self._lockfile
+                    and op.package.core.name not in self._lockfile["cores"]
+                ):
+                    partial_lockfile = True
                 op.package.core.direct_deps = [
                     objdict[n[0]] for n in op.package.install_requires
                 ]
@@ -254,6 +293,8 @@ class CoreDB:
                     virtual[1], virtual[0]
                 )
             )
+        if partial_lockfile:
+            logger.warning("Using lock file with partial list of cores")
 
         result = [op.package.core for op in transaction.operations]
 
