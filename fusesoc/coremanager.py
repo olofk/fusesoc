@@ -16,6 +16,7 @@ from simplesat.request import Request
 from fusesoc.capi2.coreparser import Core2Parser
 from fusesoc.core import Core
 from fusesoc.librarymanager import LibraryManager
+from fusesoc.lockfile import load_lockfile
 
 logger = logging.getLogger(__name__)
 
@@ -33,6 +34,11 @@ class CoreDB:
     def __init__(self):
         self._cores = {}
         self._solver_cache = {}
+        self._lockfile = load_lockfile()
+
+        for _, core in self._lockfile["cores"].items():
+            virtuals = ", ".join([str(vlvn) for vlvn in core["virtuals"]])
+            logger.info(f"~ Lockfile Core {core['vlvn']} {virtuals}")
 
     # simplesat doesn't allow ':', '-' or leading '_'
     def _package_name(self, vlnv):
@@ -45,6 +51,7 @@ class CoreDB:
     def _parse_depend(self, depends):
         # FIXME: Handle conflicts
         deps = []
+
         _s = "{} {} {}"
         for d in depends:
             for simple in d.simpleVLNVs():
@@ -180,6 +187,14 @@ class CoreDB:
                 core.name.revision,
             )
 
+            if core.name in self._lockfile["cores"].items():
+                logger.info(
+                    f"~~~ Solve Lock Match {str(core.name)} {core.name.relation}"
+                )
+                # Lock version
+                if core.name.relation != "==":
+                    core.name.relation = "=="
+
             _virtuals = core.get_virtuals(_flags)
             if _virtuals:
                 _s = "; provides ( {} )"
@@ -195,6 +210,12 @@ class CoreDB:
                 _flags["is_toplevel"] = core.name == top_core
                 _depends = core.get_depends(_flags)
                 if _depends:
+                    for depend in _depends:
+                        if depend in self._lockfile["virtuals"]:
+                            implementation_core = self._lockfile["virtuals"][depend]
+                            logger.info(
+                                f"~~~ Solve Lock Virtual {str(core.name)} {str(depend)} -> {implementation_core}"
+                            )
                     _s = "; depends ( {} )"
                     package_str += _s.format(self._parse_depend(_depends))
 
