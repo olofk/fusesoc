@@ -9,6 +9,8 @@ import tarfile
 
 from fusesoc.provider.provider import Provider
 
+_HAS_TAR_FILTER = hasattr(tarfile, "tar_filter")  # Requires Python 3.12
+
 logger = logging.getLogger(__name__)
 
 if sys.version_info[0] >= 3:
@@ -41,5 +43,10 @@ class Github(Provider):
 
         # Ugly hack to get the first part of the directory name of the extracted files
         tmp = t.getnames()[0]
-        t.extractall(cache_root)
+
+        extraction_arguments = {"path": cache_root}
+        if _HAS_TAR_FILTER:
+            extraction_arguments["filter"] = "data"
+        t.extractall(**extraction_arguments)
+
         os.rename(os.path.join(cache_root, tmp), os.path.join(cache_root, core))
