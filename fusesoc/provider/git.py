@@ -20,7 +20,7 @@ class Git(Provider):
 
         if library.sync_version:
             logger.info(
-                "Checkout out {} at version {}".format(
+                "Checked out {} at version {}".format(
                     library.name, library.sync_version
                 )
             )
