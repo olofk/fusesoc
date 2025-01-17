@@ -21,6 +21,8 @@ else:
 
 from fusesoc.provider.provider import Provider
 
+_HAS_TAR_FILTER = hasattr(tarfile, "tar_filter")  # Requires Python 3.12
+
 
 class Url(Provider):
     def _checkout(self, local_dir):
@@ -44,7 +46,10 @@ class Url(Provider):
         filetype = self.config.get("filetype")
         if filetype == "tar":
             t = tarfile.open(filename)
-            t.extractall(local_dir)
+            extraction_arguments = {"path": local_dir}
+            if _HAS_TAR_FILTER:
+                extraction_arguments["filter"] = "data"
+            t.extractall(**extraction_arguments)
         elif filetype == "zip":
             with zipfile.ZipFile(filename, "r") as z:
                 z.extractall(local_dir)
