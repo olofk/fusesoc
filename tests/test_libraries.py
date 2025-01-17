@@ -225,7 +225,7 @@ def test_library_update_with_initialize(caplog):
 library_root = {library}
 
 [library.vlog_tb_utils]
-location = fusesoc_libraries/vlog_tb_utils
+location = {library}/vlog_tb_utils
 sync-uri = https://github.com/fusesoc/vlog_tb_utils
 sync-type = git
 auto-sync = true
@@ -245,5 +245,5 @@ auto-sync = true
             fs.update_libraries([])
 
         assert "vlog_tb_utils does not exist. Trying a checkout" in caplog.text
-        assert "Cloning library into fusesoc_libraries/vlog_tb_utils" in caplog.text
+        assert f"Cloning library into {library}/vlog_tb_utils" in caplog.text
         assert "Updating..." in caplog.text
