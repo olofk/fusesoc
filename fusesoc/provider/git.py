@@ -20,7 +20,7 @@ class Git(Provider):
 
         if library.sync_version:
             logger.info(
-                "Checkout out {} at version {}".format(
+                "Checked out {} at version {}".format(
                     library.name, library.sync_version
                 )
             )
@@ -38,7 +38,8 @@ class Git(Provider):
 
     @staticmethod
     def update_library(library):
-        git_args = ["-C", library.location, "pull"]
+        download_option = "pull" if not library.sync_version else "fetch"
+        git_args = ["-C", library.location, download_option]
         try:
             Git._checkout_library_version(library)
             Launcher("git", git_args).run()
