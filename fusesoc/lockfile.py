@@ -20,17 +20,20 @@ lockfile_schema = """
     "properties": {
         "cores": {
             "description": "Cores used in the build",
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+        },
+        "virtuals": {
+            "description": "Virtual cores used in the build",
             "type": "object",
             "patternProperties": {
                 "^.+$": {
-                    "description": "Core used in the build",
-                    "properties": {
-                        "virtuals": {
-                            "description": "Virtual interfaces implemented by the core",
-                            "type": "array",
-                            "items": {
-                              "type": "string"
-                            }
+                    "description": "Virtual core used in the build",
+                    "patternProperties": {
+                        "^.+$": {
+                            "description": "Core implementing virtual core interface"
                         }
                     }
                 }
@@ -54,23 +57,22 @@ def store_lockfile(cores):
     lockfile = {
         "lockfile_version": 1,
         "fusesoc_version": version,
-        "cores": {},
+        "cores": [],
+        "virtuals": {},
     }
     for core in cores:
         name = str(core.name)
-        virtual = [
+        virtuals = [
             f"{vlvn.vendor}:{vlvn.library}:{vlvn.name}" for vlvn in core.get_virtuals()
         ]
-        if len(virtual) > 0:
-            lockfile["cores"][name] = {"virtuals": virtual}
-        else:
-            lockfile["cores"][name] = {}
+        if len(virtuals) > 0:
+            for virtual in virtuals:
+                lockfile["virtuals"][virtual] = name
+        lockfile["cores"].append(name)
     fusesoc.utils.yaml_fwrite("fusesoc.lock", lockfile)
 
 
 def load_lockfile():
-    from fusesoc.lockfile import lockfile_schema
-
     lockfile_data = None
     lockfile_path = pathlib.Path("fusesoc.lock")
     if lockfile_path.is_file():
@@ -83,22 +85,12 @@ def load_lockfile():
         except fastjsonschema.JsonSchemaException as e:
             raise SyntaxError(f"\nError validating {e}")
 
-    cores = {}
+    cores = []
     virtuals = {}
     if lockfile_data:
-        for name, core in lockfile_data["cores"].items():
-            vlvn = Vlnv(name)
-            core_virtuals = []
-            if core and "virtuals" in core:
-                core_virtuals = [Vlnv(vname) for vname in core["virtuals"]]
-                for vname in core["virtuals"]:
-                    virtual_vlvn = Vlnv(vname)
-                    virtuals[virtual_vlvn] = vlvn
-
-            cores[vlvn] = {
-                "vlvn": vlvn,
-                "virtuals": core_virtuals,
-            }
+        cores = [Vlnv(core_name) for core_name in lockfile_data["cores"]]
+        for virtual_name, core_name in lockfile_data["virtuals"].items():
+            virtuals[Vlnv(virtual_name)] = Vlnv(core_name)
 
     lockfile = {
         "cores": cores,

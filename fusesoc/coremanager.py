@@ -36,10 +36,6 @@ class CoreDB:
         self._solver_cache = {}
         self._lockfile = load_lockfile()
 
-        for _, core in self._lockfile["cores"].items():
-            virtuals = ", ".join([str(vlvn) for vlvn in core["virtuals"]])
-            logger.info(f"~ Lockfile Core {core['vlvn']} {virtuals}")
-
     # simplesat doesn't allow ':', '-' or leading '_'
     def _package_name(self, vlnv):
         _name = f"{vlnv.vendor}_{vlnv.library}_{vlnv.name}".lstrip("_")
@@ -187,10 +183,8 @@ class CoreDB:
                 core.name.revision,
             )
 
-            if core.name in self._lockfile["cores"].items():
-                logger.info(
-                    f"~~~ Solve Lock Match {str(core.name)} {core.name.relation}"
-                )
+            if core.name in self._lockfile["cores"]:
+                logger.debug(f"Lock core version {str(core.name)} {core.name.relation}")
                 # Lock version
                 if core.name.relation != "==":
                     core.name.relation = "=="
@@ -211,11 +205,16 @@ class CoreDB:
                 _depends = core.get_depends(_flags)
                 if _depends:
                     for depend in _depends:
+                        virtual_selection = None
                         if depend in self._lockfile["virtuals"]:
                             implementation_core = self._lockfile["virtuals"][depend]
-                            logger.info(
-                                f"~~~ Solve Lock Virtual {str(core.name)} {str(depend)} -> {implementation_core}"
+                            virtual_selection = implementation_core
+                            logger.debug(
+                                f"Replace virtual core {str(core.name)} {str(depend)} -> {implementation_core}"
                             )
+                        if virtual_selection:
+                            _depends.append(virtual_selection)
+                            _depends.remove(depend)
                     _s = "; depends ( {} )"
                     package_str += _s.format(self._parse_depend(_depends))
 
