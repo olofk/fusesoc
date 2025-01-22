@@ -16,7 +16,7 @@ from simplesat.request import Request
 from fusesoc.capi2.coreparser import Core2Parser
 from fusesoc.core import Core
 from fusesoc.librarymanager import LibraryManager
-from fusesoc.lockfile import load_lockfile
+from fusesoc.lockfile import load_lockfile, store_lockfile
 
 logger = logging.getLogger(__name__)
 
@@ -31,10 +31,13 @@ class DependencyError(Exception):
 
 
 class CoreDB:
-    def __init__(self):
+    def __init__(self, use_lockfile=None):
         self._cores = {}
         self._solver_cache = {}
-        self._lockfile = load_lockfile()
+        self._use_lockfile = bool(use_lockfile)
+        self._lockfile = None
+        if self._use_lockfile:
+            self._lockfile = load_lockfile()
 
     # simplesat doesn't allow ':', '-' or leading '_'
     def _package_name(self, vlnv):
@@ -85,6 +88,10 @@ class CoreDB:
         else:
             found = list([core["core"] for core in self._cores.values()])
         return found
+
+    def create_lockfile(self, cores):
+        if self._use_lockfile:
+            store_lockfile(cores)
 
     def _solver_cache_lookup(self, key):
         if key in self._solver_cache:
@@ -183,7 +190,10 @@ class CoreDB:
                 core.name.revision,
             )
 
-            if core.name in self._lockfile["cores"]:
+            if (
+                isinstance(self._lockfile, dict)
+                and core.name in self._lockfile["cores"]
+            ):
                 logger.debug(f"Lock core version {str(core.name)} {core.name.relation}")
                 # Lock version
                 if core.name.relation != "==":
@@ -206,7 +216,10 @@ class CoreDB:
                 if _depends:
                     for depend in _depends:
                         virtual_selection = None
-                        if depend in self._lockfile["virtuals"]:
+                        if (
+                            isinstance(self._lockfile, dict)
+                            and depend in self._lockfile["virtuals"]
+                        ):
                             implementation_core = self._lockfile["virtuals"][depend]
                             virtual_selection = implementation_core
                             logger.debug(
