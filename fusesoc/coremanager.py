@@ -20,6 +20,10 @@ from fusesoc.lockfile import load_lockfile, store_lockfile
 
 logger = logging.getLogger(__name__)
 
+LOCKFILE_DISABLE = 0
+LOCKFILE_ENABLE = 1
+LOCKFILE_RESET = 2
+
 
 class DependencyError(Exception):
     def __init__(self, value, msg=""):
@@ -34,10 +38,8 @@ class CoreDB:
     def __init__(self, use_lockfile=None):
         self._cores = {}
         self._solver_cache = {}
-        self._use_lockfile = bool(use_lockfile)
+        self._use_lockfile = LOCKFILE_DISABLE
         self._lockfile = None
-        if self._use_lockfile:
-            self._lockfile = load_lockfile()
 
     # simplesat doesn't allow ':', '-' or leading '_'
     def _package_name(self, vlnv):
@@ -89,8 +91,27 @@ class CoreDB:
             found = list([core["core"] for core in self._cores.values()])
         return found
 
-    def create_lockfile(self, cores):
-        if self._use_lockfile:
+    def load_lockfile(self, use_lockfile=None):
+        self._use_lockfile = LOCKFILE_DISABLE
+        if isinstance(use_lockfile, int):
+            if use_lockfile in [LOCKFILE_DISABLE, LOCKFILE_ENABLE, LOCKFILE_RESET]:
+                self._use_lockfile = use_lockfile
+        if isinstance(use_lockfile, bool) and use_lockfile:
+            self._use_lockfile = LOCKFILE_ENABLE
+        if isinstance(use_lockfile, str):
+            if use_lockfile == "enable":
+                self._use_lockfile = LOCKFILE_ENABLE
+            elif use_lockfile == "reset":
+                self._use_lockfile = LOCKFILE_RESET
+        if self._use_lockfile >= LOCKFILE_ENABLE:
+            self._lockfile = load_lockfile()
+
+    def store_lockfile(self, cores):
+        if self._use_lockfile == LOCKFILE_ENABLE:
+            # Only write lockfile if no lockfile was loaded
+            if self._lockfile is None:
+                store_lockfile(cores)
+        elif self._use_lockfile == LOCKFILE_RESET:
             store_lockfile(cores)
 
     def _solver_cache_lookup(self, key):

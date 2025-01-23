@@ -111,7 +111,7 @@ class Edalizer:
         # Create EDAM file contents
         self.create_edam()
 
-        self.core_manager.db.create_lockfile(self.cores)
+        self.core_manager.db.store_lockfile(self.cores)
 
         return self.edam
 
