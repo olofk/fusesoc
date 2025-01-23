@@ -103,8 +103,8 @@ class Config:
         if os.path.isabs(expanded):
             return expanded
         else:
-            cfg_file_dir = os.path.dirname(self._path)
-            return os.path.join(cfg_file_dir, expanded)
+            cfg_file_dir = os.path.dirname(os.path.abspath(self._path))
+            return os.path.normpath(os.path.join(cfg_file_dir, expanded))
 
     def _path_from_cfg(self, name):
         as_str = self._cp.get(Config.default_section, name, fallback=None)
