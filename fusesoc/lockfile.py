@@ -51,6 +51,10 @@ lockfile_schema = """
 }
 """
 
+LOCKFILE_DISABLE = 0
+LOCKFILE_ENABLE = 1
+LOCKFILE_RESET = 2
+
 
 def store_lockfile(cores):
 

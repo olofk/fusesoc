@@ -13,16 +13,14 @@ from simplesat.pool import Pool
 from simplesat.repository import Repository
 from simplesat.request import Request
 
+import fusesoc.lockfile
 from fusesoc.capi2.coreparser import Core2Parser
 from fusesoc.core import Core
 from fusesoc.librarymanager import LibraryManager
 from fusesoc.lockfile import load_lockfile, store_lockfile
+from fusesoc.vlnv import compare_relation
 
 logger = logging.getLogger(__name__)
-
-LOCKFILE_DISABLE = 0
-LOCKFILE_ENABLE = 1
-LOCKFILE_RESET = 2
 
 
 class DependencyError(Exception):
@@ -38,7 +36,7 @@ class CoreDB:
     def __init__(self, use_lockfile=None):
         self._cores = {}
         self._solver_cache = {}
-        self._use_lockfile = LOCKFILE_DISABLE
+        self._use_lockfile = fusesoc.lockfile.LOCKFILE_DISABLE
         self._lockfile = None
 
     # simplesat doesn't allow ':', '-' or leading '_'
@@ -92,26 +90,21 @@ class CoreDB:
         return found
 
     def load_lockfile(self, use_lockfile=None):
-        self._use_lockfile = LOCKFILE_DISABLE
-        if isinstance(use_lockfile, int):
-            if use_lockfile in [LOCKFILE_DISABLE, LOCKFILE_ENABLE, LOCKFILE_RESET]:
-                self._use_lockfile = use_lockfile
-        if isinstance(use_lockfile, bool) and use_lockfile:
-            self._use_lockfile = LOCKFILE_ENABLE
+        self._use_lockfile = fusesoc.lockfile.LOCKFILE_DISABLE
         if isinstance(use_lockfile, str):
             if use_lockfile == "enable":
-                self._use_lockfile = LOCKFILE_ENABLE
+                self._use_lockfile = fusesoc.lockfile.LOCKFILE_ENABLE
             elif use_lockfile == "reset":
-                self._use_lockfile = LOCKFILE_RESET
-        if self._use_lockfile >= LOCKFILE_ENABLE:
+                self._use_lockfile = fusesoc.lockfile.LOCKFILE_RESET
+        if self._use_lockfile >= fusesoc.lockfile.LOCKFILE_ENABLE:
             self._lockfile = load_lockfile()
 
     def store_lockfile(self, cores):
-        if self._use_lockfile == LOCKFILE_ENABLE:
+        if self._use_lockfile == fusesoc.lockfile.LOCKFILE_ENABLE:
             # Only write lockfile if no lockfile was loaded
             if self._lockfile is None:
                 store_lockfile(cores)
-        elif self._use_lockfile == LOCKFILE_RESET:
+        elif self._use_lockfile == fusesoc.lockfile.LOCKFILE_RESET:
             store_lockfile(cores)
 
     def _solver_cache_lookup(self, key):
@@ -239,26 +232,22 @@ class CoreDB:
                                     f"Replace virtual core {str(core.name)} {str(depend)} -> {implementation_core}"
                                 )
                             for locked_core in self._lockfile["cores"]:
-                                if locked_core.vln() == depend.vln():
-                                    # Lock version
-                                    if locked_core != depend:
-                                        logger.info(
-                                            f"Lock core version {str(locked_core)} != {str(depend)} {depend.relation}"
-                                        )
-                                    else:
-                                        logger.info(
-                                            f"Lock core version {str(depend)} {depend.relation}"
-                                        )
-                                    depend.version = locked_core.version
-                                    depend.revision = locked_core.revision
-                                    depend.relation = "=="
+                                if locked_core.vln_str() == depend.vln_str():
+                                    valid_version = compare_relation(
+                                        locked_core, depend.relation, depend
+                                    )
+                                    logger.info(
+                                        f"Lock core version {str(locked_core)} {str(depend)} {depend.relation} {valid_version}"
+                                    )
+                                    if valid_version:
+                                        depend.version = locked_core.version
+                                        depend.revision = locked_core.revision
+                                        depend.relation = "=="
                         if virtual_selection:
                             _depends.append(virtual_selection)
                             _depends.remove(depend)
                     _s = "; depends ( {} )"
                     package_str += _s.format(self._parse_depend(_depends))
-
-            logger.info(f"Package {package_str}")
 
             parser = PrettyPackageStringParser(EnpkgVersion.from_string)
 

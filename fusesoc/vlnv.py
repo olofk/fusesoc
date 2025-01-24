@@ -162,6 +162,44 @@ class Vlnv:
             other.version,
         )
 
-    def vln(self):
+    def vln_str(self):
         """Returns a string with <vendor>:<library>:<name>"""
         return f"{self.vendor}:{self.library}:{self.name}"
+
+
+def compare_relation(vlvn_a, relation, vlvn_b):
+    """Compare two VLVNs with the provided relation. Returns boolan."""
+    from okonomiyaki.versions import EnpkgVersion
+
+    if (
+        not isinstance(vlvn_a, Vlnv)
+        or not isinstance(relation, str)
+        or not isinstance(vlvn_b, Vlnv)
+    ):
+        return False
+    valid_version = False
+    version_str = lambda v: f"{v.version}-{v.revision}"
+    if vlvn_a.vln_str() == vlvn_b.vln_str():
+        ver_a = EnpkgVersion.from_string(version_str(vlvn_a))
+        ver_b = EnpkgVersion.from_string(version_str(vlvn_b))
+        if relation == "==":
+            valid_version = ver_a == ver_b
+        elif relation == ">":
+            valid_version = ver_a > ver_b
+        elif relation == "<":
+            valid_version = ver_a < ver_b
+        elif relation == ">=":
+            valid_version = ver_a >= ver_b
+        elif relation == "<=":
+            valid_version = ver_a <= ver_b
+        elif relation == "^":
+            nextversion = list(map(int, ver_b.version.split(".")))
+            nextversion[0] += 1
+            next_version = EnpkgVersion.from_string(".".join(map(str, nextversion)))
+            valid_version = ver_a >= ver_b and ver_a < next_version
+        elif relation == "~":
+            nextversion = list(map(int, ver_b.version.split(".")))
+            nextversion[1] += 1
+            next_version = EnpkgVersion.from_string(".".join(map(str, nextversion)))
+            valid_version = ver_a >= ver_b and ver_a < next_version
+    return valid_version
