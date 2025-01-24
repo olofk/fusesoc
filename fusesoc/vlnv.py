@@ -161,3 +161,7 @@ class Vlnv:
             other.name,
             other.version,
         )
+
+    def vln(self):
+        """Returns a string with <vendor>:<library>:<name>"""
+        return f"{self.vendor}:{self.library}:{self.name}"

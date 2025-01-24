@@ -211,15 +211,6 @@ class CoreDB:
                 core.name.revision,
             )
 
-            if (
-                isinstance(self._lockfile, dict)
-                and core.name in self._lockfile["cores"]
-            ):
-                logger.debug(f"Lock core version {str(core.name)} {core.name.relation}")
-                # Lock version
-                if core.name.relation != "==":
-                    core.name.relation = "=="
-
             _virtuals = core.get_virtuals(_flags)
             if _virtuals:
                 _s = "; provides ( {} )"
@@ -236,21 +227,38 @@ class CoreDB:
                 _depends = core.get_depends(_flags)
                 if _depends:
                     for depend in _depends:
+                        logger.info(
+                            f"Evaluate {str(core.name)} {str(depend)} {depend.relation}"
+                        )
                         virtual_selection = None
-                        if (
-                            isinstance(self._lockfile, dict)
-                            and depend in self._lockfile["virtuals"]
-                        ):
-                            implementation_core = self._lockfile["virtuals"][depend]
-                            virtual_selection = implementation_core
-                            logger.debug(
-                                f"Replace virtual core {str(core.name)} {str(depend)} -> {implementation_core}"
-                            )
+                        if isinstance(self._lockfile, dict):
+                            if depend in self._lockfile["virtuals"]:
+                                implementation_core = self._lockfile["virtuals"][depend]
+                                virtual_selection = implementation_core
+                                logger.info(
+                                    f"Replace virtual core {str(core.name)} {str(depend)} -> {implementation_core}"
+                                )
+                            for locked_core in self._lockfile["cores"]:
+                                if locked_core.vln() == depend.vln():
+                                    # Lock version
+                                    if locked_core != depend:
+                                        logger.info(
+                                            f"Lock core version {str(locked_core)} != {str(depend)} {depend.relation}"
+                                        )
+                                    else:
+                                        logger.info(
+                                            f"Lock core version {str(depend)} {depend.relation}"
+                                        )
+                                    depend.version = locked_core.version
+                                    depend.revision = locked_core.revision
+                                    depend.relation = "=="
                         if virtual_selection:
                             _depends.append(virtual_selection)
                             _depends.remove(depend)
                     _s = "; depends ( {} )"
                     package_str += _s.format(self._parse_depend(_depends))
+
+            logger.info(f"Package {package_str}")
 
             parser = PrettyPackageStringParser(EnpkgVersion.from_string)
 
