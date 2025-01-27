@@ -193,13 +193,21 @@ def compare_relation(vlvn_a, relation, vlvn_b):
         elif relation == "<=":
             valid_version = ver_a <= ver_b
         elif relation == "^":
-            nextversion = list(map(int, ver_b.version.split(".")))
-            nextversion[0] += 1
-            next_version = EnpkgVersion.from_string(".".join(map(str, nextversion)))
-            valid_version = ver_a >= ver_b and ver_a < next_version
+            nextversion = list(map(int, vlvn_a.version.split(".")))
+            for pos in range(len(nextversion)):
+                if pos == 0:
+                    nextversion[pos] += 1
+                else:
+                    nextversion[pos] = 0
+            nextversion = EnpkgVersion.from_string(".".join(map(str, nextversion)))
+            valid_version = ver_a <= ver_b and ver_b < nextversion
         elif relation == "~":
-            nextversion = list(map(int, ver_b.version.split(".")))
-            nextversion[1] += 1
-            next_version = EnpkgVersion.from_string(".".join(map(str, nextversion)))
-            valid_version = ver_a >= ver_b and ver_a < next_version
+            nextversion = list(map(int, vlvn_a.version.split(".")))
+            for pos in range(len(nextversion)):
+                if pos == 1:
+                    nextversion[pos] += 1
+                elif pos > 1:
+                    nextversion[pos] = 0
+            nextversion = EnpkgVersion.from_string(".".join(map(str, nextversion)))
+            valid_version = ver_a <= ver_b and ver_b < nextversion
     return valid_version
