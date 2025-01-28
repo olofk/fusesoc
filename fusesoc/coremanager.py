@@ -185,6 +185,8 @@ class CoreDB:
         cores = [x["core"] for x in self._cores.values()]
         conflict_map = self._get_conflict_map()
 
+        invalidate_lockfile = False
+
         for core in cores:
             if only_matching_vlnv:
                 if not any(
@@ -220,29 +222,31 @@ class CoreDB:
                 _depends = core.get_depends(_flags)
                 if _depends:
                     for depend in _depends:
-                        logger.info(
-                            f"Evaluate {str(core.name)} {str(depend)} {depend.relation}"
-                        )
                         virtual_selection = None
+                        found = False
                         if isinstance(self._lockfile, dict):
                             if depend in self._lockfile["virtuals"]:
+                                found = True
                                 implementation_core = self._lockfile["virtuals"][depend]
                                 virtual_selection = implementation_core
-                                logger.info(
-                                    f"Replace virtual core {str(core.name)} {str(depend)} -> {implementation_core}"
-                                )
-                            for locked_core in self._lockfile["cores"]:
-                                if locked_core.vln_str() == depend.vln_str():
-                                    valid_version = compare_relation(
-                                        locked_core, depend.relation, depend
-                                    )
-                                    logger.info(
-                                        f"Lock core version {str(locked_core)} {str(depend)} {depend.relation} {valid_version}"
-                                    )
-                                    if valid_version:
-                                        depend.version = locked_core.version
-                                        depend.revision = locked_core.revision
-                                        depend.relation = "=="
+                            else:
+                                for locked_core in self._lockfile["cores"]:
+                                    if locked_core.vln_str() == depend.vln_str():
+                                        found = True
+                                        valid_version = compare_relation(
+                                            locked_core, depend.relation, depend
+                                        )
+                                        if valid_version:
+                                            depend.version = locked_core.version
+                                            depend.revision = locked_core.revision
+                                            depend.relation = "=="
+                                        else:
+                                            # Invalid version in lockfile, mark as invalid
+                                            invalidate_lockfile = True
+                        if not found:
+                            logger.info(f"Package {depend} not in lockfile")
+                            # Core not in lockfile, mark as invalid
+                            invalidate_lockfile = True
                         if virtual_selection:
                             _depends.append(virtual_selection)
                             _depends.remove(depend)
@@ -310,6 +314,9 @@ class CoreDB:
 
         # Cache the solution for further lookups
         self._solver_cache_store(solver_cache_key, result)
+
+        if invalidate_lockfile:
+            self._use_lockfile = fusesoc.lockfile.LOCKFILE_RESET
 
         return result
 

@@ -1,6 +1,6 @@
-import copy
 import json
 import logging
+import os
 import pathlib
 
 import fastjsonschema
@@ -56,7 +56,15 @@ LOCKFILE_ENABLE = 1
 LOCKFILE_RESET = 2
 
 
-def store_lockfile(cores):
+def _lockfile_path(root_dir=None):
+    filename = "fusesoc.lock"
+    if root_dir is None:
+        return filename
+    else:
+        return os.path.join(os.path.dirname(root_dir), filename)
+
+
+def store_lockfile(cores, root_dir=None):
 
     lockfile = {
         "lockfile_version": 1,
@@ -73,12 +81,12 @@ def store_lockfile(cores):
             for virtual in virtuals:
                 lockfile["virtuals"][virtual] = name
         lockfile["cores"].append(name)
-    fusesoc.utils.yaml_fwrite("fusesoc.lock", lockfile)
+    fusesoc.utils.yaml_fwrite(_lockfile_path(root_dir), lockfile)
 
 
-def load_lockfile():
+def load_lockfile(root_dir=None):
     lockfile_data = None
-    lockfile_path = pathlib.Path("fusesoc.lock")
+    lockfile_path = pathlib.Path(_lockfile_path(root_dir))
     if lockfile_path.is_file():
         lockfile_data = fusesoc.utils.yaml_fread(lockfile_path)
         try:

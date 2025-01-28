@@ -388,6 +388,11 @@ def test_virtual_lockfile(caplog):
 
     core_dir = os.path.join(os.path.dirname(__file__), "capi2_cores", "virtual")
 
+    try:
+        os.remove("fusesoc.lock")
+    except FileNotFoundError:
+        pass
+
     cm = CoreManager(Config())
     cm.add_library(Library("virtual", core_dir), [])
     cm.db.load_lockfile(use_lockfile="enable")
