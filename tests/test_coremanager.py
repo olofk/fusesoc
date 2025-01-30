@@ -88,7 +88,7 @@ def test_deptree(tmp_path):
     edam = edalizer.run()
 
     # Check dependency tree (after running all generators)
-    deps = cm.get_depends(root_core.name, {})
+    deps = cm.get_depends(root_core.name, {}, ())
     deps_names = [str(c) for c in deps]
 
     all_core_names = set()
@@ -274,7 +274,7 @@ def test_virtual():
         )
         edalizer.run()
 
-        deps = cm.get_depends(root_core.name, {})
+        deps = cm.get_depends(root_core.name, {}, ())
         deps_names = [str(c) for c in deps]
 
         assert deps_names == expected_deps
@@ -355,7 +355,7 @@ def test_virtual_non_deterministic_virtual(caplog):
         edalizer.run()
     assert "Non-deterministic selection of virtual core" in caplog.text
 
-    deps = cm.get_depends(root_core.name, {})
+    deps = cm.get_depends(root_core.name, {}, ())
     deps_names = [str(c) for c in deps]
 
     for dependency in deps_names:
@@ -365,3 +365,55 @@ def test_virtual_non_deterministic_virtual(caplog):
             "::user:0",
             "::top_non_deterministic:0",
         ]
+
+
+def test_virtual_explicit_providers(caplog):
+    """
+    Test virtual core selection when there are explicit selected implementations on the side.
+    This shall NOT result in a warning that the virtual core selection is non-deteministic.
+    """
+    import logging
+    import os
+    import tempfile
+
+    from fusesoc.config import Config
+    from fusesoc.coremanager import CoreManager
+    from fusesoc.edalizer import Edalizer
+    from fusesoc.librarymanager import Library
+    from fusesoc.vlnv import Vlnv
+
+    flags = {"tool": "icarus"}
+
+    build_root = tempfile.mkdtemp(prefix="export_")
+    work_root = os.path.join(build_root, "work")
+
+    core_dir = os.path.join(os.path.dirname(__file__), "capi2_cores", "virtual")
+
+    cm = CoreManager(Config())
+    cm.add_library(Library("virtual", core_dir), [])
+
+    root_core = cm.get_core(Vlnv("::top_non_deterministic"))
+
+    added_core_options = ((Vlnv("::impl1:0"),), (Vlnv("::impl2:0"),))
+
+    for added_cores in added_core_options:
+        edalizer = Edalizer(
+            toplevel=root_core.name,
+            flags=flags,
+            core_manager=cm,
+            work_root=work_root,
+            added_core_reqs=added_cores,
+        )
+
+        with caplog.at_level(logging.WARNING):
+            edalizer.run()
+        assert "Non-deterministic selection of virtual core" not in caplog.text
+
+        deps = cm.get_depends(root_core.name, {}, added_cores)
+        deps_names = [str(c) for c in deps]
+
+        for dependency in deps_names:
+            assert dependency in [
+                "::user:0",
+                "::top_non_deterministic:0",
+            ] + [str(c) for c in added_cores]
