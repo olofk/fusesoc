@@ -49,12 +49,14 @@ class Edalizer:
         export_root=None,
         system_name=None,
         resolve_env_vars=False,
+        added_core_reqs=(),
     ):
         logger.debug("Building EDAM structure")
 
         self.toplevel = toplevel
         self.flags = flags
         self.core_manager = core_manager
+        self.added_core_reqs = added_core_reqs
         self.work_root = work_root
         self.export_root = export_root
         self.system_name = system_name
@@ -74,7 +76,9 @@ class Edalizer:
     @property
     def resolved_cores(self):
         """Get a list of all "used" cores after the dependency resolution"""
-        return self.core_manager.get_depends(self.toplevel, self.flags)
+        return self.core_manager.get_depends(
+            self.toplevel, self.flags, self.added_core_reqs
+        )
 
     @property
     def discovered_cores(self):
