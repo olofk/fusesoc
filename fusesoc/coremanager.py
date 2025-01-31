@@ -13,9 +13,12 @@ from simplesat.pool import Pool
 from simplesat.repository import Repository
 from simplesat.request import Request
 
+import fusesoc.lockfile
 from fusesoc.capi2.coreparser import Core2Parser
 from fusesoc.core import Core
 from fusesoc.librarymanager import LibraryManager
+from fusesoc.lockfile import load_lockfile, store_lockfile
+from fusesoc.vlnv import compare_relation
 
 logger = logging.getLogger(__name__)
 
@@ -30,9 +33,11 @@ class DependencyError(Exception):
 
 
 class CoreDB:
-    def __init__(self):
+    def __init__(self, use_lockfile=None):
         self._cores = {}
         self._solver_cache = {}
+        self._use_lockfile = fusesoc.lockfile.LOCKFILE_DISABLE
+        self._lockfile = None
 
     # simplesat doesn't allow ':', '-' or leading '_'
     def _package_name(self, vlnv):
@@ -45,6 +50,7 @@ class CoreDB:
     def _parse_depend(self, depends):
         # FIXME: Handle conflicts
         deps = []
+
         _s = "{} {} {}"
         for d in depends:
             for simple in d.simpleVLNVs():
@@ -82,6 +88,24 @@ class CoreDB:
         else:
             found = list([core["core"] for core in self._cores.values()])
         return found
+
+    def load_lockfile(self, use_lockfile=None):
+        self._use_lockfile = fusesoc.lockfile.LOCKFILE_DISABLE
+        if isinstance(use_lockfile, str):
+            if use_lockfile == "enable":
+                self._use_lockfile = fusesoc.lockfile.LOCKFILE_ENABLE
+            elif use_lockfile == "reset":
+                self._use_lockfile = fusesoc.lockfile.LOCKFILE_RESET
+        if self._use_lockfile >= fusesoc.lockfile.LOCKFILE_ENABLE:
+            self._lockfile = load_lockfile()
+
+    def store_lockfile(self, cores):
+        if self._use_lockfile == fusesoc.lockfile.LOCKFILE_ENABLE:
+            # Only write lockfile if no lockfile was loaded
+            if self._lockfile is None:
+                store_lockfile(cores)
+        elif self._use_lockfile == fusesoc.lockfile.LOCKFILE_RESET:
+            store_lockfile(cores)
 
     def _solver_cache_lookup(self, key):
         if key in self._solver_cache:
@@ -161,6 +185,8 @@ class CoreDB:
         cores = [x["core"] for x in self._cores.values()]
         conflict_map = self._get_conflict_map()
 
+        invalidate_lockfile = False
+
         for core in cores:
             if only_matching_vlnv:
                 if not any(
@@ -195,6 +221,35 @@ class CoreDB:
                 _flags["is_toplevel"] = core.name == top_core
                 _depends = core.get_depends(_flags)
                 if _depends:
+                    for depend in _depends:
+                        virtual_selection = None
+                        found = False
+                        if isinstance(self._lockfile, dict):
+                            if depend in self._lockfile["virtuals"]:
+                                found = True
+                                implementation_core = self._lockfile["virtuals"][depend]
+                                virtual_selection = implementation_core
+                            else:
+                                for locked_core in self._lockfile["cores"]:
+                                    if locked_core.vln_str() == depend.vln_str():
+                                        found = True
+                                        valid_version = compare_relation(
+                                            locked_core, depend.relation, depend
+                                        )
+                                        if valid_version:
+                                            depend.version = locked_core.version
+                                            depend.revision = locked_core.revision
+                                            depend.relation = "=="
+                                        else:
+                                            # Invalid version in lockfile, mark as invalid
+                                            invalidate_lockfile = True
+                        if not found:
+                            logger.info(f"Package {depend} not in lockfile")
+                            # Core not in lockfile, mark as invalid
+                            invalidate_lockfile = True
+                        if virtual_selection:
+                            _depends.append(virtual_selection)
+                            _depends.remove(depend)
                     _s = "; depends ( {} )"
                     package_str += _s.format(self._parse_depend(_depends))
 
@@ -259,6 +314,9 @@ class CoreDB:
 
         # Cache the solution for further lookups
         self._solver_cache_store(solver_cache_key, result)
+
+        if invalidate_lockfile:
+            self._use_lockfile = fusesoc.lockfile.LOCKFILE_RESET
 
         return result
 

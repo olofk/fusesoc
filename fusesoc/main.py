@@ -303,6 +303,8 @@ def run(fs, args):
         else:
             flags[flag] = True
 
+    fs.cm.db.load_lockfile(args.lockfile)
+
     core = _get_core(fs, args.system)
 
     try:
@@ -614,6 +616,12 @@ def get_parser():
     parser_run.add_argument("system", help="Select a system to operate on")
     parser_run.add_argument(
         "backendargs", nargs=argparse.REMAINDER, help="arguments to be sent to backend"
+    )
+    parser_run.add_argument(
+        "--lockfile",
+        help="Lockfile usage",
+        choices=["disable", "enable", "reset"],
+        default="enable",
     )
     parser_run.set_defaults(func=run)
 
