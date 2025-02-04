@@ -4,6 +4,7 @@
 
 import logging
 import os
+import pathlib
 
 from okonomiyaki.versions import EnpkgVersion
 from simplesat.constraints import PrettyPackageStringParser, Requirement
@@ -37,6 +38,7 @@ class CoreDB:
         self._cores = {}
         self._solver_cache = {}
         self._use_lockfile = fusesoc.lockfile.LOCKFILE_DISABLE
+        self._lockfile_path = None
         self._lockfile = None
 
     # simplesat doesn't allow ':', '-' or leading '_'
@@ -89,23 +91,18 @@ class CoreDB:
             found = list([core["core"] for core in self._cores.values()])
         return found
 
-    def load_lockfile(self, use_lockfile=None):
+    def load_lockfile(self, lockfile_path=None):
         self._use_lockfile = fusesoc.lockfile.LOCKFILE_DISABLE
-        if isinstance(use_lockfile, str):
-            if use_lockfile == "enable":
-                self._use_lockfile = fusesoc.lockfile.LOCKFILE_ENABLE
-            elif use_lockfile == "reset":
-                self._use_lockfile = fusesoc.lockfile.LOCKFILE_RESET
-        if self._use_lockfile >= fusesoc.lockfile.LOCKFILE_ENABLE:
-            self._lockfile = load_lockfile()
+        if isinstance(lockfile_path, str):
+            self._use_lockfile = fusesoc.lockfile.LOCKFILE_ENABLE
+            self._lockfile_path = pathlib.Path(lockfile_path)
+            self._lockfile = load_lockfile(self._lockfile_path)
 
     def store_lockfile(self, cores):
         if self._use_lockfile == fusesoc.lockfile.LOCKFILE_ENABLE:
             # Only write lockfile if no lockfile was loaded
             if self._lockfile is None:
                 store_lockfile(cores)
-        elif self._use_lockfile == fusesoc.lockfile.LOCKFILE_RESET:
-            store_lockfile(cores)
 
     def _solver_cache_lookup(self, key):
         if key in self._solver_cache:

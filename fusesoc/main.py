@@ -619,9 +619,7 @@ def get_parser():
     )
     parser_run.add_argument(
         "--lockfile",
-        help="Lockfile usage",
-        choices=["disable", "enable", "reset"],
-        default="enable",
+        help="Lockfile file path",
     )
     parser_run.set_defaults(func=run)
 

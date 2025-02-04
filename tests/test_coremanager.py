@@ -395,7 +395,7 @@ def test_virtual_lockfile(caplog):
 
     cm = CoreManager(Config())
     cm.add_library(Library("virtual", core_dir), [])
-    cm.db.load_lockfile(use_lockfile="enable")
+    cm.db.load_lockfile(lockfile_path="fusesoc.lock")
 
     root_core = cm.get_core(Vlnv("::top_non_deterministic"))
 

@@ -56,15 +56,7 @@ LOCKFILE_ENABLE = 1
 LOCKFILE_RESET = 2
 
 
-def _lockfile_path(root_dir=None):
-    filename = "fusesoc.lock"
-    if root_dir is None:
-        return filename
-    else:
-        return os.path.join(os.path.dirname(root_dir), filename)
-
-
-def store_lockfile(cores, root_dir=None):
+def store_lockfile(cores, filepath=None):
 
     lockfile = {
         "lockfile_version": 1,
@@ -81,12 +73,12 @@ def store_lockfile(cores, root_dir=None):
             for virtual in virtuals:
                 lockfile["virtuals"][virtual] = name
         lockfile["cores"].append(name)
-    fusesoc.utils.yaml_fwrite(_lockfile_path(root_dir), lockfile)
+    fusesoc.utils.yaml_fwrite(filepath, lockfile)
 
 
-def load_lockfile(root_dir=None):
+def load_lockfile(filepath=None):
     lockfile_data = None
-    lockfile_path = pathlib.Path(_lockfile_path(root_dir))
+    lockfile_path = pathlib.Path(filepath)
     if lockfile_path.is_file():
         lockfile_data = fusesoc.utils.yaml_fread(lockfile_path)
         try:
@@ -96,13 +88,17 @@ def load_lockfile(root_dir=None):
             raise SyntaxError(f"\nError parsing JSON Schema: {e}")
         except fastjsonschema.JsonSchemaException as e:
             raise SyntaxError(f"\nError validating {e}")
+    else:
+        logger.warning(f'Failed to load lock file, "{lockfile_path}"')
 
     cores = []
     virtuals = {}
     if lockfile_data:
-        cores = [Vlnv(core_name) for core_name in lockfile_data["cores"]]
-        for virtual_name, core_name in lockfile_data["virtuals"].items():
-            virtuals[Vlnv(virtual_name)] = Vlnv(core_name)
+        if "cores" in lockfile_data:
+            cores = [Vlnv(core_name) for core_name in lockfile_data["cores"]]
+        if "virtuals" in lockfile_data:
+            for virtual_name, core_name in lockfile_data["virtuals"].items():
+                virtuals[Vlnv(virtual_name)] = Vlnv(core_name)
 
     lockfile = {
         "cores": cores,
