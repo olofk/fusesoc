@@ -13,6 +13,7 @@ from importlib import import_module
 
 from fusesoc import utils
 from fusesoc.capi2.coreparser import Core2Parser
+from fusesoc.coremanager import DependencyError
 from fusesoc.utils import merge_dict
 from fusesoc.vlnv import Vlnv
 
@@ -296,11 +297,6 @@ class Edalizer:
 
         for snippet in first_snippets + snippets + last_snippets:
             merge_dict(self.edam, snippet)
-
-    def clean_temp_dirs(self):
-        for coredir in self._generated_core_dirs_to_remove:
-            logger.debug(f"Removing {coredir} ttptttg temporary directory")
-            shutil.rmtree(coredir)
 
     def _build_parser(self, backend_class, edam):
         typedict = {

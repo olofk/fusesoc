@@ -53,7 +53,6 @@ lockfile_schema = """
 
 
 def load_lockfile(filepath: pathlib.Path):
-    lockfile_data = None
     try:
         lockfile_data = fusesoc.utils.yaml_fread(filepath)
         try:
@@ -66,15 +65,11 @@ def load_lockfile(filepath: pathlib.Path):
     except FileNotFoundError:
         return None
 
-    cores = []
-    virtuals = {}
-    if lockfile_data:
-        if "cores" in lockfile_data:
-            cores = [Vlnv(core_name) for core_name in lockfile_data["cores"]]
-        if "virtuals" in lockfile_data:
-            for virtual_name, core_name in lockfile_data["virtuals"].items():
-                virtuals[Vlnv(virtual_name)] = Vlnv(core_name)
-
+    cores = [Vlnv(core_name) for core_name in lockfile_data.setdefault("cores", [])]
+    virtuals = {
+        Vlnv(virtual_name): Vlnv(core_name)
+        for virtual_name, core_name in lockfile_data.setdefault("virtuals", {}).items()
+    }
     lockfile = {
         "cores": cores,
         "virtuals": virtuals,
