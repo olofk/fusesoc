@@ -51,36 +51,11 @@ lockfile_schema = """
 }
 """
 
-LOCKFILE_DISABLE = 0
-LOCKFILE_ENABLE = 1
-LOCKFILE_RESET = 2
 
-
-def store_lockfile(cores, filepath=None):
-
-    lockfile = {
-        "lockfile_version": 1,
-        "fusesoc_version": version,
-        "cores": [],
-        "virtuals": {},
-    }
-    for core in cores:
-        name = str(core.name)
-        virtuals = [
-            f"{vlvn.vendor}:{vlvn.library}:{vlvn.name}" for vlvn in core.get_virtuals()
-        ]
-        if len(virtuals) > 0:
-            for virtual in virtuals:
-                lockfile["virtuals"][virtual] = name
-        lockfile["cores"].append(name)
-    fusesoc.utils.yaml_fwrite(filepath, lockfile)
-
-
-def load_lockfile(filepath=None):
+def load_lockfile(filepath: pathlib.Path):
     lockfile_data = None
-    lockfile_path = pathlib.Path(filepath)
-    if lockfile_path.is_file():
-        lockfile_data = fusesoc.utils.yaml_fread(lockfile_path)
+    try:
+        lockfile_data = fusesoc.utils.yaml_fread(filepath)
         try:
             validator = fastjsonschema.compile(json.loads(lockfile_schema))
             validator(lockfile_data)
@@ -88,8 +63,8 @@ def load_lockfile(filepath=None):
             raise SyntaxError(f"\nError parsing JSON Schema: {e}")
         except fastjsonschema.JsonSchemaException as e:
             raise SyntaxError(f"\nError validating {e}")
-    else:
-        logger.warning(f'Failed to load lock file, "{lockfile_path}"')
+    except FileNotFoundError:
+        return None
 
     cores = []
     virtuals = {}

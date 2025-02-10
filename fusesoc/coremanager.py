@@ -18,7 +18,7 @@ import fusesoc.lockfile
 from fusesoc.capi2.coreparser import Core2Parser
 from fusesoc.core import Core
 from fusesoc.librarymanager import LibraryManager
-from fusesoc.lockfile import load_lockfile, store_lockfile
+from fusesoc.lockfile import load_lockfile
 from fusesoc.vlnv import compare_relation
 
 logger = logging.getLogger(__name__)
@@ -34,11 +34,9 @@ class DependencyError(Exception):
 
 
 class CoreDB:
-    def __init__(self, use_lockfile=None):
+    def __init__(self):
         self._cores = {}
         self._solver_cache = {}
-        self._use_lockfile = fusesoc.lockfile.LOCKFILE_DISABLE
-        self._lockfile_path = None
         self._lockfile = None
 
     # simplesat doesn't allow ':', '-' or leading '_'
@@ -91,18 +89,8 @@ class CoreDB:
             found = list([core["core"] for core in self._cores.values()])
         return found
 
-    def load_lockfile(self, lockfile_path=None):
-        self._use_lockfile = fusesoc.lockfile.LOCKFILE_DISABLE
-        if isinstance(lockfile_path, str):
-            self._use_lockfile = fusesoc.lockfile.LOCKFILE_ENABLE
-            self._lockfile_path = pathlib.Path(lockfile_path)
-            self._lockfile = load_lockfile(self._lockfile_path)
-
-    def store_lockfile(self, cores):
-        if self._use_lockfile == fusesoc.lockfile.LOCKFILE_ENABLE:
-            # Only write lockfile if no lockfile was loaded
-            if self._lockfile is None:
-                store_lockfile(cores)
+    def load_lockfile(self, filepath: pathlib.Path):
+        self._lockfile = load_lockfile(filepath)
 
     def _solver_cache_lookup(self, key):
         if key in self._solver_cache:
@@ -182,7 +170,14 @@ class CoreDB:
         cores = [x["core"] for x in self._cores.values()]
         conflict_map = self._get_conflict_map()
 
-        invalidate_lockfile = False
+        lockfile_virtuals = {}
+
+        if isinstance(self._lockfile, dict):
+            for pin_core in self._lockfile["cores"]:
+                if str(pin_core) in self._cores:
+                    core = self._cores[str(pin_core)]["core"]
+                    for virtual in core.get_virtuals():
+                        lockfile_virtuals[virtual] = core.name
 
         for core in cores:
             if only_matching_vlnv:
@@ -220,16 +215,13 @@ class CoreDB:
                 if _depends:
                     for depend in _depends:
                         virtual_selection = None
-                        found = False
                         if isinstance(self._lockfile, dict):
-                            if depend in self._lockfile["virtuals"]:
-                                found = True
-                                implementation_core = self._lockfile["virtuals"][depend]
+                            if depend in lockfile_virtuals:
+                                implementation_core = lockfile_virtuals[depend]
                                 virtual_selection = implementation_core
                             else:
                                 for locked_core in self._lockfile["cores"]:
                                     if locked_core.vln_str() == depend.vln_str():
-                                        found = True
                                         valid_version = compare_relation(
                                             locked_core, depend.relation, depend
                                         )
@@ -238,12 +230,15 @@ class CoreDB:
                                             depend.revision = locked_core.revision
                                             depend.relation = "=="
                                         else:
-                                            # Invalid version in lockfile, mark as invalid
-                                            invalidate_lockfile = True
-                        if not found:
-                            logger.info(f"Package {depend} not in lockfile")
-                            # Core not in lockfile, mark as invalid
-                            invalidate_lockfile = True
+                                            # Invalid version in lockfile
+                                            logger.warning(
+                                                "Failed to pin core {} outside of dependency version {} {} {}".format(
+                                                    str(locked_core),
+                                                    depend.vln_str(),
+                                                    depend.relation,
+                                                    depend.version,
+                                                )
+                                            )
                         if virtual_selection:
                             _depends.append(virtual_selection)
                             _depends.remove(depend)
@@ -311,9 +306,6 @@ class CoreDB:
 
         # Cache the solution for further lookups
         self._solver_cache_store(solver_cache_key, result)
-
-        if invalidate_lockfile:
-            self._use_lockfile = fusesoc.lockfile.LOCKFILE_RESET
 
         return result
 

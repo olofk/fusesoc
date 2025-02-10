@@ -349,6 +349,7 @@ def test_virtual_non_deterministic_virtual(caplog):
         core_manager=cm,
         work_root=work_root,
     )
+    edalizer.run()
 
     with caplog.at_level(logging.WARNING):
         edalizer.run()
@@ -395,7 +396,7 @@ def test_virtual_lockfile(caplog):
 
     cm = CoreManager(Config())
     cm.add_library(Library("virtual", core_dir), [])
-    cm.db.load_lockfile(lockfile_path="fusesoc.lock")
+    cm.db.load_lockfile(filepath="fusesoc.lock")
 
     root_core = cm.get_core(Vlnv("::top_non_deterministic"))
 
