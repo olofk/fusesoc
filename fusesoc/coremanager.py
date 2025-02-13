@@ -286,7 +286,7 @@ class CoreManager:
         visited = set()
         for root, dirs, files in os.walk(path, followlinks=True):
             ignore_tree = ("FUSESOC_IGNORE" in files) or (
-                os.path.abspath(root) in ignored_dirs
+                os.path.realpath(root) in ignored_dirs
             )
             if ignore_tree:
                 del dirs[:]

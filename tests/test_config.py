@@ -88,7 +88,7 @@ def test_config_relative_path():
 
         conf = Config(tcf.name)
         for name in ["build_root", "cache_root", "library_root"]:
-            abs_td = os.path.abspath(td)
+            abs_td = os.path.realpath(td)
             assert getattr(conf, name) == os.path.join(abs_td, name)
 
 
@@ -107,7 +107,7 @@ def test_config_relative_path_starts_with_dot():
 
         conf = Config(tcf.name)
         for name in ["build_root", "cache_root", "library_root"]:
-            abs_td = os.path.abspath(td)
+            abs_td = os.path.realpath(td)
             assert getattr(conf, name) == os.path.join(abs_td, name)
 
 
@@ -128,7 +128,7 @@ def test_config_relative_path_with_local_config():
 
         conf = Config(tcf.name)
         for name in ["build_root", "cache_root", "library_root"]:
-            abs_td = os.path.abspath(td)
+            abs_td = os.path.realpath(td)
             assert getattr(conf, name) == os.path.join(abs_td, name)
     os.chdir(prev_dir)
 
