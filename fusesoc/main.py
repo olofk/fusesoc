@@ -315,8 +315,8 @@ def run(fs, args):
         exit(1)
 
     # Unconditionally clean out the work root on fresh builds
-    # if we use the old tool API
-    if do_configure and not core.get_flow(flags):
+    # if we use the old tool API or clean flag is set
+    if do_configure and (not core.get_flow(flags) or args.clean):
         try:
             prepare_work_root(fs.get_work_root(core, flags))
         except RuntimeError as e:
@@ -568,6 +568,11 @@ def get_parser():
 
     # run subparser
     parser_run = subparsers.add_parser("run", help="Start a tool flow")
+    parser_run.add_argument(
+        "--clean",
+        action="store_true",
+        help="Clean build directory on start",
+    )
     parser_run.add_argument(
         "--no-export",
         action="store_true",
