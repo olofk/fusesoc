@@ -29,6 +29,7 @@ from fusesoc.config import Config
 from fusesoc.coremanager import DependencyError
 from fusesoc.fusesoc import Fusesoc
 from fusesoc.librarymanager import Library
+from fusesoc.vlnv import Vlnv
 
 logger = logging.getLogger(__name__)
 
@@ -303,6 +304,11 @@ def run(fs, args):
         else:
             flags[flag] = True
 
+    added_core_reqs = []
+    for vlnv in args.add_vlnv:
+        added_core_reqs.append(Vlnv(vlnv))
+    added_core_reqs = tuple(added_core_reqs)
+
     core = _get_core(fs, args.system)
 
     try:
@@ -326,7 +332,9 @@ def run(fs, args):
     # Frontend/backend separation
 
     try:
-        edam_file, backend = fs.get_backend(core, flags, args.backendargs)
+        edam_file, backend = fs.get_backend(
+            core, flags, added_core_reqs, args.backendargs
+        )
 
     except RuntimeError as e:
         logger.error(str(e))
@@ -592,6 +600,13 @@ def get_parser():
     parser_run.add_argument("--run", action="store_true", help="Execute run stage")
     parser_run.add_argument("--target", help="Override default target")
     parser_run.add_argument("--tool", help="Override default tool for target")
+    parser_run.add_argument(
+        "--add-vlnv",
+        help="Add a VLNV to the build as a dependency of the 'system'. Intended for explicit virtual providers. Multiple uses allowed.",
+        action="append",
+        default=[],
+        metavar="VLNV",
+    )
     parser_run.add_argument(
         "--flag",
         help="Set custom use flags. Can be specified multiple times",

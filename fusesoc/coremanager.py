@@ -110,8 +110,8 @@ class CoreDB:
             h ^= hash(pair)
         return h
 
-    def solve(self, top_core, flags):
-        return self._solve(top_core, flags)
+    def solve(self, top_core, flags, added_cores):
+        return self._solve(top_core, flags, added_cores)
 
     def _get_conflict_map(self):
         """Return a map of cores to their conflicts
@@ -142,7 +142,7 @@ class CoreDB:
             conflict_set.remove(real_pkg)
         return conflict_map
 
-    def _solve(self, top_core, flags={}, only_matching_vlnv=False):
+    def _solve(self, top_core, flags={}, added_cores=(), only_matching_vlnv=False):
         def eq_vln(this, that):
             return (
                 this.vendor == that.vendor
@@ -151,7 +151,12 @@ class CoreDB:
             )
 
         # Try to return a cached result
-        solver_cache_key = (top_core, self._hash_flags_dict(flags), only_matching_vlnv)
+        requested_cores = frozenset(added_cores + (top_core,))
+        solver_cache_key = (
+            requested_cores,
+            self._hash_flags_dict(flags),
+            only_matching_vlnv,
+        )
         cached_solution = self._solver_cache_lookup(solver_cache_key)
         if cached_solution:
             return cached_solution
@@ -206,12 +211,13 @@ class CoreDB:
             repo.add_package(package)
 
         request = Request()
-        _top_dep = "{} {} {}".format(
-            self._package_name(top_core),
-            top_core.relation,
-            self._package_version(top_core),
-        )
-        request.install(Requirement._from_string(_top_dep))
+        for requested_core in requested_cores:
+            dep = "{} {} {}".format(
+                self._package_name(requested_core),
+                requested_core.relation,
+                self._package_version(requested_core),
+            )
+            request.install(Requirement._from_string(dep))
 
         installed_repository = Repository()
         pool = Pool([repo])
@@ -249,11 +255,12 @@ class CoreDB:
                 ]
         # Print a warning for all virtual selections that has no concrete requirement selection
         for virtual in virtual_selection.values():
-            logger.warning(
-                "Non-deterministic selection of virtual core {} selected {}".format(
-                    virtual[1], virtual[0]
+            if virtual[0] not in requested_cores:
+                logger.warning(
+                    "Non-deterministic selection of virtual core {} selected {}".format(
+                        virtual[1], virtual[0]
+                    )
                 )
-            )
 
         result = [op.package.core for op in transaction.operations]
 
@@ -402,12 +409,15 @@ class CoreManager:
         """Get all registered libraries"""
         return self._lm.get_libraries()
 
-    def get_depends(self, core, flags):
+    def get_depends(self, core, flags, added_cores):
         """Get an ordered list of all dependencies of a core
 
         All direct and indirect dependencies are resolved into a dependency
         tree, the tree is flattened, and an ordered list of dependencies is
         created.
+
+        The list is augmented by any added_cores required by the call, which can
+        deterministically satisfy virtual VLNV dependencies.
 
         The first element in the list is a leaf dependency, the last element
         is the core at the root of the dependency tree.
@@ -417,8 +427,11 @@ class CoreManager:
                 core.relation, str(core), str(flags)
             )
         )
+        logger.debug(
+            " User added cores to request: " + ", ".join([str(c) for c in added_cores])
+        )
         resolved_core = self.db.find(core)
-        deps = self.db.solve(resolved_core.name, flags)
+        deps = self.db.solve(resolved_core.name, flags, added_cores)
         logger.debug(" Resolved core to {}".format(str(resolved_core.name)))
         logger.debug(" with dependencies " + ", ".join([str(c.name) for c in deps]))
         return deps
