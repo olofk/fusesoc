@@ -1,0 +1,2 @@
+virtuals:
+  ::someinterface:0: ::impl2:0
