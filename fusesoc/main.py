@@ -236,7 +236,7 @@ def gen_list(fs, args):
                     "{} : {} : {}".format(
                         core.ljust(maxlen),
                         generator_name,
-                        generator_data["description"] or "<No description>",
+                        generator_data.get("description", "<No description>"),
                     )
                 )
 
