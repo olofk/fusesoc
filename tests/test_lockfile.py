@@ -21,8 +21,4 @@ def test_load_lockfile():
             Vlnv(":common:gpio_ctrl:0.1"),
             Vlnv(":product:toppy:0.1"),
         ],
-        "virtuals": {
-            Vlnv(":interface:pin:"): Vlnv(":lib:pin:0.1"),
-            Vlnv(":interface:gpio:"): Vlnv(":lib:gpio:0.1"),
-        },
     }

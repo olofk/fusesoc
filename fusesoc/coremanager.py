@@ -216,10 +216,7 @@ class CoreDB:
                     for depend in _depends:
                         virtual_selection = None
                         if isinstance(self._lockfile, dict):
-                            if depend in self._lockfile["virtuals"]:
-                                implementation_core = self._lockfile["virtuals"][depend]
-                                virtual_selection = implementation_core
-                            elif depend in lockfile_virtuals:
+                            if depend in lockfile_virtuals:
                                 implementation_core = lockfile_virtuals[depend]
                                 virtual_selection = implementation_core
                             else:

@@ -25,20 +25,6 @@ lockfile_schema = """
               "type": "string"
             }
         },
-        "virtuals": {
-            "description": "Virtual cores used in the build",
-            "type": "object",
-            "patternProperties": {
-                "^.+$": {
-                    "description": "Virtual core used in the build",
-                    "patternProperties": {
-                        "^.+$": {
-                            "description": "Core implementing virtual core interface"
-                        }
-                    }
-                }
-            }
-        },
         "fusesoc_version": {
             "description": "FuseSoC version which generated the lockfile",
             "type": "string"
@@ -66,13 +52,8 @@ def load_lockfile(filepath: pathlib.Path):
         return None
 
     cores = [Vlnv(core_name) for core_name in lockfile_data.setdefault("cores", [])]
-    virtuals = {
-        Vlnv(virtual_name): Vlnv(core_name)
-        for virtual_name, core_name in lockfile_data.setdefault("virtuals", {}).items()
-    }
     lockfile = {
         "cores": cores,
-        "virtuals": virtuals,
     }
 
     return lockfile
