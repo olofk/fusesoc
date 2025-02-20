@@ -5,6 +5,7 @@
 
 import argparse
 import os
+import pathlib
 import shutil
 import signal
 import sys
@@ -302,6 +303,9 @@ def run(fs, args):
             flags[flag[1:]] = False
         else:
             flags[flag] = True
+
+    if args.lockfile is not None:
+        fs.cm.db.load_lockfile(args.lockfile)
 
     core = _get_core(fs, args.system)
 
@@ -619,6 +623,11 @@ def get_parser():
     parser_run.add_argument("system", help="Select a system to operate on")
     parser_run.add_argument(
         "backendargs", nargs=argparse.REMAINDER, help="arguments to be sent to backend"
+    )
+    parser_run.add_argument(
+        "--lockfile",
+        help="Lockfile file path",
+        type=pathlib.Path,
     )
     parser_run.set_defaults(func=run)
 
