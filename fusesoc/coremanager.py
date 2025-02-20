@@ -90,6 +90,7 @@ class CoreDB:
         return found
 
     def load_lockfile(self, filepath: pathlib.Path):
+
         self._lockfile = load_lockfile(filepath)
 
     def _solver_cache_lookup(self, key):
@@ -170,14 +171,16 @@ class CoreDB:
         cores = [x["core"] for x in self._cores.values()]
         conflict_map = self._get_conflict_map()
 
+        # Enumerate cores in lock file, if any
         lockfile_virtuals = {}
-
+        lockfile_cores = []
         if isinstance(self._lockfile, dict):
             for pin_core in self._lockfile["cores"]:
                 if str(pin_core) in self._cores:
                     core = self._cores[str(pin_core)]["core"]
                     for virtual in core.get_virtuals():
                         lockfile_virtuals[virtual] = core.name
+                lockfile_cores.append(pin_core)
 
         for core in cores:
             if only_matching_vlnv:
@@ -220,12 +223,17 @@ class CoreDB:
                                 implementation_core = lockfile_virtuals[depend]
                                 virtual_selection = implementation_core
                             else:
-                                for locked_core in self._lockfile["cores"]:
+                                for locked_core in lockfile_cores:
                                     if locked_core.vln_str() == depend.vln_str():
                                         valid_version = compare_relation(
                                             locked_core, depend.relation, depend
                                         )
                                         if valid_version:
+                                            logger.info(
+                                                "Pin version {}".format(
+                                                    str(locked_core)
+                                                )
+                                            )
                                             depend.version = locked_core.version
                                             depend.revision = locked_core.revision
                                             depend.relation = "=="
@@ -240,6 +248,7 @@ class CoreDB:
                                                 )
                                             )
                         if virtual_selection:
+                            logger.info("Pin virtual {}".format(str(virtual_selection)))
                             _depends.append(virtual_selection)
                             _depends.remove(depend)
                     _s = "; depends ( {} )"
@@ -273,6 +282,7 @@ class CoreDB:
             raise DependencyError(top_core.name)
 
         virtual_selection = {}
+        partial_lockfile = False
         objdict = {}
         if len(transaction.operations) > 1:
             for op in transaction.operations:
@@ -291,6 +301,11 @@ class CoreDB:
                     if p[0] in virtual_selection:
                         # If package that implements a virtual core is required, remove from the dictionary
                         del virtual_selection[p[0]]
+                if (
+                    isinstance(self._lockfile, dict)
+                    and op.package.core.name not in lockfile_cores
+                ):
+                    partial_lockfile = True
                 op.package.core.direct_deps = [
                     objdict[n[0]] for n in op.package.install_requires
                 ]
@@ -301,6 +316,8 @@ class CoreDB:
                     virtual[1], virtual[0]
                 )
             )
+        if partial_lockfile:
+            logger.warning("Using lock file with partial list of cores")
 
         result = [op.package.core for op in transaction.operations]
 

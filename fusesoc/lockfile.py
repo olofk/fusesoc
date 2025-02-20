@@ -49,6 +49,7 @@ def load_lockfile(filepath: pathlib.Path):
         except fastjsonschema.JsonSchemaException as e:
             raise SyntaxError(f"\nError validating {e}")
     except FileNotFoundError:
+        logger.warning(f"Lockfile {filepath} not found")
         return None
 
     cores = [Vlnv(core_name) for core_name in lockfile_data.setdefault("cores", [])]

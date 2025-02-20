@@ -367,7 +367,7 @@ def test_virtual_non_deterministic_virtual(caplog):
         ]
 
 
-def test_lockfile(caplog):
+def test_lockfile_partial_warning(caplog):
     """
     Test core selection with a core pinned by a lock file
     """
@@ -388,16 +388,11 @@ def test_lockfile(caplog):
 
     core_dir = os.path.join(os.path.dirname(__file__), "capi2_cores", "dependencies")
 
-    try:
-        os.remove("fusesoc.lock")
-    except FileNotFoundError:
-        pass
-
     cm = CoreManager(Config())
     cm.add_library(Library("virtual", core_dir), [])
     cm.db.load_lockfile(
         filepath=os.path.join(
-            os.path.dirname(__file__), "lockfiles", "dependencies.lock"
+            os.path.dirname(__file__), "lockfiles", "dependencies-partial.lock"
         )
     )
 
@@ -425,7 +420,60 @@ def test_lockfile(caplog):
         ]
 
 
-def test_lockfile_warning(caplog):
+def test_lockfile_partial_warning(caplog):
+    """
+    Test core selection with a core pinned by a lock file
+    """
+    import logging
+    import os
+    import tempfile
+
+    from fusesoc.config import Config
+    from fusesoc.coremanager import CoreManager
+    from fusesoc.edalizer import Edalizer
+    from fusesoc.librarymanager import Library
+    from fusesoc.vlnv import Vlnv
+
+    flags = {"tool": "icarus"}
+
+    build_root = tempfile.mkdtemp(prefix="export_")
+    work_root = os.path.join(build_root, "work")
+
+    core_dir = os.path.join(os.path.dirname(__file__), "capi2_cores", "dependencies")
+
+    cm = CoreManager(Config())
+    cm.add_library(Library("virtual", core_dir), [])
+    cm.db.load_lockfile(
+        filepath=os.path.join(
+            os.path.dirname(__file__), "lockfiles", "dependencies-partial.lock"
+        )
+    )
+
+    root_core = cm.get_core(Vlnv("::dependencies-top"))
+
+    edalizer = Edalizer(
+        toplevel=root_core.name,
+        flags=flags,
+        core_manager=cm,
+        work_root=work_root,
+    )
+
+    with caplog.at_level(logging.WARNING):
+        edalizer.run()
+
+    assert "Using lock file with partial list of cores" in caplog.text
+
+    deps = cm.get_depends(root_core.name, {})
+    deps_names = [str(c) for c in deps]
+
+    for dependency in deps_names:
+        assert dependency in [
+            "::used:1.1",
+            "::dependencies-top:0",
+        ]
+
+
+def test_lockfile_version_warning(caplog):
     """
     Test core selection with a core pinned by a lock file, warning if version is out of scope
     """
@@ -455,7 +503,7 @@ def test_lockfile_warning(caplog):
     cm.add_library(Library("virtual", core_dir), [])
     cm.db.load_lockfile(
         filepath=os.path.join(
-            os.path.dirname(__file__), "lockfiles", "dependencies-1.0.lock"
+            os.path.dirname(__file__), "lockfiles", "dependencies-partial-1.0.lock"
         )
     )
 
