@@ -115,7 +115,7 @@ class Fusesoc:
 
         return work_root
 
-    def get_backend(self, core, flags, backendargs=[]):
+    def get_backend(self, core, flags, added_core_reqs=(), backendargs=[]):
 
         work_root = self.get_work_root(core, flags)
 
@@ -156,6 +156,7 @@ class Fusesoc:
             export_root=export_root,
             system_name=self.config.system_name,
             resolve_env_vars=self.config.resolve_env_vars_early,
+            added_core_reqs=added_core_reqs,
         )
 
         try:
