@@ -14,7 +14,6 @@ from simplesat.pool import Pool
 from simplesat.repository import Repository
 from simplesat.request import Request
 
-import fusesoc.lockfile
 from fusesoc.capi2.coreparser import Core2Parser
 from fusesoc.core import Core
 from fusesoc.librarymanager import LibraryManager
@@ -171,17 +170,6 @@ class CoreDB:
         cores = [x["core"] for x in self._cores.values()]
         conflict_map = self._get_conflict_map()
 
-        # Enumerate cores in lock file, if any
-        lockfile_virtuals = {}
-        lockfile_cores = []
-        if isinstance(self._lockfile, dict):
-            for pin_core in self._lockfile["cores"]:
-                if str(pin_core) in self._cores:
-                    core = self._cores[str(pin_core)]["core"]
-                    for virtual in core.get_virtuals():
-                        lockfile_virtuals[virtual] = core.name
-                lockfile_cores.append(pin_core)
-
         for core in cores:
             if only_matching_vlnv:
                 if not any(
@@ -218,35 +206,29 @@ class CoreDB:
                 if _depends:
                     for depend in _depends:
                         virtual_selection = None
-                        if isinstance(self._lockfile, dict):
-                            if depend in lockfile_virtuals:
-                                implementation_core = lockfile_virtuals[depend]
-                                virtual_selection = implementation_core
-                            else:
-                                for locked_core in lockfile_cores:
-                                    if locked_core.vln_str() == depend.vln_str():
-                                        valid_version = compare_relation(
-                                            locked_core, depend.relation, depend
+                        if self._lockfile:
+                            for locked_core in self._lockfile["cores"]:
+                                if locked_core.vln_str() == depend.vln_str():
+                                    valid_version = compare_relation(
+                                        locked_core, depend.relation, depend
+                                    )
+                                    if valid_version:
+                                        logger.info(
+                                            "Pin version {}".format(str(locked_core))
                                         )
-                                        if valid_version:
-                                            logger.info(
-                                                "Pin version {}".format(
-                                                    str(locked_core)
-                                                )
+                                        depend.version = locked_core.version
+                                        depend.revision = locked_core.revision
+                                        depend.relation = "=="
+                                    else:
+                                        # Invalid version in lockfile
+                                        logger.warning(
+                                            "Failed to pin core {} outside of dependency version {} {} {}".format(
+                                                str(locked_core),
+                                                depend.vln_str(),
+                                                depend.relation,
+                                                depend.version,
                                             )
-                                            depend.version = locked_core.version
-                                            depend.revision = locked_core.revision
-                                            depend.relation = "=="
-                                        else:
-                                            # Invalid version in lockfile
-                                            logger.warning(
-                                                "Failed to pin core {} outside of dependency version {} {} {}".format(
-                                                    str(locked_core),
-                                                    depend.vln_str(),
-                                                    depend.relation,
-                                                    depend.version,
-                                                )
-                                            )
+                                        )
                         if virtual_selection:
                             logger.info("Pin virtual {}".format(str(virtual_selection)))
                             _depends.append(virtual_selection)
@@ -302,8 +284,8 @@ class CoreDB:
                         # If package that implements a virtual core is required, remove from the dictionary
                         del virtual_selection[p[0]]
                 if (
-                    isinstance(self._lockfile, dict)
-                    and op.package.core.name not in lockfile_cores
+                    self._lockfile
+                    and op.package.core.name not in self._lockfile["cores"]
                 ):
                     partial_lockfile = True
                 op.package.core.direct_deps = [
