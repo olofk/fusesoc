@@ -155,6 +155,7 @@ def test_tool_or_flow():
 
 
 def test_generators():
+    import os
     import shutil
     import tempfile
     from pathlib import Path
@@ -165,8 +166,8 @@ def test_generators():
     from fusesoc.librarymanager import Library
     from fusesoc.vlnv import Vlnv
 
-    tests_dir = Path(__file__).parent
-    cores_dir = tests_dir / "capi2_cores" / "misc" / "generate"
+    tests_dir = os.path.dirname(__file__)
+    cores_dir = os.path.join(tests_dir, "capi2_cores", "misc")
 
     lib = Library("edalizer", cores_dir)
 

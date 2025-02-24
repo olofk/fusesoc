@@ -374,14 +374,14 @@ def test_virtual_non_deterministic_virtual(caplog):
 
 
 def test_mapping_success_cases():
-    from pathlib import Path
+    import os
 
     from fusesoc.config import Config
     from fusesoc.coremanager import CoreManager
     from fusesoc.librarymanager import Library
     from fusesoc.vlnv import Vlnv
 
-    core_dir = Path(__file__).parent / "capi2_cores" / "mapping"
+    core_dir = os.path.join(os.path.dirname(__file__), "capi2_cores", "mapping")
 
     top = "test_mapping:t:top"
     top_vlnv = Vlnv(top)
@@ -443,13 +443,13 @@ def test_mapping_success_cases():
 
 
 def test_mapping_failure_cases():
-    from pathlib import Path
+    import os
 
     from fusesoc.config import Config
     from fusesoc.coremanager import CoreManager
     from fusesoc.librarymanager import Library
 
-    core_dir = Path(__file__).parent / "capi2_cores" / "mapping"
+    core_dir = os.path.join(os.path.dirname(__file__), "capi2_cores", "mapping")
 
     for mappings in (
         ["test_mapping:m:non_existent"],
