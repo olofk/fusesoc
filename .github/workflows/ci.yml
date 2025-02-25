@@ -23,12 +23,11 @@ jobs:
         # https://github.com/olofk/fusesoc/issues/528
         #- { icon: 🧊, name: windows-latest }
         pyver:
-          - '3.7'
-          - '3.8'
-          - '3.9'
           - '3.10'
           - '3.11'
           - '3.12'
+          - '3.13'
+          - '3.14'
         exclude:
           #Fails because github can't find an arm64 image for Python 3.7???
           - os: {name: macos-latest}
