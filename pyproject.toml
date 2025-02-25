@@ -60,3 +60,26 @@ envlist = py3
 deps = pytest
 commands = pytest
 """
+
+[tool.ruff]
+line-length = 88
+indent-width = 4
+
+target-version = "py37"
+
+[tool.ruff.lint]
+ignore = [
+  "E711",
+  "E712",
+  "E713",
+  "E714",
+  "E721",
+  "E722",
+  "E741",
+  "E743",
+  "F401",
+  "E402",
+  "F523",
+  "F841",
+  "F821",
+]
