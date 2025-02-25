@@ -16,6 +16,8 @@ except ImportError:
     from yaml import SafeDumper as YamlDumper
     from yaml import SafeLoader as YamlLoader
 
+from pydantic import validate_call
+
 from fusesoc.capi2.inheritance import Inheritance
 
 logger = logging.getLogger(__name__)
@@ -62,7 +64,8 @@ def cygpath(win_path):
 import os
 
 
-def unique_dirs(file_list):
+@validate_call
+def unique_dirs(file_list: list[str]) -> list[str]:
     return list({os.path.dirname(f) for f in file_list})
 
 
