@@ -13,7 +13,6 @@ from importlib import import_module
 
 from fusesoc import utils
 from fusesoc.capi2.coreparser import Core2Parser
-from fusesoc.coremanager import DependencyError
 from fusesoc.utils import merge_dict
 from fusesoc.vlnv import Vlnv
 

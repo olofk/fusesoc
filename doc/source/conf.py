@@ -12,10 +12,10 @@
 import os
 import sys
 from datetime import datetime
+from importlib import util as importlib_util
 
 import jsonschema2md
 
-import fusesoc
 from fusesoc.capi2.json_schema import capi2_schema
 from fusesoc.utils import yaml_read
 
@@ -109,11 +109,9 @@ todo_include_todos = True
 # or
 # - apt-get install python-sphinx-rtd-theme
 
-try:
-    import sphinx_rtd_theme
-
+if importlib_util.find_spec("sphinx_rtd_theme") is not None:
     html_theme = "sphinx_rtd_theme"
-except ImportError:
+else:
     sys.stderr.write(
         "Warning: The Sphinx 'sphinx_rtd_theme' HTML theme was "
         + "not found. Make sure you have the theme installed to produce pretty "

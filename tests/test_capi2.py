@@ -38,7 +38,6 @@ def test_files_out_of_hierarchy():
 
 def test_empty_core():
     import os
-    import tempfile
 
     from fusesoc.capi2.coreparser import Core2Parser
     from fusesoc.core import Core
