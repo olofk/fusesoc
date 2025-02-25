@@ -7,6 +7,7 @@ import os.path
 import shutil
 import subprocess
 import tempfile
+from textwrap import dedent
 from argparse import Namespace
 
 from test_common import cache_root, cores_root, library_root
@@ -136,14 +137,14 @@ auto-sync = true"""
     vars(args)["sync-version"] = "capi2"
     args.location = None
 
-    expected = """[library.fusesoc-cores]
-location = fusesoc_libraries/fusesoc-cores
-sync-uri = https://github.com/fusesoc/fusesoc-cores
-sync-version = capi2
-sync-type = git
-auto-sync = true""".format(
-        cm._lm.library_root
-    )
+    expected = dedent("""
+        [library.fusesoc-cores]
+        location = fusesoc_libraries/fusesoc-cores
+        sync-uri = https://github.com/fusesoc/fusesoc-cores
+        sync-version = capi2
+        sync-type = git
+        auto-sync = true
+    """)
 
     add_library(cm, args)
 
