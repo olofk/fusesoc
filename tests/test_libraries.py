@@ -178,8 +178,6 @@ def test_library_update(caplog):
 
         conf = Config(tcf.name)
 
-    args = Namespace()
-
     Fusesoc.init_logging(False, False)
     fs = Fusesoc(conf)
 
@@ -236,8 +234,6 @@ auto-sync = true
             tcf.flush()
 
             conf = Config(tcf.name)
-
-        args = Namespace()
 
         Fusesoc.init_logging(False, False)
         fs = Fusesoc(conf)

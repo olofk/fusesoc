@@ -36,7 +36,7 @@ class Fusesoc:
         for library in self.config.libraries + cores_root_libs:
             try:
                 self.add_library(library)
-            except (RuntimeError, OSError) as e:
+            except (RuntimeError, OSError):
                 try:
                     temporary_lm = LibraryManager(self.config.library_root)
                     # try to initialize library

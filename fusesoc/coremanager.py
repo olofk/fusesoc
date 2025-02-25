@@ -222,7 +222,7 @@ class CoreDB:
             transaction = solver.solve(request)
         except SatisfiabilityError as e:
             raise DependencyError(top_core.name, msg=e.unsat.to_string(pool))
-        except NoPackageFound as e:
+        except NoPackageFound:
             raise DependencyError(top_core.name)
 
         virtual_selection = {}
@@ -376,7 +376,7 @@ class CoreManager:
                             core_file
                         )
                     )
-        except Exception as error:
+        except Exception:
             error_msg = f"Unable to determine CAPI version from core file {core_file}"
             logger.warning(error_msg)
             return -1
