@@ -6,10 +6,11 @@ import logging
 import os
 from typing import Literal
 
-from fusesoc.provider.provider import get_provider
 from pydantic import model_validator
 from pydantic.dataclasses import dataclass
 from typing_extensions import Self
+
+from fusesoc.provider.provider import get_provider
 
 logger = logging.getLogger(__name__)
 
@@ -25,16 +26,11 @@ class Library:
 
     @model_validator(mode="after")
     def check_instances(self) -> Self:
-        if self.sync_type and self.sync_type not in ("local", "git", "url"):
-            raise ValueError(
-                "Library {} ({}) Invalid sync-type '{}'".format(
-                    self.name, self.location, self.sync_type
-                )
-            )
         if self.sync_type in ("git", "url"):
             if self.sync_uri is None:
                 raise ValueError(
-                    f"Library {self.name} ({self.location}) 'sync_uri' must be set when using sync_type '{self.sync_type}'"
+                    f"Library {self.name} ({self.location}) "
+                    f"sync-uri must be set when using sync_type '{self.sync_type}'"
                 )
         return self
 
