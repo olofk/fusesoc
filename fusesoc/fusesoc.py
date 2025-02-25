@@ -146,6 +146,7 @@ class Fusesoc:
             try:
                 backend_class = get_edatool(flags["tool"])
             except ImportError:
+                tool = flags.setdefault("tool", "")
                 raise RuntimeError(f"Backend {tool!r} not found")
 
         edalizer = Edalizer(
