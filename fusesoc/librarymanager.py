@@ -26,16 +26,14 @@ class Library:
     def check_instances(self) -> Self:
         if self.sync_type and not self.sync_type in ["local", "git"]:
             raise ValueError(
-                "Library {} ({}) Invalid sync-type '{}'".format(
-                    self.name, self.location, self.sync_type
-                )
+                f"Library {self.name} ({self.location}) "
+                f"Invalid sync-type '{self.sync_type}'"
             )
         if self.sync_type in ["git"]:
             if not self.sync_uri:
                 raise ValueError(
-                    "Library {} ({}) sync-uri must be set when using sync_type 'git'".format(
-                        self.name, self.location
-                    )
+                    f"Library {self.name} ({self.location}) "
+                    "sync-uri must be set when using sync_type 'git'"
                 )
         return self
 
