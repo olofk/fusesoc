@@ -34,3 +34,10 @@ repos:
     rev: 22.3.0
     hooks:
       - id: black
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.9.7
+    hooks:
+      # Run the linter.
+      - id: ruff
+      # The formatter could be run in the future
+      #- id: ruff-format
