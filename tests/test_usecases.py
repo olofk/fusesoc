@@ -61,6 +61,76 @@ def test_usage_error_leads_to_nonzero_exit_code():
         _fusesoc("--option_does_not_exist")
 
 
+def test_failing_generator_is_not_cached(caplog, capfd):
+    """
+    When FuseSoC runs generators, the output is cached if the generator requests
+    so. While this is generally a good idea, the cached output must not be used
+    in subsequent runs if the generator fails with a non-zero exit code. In that
+    case, the generator should be re-invoked in the next run to not need to user
+    to manually run `fusesoc gen clean` to fix a faulty cache entry.
+
+    Therefore this tests adds a simple generator, which prints something to the
+    console and then exist with an error. After registering this generator, two
+    FuseSoC-runs are performed, where the generator, despited being marked as
+    cacheable, needs to be reinvoked.
+    """
+    # Register the generator
+    with open("failing-script.py", "w") as command:
+        command.write("import sys; print('Running generator'); sys.exit(2)")
+    with open("test-generator.core", "w") as failing_generator:
+        failing_generator.write(
+            """\
+CAPI=2:
+name: ::test-generator:0.1.0
+generators:
+  failing-generator:
+    # Run a builtin POSIX command, which prints something and then exits with a
+    # non-zero exit code. `printf` can be used with formatting something that is
+    # not an integer as one, causing it to fail.
+    interpreter: python
+    command: failing-script.py
+    cache_type: input
+            """
+        )
+    _fusesoc("library", "add", ".")
+    _fusesoc("gen", "clean")
+    _fusesoc("gen", "list")
+    captured = capfd.readouterr()
+    assert "::test-generator:0.1.0" in captured.out
+
+    with open("test-user.core", "w") as using_core:
+        using_core.write(
+            """\
+CAPI=2:
+name: ::test-user:0.1.0
+filesets:
+  rtl:
+    depend: ["::test-generator:0.1.0"]
+generate:
+  call-generator:
+    generator: failing-generator
+targets:
+  default:
+    filesets: [rtl]
+    generate: [call-generator]
+            """
+        )
+
+    # run generator the first time, which should fail
+    with pytest.raises(SystemExit):
+        _fusesoc("run", "--tool=icarus", "::test-user:0.1.0")
+    captured = capfd.readouterr()
+    assert "Found cached output for ::test-user-call-generator:0.1.0" not in caplog.text
+    assert captured.out == "Running generator\n"
+
+    # run generator second time, which should fail as well despite being cached
+    with pytest.raises(SystemExit):
+        _fusesoc("run", "--tool=icarus", "::test-user:0.1.0")
+    captured = capfd.readouterr()
+    assert "Found cached output for ::test-user-call-generator:0.1.0" not in caplog.text
+    assert captured.out == "Running generator\n"
+
+
 # region Test fixtures and helper functions
 @pytest.fixture(autouse=True)  # this fixture will be used by all tests implicitly
 def run_in_temporary_directory(request):
