@@ -672,7 +672,17 @@ class Ttptttg:
                 )
             else:
                 shutil.rmtree(generator_cwd, ignore_errors=True)
-            self._run(generator_cwd)
+            try:
+                self._run(generator_cwd)
+            except:
+                # If the generator invocation failed for any reason, its output
+                # directory is removed. While this is bad for debugging failing
+                # generators, it at least prevents the next FuseSoC-run to
+                # assume, that the generator was successful and hence a failed
+                # generator is retried on the next FuseSoC-run.
+                logger.debug("Generator failed, removing its output files")
+                shutil.rmtree(generator_cwd, ignore_errors=False)
+                raise
             # TODO: Release cache lock
 
         cores = []
