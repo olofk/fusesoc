@@ -6,11 +6,10 @@ import logging
 import os
 from importlib import import_module
 
-from fusesoc.config import Config
 from fusesoc.coremanager import CoreManager, DependencyError
 from fusesoc.edalizer import Edalizer
 from fusesoc.librarymanager import Library, LibraryManager
-from fusesoc.utils import Launcher, setup_logging, yaml_fread
+from fusesoc.utils import setup_logging, yaml_fread
 from fusesoc.vlnv import Vlnv
 
 try:
@@ -36,7 +35,7 @@ class Fusesoc:
         for library in self.config.libraries + cores_root_libs:
             try:
                 self.add_library(library)
-            except (RuntimeError, OSError) as e:
+            except (RuntimeError, OSError):
                 try:
                     temporary_lm = LibraryManager(self.config.library_root)
                     # try to initialize library
@@ -146,6 +145,7 @@ class Fusesoc:
             try:
                 backend_class = get_edatool(flags["tool"])
             except ImportError:
+                tool = flags.setdefault("tool", "")
                 raise RuntimeError(f"Backend {tool!r} not found")
 
         edalizer = Edalizer(

@@ -38,14 +38,13 @@ def test_files_out_of_hierarchy():
 
 def test_empty_core():
     import os
-    import tempfile
 
     from fusesoc.capi2.coreparser import Core2Parser
     from fusesoc.core import Core
 
     core_file = os.path.join(tests_dir, "capi2_cores", "misc", "empty.core")
     with pytest.raises(SyntaxError) as excinfo:
-        core = Core(Core2Parser(), core_file)
+        Core(Core2Parser(), core_file)
     assert "Error validating" in str(excinfo.value)
 
 
@@ -126,8 +125,6 @@ def test_capi2_export_no_overwrite():
         "vlogfile",
         "vpifile",
     ]
-
-    result = []
 
     # Export and check all dst files are equal to src files
     core.export(export_root)
@@ -282,7 +279,7 @@ def test_capi2_type_check():
     core_file = os.path.join(tests_dir, "capi2_cores", "misc", "typecheck.core")
 
     with pytest.raises(SyntaxError) as excinfo:
-        core = Core(Core2Parser(), core_file)
+        Core(Core2Parser(), core_file)
     assert "Error validating" in str(excinfo.value)
 
 

@@ -3,7 +3,6 @@
 # SPDX-License-Identifier: BSD-2-Clause
 
 import fastjsonschema
-import yaml
 
 from fusesoc import utils
 
