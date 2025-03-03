@@ -18,7 +18,7 @@ from fusesoc.capi2.coreparser import Core2Parser
 from fusesoc.core import Core
 from fusesoc.librarymanager import LibraryManager
 from fusesoc.lockfile import load_lockfile
-from fusesoc.vlnv import compare_relation
+from fusesoc.vlnv import Vlnv, compare_relation
 
 logger = logging.getLogger(__name__)
 
@@ -119,6 +119,28 @@ class CoreDB:
             h ^= hash(pair)
         return h
 
+    def _lockfile_replace(self, core: Vlnv):
+        """Try to pin the core version from cores defined in the lock file"""
+        if self._lockfile:
+            for locked_core in self._lockfile["cores"]:
+                if locked_core.vln_str() == core.vln_str():
+                    valid_version = compare_relation(locked_core, core.relation, core)
+                    if valid_version:
+                        logger.info("Pin version {}".format(str(locked_core)))
+                        core.version = locked_core.version
+                        core.revision = locked_core.revision
+                        core.relation = "=="
+                    else:
+                        # Invalid version in lockfile
+                        logger.warning(
+                            "Failed to pin core {} outside of dependency version {} {} {}".format(
+                                str(locked_core),
+                                core.vln_str(),
+                                core.relation,
+                                core.version,
+                            )
+                        )
+
     def solve(self, top_core, flags):
         return self._solve(top_core, flags)
 
@@ -205,36 +227,11 @@ class CoreDB:
                 _depends = core.get_depends(_flags)
                 if _depends:
                     for depend in _depends:
-                        virtual_selection = None
-                        if self._lockfile:
-                            for locked_core in self._lockfile["cores"]:
-                                if locked_core.vln_str() == depend.vln_str():
-                                    valid_version = compare_relation(
-                                        locked_core, depend.relation, depend
-                                    )
-                                    if valid_version:
-                                        logger.info(
-                                            "Pin version {}".format(str(locked_core))
-                                        )
-                                        depend.version = locked_core.version
-                                        depend.revision = locked_core.revision
-                                        depend.relation = "=="
-                                    else:
-                                        # Invalid version in lockfile
-                                        logger.warning(
-                                            "Failed to pin core {} outside of dependency version {} {} {}".format(
-                                                str(locked_core),
-                                                depend.vln_str(),
-                                                depend.relation,
-                                                depend.version,
-                                            )
-                                        )
-                        if virtual_selection:
-                            logger.info("Pin virtual {}".format(str(virtual_selection)))
-                            _depends.append(virtual_selection)
-                            _depends.remove(depend)
+                        self._lockfile_replace(depend)
                     _s = "; depends ( {} )"
                     package_str += _s.format(self._parse_depend(_depends))
+            else:
+                self._lockfile_replace(top_core)
 
             parser = PrettyPackageStringParser(EnpkgVersion.from_string)
 

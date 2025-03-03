@@ -167,16 +167,10 @@ class Vlnv:
         return f"{self.vendor}:{self.library}:{self.name}"
 
 
-def compare_relation(vlvn_a, relation, vlvn_b):
+def compare_relation(vlvn_a: Vlnv, relation: str, vlvn_b: Vlnv):
     """Compare two VLVNs with the provided relation. Returns boolan."""
     from okonomiyaki.versions import EnpkgVersion
 
-    if (
-        not isinstance(vlvn_a, Vlnv)
-        or not isinstance(relation, str)
-        or not isinstance(vlvn_b, Vlnv)
-    ):
-        return False
     valid_version = False
     version_str = lambda v: f"{v.version}-{v.revision}"
     if vlvn_a.vln_str() == vlvn_b.vln_str():
