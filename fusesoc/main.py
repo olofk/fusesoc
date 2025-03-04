@@ -305,7 +305,11 @@ def run(fs, args):
             flags[flag] = True
 
     if args.lockfile is not None:
-        fs.cm.db.load_lockfile(args.lockfile)
+        try:
+            fs.cm.db.load_lockfile(args.lockfile)
+        except SyntaxError as e:
+            logger.error(f"Failed to load lock file, {str(e)}")
+            exit(1)
 
     core = _get_core(fs, args.system)
 

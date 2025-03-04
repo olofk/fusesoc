@@ -48,24 +48,28 @@ def load_lockfile(filepath: pathlib.Path):
     try:
         lockfile_data = fusesoc.utils.yaml_fread(filepath)
         try:
-            validator = fastjsonschema.compile(json.loads(lockfile_schema))
+            validator = fastjsonschema.compile(
+                json.loads(lockfile_schema), detailed_exceptions=False
+            )
             validator(lockfile_data)
         except fastjsonschema.JsonSchemaDefinitionException as e:
-            raise SyntaxError(f"\nError parsing JSON Schema: {e}")
+            raise SyntaxError(f"Error parsing JSON Schema: {e}")
         except fastjsonschema.JsonSchemaException as e:
-            raise SyntaxError(f"\nError validating {e}")
+            raise SyntaxError(f"Error validating {e}")
     except FileNotFoundError:
         logger.warning(f"Lockfile {filepath} not found")
         return None
 
     cores = {}
-    for core in lockfile_data.setdefault("cores", {}):
-        vlnv = Vlnv(core["name"])
-        vln = vlnv.vln_str()
-        for existing_name in cores.keys():
-            if existing_name.vln_str() == vln:
+    for core in lockfile_data.setdefault("cores", []):
+        if "name" in core:
+            vlnv = Vlnv(core["name"])
+            vln = vlnv.vln_str()
+            if vln in map(Vlnv.vln_str, cores.keys()):
                 raise SyntaxError(f"Core {vln} defined multiple times in lock file")
-        cores[vlnv] = {"name": vlnv}
+            cores[vlnv] = {"name": vlnv}
+        else:
+            raise SyntaxError(f"Core definition without a name")
     lockfile = {
         "cores": cores,
     }

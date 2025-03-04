@@ -89,7 +89,6 @@ class CoreDB:
         return found
 
     def load_lockfile(self, filepath: pathlib.Path):
-
         self._lockfile = load_lockfile(filepath)
 
     def _solver_cache_lookup(self, key):
