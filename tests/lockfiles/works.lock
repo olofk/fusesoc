@@ -1,7 +1,0 @@
-lockfile_version: 1
-fusesoc_version: 2.4.2
-cores:
-- :lib:pin:0.1
-- :lib:gpio:0.1
-- :common:gpio_ctrl:0.1
-- :product:toppy:0.1

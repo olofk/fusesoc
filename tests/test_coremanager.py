@@ -367,12 +367,13 @@ def test_virtual_non_deterministic_virtual(caplog):
         ]
 
 
-def test_lockfile_partial_warning(caplog):
+def test_lockfile(caplog):
     """
     Test core selection with a core pinned by a lock file
     """
     import logging
     import os
+    import pathlib
     import tempfile
 
     from fusesoc.config import Config
@@ -391,9 +392,7 @@ def test_lockfile_partial_warning(caplog):
     cm = CoreManager(Config())
     cm.add_library(Library("virtual", core_dir), [])
     cm.db.load_lockfile(
-        filepath=os.path.join(
-            os.path.dirname(__file__), "lockfiles", "dependencies-partial.lock"
-        )
+        pathlib.Path(__file__).parent / "lockfiles" / "dependencies.lock.yml"
     )
 
     root_core = cm.get_core(Vlnv("::dependencies-top"))
@@ -426,6 +425,7 @@ def test_lockfile_partial_warning(caplog):
     """
     import logging
     import os
+    import pathlib
     import tempfile
 
     from fusesoc.config import Config
@@ -444,9 +444,7 @@ def test_lockfile_partial_warning(caplog):
     cm = CoreManager(Config())
     cm.add_library(Library("virtual", core_dir), [])
     cm.db.load_lockfile(
-        filepath=os.path.join(
-            os.path.dirname(__file__), "lockfiles", "dependencies-partial.lock"
-        )
+        pathlib.Path(__file__).parent / "lockfiles" / "dependencies-partial.lock.yml"
     )
 
     root_core = cm.get_core(Vlnv("::dependencies-top"))
@@ -479,6 +477,7 @@ def test_lockfile_version_warning(caplog):
     """
     import logging
     import os
+    import pathlib
     import tempfile
 
     from fusesoc.config import Config
@@ -497,9 +496,9 @@ def test_lockfile_version_warning(caplog):
     cm = CoreManager(Config())
     cm.add_library(Library("virtual", core_dir), [])
     cm.db.load_lockfile(
-        filepath=os.path.join(
-            os.path.dirname(__file__), "lockfiles", "dependencies-partial-1.0.lock"
-        )
+        pathlib.Path(__file__).parent
+        / "lockfiles"
+        / "dependencies-partial-1.0.lock.yml"
     )
 
     root_core = cm.get_core(Vlnv("::dependencies-top"))

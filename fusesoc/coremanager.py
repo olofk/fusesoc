@@ -126,7 +126,6 @@ class CoreDB:
                 if locked_core.vln_str() == core.vln_str():
                     valid_version = compare_relation(locked_core, core.relation, core)
                     if valid_version:
-                        logger.info("Pin version {}".format(str(locked_core)))
                         core.version = locked_core.version
                         core.revision = locked_core.revision
                         core.relation = "=="

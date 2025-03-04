@@ -22,7 +22,13 @@ lockfile_schema = """
             "description": "Cores used in the build",
             "type": "array",
             "items": {
-              "type": "string"
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "description": "Core VLVN",
+                    "type": "string"
+                  }
+                }
             }
         },
         "fusesoc_version": {
@@ -52,9 +58,15 @@ def load_lockfile(filepath: pathlib.Path):
         logger.warning(f"Lockfile {filepath} not found")
         return None
 
-    cores = [Vlnv(core_name) for core_name in lockfile_data.setdefault("cores", [])]
+    cores = {}
+    for core in lockfile_data.setdefault("cores", {}):
+        vlnv = Vlnv(core["name"])
+        vln = vlnv.vln_str()
+        for existing_name in cores.keys():
+            if existing_name.vln_str() == vln:
+                raise SyntaxError(f"Core {vln} defined multiple times in lock file")
+        cores[vlnv] = {"name": vlnv}
     lockfile = {
         "cores": cores,
     }
-
     return lockfile
