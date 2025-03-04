@@ -1,0 +1,18 @@
+CAPI=2:
+# Copyright FuseSoC contributors
+# Licensed under the 2-Clause BSD License, see LICENSE for details.
+# SPDX-License-Identifier: BSD-2-Clause
+
+name: ::used:1.0
+filesets:
+  rtl:
+    files:
+      - used-1.0.sv
+    file_type: systemVerilogSource
+
+
+targets:
+  default:
+    filesets:
+      - rtl
+    toplevel: used_1_0

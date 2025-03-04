@@ -365,3 +365,161 @@ def test_virtual_non_deterministic_virtual(caplog):
             "::user:0",
             "::top_non_deterministic:0",
         ]
+
+
+def test_lockfile(caplog):
+    """
+    Test core selection with a core pinned by a lock file
+    """
+    import logging
+    import os
+    import pathlib
+    import tempfile
+
+    from fusesoc.config import Config
+    from fusesoc.coremanager import CoreManager
+    from fusesoc.edalizer import Edalizer
+    from fusesoc.librarymanager import Library
+    from fusesoc.vlnv import Vlnv
+
+    flags = {"tool": "icarus"}
+
+    build_root = tempfile.mkdtemp(prefix="export_")
+    work_root = os.path.join(build_root, "work")
+
+    core_dir = os.path.join(os.path.dirname(__file__), "capi2_cores", "dependencies")
+
+    cm = CoreManager(Config())
+    cm.add_library(Library("virtual", core_dir), [])
+    cm.db.load_lockfile(
+        pathlib.Path(__file__).parent / "lockfiles" / "dependencies.lock.yml"
+    )
+
+    root_core = cm.get_core(Vlnv("::dependencies-top"))
+
+    edalizer = Edalizer(
+        toplevel=root_core.name,
+        flags=flags,
+        core_manager=cm,
+        work_root=work_root,
+    )
+
+    with caplog.at_level(logging.WARNING):
+        edalizer.run()
+
+    assert caplog.records == []
+
+    deps = cm.get_depends(root_core.name, {})
+    deps_names = [str(c) for c in deps]
+
+    for dependency in deps_names:
+        assert dependency in [
+            "::used:1.1",
+            "::dependencies-top:0",
+        ]
+
+
+def test_lockfile_partial_warning(caplog):
+    """
+    Test core selection with a core pinned by a lock file
+    """
+    import logging
+    import os
+    import pathlib
+    import tempfile
+
+    from fusesoc.config import Config
+    from fusesoc.coremanager import CoreManager
+    from fusesoc.edalizer import Edalizer
+    from fusesoc.librarymanager import Library
+    from fusesoc.vlnv import Vlnv
+
+    flags = {"tool": "icarus"}
+
+    build_root = tempfile.mkdtemp(prefix="export_")
+    work_root = os.path.join(build_root, "work")
+
+    core_dir = os.path.join(os.path.dirname(__file__), "capi2_cores", "dependencies")
+
+    cm = CoreManager(Config())
+    cm.add_library(Library("virtual", core_dir), [])
+    cm.db.load_lockfile(
+        pathlib.Path(__file__).parent / "lockfiles" / "dependencies-partial.lock.yml"
+    )
+
+    root_core = cm.get_core(Vlnv("::dependencies-top"))
+
+    edalizer = Edalizer(
+        toplevel=root_core.name,
+        flags=flags,
+        core_manager=cm,
+        work_root=work_root,
+    )
+
+    with caplog.at_level(logging.WARNING):
+        edalizer.run()
+
+    assert "Using lock file with partial list of cores" in caplog.text
+
+    deps = cm.get_depends(root_core.name, {})
+    deps_names = [str(c) for c in deps]
+
+    for dependency in deps_names:
+        assert dependency in [
+            "::used:1.1",
+            "::dependencies-top:0",
+        ]
+
+
+def test_lockfile_version_warning(caplog):
+    """
+    Test core selection with a core pinned by a lock file, warning if version is out of scope
+    """
+    import logging
+    import os
+    import pathlib
+    import tempfile
+
+    from fusesoc.config import Config
+    from fusesoc.coremanager import CoreManager
+    from fusesoc.edalizer import Edalizer
+    from fusesoc.librarymanager import Library
+    from fusesoc.vlnv import Vlnv
+
+    flags = {"tool": "icarus"}
+
+    build_root = tempfile.mkdtemp(prefix="export_")
+    work_root = os.path.join(build_root, "work")
+
+    core_dir = os.path.join(os.path.dirname(__file__), "capi2_cores", "dependencies")
+
+    cm = CoreManager(Config())
+    cm.add_library(Library("virtual", core_dir), [])
+    cm.db.load_lockfile(
+        pathlib.Path(__file__).parent
+        / "lockfiles"
+        / "dependencies-partial-1.0.lock.yml"
+    )
+
+    root_core = cm.get_core(Vlnv("::dependencies-top"))
+
+    edalizer = Edalizer(
+        toplevel=root_core.name,
+        flags=flags,
+        core_manager=cm,
+        work_root=work_root,
+    )
+
+    with caplog.at_level(logging.WARNING):
+        edalizer.run()
+
+    assert "Failed to pin" in caplog.text
+
+    deps = cm.get_depends(root_core.name, {})
+    deps_names = [str(c) for c in deps]
+
+    for dependency in deps_names:
+        assert dependency in [
+            "::used:1.1",
+            "::dependencies-top:0",
+        ]

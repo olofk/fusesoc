@@ -4,7 +4,7 @@
 
 import pytest
 
-from fusesoc.vlnv import Vlnv
+from fusesoc.vlnv import Vlnv, compare_relation
 
 
 def vlnv_tuple(vlnv):
@@ -80,3 +80,51 @@ def test_name_version_revision_legacy():
 
 def test_name_revision_legacy():
     assert vlnv_tuple(Vlnv("uart16550-r2")) == ("", "", "uart16550", "0", 2)
+
+
+def test_vlvn_compare_relation():
+    version_1_3 = Vlnv(":peripherals:uart16550:1.3.1")
+    version_1_4 = Vlnv(":peripherals:uart16550:1.4.2")
+    version_1_5 = Vlnv(":peripherals:uart16550:1.5.1")
+    version_2_0 = Vlnv(":peripherals:uart16550:2.0.1")
+
+    assert compare_relation(version_1_4, "==", version_1_4)
+    assert not compare_relation(
+        version_1_4, "==", Vlnv("other:peripherals:uart16550:1.4.2")
+    )
+    assert not compare_relation(version_1_4, "==", Vlnv(":other:uart16550:1.4.2"))
+    assert not compare_relation(version_1_4, "==", Vlnv(":peripherals:other:1.4.2"))
+    assert not compare_relation(version_1_4, "==", version_1_3)
+    assert not compare_relation(version_1_4, "==", version_1_5)
+    assert not compare_relation(version_1_4, "==", version_2_0)
+
+    assert compare_relation(version_1_4, ">", version_1_3)
+    assert not compare_relation(version_1_4, ">", version_1_4)
+    assert not compare_relation(version_1_4, ">", version_1_5)
+    assert not compare_relation(version_1_4, ">", version_2_0)
+
+    assert compare_relation(version_1_4, ">=", version_1_3)
+    assert compare_relation(version_1_4, ">=", version_1_4)
+    assert not compare_relation(version_1_4, ">=", version_1_5)
+    assert not compare_relation(version_1_4, ">=", version_2_0)
+
+    assert not compare_relation(version_1_4, "<", version_1_3)
+    assert not compare_relation(version_1_4, "<", version_1_4)
+    assert compare_relation(version_1_4, "<", version_1_5)
+    assert compare_relation(version_1_4, "<", version_2_0)
+
+    assert not compare_relation(version_1_4, "<=", version_1_3)
+    assert compare_relation(version_1_4, "<=", version_1_4)
+    assert compare_relation(version_1_4, "<=", version_1_5)
+    assert compare_relation(version_1_4, "<=", version_2_0)
+
+    assert not compare_relation(version_1_4, "^", version_1_3)
+    assert compare_relation(version_1_4, "^", version_1_4)
+    assert compare_relation(version_1_4, "^", version_1_5)
+    assert not compare_relation(version_1_4, "^", version_2_0)
+
+    assert not compare_relation(version_1_4, "~", version_1_3)
+    assert compare_relation(version_1_4, "~", version_1_4)
+    assert compare_relation(version_1_4, "~", Vlnv(":peripherals:uart16550:1.4.9"))
+    assert not compare_relation(version_1_4, "~", version_1_5)
+    assert not compare_relation(version_1_4, "~", version_2_0)
