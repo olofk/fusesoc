@@ -307,6 +307,8 @@ def run(fs, args):
         else:
             flags[flag] = True
 
+    fs.cm.db.mapping_set(args.mapping)
+
     if args.lockfile is not None:
         try:
             fs.cm.db.load_lockfile(args.lockfile)
@@ -678,6 +680,12 @@ def get_parser():
         "--lockfile",
         help="Lockfile file path",
         type=pathlib.Path,
+    )
+    parser_run.add_argument(
+        "--mapping",
+        help="The VLNV of a core's mapping to apply.",
+        default=[],
+        action="append",
     )
     parser_run.set_defaults(func=run)
 

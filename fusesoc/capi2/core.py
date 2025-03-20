@@ -10,6 +10,8 @@ import os
 import shutil
 import warnings
 from filecmp import cmp
+from types import MappingProxyType
+from typing import Mapping, Optional
 
 from fusesoc import utils
 from fusesoc.capi2.coredata import CoreData
@@ -630,3 +632,7 @@ Targets:
 
     def get_description(self):
         return self._coredata.get_description()
+
+    @property
+    def mapping(self) -> Optional[Mapping[str, str]]:
+        return MappingProxyType(self._coredata.get("mapping", {}))

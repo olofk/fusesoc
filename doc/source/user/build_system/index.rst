@@ -38,5 +38,7 @@ A full reference documentation on the CAPI2 core file format can be found in the
    filters.rst
    flags.rst
    generators.rst
+   virtual_cores.rst
+   mappings.rst
    hooks.rst
    vpi.rst

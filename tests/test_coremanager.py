@@ -367,6 +367,98 @@ def test_virtual_non_deterministic_virtual(caplog):
         ]
 
 
+def test_mapping_success_cases():
+    from pathlib import Path
+
+    from fusesoc.config import Config
+    from fusesoc.coremanager import CoreManager
+    from fusesoc.librarymanager import Library
+    from fusesoc.vlnv import Vlnv
+
+    core_dir = Path(__file__).parent / "capi2_cores" / "mapping"
+
+    top = "test_mapping:t:top"
+    top_vlnv = Vlnv(top)
+
+    for mappings, expected_deps in (
+        (
+            [],
+            {
+                "test_mapping:t:top:0",
+                "test_mapping:l:a:0",
+                "test_mapping:l:b:0",
+                "test_mapping:l:c:0",
+            },
+        ),
+        (
+            [top],
+            {
+                "test_mapping:t:top:0",
+                "test_mapping:l:f:0",
+                "test_mapping:l:b:0",
+                "test_mapping:l:c:0",
+            },
+        ),
+        (
+            ["test_mapping:l:d"],
+            {
+                "test_mapping:t:top:0",
+                "test_mapping:l:a:0",
+                "test_mapping:l:d:0",
+                "test_mapping:l:e:0",
+            },
+        ),
+        (
+            [top, "test_mapping:l:d"],
+            {
+                "test_mapping:t:top:0",
+                "test_mapping:l:f:0",
+                "test_mapping:l:d:0",
+                "test_mapping:l:e:0",
+            },
+        ),
+        (
+            ["test_mapping:l:c"],
+            {
+                "test_mapping:t:top:0",
+                "test_mapping:l:a:0",
+                "test_mapping:l:b:0",
+            },
+        ),
+    ):
+        cm = CoreManager(Config())
+        cm.add_library(Library("mapping_test", core_dir), [])
+
+        cm.db.mapping_set(mappings)
+
+        actual_deps = {str(c) for c in cm.get_depends(top_vlnv, {})}
+
+        assert expected_deps == actual_deps
+
+
+def test_mapping_failure_cases():
+    from pathlib import Path
+
+    from fusesoc.config import Config
+    from fusesoc.coremanager import CoreManager
+    from fusesoc.librarymanager import Library
+
+    core_dir = Path(__file__).parent / "capi2_cores" / "mapping"
+
+    for mappings in (
+        ["test_mapping:m:non_existent"],
+        ["test_mapping:m:map_vers"],
+        ["test_mapping:m:map_rec"],
+        ["test_mapping:t:top", "test_mapping:l:c"],
+        ["test_mapping:t:top", "test_mapping:t:top"],
+    ):
+        cm = CoreManager(Config())
+        cm.add_library(Library("mapping_test", core_dir), [])
+
+        with pytest.raises(RuntimeError):
+            cm.db.mapping_set(mappings)
+
+
 def test_lockfile(caplog):
     """
     Test core selection with a core pinned by a lock file

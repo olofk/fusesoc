@@ -5,6 +5,9 @@
 import logging
 import os
 import pathlib
+from itertools import chain
+from types import MappingProxyType
+from typing import Iterable, Mapping
 
 from okonomiyaki.versions import EnpkgVersion
 from simplesat.constraints import PrettyPackageStringParser, Requirement
@@ -33,6 +36,8 @@ class DependencyError(Exception):
 
 
 class CoreDB:
+    _mapping: Mapping[str, str] = MappingProxyType({})
+
     def __init__(self):
         self._cores = {}
         self._solver_cache = {}
@@ -139,6 +144,98 @@ class CoreDB:
                             )
                         )
 
+    def _mapping_apply(self, core: Vlnv):
+        """If the core matches a mapping, apply the mapping, mutating the given core."""
+        remapping = self._mapping.get(core.vln_str())
+
+        if not remapping:
+            return
+
+        previous_vlnv = str(core)
+        (core.vendor, core.library, core.name) = remapping.split(":")
+
+        logger.info(f"Mapped {previous_vlnv} to {core}.")
+
+    def mapping_set(self, mapping_vlnvs: Iterable[str]) -> None:
+        """Construct a mapping from the given cores' mappings.
+
+        Takes the VLNV strings of the cores' mappings to apply.
+        Verifies the mappings and applies them.
+        """
+        if self._mapping:
+            raise RuntimeError(
+                "Due to implementation details, mappings can only be applied once."
+            )
+
+        mappings = {}
+        for mapping_vlnv in mapping_vlnvs:
+            new_mapping_name = str(Vlnv(mapping_vlnv))
+            new_mapping_core = self._cores.get(new_mapping_name)
+            if not new_mapping_core:
+                raise RuntimeError(f"The core '{mapping_vlnv}' wasn't found.")
+
+            new_mapping_raw = new_mapping_core["core"].mapping
+            if not new_mapping_raw:
+                raise RuntimeError(
+                    f"The core '{mapping_vlnv}' doesn't contain a mapping."
+                )
+
+            have_versions = list(
+                filter(
+                    lambda vlnv: (vlnv.relation, vlnv.version) != (">=", "0"),
+                    map(Vlnv, chain(new_mapping_raw.keys(), new_mapping_raw.values())),
+                )
+            )
+            if have_versions:
+                raise RuntimeError(
+                    "Versions cannot be given as part of a mapping."
+                    f"\nThe mapping of {mapping_vlnv} following has"
+                    f" the following version constraints:\n\t{have_versions}"
+                )
+
+            new_mapping = {
+                Vlnv(source).vln_str(): Vlnv(destination).vln_str()
+                for source, destination in new_mapping_raw.items()
+            }
+            new_src_set = new_mapping.keys()
+            new_dest_set = frozenset(new_mapping.values())
+            curr_src_set = mappings.keys()
+            curr_dest_set = frozenset(mappings.values())
+
+            new_src_dest_overlap = new_mapping.keys() & new_dest_set
+            if new_src_dest_overlap:
+                raise RuntimeError(
+                    "Recursive mappings are not supported."
+                    f"\nThe mapping {mapping_vlnv} has the following VLNV's"
+                    f" in both it's sources and destinations:\n\t{new_src_dest_overlap}."
+                )
+
+            source_overlap = curr_src_set & new_src_set
+            if source_overlap:
+                raise RuntimeError(
+                    f"The following sources are in multiple mappings:\n\t{source_overlap}."
+                )
+
+            dest_overlap = new_dest_set & curr_dest_set
+            if dest_overlap:
+                raise RuntimeError(
+                    f"The following destinations are in multiple mappings:\n\t{dest_overlap}."
+                )
+
+            src_dest_overlap = (new_src_set | curr_src_set) & (
+                new_dest_set | curr_dest_set
+            )
+            if src_dest_overlap:
+                raise RuntimeError(
+                    "Recursive mappings are not supported."
+                    f"\nThe following VLNV's are in both the sources and"
+                    f" destinations:\n\t{src_dest_overlap}."
+                )
+
+            mappings.update(new_mapping)
+
+        self._mapping = MappingProxyType(mappings)
+
     def solve(self, top_core, flags):
         return self._solve(top_core, flags)
 
@@ -225,6 +322,7 @@ class CoreDB:
                 _depends = core.get_depends(_flags)
                 if _depends:
                     for depend in _depends:
+                        self._mapping_apply(depend)
                         self._lockfile_replace(depend)
                     _s = "; depends ( {} )"
                     package_str += _s.format(self._parse_depend(_depends))
