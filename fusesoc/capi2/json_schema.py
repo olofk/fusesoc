@@ -52,6 +52,15 @@ capi2_schema = """
       "items": {
         "type": "string"
       }
+    },
+    "mapping": {
+      "description": "",
+      "type": "object",
+      "patternProperties": {
+        "^.+$": {
+          "type": "string"
+        }
+      }
     }
   },
   "additionalProperties": false,
