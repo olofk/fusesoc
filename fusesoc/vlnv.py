@@ -108,6 +108,8 @@ class Vlnv:
             self.vendor, self.library, self.name, self.version, revision
         )
 
+    __repr__ = __str__
+
     def __hash__(self):
         return hash(str(self))
 
