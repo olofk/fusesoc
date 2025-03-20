@@ -1,0 +1,8 @@
+CAPI=2:
+# Copyright FuseSoC contributors
+# Licensed under the 2-Clause BSD License, see LICENSE for details.
+# SPDX-License-Identifier: BSD-2-Clause
+
+name: test_mapping:m:map_vers:0
+mapping:
+  "test_mapping:l:b:0": "test_mapping:l:c"
