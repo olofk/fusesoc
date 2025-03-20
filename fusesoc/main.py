@@ -307,6 +307,8 @@ def run(fs, args):
         else:
             flags[flag] = True
 
+    fs.cm.db.mapping_set(args.mapping)
+
     if args.lockfile is not None:
         try:
             fs.cm.db.load_lockfile(args.lockfile)
