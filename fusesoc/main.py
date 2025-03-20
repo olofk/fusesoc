@@ -679,6 +679,12 @@ def get_parser():
         help="Lockfile file path",
         type=pathlib.Path,
     )
+    parser_run.add_argument(
+        "--mapping",
+        help="The VLNV of a core's mapping to apply.",
+        default=[],
+        action="append",
+    )
     parser_run.set_defaults(func=run)
 
     # config subparser
