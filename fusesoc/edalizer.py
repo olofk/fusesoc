@@ -111,6 +111,9 @@ class Edalizer:
         # Create EDAM file contents
         self.create_edam()
 
+        # Write lockfile if appropriate
+        self.core_manager.db.store_lockfile(self.cores)
+
         return self.edam
 
     def _core_flags(self, core):
