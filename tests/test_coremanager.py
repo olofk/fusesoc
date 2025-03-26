@@ -568,7 +568,9 @@ def test_lockfile_no_file(caplog):
 
     assert f"Lockfile {filepath} not found" in caplog.text
     assert not filepath.exists()
-    filepath.unlink(True)
+
+    if filepath.exists():
+        filepath.unlink()
 
     deps = cm.get_depends(root_core.name, {})
     deps_names = [str(c) for c in deps]
@@ -622,7 +624,8 @@ def test_lockfile_no_file_create(caplog):
     assert f"Lockfile {filepath} not found" in caplog.text
     assert filepath.exists()
 
-    filepath.unlink(True)
+    if filepath.exists():
+        filepath.unlink()
 
     deps = cm.get_depends(root_core.name, {})
     deps_names = [str(c) for c in deps]
