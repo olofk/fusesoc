@@ -17,7 +17,7 @@ from simplesat.request import Request
 from fusesoc.capi2.coreparser import Core2Parser
 from fusesoc.core import Core
 from fusesoc.librarymanager import LibraryManager
-from fusesoc.lockfile import load_lockfile
+from fusesoc.lockfile import LockFile, LockFileMode
 from fusesoc.vlnv import Vlnv, compare_relation
 
 logger = logging.getLogger(__name__)
@@ -36,7 +36,7 @@ class CoreDB:
     def __init__(self):
         self._cores = {}
         self._solver_cache = {}
-        self._lockfile = None
+        self._lockfile = LockFile()
 
     # simplesat doesn't allow ':', '-' or leading '_'
     def _package_name(self, vlnv):
@@ -88,8 +88,13 @@ class CoreDB:
             found = list([core["core"] for core in self._cores.values()])
         return found
 
-    def load_lockfile(self, filepath: pathlib.Path):
-        self._lockfile = load_lockfile(filepath)
+    def load_lockfile(self, filepath: pathlib.Path, disable_store: bool = False):
+        mode = LockFileMode.LOAD if disable_store else LockFileMode.STORE
+        self._lockfile = LockFile.load(filepath, mode)
+
+    def store_lockfile(self, cores):
+        if self._lockfile.update(cores):
+            self._lockfile.store()
 
     def _solver_cache_lookup(self, key):
         if key in self._solver_cache:
@@ -120,8 +125,9 @@ class CoreDB:
 
     def _lockfile_replace(self, core: Vlnv):
         """Try to pin the core version from cores defined in the lock file"""
-        if self._lockfile:
-            for locked_core in self._lockfile["cores"]:
+        cores = self._lockfile.cores_vlnv()
+        if cores:
+            for locked_core in cores:
                 if locked_core.vln_str() == core.vln_str():
                     valid_version = compare_relation(locked_core, core.relation, core)
                     if valid_version:
@@ -278,10 +284,7 @@ class CoreDB:
                     if p[0] in virtual_selection:
                         # If package that implements a virtual core is required, remove from the dictionary
                         del virtual_selection[p[0]]
-                if (
-                    self._lockfile
-                    and op.package.core.name not in self._lockfile["cores"]
-                ):
+                if not self._lockfile.core_vlnv_exists(op.package.core.name):
                     partial_lockfile = True
                 op.package.core.direct_deps = [
                     objdict[n[0]] for n in op.package.install_requires
@@ -293,7 +296,7 @@ class CoreDB:
                     virtual[1], virtual[0]
                 )
             )
-        if partial_lockfile:
+        if partial_lockfile and not self._lockfile.no_cores():
             logger.warning("Using lock file with partial list of cores")
 
         result = [op.package.core for op in transaction.operations]
