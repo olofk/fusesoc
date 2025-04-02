@@ -222,6 +222,14 @@ class Edalizer:
 
             rel_root = os.path.relpath(files_root, self.work_root)
 
+            # Extract core description file
+            snippet["cores"] = {
+                str(core.name): {
+                    "core_file": os.path.relpath(core.core_file, self.work_root),
+                    "dependencies": core.direct_deps,
+                }
+            }
+
             # Extract parameters
             snippet["parameters"] = core.get_parameters(_flags, parameters)
             merge_dict(parameters, snippet["parameters"])

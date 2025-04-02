@@ -82,6 +82,12 @@ def test_tool_or_flow():
 
     ref_edam = {
         "version": "0.2.1",
+        "cores": {
+            "::flow:0": {
+                "core_file": "tests/capi2_cores/misc/flow.core",
+                "dependencies": [],
+            }
+        },
         "dependencies": {"::flow:0": []},
         "files": [],
         "filters": [],
@@ -184,6 +190,47 @@ def test_generators():
     ref_edam = {
         "version": "0.2.1",
         "name": "generate_0",
+        "cores": {
+            "::generators:0": {
+                "core_file": "generators.core",
+                "dependencies": [],
+            },
+            "::generate:0": {
+                "core_file": "generate.core",
+                "dependencies": [
+                    "::generators:0",
+                    "::generate-testgenerate_without_params:0",
+                    "::generate-testgenerate_with_params:0",
+                    "::generate-testgenerate_with_override:0",
+                    "::generate-testgenerate_with_cache:0",
+                    "::generate-testgenerate_with_file_cache:0",
+                ],
+            },
+            "::generators:0": {
+                "core_file": "generators.core",
+                "dependencies": [],
+            },
+            "::generate-testgenerate_without_params:0": {
+                "core_file": "generated.core",
+                "dependencies": [],
+            },
+            "::generate-testgenerate_with_params:0": {
+                "core_file": "generated.core",
+                "dependencies": [],
+            },
+            "::generate-testgenerate_with_override:0": {
+                "core_file": "generated.core",
+                "dependencies": [],
+            },
+            "::generate-testgenerate_with_cache:0": {
+                "core_file": "generated.core",
+                "dependencies": [],
+            },
+            "::generate-testgenerate_with_file_cache:0": {
+                "core_file": "generated.core",
+                "dependencies": [],
+            },
+        },
         "toplevel": "na",
         "dependencies": {
             "::generators:0": [],
@@ -210,6 +257,10 @@ def test_generators():
         "vpi": [],
     }
 
+    # EDAM will contain absolute paths to core files that are non-deterministic.
+    # Remove these before comparing and only keep the name of the core file
+    for core in edalizer.edam["cores"].values():
+        core["core_file"] = Path(core["core_file"]).name
     assert ref_edam == edalizer.edam
 
     name_to_core = {str(core.name): core for core in edalizer.cores}
