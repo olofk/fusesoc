@@ -134,14 +134,11 @@ class LockFile:
                 if item.items() <= current[core.name].items():
                     continue
                 else:
-                    logger.info("update item {}".format(self._data["cores"][core.name]))
                     self._data["cores"][core.name].update(item)
                     changed = True
-                    logger.info("update item {}".format(self._data["cores"][core.name]))
             else:
                 self._data["cores"][core.name] = item
                 changed = True
-                logger.info("new item {}".format(self._data["cores"][core.name]))
         return changed
 
     def _cores(self):
