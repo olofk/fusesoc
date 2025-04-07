@@ -392,7 +392,7 @@ def test_lockfile(caplog):
     cm = CoreManager(Config())
     cm.add_library(Library("virtual", core_dir), [])
     cm.db.load_lockfile(
-        pathlib.Path(__file__).parent / "lockfiles" / "dependencies.lock.yml"
+        pathlib.Path(__file__).parent / "lockfiles" / "dependencies.lock.yml", True
     )
 
     root_core = cm.get_core(Vlnv("::dependencies-top"))
@@ -444,7 +444,8 @@ def test_lockfile_partial_warning(caplog):
     cm = CoreManager(Config())
     cm.add_library(Library("virtual", core_dir), [])
     cm.db.load_lockfile(
-        pathlib.Path(__file__).parent / "lockfiles" / "dependencies-partial.lock.yml"
+        pathlib.Path(__file__).parent / "lockfiles" / "dependencies-partial.lock.yml",
+        True,
     )
 
     root_core = cm.get_core(Vlnv("::dependencies-top"))
@@ -498,7 +499,8 @@ def test_lockfile_version_warning(caplog):
     cm.db.load_lockfile(
         pathlib.Path(__file__).parent
         / "lockfiles"
-        / "dependencies-partial-1.0.lock.yml"
+        / "dependencies-partial-1.0.lock.yml",
+        True,
     )
 
     root_core = cm.get_core(Vlnv("::dependencies-top"))
@@ -514,6 +516,116 @@ def test_lockfile_version_warning(caplog):
         edalizer.run()
 
     assert "Failed to pin" in caplog.text
+
+    deps = cm.get_depends(root_core.name, {})
+    deps_names = [str(c) for c in deps]
+
+    for dependency in deps_names:
+        assert dependency in [
+            "::used:1.1",
+            "::dependencies-top:0",
+        ]
+
+
+def test_lockfile_no_file(caplog):
+    """
+    Test core selection with a core pinned by a lock file
+    """
+    import logging
+    import os
+    import pathlib
+    import tempfile
+
+    from fusesoc.config import Config
+    from fusesoc.coremanager import CoreManager
+    from fusesoc.edalizer import Edalizer
+    from fusesoc.librarymanager import Library
+    from fusesoc.vlnv import Vlnv
+
+    flags = {"tool": "icarus"}
+
+    build_root = tempfile.mkdtemp(prefix="export_")
+    work_root = os.path.join(build_root, "work")
+
+    core_dir = os.path.join(os.path.dirname(__file__), "capi2_cores", "dependencies")
+
+    cm = CoreManager(Config())
+    cm.add_library(Library("virtual", core_dir), [])
+    filepath = pathlib.Path(__file__).parent / "lockfiles" / "missing.lock.yml"
+    cm.db.load_lockfile(filepath, True)
+
+    root_core = cm.get_core(Vlnv("::dependencies-top"))
+
+    edalizer = Edalizer(
+        toplevel=root_core.name,
+        flags=flags,
+        core_manager=cm,
+        work_root=work_root,
+    )
+
+    with caplog.at_level(logging.WARNING):
+        edalizer.run()
+
+    assert f"Lockfile {filepath} not found" in caplog.text
+    assert not filepath.exists()
+
+    if filepath.exists():
+        filepath.unlink()
+
+    deps = cm.get_depends(root_core.name, {})
+    deps_names = [str(c) for c in deps]
+
+    for dependency in deps_names:
+        assert dependency in [
+            "::used:1.1",
+            "::dependencies-top:0",
+        ]
+
+
+def test_lockfile_no_file_create(caplog):
+    """
+    Test core selection with a core pinned by a lock file
+    """
+    import logging
+    import os
+    import pathlib
+    import tempfile
+
+    from fusesoc.config import Config
+    from fusesoc.coremanager import CoreManager
+    from fusesoc.edalizer import Edalizer
+    from fusesoc.librarymanager import Library
+    from fusesoc.vlnv import Vlnv
+
+    flags = {"tool": "icarus"}
+
+    build_root = tempfile.mkdtemp(prefix="export_")
+    work_root = os.path.join(build_root, "work")
+
+    core_dir = os.path.join(os.path.dirname(__file__), "capi2_cores", "dependencies")
+
+    cm = CoreManager(Config())
+    cm.add_library(Library("virtual", core_dir), [])
+    filepath = pathlib.Path(__file__).parent / "lockfiles" / "created.lock.yml"
+    cm.db.load_lockfile(filepath, False)
+
+    root_core = cm.get_core(Vlnv("::dependencies-top"))
+
+    edalizer = Edalizer(
+        toplevel=root_core.name,
+        flags=flags,
+        core_manager=cm,
+        work_root=work_root,
+    )
+
+    with caplog.at_level(logging.WARNING):
+        edalizer.run()
+
+    assert f"Lockfile {filepath} not found" in caplog.text
+    assert filepath.exists()
+
+    if filepath.exists():
+        filepath.unlink()
 
     deps = cm.get_depends(root_core.name, {})
     deps_names = [str(c) for c in deps]
