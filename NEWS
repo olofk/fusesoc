@@ -1,3 +1,22 @@
+2.4.3 2024-04-14 Olof Kindgren <olof.kindgren@gmail.com>
+======================================================
+
+* Improve generator caching
+* Check out missing core libraries on updates
+* Added argcompletion
+* Add lockfile support
+* Add mapping support
+* Expose core description files in EDAM
+
+Contributors:
+Erik Bånvik <erik.public@gmail.com>
+Hugo McNally <hugo.mcnally@gmail.com>
+Ivan <ivanmvig@gmail.com>
+Julian Frimmel <julian@fri-me.de>
+Nico Rumpeltin <nico@rumpeltin.de>
+Olof Kindgren <olof.kindgren@gmail.com>
+
+
 2.4.2 2024-01-07 Olof Kindgren <olof.kindgren@gmail.com>
 ======================================================
 
