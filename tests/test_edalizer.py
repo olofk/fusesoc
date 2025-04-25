@@ -167,7 +167,7 @@ def test_generators():
     tests_dir = Path(__file__).parent
     cores_dir = tests_dir / "capi2_cores" / "misc" / "generate"
 
-    lib = Library("edalizer", cores_dir)
+    lib = Library("edalizer", str(cores_dir))
 
     cm = CoreManager(Config())
     cm.add_library(lib, [])
