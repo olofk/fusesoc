@@ -131,7 +131,9 @@ class Core:
         for root, dirs, files in os.walk(dst_dir):
             for f in files:
                 _abs_f = os.path.join(root, f)
-                if not os.path.relpath(_abs_f, dst_dir).replace("\\", "/") in src_files:
+                _rel_f = os.path.normpath(os.path.relpath(_abs_f, dst_dir))
+
+                if not _rel_f in [os.path.normpath(x) for x in src_files]:
                     os.remove(_abs_f)
 
     def _get_script_names(self, flags):
