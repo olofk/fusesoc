@@ -6,6 +6,8 @@
 def test_apply_filters(caplog):
     import logging
 
+    import pytest
+
     from fusesoc.edalizer import Edalizer
 
     input_edam = {
@@ -54,10 +56,10 @@ def test_apply_filters(caplog):
     # Non-existent filter
     edalizer.edam = {}
 
-    with caplog.at_level(logging.WARNING):
+    with pytest.raises(RuntimeError) as excinfo:
         edalizer.apply_filters(["doesnotexist"])
 
-    assert "Ignoring unknown EDAM filter 'doesnotexist'" in caplog.text
+    assert "Could not find EDAM filter 'doesnotexist'" in str(excinfo.value)
     assert edalizer.edam == {}
 
 

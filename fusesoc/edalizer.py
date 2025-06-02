@@ -91,9 +91,11 @@ class Edalizer:
                 logger.info(f"Applying filter {f}")
                 self.edam = filter_class().run(self.edam, self.work_root)
             except ModuleNotFoundError:
-                logger.warning(f"Ignoring unknown EDAM filter '{f}'")
+                raise RuntimeError(f"Could not find EDAM filter '{f}'")
             except Exception as e:
-                logger.error(f"Filter error: {str(e)}")
+                raise RuntimeError(f"Filter error: {str(e)}")
+            except SystemExit as e:
+                raise RuntimeError(f"Filter exited with error code {str(e)}")
 
     def run(self):
         """Run all steps to create a EDAM file"""
