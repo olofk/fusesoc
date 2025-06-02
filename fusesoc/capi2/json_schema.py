@@ -486,6 +486,41 @@ capi2_schema = """
             "url",
             "filetype"
           ]
+        },
+        {
+          "description": "gitlab Provider",
+          "type": "object",
+          "properties": {
+            "name": {
+              "type": "string",
+              "pattern": "^gitlab$"
+            },
+            "host": {
+              "type": "string"
+            },
+            "project": {
+              "type": "string"
+            },
+            "ref": {
+              "type": "string"
+            },
+            "patches": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "cachable": {
+              "type": "boolean"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "name",
+            "host",
+            "project",
+            "ref"
+          ]
         }
       ]
     },

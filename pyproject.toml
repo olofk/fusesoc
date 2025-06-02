@@ -32,6 +32,7 @@ dependencies = [
   "fastjsonschema",
   "jsonschema2md",
   "argcomplete",
+  "requests",
 ]
 requires-python = ">=3.6, <4"
 
