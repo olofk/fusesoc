@@ -14,6 +14,7 @@ import warnings
 from pathlib import Path
 
 import argcomplete
+import requests
 
 from fusesoc import signature
 
@@ -307,6 +308,33 @@ def core_verify(fs, args):
         print(f"Signature for {user}: {ok} ")
 
 
+def core_publish(fs, args):
+    core = _get_core(fs, args.core)
+    logger.info("publish core file: " + core.core_file)
+    logger.info("to api at: " + args.url)
+    if args.sigfile:
+        logger.info("including sigfile: " + args.sigfile)
+    else:
+        logger.info("no sigfile")
+
+    file = open(core.core_file)
+    cf_data = file.read()
+    file.close()
+    body = {"core_file": cf_data}
+    if args.sigfile:
+        file = open(args.sigfile)
+        sf_data = file.read()
+        file.close()
+        body["signature_file"] = sf_data
+    res = requests.post(
+        args.url + "/api/fusesoc-packages/publish/", json=body, allow_redirects=True
+    )
+    logger.info("Got: " + str(res))
+    if not res.ok:
+        print("Request returned http result", res.status_code, res.reason)
+    res.close()
+
+
 def gen_clean(fs, args):
     cachedir = os.path.join(fs.config.cache_root, "generator_cache")
     shutil.rmtree(cachedir, ignore_errors=True)
@@ -555,6 +583,18 @@ def get_parser():
     parser_core_verify.add_argument("trustfile", help="File listing trusted keys")
     parser_core_verify.add_argument("sigfile", help="File containing signature")
     parser_core_verify.set_defaults(func=core_verify)
+
+    parser_core_publish = core_subparsers.add_parser(
+        "publish", help="Publish core to package db"
+    )
+    parser_core_publish.add_argument(
+        "core", help="Name of the core to publish"
+    ).completer = CoreCompleter()
+    parser_core_publish.add_argument("url", help="Publishing target")
+    parser_core_publish.add_argument(
+        "sigfile", nargs=argparse.OPTIONAL, help="Optional signature file"
+    )
+    parser_core_publish.set_defaults(func=core_publish)
 
     # tool subparser
     parser_tool = subparsers.add_parser(
