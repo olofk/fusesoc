@@ -277,8 +277,13 @@ def core_sign(fs, args):
     core = _get_core(fs, args.core)
     logger.info("sign core file: " + core.core_file)
     logger.info("with key file: " + args.keyfile)
+    sigfile = core.core_file + ".sig"
+    logger.info("put result in: " + sigfile)
     sig = signature.sign(core.core_file, args.keyfile, None)
-    print(sig)
+    file = open(sigfile, "w")
+    file.write(sig)
+    file.close()
+    print(f"{sigfile} created")
 
 
 def core_verify(fs, args):
