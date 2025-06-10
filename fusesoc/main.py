@@ -14,6 +14,7 @@ import warnings
 from pathlib import Path
 
 import argcomplete
+import requests
 
 from fusesoc import signature
 
@@ -296,6 +297,33 @@ def core_sign(fs, args):
     file.write(sig)
     file.close()
     print(f"{sigfile} created")
+
+
+def core_publish(fs, args):
+    core = _get_core(fs, args.core)
+    logger.info("publish core file: " + core.core_file)
+    logger.info("to api at: " + args.url)
+    if args.sigfile:
+        logger.info("including sigfile: " + args.sigfile)
+    else:
+        logger.info("no sigfile")
+
+    file = open(core.core_file)
+    cf_data = file.read()
+    file.close()
+    body = {"core_file": cf_data}
+    if args.sigfile:
+        file = open(args.sigfile)
+        sf_data = file.read()
+        file.close()
+        body["signature_file"] = sf_data
+    res = requests.post(
+        args.url + "/api/fusesoc-packages/publish/", json=body, allow_redirects=True
+    )
+    logger.info("Got: " + str(res))
+    if not res.ok:
+        print("Request returned http result", res.status_code, res.reason)
+    res.close()
 
 
 def gen_clean(fs, args):
