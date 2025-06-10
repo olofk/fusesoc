@@ -17,6 +17,24 @@ keyfiles_root = os.path.join(tests_dir, "signature_files", "keyfiles")
 sigfile_root = os.path.join(tests_dir, "signature_files")
 
 
+@pytest.fixture(scope="session", autouse=True)
+def fix_key_premissions(request):
+    """
+    Private key files must be readable only to owner, or
+    ssh-keygen will freak out, but git does not preserve permissions
+    other than x, so we chmod all private test keys here.
+    """
+    priv_keys = [
+        "user1_ecdsa",
+        "user1_ed25519",
+        "user1_rsa",
+        "user2_ed25519",
+        "user3_ed25519",
+    ]
+    for x in priv_keys:
+        os.chmod(os.path.join(keyfiles_root, x), 0o600)
+
+
 def test_signature_single_standalone():
     """
     Test signing and verifying a core as a single signature in a
