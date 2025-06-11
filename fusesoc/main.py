@@ -193,7 +193,7 @@ def list_cores(fs, args):
         print(
             "\nNOTE: No trustfile configured (ssh-trustfile in fusesoc.conf),\nsignatures will not be checked."
         )
-    if not os.path.isfile(fs.config.ssh_trustfile):
+    elif not os.path.isfile(fs.config.ssh_trustfile):
         print(
             "\nNOTE: The trustfile configured in fusesoc.conf does not exist,\nsignatures will not be checked."
         )
@@ -280,7 +280,7 @@ Usage       :
 
 def core_info(fs, args):
     core = _get_core(fs, args.core)
-    print(core.info())
+    print(core.info(fs.config.ssh_trustfile))
 
 
 def core_sign(fs, args):
