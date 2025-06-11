@@ -189,6 +189,14 @@ def library_list(fs, args):
 
 def list_cores(fs, args):
     cores = fs.get_cores()
+    if not fs.config.ssh_trustfile:
+        print(
+            "\nNOTE: No trustfile configured (ssh-trustfile in fusesoc.conf),\nsignatures will not be checked."
+        )
+    if not os.path.isfile(fs.config.ssh_trustfile):
+        print(
+            "\nNOTE: The trustfile configured in fusesoc.conf does not exist,\nsignatures will not be checked."
+        )
     print("\nAvailable cores:\n")
     if not cores:
         cores_root = fs.get_libraries()
@@ -198,7 +206,7 @@ def list_cores(fs, args):
             logger.error("No libraries registered")
         exit(1)
     maxlen = max(map(len, cores.keys()))
-    print("Core".ljust(maxlen) + "  Cache status  Description")
+    print("Core".ljust(maxlen) + "  Cache status  Signature  Description")
     print("=" * 80)
     for name in sorted(cores.keys()):
         core = cores[name]
@@ -206,6 +214,8 @@ def list_cores(fs, args):
             name.ljust(maxlen)
             + " : "
             + core.cache_status().rjust(10)
+            + " : "
+            + core.sig_status(fs.config.ssh_trustfile).rjust(8)
             + " : "
             + (core.get_description() or "<No description>")
         )

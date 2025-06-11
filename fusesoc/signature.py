@@ -88,6 +88,9 @@ def verify(data_file_name, trust_file_name, sig_file_name):
 
     See man ssh-keygen for details.
     """
+    logger.debug("verify core:       " + data_file_name)
+    logger.debug("against signature: " + sig_file_name)
+    logger.debug("with trustfile:    " + trust_file_name)
     core_canonical = read_core(data_file_name)
     core = utils.yaml_read(core_canonical.decode("utf-8"))
     sig_data = utils.yaml_fread(sig_file_name)
@@ -113,13 +116,16 @@ def verify(data_file_name, trust_file_name, sig_file_name):
             "-s",
             tmp_name,
         ]
-        logger.info("Run command: " + str(cmd))
+        logger.debug("Run command: " + str(cmd))
         res = subprocess.run(cmd, input=core_canonical, capture_output=True)
+        # A user may have signed a core with several keys, report OK
+        # as long as one of them matches.
         try:
             user_results[sig["user_id"]] |= res.returncode == 0
         except KeyError:
             user_results[sig["user_id"]] = res.returncode == 0
         os.remove(tmp_name)
+    logger.debug("Result: " + str(user_results))
     return user_results
 
 

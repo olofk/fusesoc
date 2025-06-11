@@ -13,7 +13,7 @@ from filecmp import cmp
 from types import MappingProxyType
 from typing import Mapping, Optional
 
-from fusesoc import utils
+from fusesoc import signature, utils
 from fusesoc.capi2.coredata import CoreData
 from fusesoc.provider.provider import get_provider
 from fusesoc.vlnv import Vlnv
@@ -638,3 +638,25 @@ Targets:
     @property
     def mapping(self) -> Optional[Mapping[str, str]]:
         return MappingProxyType(self._coredata.get("mapping", {}))
+
+    def sig_status(self, trustfile):
+        sigfile = self.core_file + ".sig"
+        if not os.path.isfile(sigfile):
+            return "-"  # Not signed
+        if not trustfile:
+            return "?"  # Signed by unknown key
+        ok = False
+        try:
+            res = signature.verify(self.core_file, trustfile, sigfile)
+            for user in res:
+                if res[user]:
+                    ok = True
+        except RuntimeError:
+            return "*"  # Signature is not for this core (should not happen)
+        except:
+            return "!"  # Bad signature format
+        if ok:
+            return "good"
+        else:
+            return "?"  # Either signed by an untrusted key, or
+            # signature does not match.
