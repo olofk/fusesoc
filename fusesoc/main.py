@@ -342,7 +342,7 @@ def core_publish(fs, args):
     if not res.ok:
         print("Request returned http result", res.status_code, res.reason)
         err = json.loads(res.content)
-        print(str(err))
+        print(json.dumps(err, indent=4))
     res.close()
     fob_core.close()
     if fob_sig:
