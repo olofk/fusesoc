@@ -56,6 +56,8 @@ class Config:
         logger.debug("cache_root=" + self.cache_root)
         logger.debug("library_root=" + self.library_root)
         logger.debug("ssh-trustfile=" + (self.ssh_trustfile or "none"))
+        logger.debug("publish-uri=" + (self.publish_uri or "none"))
+        logger.debug("publish-uri-pem=" + (self.publish_uri_pem or "none"))
 
     def _parse_library(self):
         # Parse library sections
@@ -198,6 +200,22 @@ class Config:
     @ssh_trustfile.setter
     def ssh_trustfile(self, val):
         self._set_default_section("ssh-trustfile", val)
+
+    @property
+    def publish_uri(self):
+        return self._cp.get(Config.default_section, "publish-uri", fallback=None)
+
+    @publish_uri.setter
+    def publish_uri(self, val):
+        self._set_default_section("publish-uri", val)
+
+    @property
+    def publish_uri_pem(self):
+        return self._cp.get(Config.default_section, "publish-uri-pem", fallback=None)
+
+    @publish_uri_pem.setter
+    def publish_uri_pem(self, val):
+        self._set_default_section("publish-uri-pem", val)
 
     @property
     def library_root(self):

@@ -5,6 +5,7 @@
 # SPDX-License-Identifier: BSD-2-Clause
 
 import argparse
+import json
 import os
 import pathlib
 import shutil
@@ -310,29 +311,42 @@ def core_verify(fs, args):
 
 def core_publish(fs, args):
     core = _get_core(fs, args.core)
-    logger.info("publish core file: " + core.core_file)
-    logger.info("to api at: " + args.url)
-    if args.sigfile:
-        logger.info("including sigfile: " + args.sigfile)
+    uri = fs.config.publish_uri
+    pem = fs.config.publish_uri_pem
+    sigfile = core.core_file + ".sig"
+    print("Publish core file: " + core.core_file)
+    fob_core = open(core.core_file, "rb")
+    body = {"core_file": fob_core}
+    fob_sig = None
+    if os.path.exists(sigfile):
+        print("and signature file: " + sigfile)
+        fob_sig = open(sigfile, "rb")
+        body["signature_file"] = fob_sig
     else:
-        logger.info("no sigfile")
+        print("(without signature file)")
+        sf_data = None
+    if pem:
+        print("with certificate from: " + pem)
+    print("to api at: " + uri)
+    if args.yes:
+        print("without confirmation")
+    else:
+        c = input("Confirm by typing 'yes': ")
+        if c != "yes":
+            print("Aborted.")
+            return False
 
-    file = open(core.core_file)
-    cf_data = file.read()
-    file.close()
-    body = {"core_file": cf_data}
-    if args.sigfile:
-        file = open(args.sigfile)
-        sf_data = file.read()
-        file.close()
-        body["signature_file"] = sf_data
-    res = requests.post(
-        args.url + "/api/fusesoc-packages/publish/", json=body, allow_redirects=True
-    )
-    logger.info("Got: " + str(res))
+    target = uri + "/v1/publish/"
+    logger.debug("POST to " + target)
+    res = requests.post(target, files=body, allow_redirects=True, verify=pem)
     if not res.ok:
         print("Request returned http result", res.status_code, res.reason)
+        err = json.loads(res.content)
+        print(str(err))
     res.close()
+    fob_core.close()
+    if fob_sig:
+        fob_sig.close()
 
 
 def gen_clean(fs, args):
@@ -590,9 +604,8 @@ def get_parser():
     parser_core_publish.add_argument(
         "core", help="Name of the core to publish"
     ).completer = CoreCompleter()
-    parser_core_publish.add_argument("url", help="Publishing target")
     parser_core_publish.add_argument(
-        "sigfile", nargs=argparse.OPTIONAL, help="Optional signature file"
+        "--yes", help="Skip confirmation", action="store_true"
     )
     parser_core_publish.set_defaults(func=core_publish)
 
