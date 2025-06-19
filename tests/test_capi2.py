@@ -671,8 +671,8 @@ def test_capi2_info():
         gen_info = "\n".join(
             [
                 x
-                for x in core.info().split("\n")
-                if not any([y in x for y in ["Core root", "Core file"]])
+                for x in core.info(None).split("\n")
+                if not any([y in x for y in ["Core root", "Core file", "Signature"]])
             ]
         )
         with open(os.path.join(tests_dir, __name__, core_name + ".info")) as f:

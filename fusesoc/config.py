@@ -55,6 +55,7 @@ class Config:
 
         logger.debug("cache_root=" + self.cache_root)
         logger.debug("library_root=" + self.library_root)
+        logger.debug("ssh-trustfile=" + (self.ssh_trustfile or "none"))
 
     def _parse_library(self):
         # Parse library sections
@@ -131,6 +132,9 @@ class Config:
         )
         return str(Path(xdg_cache_home) / "fusesoc")
 
+    def _get_ssh_trustfile(self):
+        return self._path_from_cfg("ssh-trustfile")
+
     def _get_library_root(self):
         from_cfg = self._path_from_cfg("library_root")
         if from_cfg is not None:
@@ -186,6 +190,14 @@ class Config:
     @cache_root.setter
     def cache_root(self, val):
         self._set_default_section("cache_root", val)
+
+    @property
+    def ssh_trustfile(self):
+        return self._get_ssh_trustfile()
+
+    @ssh_trustfile.setter
+    def ssh_trustfile(self, val):
+        self._set_default_section("ssh-trustfile", val)
 
     @property
     def library_root(self):
