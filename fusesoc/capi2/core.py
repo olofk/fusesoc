@@ -13,7 +13,7 @@ from filecmp import cmp
 from types import MappingProxyType
 from typing import Mapping, Optional
 
-from fusesoc import utils
+from fusesoc import signature, utils
 from fusesoc.capi2.coredata import CoreData
 from fusesoc.provider.provider import get_provider
 from fusesoc.vlnv import Vlnv
@@ -521,12 +521,13 @@ class Core:
             )
         return vpi
 
-    def info(self):
+    def info(self, trustfile):
         s = """CORE INFO
 Name:        {}
 Description: {}
 Core root:   {}
 Core file:   {}
+Signature:   {}
 
 Targets:
 {}"""
@@ -551,6 +552,7 @@ Targets:
             str(self.get_description() or "<No description>"),
             str(self.core_root),
             str(self.core_basename),
+            self.sig_status_long(trustfile),
             targets,
         )
 
@@ -638,3 +640,50 @@ Targets:
     @property
     def mapping(self) -> Optional[Mapping[str, str]]:
         return MappingProxyType(self._coredata.get("mapping", {}))
+
+    def sig_status_long(self, trustfile):
+        if not trustfile:
+            siginfo = "No trustfile"
+        elif not os.path.isfile(trustfile):
+            siginfo = "Configured trustfile does not exist"
+        else:
+            match self.sig_status(trustfile):
+                case "-":
+                    siginfo = "Not signed"
+                case "?":
+                    siginfo = "Signed by unknown key"
+                case "*":
+                    siginfo = "Signature is not for this core"
+                case "!":
+                    siginfo = "Signature checking error"
+                case "good":
+                    siginfo = "Good"
+                case "?!":
+                    siginfo = (
+                        "Either signed by an unknown key, or signature does not match"
+                    )
+                case _:
+                    siginfo = "Other signature checking error"
+        return siginfo
+
+    def sig_status(self, trustfile):
+        sigfile = self.core_file + ".sig"
+        if not os.path.isfile(sigfile):
+            return "-"  # Not signed
+        if not trustfile:
+            return "?"  # Signed by unknown key
+        ok = False
+        try:
+            res = signature.verify(self.core_file, trustfile, sigfile)
+            for user in res:
+                if res[user]:
+                    ok = True
+        except RuntimeError:
+            return "*"  # Signature is not for this core (should not happen)
+        except:
+            return "!"  # Other signature checking error
+        if ok:
+            return "good"
+        else:
+            return "?!"  # Either signed by an untrusted key, or
+            # signature does not match.
