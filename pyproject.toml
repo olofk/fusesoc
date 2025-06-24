@@ -30,7 +30,6 @@ dependencies = [
   "pyyaml>=6.0",
   "simplesat>=0.9.1",
   "fastjsonschema",
-  "jsonschema2md",
   "argcomplete",
 ]
 requires-python = ">=3.6, <4"
