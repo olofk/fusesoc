@@ -6,6 +6,7 @@
 import base64
 import logging
 import os
+import shutil
 import subprocess
 import sys
 import tempfile
@@ -49,6 +50,10 @@ def sign(data_file_name, key_file_name, old_sig_file):
     signatory = key_parts[2].strip()
     core_canonical = read_core(data_file_name)
     cc_data = utils.yaml_read(core_canonical.decode("utf-8"))
+
+    if shutil.which("ssh-keygen") == None:
+        raise RuntimeError("ssh-keygen not found in $PATH")
+
     cmd = ["ssh-keygen", "-Y", "sign", "-f", key_file_name, "-n", "file"]
     logger.info("Run command: " + " ".join(cmd))
     res = subprocess.run(cmd, input=core_canonical, capture_output=True)
@@ -94,10 +99,21 @@ def verify(data_file_name, trust_file_name, sig_file_name):
     core_canonical = read_core(data_file_name)
     core = utils.yaml_read(core_canonical.decode("utf-8"))
     sig_data = utils.yaml_fread(sig_file_name)
+    if not "coresig" in sig_data:
+        raise RuntimeError("Signature file missing coresig member.")
+    if not isinstance(sig_data["coresig"], dict):
+        raise RuntimeError("coresig object in signature is not an object.")
+    if not "name" in sig_data["coresig"]:
+        raise RuntimeError("Signature file missing name member in coresig object.")
+    if not "name" in core:
+        raise RuntimeError("Core file missing name member.")
     if sig_data["coresig"]["name"] != core["name"]:
         raise RuntimeError(
             "Signature file and core file must have the same 'name' field."
         )
+    if shutil.which("ssh-keygen") == None:
+        raise RuntimeError("ssh-keygen not found in $PATH")
+
     user_results = {}
     for sig in sig_data["coresig"]["signatures"]:
         f_os, tmp_name = tempfile.mkstemp(prefix="sig_", suffix=".asc")
