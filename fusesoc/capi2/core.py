@@ -647,23 +647,21 @@ Targets:
         elif not os.path.isfile(trustfile):
             siginfo = "Configured trustfile does not exist"
         else:
-            match self.sig_status(trustfile):
-                case "-":
-                    siginfo = "Not signed"
-                case "?":
-                    siginfo = "Signed by unknown key"
-                case "*":
-                    siginfo = "Signature is not for this core"
-                case "!":
-                    siginfo = "Signature checking error"
-                case "good":
-                    siginfo = "Good"
-                case "?!":
-                    siginfo = (
-                        "Either signed by an unknown key, or signature does not match"
-                    )
-                case _:
-                    siginfo = "Other signature checking error"
+            short_status = self.sig_status(trustfile)
+            if short_status == "-":
+                siginfo = "Not signed"
+            elif short_status == "?":
+                siginfo = "Signed by unknown key"
+            elif short_status == "*":
+                siginfo = "Signature is not for this core"
+            elif short_status == "!":
+                siginfo = "Signature checking error"
+            elif short_status == "good":
+                siginfo = "Good"
+            elif short_status == "?!":
+                siginfo = "Either signed by an unknown key, or signature does not match"
+            else:
+                siginfo = "Other signature checking error"
         return siginfo
 
     def sig_status(self, trustfile):
