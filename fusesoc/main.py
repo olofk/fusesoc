@@ -190,12 +190,12 @@ def library_list(fs, args):
 def list_cores(fs, args):
     cores = fs.get_cores()
     if not fs.config.ssh_trustfile:
-        print(
-            "\nNOTE: No trustfile configured (ssh-trustfile in fusesoc.conf),\nsignatures will not be checked."
+        logger.info(
+            "NOTE: No trustfile configured (ssh-trustfile in fusesoc.conf), signatures will not be checked."
         )
     elif not os.path.isfile(fs.config.ssh_trustfile):
-        print(
-            "\nNOTE: The trustfile configured in fusesoc.conf does not exist,\nsignatures will not be checked."
+        logger.info(
+            "NOTE: The trustfile configured in fusesoc.conf does not exist, signatures will not be checked."
         )
     print("\nAvailable cores:\n")
     if not cores:
@@ -298,9 +298,6 @@ def core_sign(fs, args):
 
 def core_verify(fs, args):
     core = _get_core(fs, args.core)
-    logger.info("verify core file: " + core.core_file)
-    logger.info("against signature file: " + args.sigfile)
-    logger.info("using trust file: " + args.trustfile)
     res = signature.verify(core.core_file, args.trustfile, args.sigfile)
     for user in res:
         ok = "OK" if res[user] else "Failed"
