@@ -717,7 +717,7 @@ capi2_schema = """
           "additionalProperties": false
         }
       }
-    },
+    }
   }
 }
 """
