@@ -189,13 +189,14 @@ def library_list(fs, args):
 
 def list_cores(fs, args):
     cores = fs.get_cores()
-    if not fs.config.ssh_trustfile:
-        logger.info(
-            "NOTE: No trustfile configured (ssh-trustfile in fusesoc.conf), signatures will not be checked."
+    trustfile = fs.config.ssh_trustfile or args.ssh_trust_file
+    if not trustfile:
+        logger.warn(
+            "No trustfile configured (ssh-trustfile in fusesoc.conf), signatures will not be checked."
         )
-    elif not os.path.isfile(fs.config.ssh_trustfile):
-        logger.info(
-            "NOTE: The trustfile configured in fusesoc.conf does not exist, signatures will not be checked."
+    elif not os.path.isfile(trustfile):
+        logger.warn(
+            "The trustfile configured in fusesoc.conf does not exist, signatures will not be checked."
         )
     print("\nAvailable cores:\n")
     if not cores:
@@ -215,7 +216,7 @@ def list_cores(fs, args):
             + " : "
             + core.cache_status().rjust(10)
             + " : "
-            + core.sig_status(fs.config.ssh_trustfile).rjust(8)
+            + core.sig_status(trustfile).rjust(8)
             + " : "
             + (core.get_description() or "<No description>")
         )
@@ -280,7 +281,8 @@ Usage       :
 
 def core_info(fs, args):
     core = _get_core(fs, args.core)
-    print(core.info(fs.config.ssh_trustfile))
+    trustfile = fs.config.ssh_trustfile or args.ssh_trust_file
+    print(core.info(trustfile))
 
 
 def core_sign(fs, args):
@@ -289,19 +291,11 @@ def core_sign(fs, args):
     logger.info("with key file: " + args.keyfile)
     sigfile = core.core_file + ".sig"
     logger.info("put result in: " + sigfile)
-    sig = signature.sign(core.core_file, args.keyfile, None)
+    sig = signature.sign(core, args.keyfile, None)
     file = open(sigfile, "w")
     file.write(sig)
     file.close()
     print(f"{sigfile} created")
-
-
-def core_verify(fs, args):
-    core = _get_core(fs, args.core)
-    res = signature.verify(core.core_file, args.trustfile, args.sigfile)
-    for user in res:
-        ok = "OK" if res[user] else "Failed"
-        print(f"Signature for {user}: {ok} ")
 
 
 def gen_clean(fs, args):
@@ -506,6 +500,7 @@ def get_parser():
     )
     parser.add_argument("--verbose", help="More info messages", action="store_true")
     parser.add_argument("--log-file", help="Write log messages to file")
+    parser.add_argument("--ssh-trust-file", help="Override trustfile in fusesoc.conf")
 
     # fetch subparser
     parser_fetch = subparsers.add_parser(
@@ -542,16 +537,6 @@ def get_parser():
     ).completer = CoreCompleter()
     parser_core_sign.add_argument("keyfile", help="File containing ssh private key")
     parser_core_sign.set_defaults(func=core_sign)
-
-    parser_core_verify = core_subparsers.add_parser(
-        "verify", help="Verify user signature for a core"
-    )
-    parser_core_verify.add_argument(
-        "core", help="Name of the core to verify"
-    ).completer = CoreCompleter()
-    parser_core_verify.add_argument("trustfile", help="File listing trusted keys")
-    parser_core_verify.add_argument("sigfile", help="File containing signature")
-    parser_core_verify.set_defaults(func=core_verify)
 
     # tool subparser
     parser_tool = subparsers.add_parser(

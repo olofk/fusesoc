@@ -641,28 +641,33 @@ Targets:
     def mapping(self) -> Optional[Mapping[str, str]]:
         return MappingProxyType(self._coredata.get("mapping", {}))
 
-    def sig_status_long(self, trustfile):
-        if not trustfile:
-            siginfo = "No trustfile"
-        elif not os.path.isfile(trustfile):
-            siginfo = "Configured trustfile does not exist"
+    def signed_data(self):
+        """
+        Return a canonical representation of the core as a string
+        for signature purposes.
+        """
+        file = open(self.core_file, "rb")
+        header = file.readline()
+        core_raw = file.read()
+        file.close()
+        if header.startswith(b"CAPI=2:"):
+            # Core file is single document, no built in signature.  We
+            # sign everything after the header line.
+            core_canonical = core_raw.strip()
         else:
-            short_status = self.sig_status(trustfile)
-            if short_status == "-":
-                siginfo = "Not signed"
-            elif short_status == "?":
-                siginfo = "Signed by unknown key"
-            elif short_status == "*":
-                siginfo = "Signature is not for this core"
-            elif short_status == "!":
-                siginfo = "Signature checking error"
-            elif short_status == "good":
-                siginfo = "Good"
-            elif short_status == "?!":
-                siginfo = "Either signed by an unknown key, or signature does not match"
-            else:
-                siginfo = "Other signature checking error"
-        return siginfo
+            # Core file is not a valid CAPI=2 document.
+            raise RuntimeError("File to sign is not a valid CAPI=2 document.")
+        return core_canonical
+
+    def sig_status_long(self, trustfile):
+        return {
+            "-": "Not signed",
+            "?": "Signed by unknown key",
+            "*": "Signature is not for this core",
+            "!": "Signature checking error",
+            "good": "Good",
+            "?!": "Either signed by an unknown key, or signature does not match",
+        }.get(self.sig_status(trustfile), "Other signature checking error")
 
     def sig_status(self, trustfile):
         sigfile = self.core_file + ".sig"
@@ -672,7 +677,7 @@ Targets:
             return "?"  # Signed by unknown key
         ok = False
         try:
-            res = signature.verify(self.core_file, trustfile, sigfile)
+            res = signature.verify(self, trustfile, sigfile)
             for user in res:
                 if res[user]:
                     ok = True

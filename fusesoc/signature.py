@@ -36,9 +36,9 @@ def read_core(data_file_name):
     return core_canonical
 
 
-def sign(data_file_name, key_file_name, old_sig_file):
+def sign(core, key_file_name, old_sig_file):
     """
-    Read a core file, sign it, and return the signature yaml document as a string.
+    Generate signature for a core file and return as signature yaml document.
     """
     # Get the name and key type from the public key file, which we
     # assume is in the same directory and has the same name with .pub
@@ -48,8 +48,7 @@ def sign(data_file_name, key_file_name, old_sig_file):
     file.close()
     key_type = key_parts[0].strip()
     signatory = key_parts[2].strip()
-    core_canonical = read_core(data_file_name)
-    cc_data = utils.yaml_read(core_canonical.decode("utf-8"))
+    core_canonical = core.signed_data()
 
     if shutil.which("ssh-keygen") == None:
         raise RuntimeError("ssh-keygen not found in $PATH")
@@ -59,7 +58,7 @@ def sign(data_file_name, key_file_name, old_sig_file):
     res = subprocess.run(cmd, input=core_canonical, capture_output=True)
     sig_data = {
         "coresig": {
-            "name": cc_data["name"],
+            "name": str(core.get_name()),
             "signatures": [
                 {
                     "type": key_type,
@@ -80,10 +79,10 @@ def sign(data_file_name, key_file_name, old_sig_file):
     return yaml.dump(sig_data)
 
 
-def verify(data_file_name, trust_file_name, sig_file_name):
+def verify(core_obj, trust_file_name, sig_file_name):
     """
-    Verify signatures of a core file and return a dictionary of
-    users whos signatures were tried and their result (True or False).
+    Verify signatures of a core and return a dictionary of users whos
+    signatures were tried and their result (True or False).
 
     The parameter trust_file_name must point to an ssh trust file
     which lists the users and public keys that are trusted, one per
@@ -92,12 +91,12 @@ def verify(data_file_name, trust_file_name, sig_file_name):
         <user_name> <keytype> <public key>
 
     See man ssh-keygen for details.
+
     """
-    logger.debug("verify core:       " + data_file_name)
+    logger.debug("verify core:       " + core_obj.core_file)
     logger.debug("against signature: " + sig_file_name)
     logger.debug("with trustfile:    " + trust_file_name)
-    core_canonical = read_core(data_file_name)
-    core = utils.yaml_read(core_canonical.decode("utf-8"))
+    core_canonical = core_obj.signed_data()
     sig_data = utils.yaml_fread(sig_file_name)
     if not "coresig" in sig_data:
         raise RuntimeError("Signature file missing coresig member.")
@@ -105,9 +104,7 @@ def verify(data_file_name, trust_file_name, sig_file_name):
         raise RuntimeError("coresig object in signature is not an object.")
     if not "name" in sig_data["coresig"]:
         raise RuntimeError("Signature file missing name member in coresig object.")
-    if not "name" in core:
-        raise RuntimeError("Core file missing name member.")
-    if sig_data["coresig"]["name"] != core["name"]:
+    if sig_data["coresig"]["name"] != str(core_obj.get_name()):
         raise RuntimeError(
             "Signature file and core file must have the same 'name' field."
         )

@@ -10,6 +10,8 @@ import pytest
 from test_common import tests_dir
 
 from fusesoc import signature
+from fusesoc.capi2.coreparser import Core2Parser
+from fusesoc.core import Core
 
 cores_root = os.path.join(tests_dir, "cores")
 trustfiles_root = os.path.join(tests_dir, "signature_files", "trustfiles")
@@ -42,8 +44,8 @@ def test_signature_single_standalone():
     """
     kf_ok = os.path.join(keyfiles_root, "user1_rsa")
     kf_bad = os.path.join(keyfiles_root, "user1_ecdsa")
-    cf_ok = os.path.join(cores_root, "sockit/sockit.core")
-    cf_bad = os.path.join(cores_root, "misc/ghdltest.core")
+    cf_ok = Core(Core2Parser(), os.path.join(cores_root, "sockit/sockit.core"))
+    cf_bad = Core(Core2Parser(), os.path.join(cores_root, "misc/ghdltest.core"))
     sf_ok = os.path.join(sigfile_root, "sockit.sig")
     sf_bad1 = os.path.join(sigfile_root, "sockit_bad1.sig")
     sf_bad2 = os.path.join(sigfile_root, "sockit_bad2.sig")
@@ -147,7 +149,6 @@ def test_signature_single_standalone():
         },
     ]
     for x in to_verify:
-        print(x)
         try:
             res = signature.verify(x["core"], x["tf"], x["sig"])
             e = False
