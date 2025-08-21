@@ -58,7 +58,7 @@ def sign(core, key_file_name, old_sig_file):
     res = subprocess.run(cmd, input=core_canonical, capture_output=True)
     sig_data = {
         "coresig": {
-            "name": str(core.get_name()),
+            "name": str(core.name),
             "signatures": [
                 {
                     "type": key_type,
@@ -104,7 +104,7 @@ def verify(core_obj, trust_file_name, sig_file_name):
         raise RuntimeError("coresig object in signature is not an object.")
     if not "name" in sig_data["coresig"]:
         raise RuntimeError("Signature file missing name member in coresig object.")
-    if sig_data["coresig"]["name"] != str(core_obj.get_name()):
+    if sig_data["coresig"]["name"] != str(core_obj.name):
         raise RuntimeError(
             "Signature file and core file must have the same 'name' field."
         )
