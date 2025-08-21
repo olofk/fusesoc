@@ -189,7 +189,7 @@ def library_list(fs, args):
 
 def list_cores(fs, args):
     cores = fs.get_cores()
-    trustfile = fs.config.ssh_trustfile or args.ssh_trust_file
+    trustfile = fs.config.ssh_trustfile or args.ssh_trustfile
     if not trustfile:
         logger.warn(
             "No trustfile configured (ssh-trustfile in fusesoc.conf), signatures will not be checked."
@@ -281,7 +281,7 @@ Usage       :
 
 def core_info(fs, args):
     core = _get_core(fs, args.core)
-    trustfile = fs.config.ssh_trustfile or args.ssh_trust_file
+    trustfile = fs.config.ssh_trustfile or args.ssh_trustfile
     print(core.info(trustfile))
 
 
