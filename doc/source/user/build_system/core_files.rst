@@ -291,7 +291,7 @@ The location of this file can be set in the ``[main]`` section of the ``fusesoc.
    [main]
    ssh-trustfile = /home/anders/FuseSoCdb/git/fusesoc/tests/signature_files/trustfiles/trustfile
 
-This setting can also be overridden using the command line option ``--ssh-trust-file``.
+This setting can also be overridden using the command line option ``--ssh-trustfile``.
 
 The signing process is accomplished with the ``core sign`` command, which takes a core name and a path to a private ssh key as arguments.
 
