@@ -270,3 +270,29 @@ As always with inheritance the interesting questions are around overriding behav
   To do so, it specifies the special ``filesets_append`` key with a partial list.
   When evaluating the core file, FuseSoC appends the contents of ``sim.fileset_append`` at the end of ``default.fileset`` to form a list with two items: ``rtl``, and ``tb``.
   The same behavior works for all lists in core files.
+
+Signed core files
+-----------------
+
+The fusesoc cli tool can produce a cryptographic signature for a core (currenly using ssh keys).  The signature is stored in a separate file named as the signed core but with ``.sig`` appended.
+
+For verifying signatures a file called a *trustfile* is used.  The trustfile contains a list of trusted users and their public ssh keys, one per line:
+
+.. code-block:: text
+
+   $ cat tests/signature_files/trustfiles/trustfile_1ed_and_2
+   user1@example.com ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIFL1l8BB+EnUUkwMtMMqv1HFw8q2SZ7ERuGcFYt8VtqL
+   user2@example.com ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIP6w+b8Xue0Jo/Hskd9B+Ttr6g9rq99qbZV/01q+FgED
+
+The location of this file can be set in the ``[main]`` section of the ``fusesoc.conf`` file:
+
+.. code-block:: INI
+
+   [main]
+   ssh-trustfile = /home/anders/FuseSoCdb/git/fusesoc/tests/signature_files/trustfiles/trustfile
+
+This setting can also be overridden using the command line option ``--ssh-trustfile``.
+
+The signing process is accomplished with the ``core sign`` command, which takes a core name and a path to a private ssh key as arguments.
+
+The signing status of a core is shown in the ``core list`` and ``core show`` commands in the fusesoc cli tool.

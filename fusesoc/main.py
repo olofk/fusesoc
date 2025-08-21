@@ -15,6 +15,8 @@ from pathlib import Path
 
 import argcomplete
 
+from fusesoc import signature
+
 try:
     from fusesoc.version import version as __version__
 except ImportError:
@@ -187,6 +189,15 @@ def library_list(fs, args):
 
 def list_cores(fs, args):
     cores = fs.get_cores()
+    trustfile = fs.config.ssh_trustfile or args.ssh_trustfile
+    if not trustfile:
+        logger.warn(
+            "No trustfile configured (ssh-trustfile in fusesoc.conf), signatures will not be checked."
+        )
+    elif not os.path.isfile(trustfile):
+        logger.warn(
+            "The trustfile configured in fusesoc.conf does not exist, signatures will not be checked."
+        )
     print("\nAvailable cores:\n")
     if not cores:
         cores_root = fs.get_libraries()
@@ -196,7 +207,7 @@ def list_cores(fs, args):
             logger.error("No libraries registered")
         exit(1)
     maxlen = max(map(len, cores.keys()))
-    print("Core".ljust(maxlen) + "  Cache status  Description")
+    print("Core".ljust(maxlen) + "  Cache status  Signature  Description")
     print("=" * 80)
     for name in sorted(cores.keys()):
         core = cores[name]
@@ -204,6 +215,8 @@ def list_cores(fs, args):
             name.ljust(maxlen)
             + " : "
             + core.cache_status().rjust(10)
+            + " : "
+            + core.sig_status(trustfile).rjust(8)
             + " : "
             + (core.get_description() or "<No description>")
         )
@@ -268,7 +281,21 @@ Usage       :
 
 def core_info(fs, args):
     core = _get_core(fs, args.core)
-    print(core.info())
+    trustfile = fs.config.ssh_trustfile or args.ssh_trustfile
+    print(core.info(trustfile))
+
+
+def core_sign(fs, args):
+    core = _get_core(fs, args.core)
+    logger.info("sign core file: " + core.core_file)
+    logger.info("with key file: " + args.keyfile)
+    sigfile = core.core_file + ".sig"
+    logger.info("put result in: " + sigfile)
+    sig = signature.sign(core, args.keyfile, None)
+    file = open(sigfile, "w")
+    file.write(sig)
+    file.close()
+    print(f"{sigfile} created")
 
 
 def gen_clean(fs, args):
@@ -473,6 +500,7 @@ def get_parser():
     )
     parser.add_argument("--verbose", help="More info messages", action="store_true")
     parser.add_argument("--log-file", help="Write log messages to file")
+    parser.add_argument("--ssh-trustfile", help="Override trustfile in fusesoc.conf")
 
     # fetch subparser
     parser_fetch = subparsers.add_parser(
@@ -500,6 +528,15 @@ def get_parser():
         "core", help="Name of the core to show"
     ).completer = CoreCompleter()
     parser_core_show.set_defaults(func=core_info)
+
+    parser_core_sign = core_subparsers.add_parser(
+        "sign", help="Create user signature for a core"
+    )
+    parser_core_sign.add_argument(
+        "core", help="Name of the core to sign"
+    ).completer = CoreCompleter()
+    parser_core_sign.add_argument("keyfile", help="File containing ssh private key")
+    parser_core_sign.set_defaults(func=core_sign)
 
     # tool subparser
     parser_tool = subparsers.add_parser(
