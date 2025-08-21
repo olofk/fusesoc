@@ -18,24 +18,6 @@ from fusesoc import utils
 logger = logging.getLogger(__name__)
 
 
-def read_core(data_file_name):
-    """
-    Reads a given core file and returns the canonical (signed)
-    part.
-    """
-    file = open(data_file_name, "rb")
-    core_raw = file.read()
-    file.close()
-    if core_raw.startswith(b"CAPI=2:"):
-        # Core file is single document, no built in signature.  We
-        # sign everything after the header line.
-        core_canonical = core_raw[7:].strip()
-    else:
-        # Core file is not a valid CAPI=2 document.
-        raise RuntimeError("Signature file is not a valid CAPI=2 document.")
-    return core_canonical
-
-
 def sign(core, key_file_name, old_sig_file):
     """
     Generate signature for a core file and return as signature yaml document.
