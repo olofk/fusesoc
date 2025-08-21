@@ -158,6 +158,6 @@ def test_signature_single_standalone():
         if not e:
             assert len(res) == 1
             assert list(res.values())[0] == x["res"]
-    Path.unlink(sf_ok)
-    Path.unlink(sf_bad1)
-    Path.unlink(sf_bad2)
+    os.remove(sf_ok)
+    os.remove(sf_bad1)
+    os.remove(sf_bad2)
