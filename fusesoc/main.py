@@ -500,7 +500,7 @@ def get_parser():
     )
     parser.add_argument("--verbose", help="More info messages", action="store_true")
     parser.add_argument("--log-file", help="Write log messages to file")
-    parser.add_argument("--ssh-trust-file", help="Override trustfile in fusesoc.conf")
+    parser.add_argument("--ssh-trustfile", help="Override trustfile in fusesoc.conf")
 
     # fetch subparser
     parser_fetch = subparsers.add_parser(
