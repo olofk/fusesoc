@@ -293,4 +293,6 @@ The location of this file can be set in the ``[main]`` section of the ``fusesoc.
 
 This setting can also be overridden using the command line option ``--ssh-trust-file``.
 
+The signing process is accomplished with the ``core sign`` command, which takes a core name and a path to a private ssh key as arguments.
+
 The signing status of a core is shown in the ``core list`` and ``core show`` commands in the fusesoc cli tool.
