@@ -28,11 +28,12 @@ dependencies = [
   "edalize>=0.4.1",
   "pyparsing>=2.3.1",
   "pyyaml>=6.0",
+  "pydantic>=2.10.6",
   "simplesat>=0.9.1",
   "fastjsonschema",
   "argcomplete",
 ]
-requires-python = ">=3.6, <4"
+requires-python = ">=3.10, <4"
 
 [project.urls]
 Homepage = "https://fusesoc.net"
