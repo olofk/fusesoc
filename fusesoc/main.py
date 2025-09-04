@@ -580,6 +580,17 @@ def get_parser():
     parser_core_sign.add_argument("keyfile", help="File containing ssh private key")
     parser_core_sign.set_defaults(func=core_sign)
 
+    parser_core_publish = core_subparsers.add_parser(
+        "publish", help="Publish core to package db"
+    )
+    parser_core_publish.add_argument(
+        "core", help="Name of the core to publish"
+    ).completer = CoreCompleter()
+    parser_core_publish.add_argument(
+        "--yes", help="Skip confirmation", action="store_true"
+    )
+    parser_core_publish.set_defaults(func=core_publish)
+
     # tool subparser
     parser_tool = subparsers.add_parser(
         "tool", help="Subcommands for dealing with tools"
