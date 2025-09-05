@@ -19,12 +19,13 @@ def get_provider(name):
 
 
 class Provider:
-    def __init__(self, config, core_root, files_root):
+    def __init__(self, config, core_root, files_root, name):
         self.config = config
         self.core_root = core_root
         self.files_root = files_root
         self.cachable = not (config.get("cachable", "") == False)
         self.patches = config.get("patches", [])
+        self.name = name
 
     def clean_cache(self):
         def _make_tree_writable(topdir):
