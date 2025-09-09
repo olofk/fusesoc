@@ -1,3 +1,18 @@
+2.4.4 2025-09-09 Olof Kindgren
+======================================================
+
+* Fix exporting of generated files
+* Make filter errors fatal
+* Add signing support
+* Add license field to CAPI2
+
+Contributors:
+Anders Ahlberg
+Anska Ludwig
+Hugo McNally
+Olof Kindgren
+Paul Gatewood
+
 2.4.3 2025-04-14 Olof Kindgren <olof.kindgren@gmail.com>
 ======================================================
 
