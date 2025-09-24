@@ -6,6 +6,7 @@ import logging
 import subprocess
 import sys
 import warnings
+from typing import Any
 
 import yaml
 
@@ -27,15 +28,20 @@ class Launcher:
         self.args = args
         self.cwd = cwd
 
-    def run(self):
+    def run(self, **kwargs) -> subprocess.Popen:
         """Runs the cmd with args after converting them all to strings via str"""
         logger.debug(self.cwd or "./")
         logger.debug("    " + str(self))
+
+        cmd = map(str, [self.cmd] + self.args)
         try:
-            subprocess.check_call(
-                map(str, [self.cmd] + self.args),
-                cwd=self.cwd,
-            ),
+            proc = subprocess.Popen(args=cmd, cwd=self.cwd, **kwargs)
+            proc.wait()
+
+            if proc.returncode != 0:
+                raise subprocess.CalledProcessError(proc.returncode, cmd)
+
+            return proc
         except FileNotFoundError:
             raise RuntimeError(
                 "Command '" + self.cmd + "' not found. Make sure it is in $PATH"
