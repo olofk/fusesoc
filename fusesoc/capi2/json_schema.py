@@ -9,6 +9,24 @@ capi2_schema = """
       "description": "Short description of core",
       "type": "string"
     },
+    "license": {
+      "oneOf": [
+        {
+          "type": "string",
+          "description": "SPDX license identifier. See https://spdx.org/licenses/ for valid values."
+        },
+        {
+          "type": "object",
+          "properties": {
+            "name": { "type": "string" },
+            "text": { "type": "string" }
+          },
+          "required": ["name", "text"],
+          "additionalProperties": false,
+          "description": "Custom defined license"
+        }
+      ]
+    },
     "filesets": { "$ref": "#/$defs/filesets" },
     "generate": { "$ref": "#/$defs/generate" },
     "generators": { "$ref": "#/$defs/generators" },
