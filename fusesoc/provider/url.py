@@ -25,6 +25,22 @@ _HAS_TAR_FILTER = hasattr(tarfile, "tar_filter")  # Requires Python 3.12
 
 
 class Url(Provider):
+    @staticmethod
+    def init_library(library):
+        try:
+            logger.info(f"Downloading library from {library.sync_uri}...")
+            Url._download(library.sync_uri, library.location, "zip")
+            logger.info(f"Library stored at {library.location}")
+        except Exception as e:
+            raise RuntimeError(str(e))
+
+    @staticmethod
+    def update_library(library):
+        try:
+            Url._download(library.sync_uri, library.location, "zip")
+        except Exception as e:
+            raise RuntimeError(str(e))
+
     def _checkout(self, local_dir):
         url = self.config.get("url")
         logger.info("Downloading...")

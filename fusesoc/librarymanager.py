@@ -20,19 +20,17 @@ class Library:
         sync_version=None,
         auto_sync=True,
     ):
-        if sync_type and not sync_type in ["local", "git"]:
+        if sync_type and not sync_type in ["local", "git", "url"]:
             raise ValueError(
                 "Library {} ({}) Invalid sync-type '{}'".format(
                     name, location, sync_type
                 )
             )
 
-        if sync_type in ["git"]:
+        if sync_type in ["git", "url"]:
             if not sync_uri:
                 raise ValueError(
-                    "Library {} ({}) sync-uri must be set when using sync_type 'git'".format(
-                        name, location
-                    )
+                    f"Library name ({location}) {sync_uri} must be set when using sync_type '{sync_type}'"
                 )
 
         self.name = name
