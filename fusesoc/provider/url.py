@@ -29,11 +29,16 @@ class Url(Provider):
         url = self.config.get("url")
         logger.info("Downloading...")
         user_agent = self.config.get("user-agent")
+        filetype = self.config.get("filetype")
         if not self.config.get("verify_cert", True):
             import ssl
 
             ssl._create_default_https_context = ssl._create_unverified_context
 
+        Url._download(url, local_dir, filetype, user_agent)
+
+    @staticmethod
+    def _download(url, local_dir, filetype, user_agent=False):
         if user_agent and sys.version_info[0] >= 3:
             opener = urllib.build_opener()
             opener.addheaders = [("User-agent", user_agent)]
@@ -43,7 +48,6 @@ class Url(Provider):
         except (URLError, HTTPError) as e:
             raise RuntimeError(f"Failed to download '{url}'. '{e.reason}'")
 
-        filetype = self.config.get("filetype")
         if filetype == "tar":
             t = tarfile.open(filename)
             extraction_arguments = {"path": local_dir}
