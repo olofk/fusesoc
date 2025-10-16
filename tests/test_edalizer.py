@@ -88,6 +88,7 @@ def test_tool_or_flow():
             "::flow:0": {
                 "core_file": "tests/capi2_cores/misc/flow.core",
                 "dependencies": [],
+                "license": None,
             }
         },
         "dependencies": {"::flow:0": []},
@@ -196,6 +197,7 @@ def test_generators():
             "::generators:0": {
                 "core_file": "generators.core",
                 "dependencies": [],
+                "license": None,
             },
             "::generate:0": {
                 "core_file": "generate.core",
@@ -207,30 +209,37 @@ def test_generators():
                     "::generate-testgenerate_with_cache:0",
                     "::generate-testgenerate_with_file_cache:0",
                 ],
+                "license": None,
             },
             "::generators:0": {
                 "core_file": "generators.core",
                 "dependencies": [],
+                "license": None,
             },
             "::generate-testgenerate_without_params:0": {
                 "core_file": "generated.core",
                 "dependencies": [],
+                "license": None,
             },
             "::generate-testgenerate_with_params:0": {
                 "core_file": "generated.core",
                 "dependencies": [],
+                "license": None,
             },
             "::generate-testgenerate_with_override:0": {
                 "core_file": "generated.core",
                 "dependencies": [],
+                "license": None,
             },
             "::generate-testgenerate_with_cache:0": {
                 "core_file": "generated.core",
                 "dependencies": [],
+                "license": None,
             },
             "::generate-testgenerate_with_file_cache:0": {
                 "core_file": "generated.core",
                 "dependencies": [],
+                "license": None,
             },
         },
         "toplevel": "na",
