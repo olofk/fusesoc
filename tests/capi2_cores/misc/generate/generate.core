@@ -5,6 +5,8 @@ CAPI=2:
 
 name : ::generate:0
 
+license: MIT
+
 filesets:
   default:
     depend:

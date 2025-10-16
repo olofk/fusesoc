@@ -209,7 +209,7 @@ def test_generators():
                     "::generate-testgenerate_with_cache:0",
                     "::generate-testgenerate_with_file_cache:0",
                 ],
-                "license": None,
+                "license": "MIT",
             },
             "::generators:0": {
                 "core_file": "generators.core",
