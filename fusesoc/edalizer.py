@@ -229,6 +229,7 @@ class Edalizer:
                 str(core.name): {
                     "core_file": os.path.relpath(core.core_file, self.work_root),
                     "dependencies": core.direct_deps,
+                    "license": core.get_license(),
                 }
             }
 

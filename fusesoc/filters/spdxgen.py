@@ -149,6 +149,8 @@ class Spdxgen:
         return pkg, pkg_id
 
     def run(self, edam, work_root):
+        # with open(os.path.join(work_root, edam["name"] + ".debug.json"), "w") as f:
+        #    f.write(json.dumps(edam))
         with open(os.path.join(work_root, edam["name"] + ".json"), "w") as f:
             ci_id = "https://FuseSoC/creationinfo/" + nanoid.generate()
             dt = datetime.datetime.now(datetime.UTC)
@@ -164,8 +166,11 @@ class Spdxgen:
                     core_dict[core].append(name)
                 else:
                     core_dict[core] = [name]
-            license_expr = "dummy license"  # Get from edam once present
             for vlnv, flist in core_dict.items():
+                license_expr = "No assertion"
+                le = edam["cores"][vlnv]["license"]
+                if le:
+                    license_expr = le
                 package, pid = self._generate_package(
                     work_root, ci_id, vlnv, license_expr, flist
                 )
