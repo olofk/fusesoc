@@ -149,8 +149,6 @@ class Spdxgen:
         return pkg, pkg_id
 
     def run(self, edam, work_root):
-        # with open(os.path.join(work_root, edam["name"] + ".debug.json"), "w") as f:
-        #    f.write(json.dumps(edam))
         with open(os.path.join(work_root, edam["name"] + ".json"), "w") as f:
             ci_id = "https://FuseSoC/creationinfo/" + nanoid.generate()
             dt = datetime.datetime.now(datetime.UTC)
