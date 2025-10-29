@@ -8,7 +8,12 @@ import hashlib
 import json
 import os
 
-import nanoid
+try:
+    import nanoid
+except:
+    print(
+        "Filter spdxgen needs the nanoid python package, please install it and try again."
+    )
 
 
 class Spdxgen:
@@ -149,7 +154,7 @@ class Spdxgen:
         return pkg, pkg_id
 
     def run(self, edam, work_root):
-        with open(os.path.join(work_root, edam["name"] + ".json"), "w") as f:
+        with open(os.path.join(work_root, edam["name"] + ".spdx.json"), "w") as f:
             ci_id = "https://FuseSoC/creationinfo/" + nanoid.generate()
             dt = datetime.datetime.now(datetime.UTC)
             dt.replace(microsecond=0)  # for isoformat to stop at seconds
