@@ -163,9 +163,15 @@ def test_copyto():
             "core": "::copytocore:0",
             "name": "subdir/another.file",
         },
+        {
+            "file_type": "tclSource",
+            "core": "::copytocore:0",
+            "name": "copytodot",
+        },
     ]
     assert os.path.exists(os.path.join(work_root, "copied.file"))
     assert os.path.exists(os.path.join(work_root, "subdir", "another.file"))
+    assert os.path.exists(os.path.join(work_root, "copytodot"))
 
 
 def test_export():

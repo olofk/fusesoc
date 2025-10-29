@@ -256,9 +256,14 @@ class Edalizer:
             for file in core.get_files(_flags):
 
                 # Reparent file path
-                file["name"] = str(
-                    file.get("copyto", os.path.join(rel_root, file["name"]))
-                )
+                if "copyto" in file:
+                    _cpt = pathlib.Path(file["copyto"])
+                    if (self.work_root / _cpt).is_dir():
+                        file["name"] = str(_cpt / pathlib.Path(file["name"]).name)
+                    else:
+                        file["name"] = file["copyto"]
+                else:
+                    file["name"] = str(os.path.join(rel_root, file["name"]))
 
                 # Set owning core
                 file["core"] = str(core.name)
