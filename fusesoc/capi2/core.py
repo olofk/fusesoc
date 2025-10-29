@@ -637,6 +637,9 @@ Targets:
     def get_description(self):
         return self._coredata.get_description()
 
+    def get_license(self):
+        return self._coredata.get("license")
+
     @property
     def mapping(self) -> Optional[Mapping[str, str]]:
         return MappingProxyType(self._coredata.get("mapping", {}))
