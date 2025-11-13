@@ -1,3 +1,16 @@
+2.4.5 2025-11-13 Olof Kindgren
+======================================================
+
+* Add support for URL-based library syncing
+* Add SPDX generation filter
+* Set correct EDAM filename for copyto to directories
+* Dump stacktrace on filter errors
+
+Contributors:
+Anders Ahlberg
+Anska Ludwig
+Olof Kindgren
+
 2.4.4 2025-09-09 Olof Kindgren
 ======================================================
 
