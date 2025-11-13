@@ -93,6 +93,9 @@ class Edalizer:
             except ModuleNotFoundError:
                 raise RuntimeError(f"Could not find EDAM filter '{f}'")
             except Exception as e:
+                import traceback
+
+                traceback.print_exc()
                 raise RuntimeError(f"Filter error: {str(e)}")
             except SystemExit as e:
                 raise RuntimeError(f"Filter exited with error code {str(e)}")
