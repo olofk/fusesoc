@@ -5,17 +5,20 @@
 # SPDX-License-Identifier: BSD-2-Clause
 
 import argparse
+import json
 import os
 import pathlib
 import shutil
 import signal
+import subprocess
 import sys
 import warnings
 from pathlib import Path
 
 import argcomplete
+import requests
 
-from fusesoc import signature
+from fusesoc import publish, signature
 
 try:
     from fusesoc.version import version as __version__
@@ -537,6 +540,22 @@ def get_parser():
     ).completer = CoreCompleter()
     parser_core_sign.add_argument("keyfile", help="File containing ssh private key")
     parser_core_sign.set_defaults(func=core_sign)
+
+    parser_core_publish = core_subparsers.add_parser(
+        "publish", help="Publish core to package db"
+    )
+    parser_core_publish.add_argument(
+        "core", help="Name of the core to publish"
+    ).completer = CoreCompleter()
+    parser_core_publish.add_argument(
+        "--yes", help="Skip confirmation", action="store_true"
+    )
+    parser_core_publish.add_argument(
+        "--autoprovider",
+        help="Automatically add provider section if missing and possible to guess",
+        action="store_true",
+    )
+    parser_core_publish.set_defaults(func=publish.core_publish)
 
     # tool subparser
     parser_tool = subparsers.add_parser(

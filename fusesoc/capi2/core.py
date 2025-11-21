@@ -58,7 +58,7 @@ class Core:
         if cd_provider:
             self.files_root = os.path.join(cache_root, self.name.sanitized_name)
             self.provider = get_provider(cd_provider["name"])(
-                cd_provider, self.core_root, self.files_root
+                cd_provider, self.core_root, self.files_root, cd_provider["name"]
             )
         else:
             self.files_root = self.core_root
