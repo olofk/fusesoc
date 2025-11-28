@@ -3,6 +3,7 @@
 # SPDX-License-Identifier: BSD-2-Clause
 
 import logging
+import netrc
 import os.path
 import sys
 import tarfile
@@ -22,6 +23,34 @@ else:
     from urllib2 import URLError
 
 URL = "https://github.com/{user}/{repo}/archive/{version}.tar.gz"
+
+
+def _setup_github_auth():
+    """Install urllib opener with GitHub token auth from .netrc if available."""
+    try:
+        credentials = netrc.netrc()
+        auth = credentials.authenticators("github.com")
+        if auth:
+            _, _, token = auth
+
+            class TokenAuthHandler(urllib.BaseHandler):
+                def __init__(self, token):
+                    self.token = token
+
+                def http_request(self, req):
+                    req.add_header("Authorization", f"token {self.token}")
+                    return req
+
+                https_request = http_request
+
+            opener = urllib.build_opener(TokenAuthHandler(token))
+            urllib.install_opener(opener)
+            logger.debug("Installed GitHub token auth from .netrc")
+    except (FileNotFoundError, netrc.NetrcParseError):
+        pass
+
+
+_setup_github_auth()
 
 
 class Github(Provider):
