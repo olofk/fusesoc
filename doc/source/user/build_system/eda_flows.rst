@@ -7,7 +7,7 @@ A design described by FuseSoC core description files is intended to be used by o
 
 .. note::
 
-Edalize currently exposes two different APIs called the *tool API* and *flow API* respectively. These have different configuration keys in the core description files. The new flow API is intended to become the default API. However, not all Edalize backends have been converted to the new API, so the old tool API remains in use. If both the `default_tool` key (from the tool API) and the `flow` key (from the flow API) is defined in a target, the flow API will take precedence.
+   Edalize currently exposes two different APIs called the *tool API* and *flow API* respectively. These have different configuration keys in the core description files. The new flow API is intended to become the default API. However, not all Edalize backends have been converted to the new API, so the old tool API remains in use. If both the `default_tool` key (from the tool API) and the `flow` key (from the flow API) is defined in a target, the flow API will take precedence.
 
 .. toctree::
    :maxdepth: 2
