@@ -160,22 +160,24 @@ capi2_schema = """
         "^.+$": {
           "description": "Name of fileset",
           "type": "object",
-          "patternProperties": {
-            "^file_type$": {
+          "properties": {
+            "file_type": {
               "description": "Default file_type for files in fileset",
               "type": "string"
             },
-            "^logical_name$": {
+            "logical_name": {
               "description": "Default logical_name (i.e. library) for files in fileset",
               "type": "string"
             },
-            "^tags$": {
+            "tags": {
               "description": "Default tags for files in fileset",
                "type": "array",
                "items": {
                  "type": "string"
                }
             },
+          },
+          "patternProperties": {
             "^files(_append)?$": { "$ref": "#/$defs/files" },
             "^depend(_append)?$": {
               "description": "Dependencies of fileset",
@@ -512,6 +514,17 @@ capi2_schema = """
       "type": "object",
       "patternProperties": {
         "^.+$": {
+          "properties": {
+            "env": {
+              "description": "Map of environment variables to set before launching the script",
+              "type": "object",
+              "patternProperties": {
+                "^.+$": {
+                  "type": "string"
+                }
+              }
+            }
+          },
           "patternProperties": {
             "^cmd(_append)?$": {
               "description": "List of command-line arguments",
@@ -527,15 +540,6 @@ capi2_schema = """
                 "type": "string"
               }
             },
-            "^env$": {
-              "description": "Map of environment variables to set before launching the script",
-              "type": "object",
-              "patternProperties": {
-                "^.+$": {
-                  "type": "string"
-                }
-              }
-            }
           },
           "additionalProperties": false
         }
@@ -547,20 +551,20 @@ capi2_schema = """
       "type": "object",
       "patternProperties": {
         "^.+$": {
-          "patternProperties": {
-            "^default_tool$": {
+          "properties": {
+            "default_tool": {
               "description": "Default tool to use unless overridden with ``--tool=`` This key is used by the Edalize Tool API and is ignored if the Flow API is used instead.",
               "type": "string"
             },
-            "^description$": {
+            "description": {
               "description": "Description of the target",
               "type": "string"
             },
-            "^flow$": {
+            "flow": {
               "description": "Edalize backend flow to use for target. Setting this key enables the flow API instead of the legacy Tool API.",
               "type": "string"
             },
-            "^flow_options$": {
+            "flow_options": {
               "description": "Tool- and flow-specific options. Used by the Flow API. The Edalize documentation contains information on available options for different flows (https://edalize.readthedocs.io/en/latest/edam/api.html#flow-options)",
               "type": "object",
               "patternProperties": {
@@ -585,7 +589,7 @@ capi2_schema = """
                 }
               }
             },
-            "^hooks$": {
+            "hooks": {
               "description": "Script hooks to run when target is used",
               "type": "object",
               "patternProperties": {
@@ -620,7 +624,7 @@ capi2_schema = """
               },
               "additionalProperties": false
             },
-            "^tools$": {
+            "tools": {
               "description": "Tool-specific options for target. Used by the legacy Tool API. The contents of this section is handled by Edalize, and a list of available tool options for each tool can be found in the Edalize documentation (https://edalize.readthedocs.io/en/latest/edam/api.html#tool-options)",
               "type": "object",
               "patternProperties": {
@@ -650,7 +654,7 @@ capi2_schema = """
                 }
               }
             },
-            "^toplevel$": {
+            "toplevel": {
               "description": "Top-level module. Normally a single module/entity but can be a list of several items",
               "anyOf": [
                 {
@@ -664,6 +668,33 @@ capi2_schema = """
                 }
               ]
             },
+            "flags": {
+              "description": "Default values of flags",
+              "type": "object",
+              "patternProperties": {
+                "^.+$": {
+                  "anyOf": [
+                    {
+                      "type": "string"
+                    },
+                    {
+                      "type": "number"
+                    },
+                    {
+                      "type": "boolean"
+                    },
+                    {
+                      "type": "array"
+                    },
+                    {
+                      "type": "object"
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "patternProperties": {
             "^filesets(_append)?$": {
               "description": "File sets to use in target",
               "type": "array",
@@ -706,31 +737,6 @@ capi2_schema = """
                 "type": "string"
               }
             },
-            "flags": {
-              "description": "Default values of flags",
-              "type": "object",
-              "patternProperties": {
-                "^.+$": {
-                  "anyOf": [
-                    {
-                      "type": "string"
-                    },
-                    {
-                      "type": "number"
-                    },
-                    {
-                      "type": "boolean"
-                    },
-                    {
-                      "type": "array"
-                    },
-                    {
-                      "type": "object"
-                    }
-                  ]
-                }
-              }
-            }
           },
           "additionalProperties": false
         }
