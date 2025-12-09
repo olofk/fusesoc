@@ -48,17 +48,11 @@ capi2_schema = """
           "patternProperties": {
             "^filesets(_append)?$": {
               "description": "Filesets containing files to use when compiling the VPI library",
-              "type": "array",
-              "items": {
-                "type": "string"
-              }
+              "$ref": "#/$defs/string_array"
             },
             "^libs(_append)?$": {
               "description": "External libraries to link against",
-              "type": "array",
-              "items": {
-                "type": "string"
-              }
+              "$ref": "#/$defs/string_array"
             }
           }
         }
@@ -66,10 +60,7 @@ capi2_schema = """
     },
     "virtual": {
       "description": "VLNV of a virtual core provided by this core. Versions are currently not supported, only the VLN part is used.",
-      "type": "array",
-      "items": {
-        "type": "string"
-      }
+      "$ref": "#/$defs/string_array"
     },
     "mapping": {
       "description": "",
@@ -84,6 +75,13 @@ capi2_schema = """
   "additionalProperties": false,
 
   "$defs": {
+
+    "string_array": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
 
     "files": {
       "description": "Files in fileset",
@@ -134,10 +132,7 @@ capi2_schema = """
                   },
                   "tags": {
                     "description": "Tags, special file-specific hints for the backends. Appends the tags set on the containing fileset",
-                    "type": "array",
-                    "items": {
-                      "type": "string"
-                    }
+                    "$ref": "#/$defs/string_array"
                   },
                   "copyto": {
                     "description": "Copy the source file to this path in the work directory",
@@ -171,20 +166,14 @@ capi2_schema = """
             },
             "tags": {
               "description": "Default tags for files in fileset",
-               "type": "array",
-               "items": {
-                 "type": "string"
-               }
+              "$ref": "#/$defs/string_array"
             }
           },
           "patternProperties": {
             "^files(_append)?$": { "$ref": "#/$defs/files" },
             "^depend(_append)?$": {
               "description": "Dependencies of fileset",
-              "type": "array",
-              "items": {
-                "type": "string"
-              }
+              "$ref": "#/$defs/string_array"
             }
           },
           "additionalProperties": false
@@ -332,10 +321,7 @@ capi2_schema = """
               "type": "string"
             },
             "patches": {
-              "type": "array",
-              "items": {
-                "type": "string"
-              }
+              "$ref": "#/$defs/string_array"
             },
             "cachable": {
               "type": "boolean"
@@ -358,10 +344,7 @@ capi2_schema = """
               "pattern": "^local$"
             },
             "patches": {
-              "type": "array",
-              "items": {
-                "type": "string"
-              }
+              "$ref": "#/$defs/string_array"
             },
             "cachable": {
               "type": "boolean"
@@ -387,10 +370,7 @@ capi2_schema = """
               "type": "string"
             },
             "patches": {
-              "type": "array",
-              "items": {
-                "type": "string"
-              }
+              "$ref": "#/$defs/string_array"
             },
             "cachable": {
               "type": "boolean"
@@ -420,10 +400,7 @@ capi2_schema = """
               "type": "string"
             },
             "patches": {
-              "type": "array",
-              "items": {
-                "type": "string"
-              }
+              "$ref": "#/$defs/string_array"
             },
             "cachable": {
               "type": "boolean"
@@ -455,10 +432,7 @@ capi2_schema = """
               "type": "boolean"
             },
             "patches": {
-              "type": "array",
-              "items": {
-                "type": "string"
-              }
+              "$ref": "#/$defs/string_array"
             },
             "cachable": {
               "type": "boolean"
@@ -491,10 +465,7 @@ capi2_schema = """
               "type": "string"
             },
             "patches": {
-              "type": "array",
-              "items": {
-                "type": "string"
-              }
+              "$ref": "#/$defs/string_array"
             },
             "cachable": {
               "type": "boolean"
@@ -528,17 +499,11 @@ capi2_schema = """
           "patternProperties": {
             "^cmd(_append)?$": {
               "description": "List of command-line arguments",
-              "type": "array",
-              "items": {
-                "type": "string"
-              }
+              "$ref": "#/$defs/string_array"
             },
             "^filesets(_append)?$": {
               "description": "Filesets needed to run the script",
-              "type": "array",
-              "items": {
-                "type": "string"
-              }
+              "$ref": "#/$defs/string_array"
             }
           },
           "additionalProperties": false
@@ -595,31 +560,19 @@ capi2_schema = """
               "patternProperties": {
                 "^pre_build(_append)?$": {
                   "description": "Scripts executed before the *build* phase",
-                  "type": "array",
-                  "items": {
-                    "type": "string"
-                  }
+                  "$ref": "#/$defs/string_array"
                 },
                 "^post_build(_append)?$": {
                   "description": "Scripts executed after the *build* phase",
-                  "type": "array",
-                  "items": {
-                    "type": "string"
-                  }
+                  "$ref": "#/$defs/string_array"
                 },
                 "^pre_run(_append)?$": {
                   "description": "Scrips executed before the *run* phase",
-                  "type": "array",
-                  "items": {
-                    "type": "string"
-                  }
+                  "$ref": "#/$defs/string_array"
                 },
                 "^post_run(_append)?$": {
                   "description": "Scripts executed after the *run* phase",
-                  "type": "array",
-                  "items": {
-                    "type": "string"
-                  }
+                  "$ref": "#/$defs/string_array"
                 }
               },
               "additionalProperties": false
@@ -661,10 +614,7 @@ capi2_schema = """
                   "type": "string"
                 },
                 {
-                  "type": "array",
-                  "items": {
-                    "type": "string"
-                  }
+                  "$ref": "#/$defs/string_array"
                 }
               ]
             },
@@ -697,17 +647,11 @@ capi2_schema = """
           "patternProperties": {
             "^filesets(_append)?$": {
               "description": "File sets to use in target",
-              "type": "array",
-              "items": {
-                "type": "string"
-              }
+              "$ref": "#/$defs/string_array"
             },
             "^filters(_append)?$": {
               "description": "EDAM filters to apply",
-              "type": "array",
-              "items": {
-                "type": "string"
-              }
+              "$ref": "#/$defs/string_array"
             },
             "^generate(_append)?$": {
               "description": "Parameterized generators to run for this target with optional parametrization",
@@ -725,17 +669,11 @@ capi2_schema = """
             },
             "^parameters(_append)?$": {
               "description": "Parameters to use in target. The parameter default value can be set here with ``param=value``",
-              "type": "array",
-              "items": {
-                "type": "string"
-              }
+              "$ref": "#/$defs/string_array"
             },
             "^vpi(_append)?$": {
               "description": "VPI modules to build and include for target",
-              "type": "array",
-              "items": {
-                "type": "string"
-              }
+              "$ref": "#/$defs/string_array"
             }
           },
           "additionalProperties": false
