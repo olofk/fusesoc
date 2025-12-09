@@ -53,7 +53,8 @@ capi2_schema = """
               "description": "External libraries to link against",
               "$ref": "#/$defs/string_array"
             }
-          }
+          },
+          "additionalProperties": false
         }
       }
     },
@@ -132,7 +133,8 @@ capi2_schema = """
                           { "type": "boolean"}
                         ]
                       }
-                    }
+                    },
+                    "additionalProperties": false
                   },
                   "is_include_file": {
                     "description": "Treats file as an include file when true",
@@ -517,7 +519,8 @@ capi2_schema = """
                 "^.+$": {
                   "type": "string"
                 }
-              }
+              },
+              "additionalProperties": false
             }
           },
           "patternProperties": {
