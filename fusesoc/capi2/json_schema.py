@@ -107,7 +107,7 @@ capi2_schema = """
     "files": {
       "description": "Files in fileset",
       "type": "array",
-      "minContains": 1,
+      "minItems": 1,
       "items": {
         "oneOf": [
           {
