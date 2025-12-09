@@ -43,6 +43,7 @@ capi2_schema = """
       "type": "object",
       "patternProperties": {
         "^.+$": {
+          "type": "object",
           "patternProperties": {
             "^filesets(_append)?$": {
               "description": "Filesets containing files to use when compiling the VPI library",
@@ -206,6 +207,7 @@ capi2_schema = """
       "patternProperties": {
         "^.+$": {
           "description": "Name of generator to use",
+          "type": "object",
           "properties": {
             "generator": {
               "description": "The generator to use. Note that the generator must be present in the dependencies of the core.",
@@ -235,6 +237,7 @@ capi2_schema = """
       "patternProperties": {
         "^.+$": {
           "description": "Name of generator",
+          "type": "object",
           "properties": {
             "command": {
               "description": "The command to run (relative to the core root)",
@@ -275,6 +278,7 @@ capi2_schema = """
       "type": "object",
       "patternProperties": {
         "^.+$": {
+          "type": "object",
           "properties": {
             "datatype": {
               "description": "Parameter datatype. Legal values are *bool*, *file*, *int*, *str*. *file* is same as *str*, but prefixed with the current directory that FuseSoC runs from",
@@ -503,6 +507,7 @@ capi2_schema = """
       "type": "object",
       "patternProperties": {
         "^.+$": {
+          "type": "object",
           "properties": {
             "env": {
               "description": "Map of environment variables to set before launching the script",
@@ -534,6 +539,7 @@ capi2_schema = """
       "type": "object",
       "patternProperties": {
         "^.+$": {
+          "type": "object",
           "properties": {
             "default_tool": {
               "description": "Default tool to use unless overridden with ``--tool=`` This key is used by the Edalize Tool API and is ignored if the Flow API is used instead.",
