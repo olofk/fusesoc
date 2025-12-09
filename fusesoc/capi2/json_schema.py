@@ -216,7 +216,7 @@ capi2_schema = """
             "position": {
               "description": "Where to insert the generated core. Legal values are *first*, *prepend*, *append* or *last*. *prepend* (*append*) will insert core before (after) the core that called the generator",
               "type": "string",
-              "pattern": "^first|prepend|append|last$"
+              "enum": ["first", "prepend", "append", "last"]
             },
             "parameters": {
               "description": "Generator-specific parameters. ``fusesoc gen show $generator`` might show available parameters. ",
@@ -250,7 +250,7 @@ capi2_schema = """
             "cache_type": {
               "description": "If the result of the generator should be considered cacheable. Legal values are *none*, *input* or *generator*.",
               "type": "string",
-              "pattern": "^none|input|generator$"
+              "enum": ["none", "input", "generator"]
             },
             "file_input_parameters": {
               "description": "All parameters that are file inputs to the generator. This option can be used when *cache_type* is set to *input* if fusesoc should track if these files change.",
@@ -283,7 +283,7 @@ capi2_schema = """
             "datatype": {
               "description": "Parameter datatype. Legal values are *bool*, *file*, *int*, *str*. *file* is same as *str*, but prefixed with the current directory that FuseSoC runs from",
               "type": "string",
-              "pattern": "^bool|file|int|real|str$"
+              "enum": ["bool", "file", "int", "real", "str"]
             },
             "default": {
               "description": "Default value",
