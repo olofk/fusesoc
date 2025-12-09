@@ -32,9 +32,7 @@ capi2_schema = """
     "generators": { "$ref": "#/$defs/generators" },
     "name": {
       "description": "VLNV identifier for core",
-      "type": "string",
-      "minProperties" : 1,
-      "maxProperties" : 1
+      "type": "string"
     },
     "parameters": { "$ref": "#/$defs/parameters" },
     "provider": { "$ref": "#/$defs/provider" },
