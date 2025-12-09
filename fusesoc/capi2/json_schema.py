@@ -175,7 +175,7 @@ capi2_schema = """
                "items": {
                  "type": "string"
                }
-            },
+            }
           },
           "patternProperties": {
             "^files(_append)?$": { "$ref": "#/$defs/files" },
@@ -539,7 +539,7 @@ capi2_schema = """
               "items": {
                 "type": "string"
               }
-            },
+            }
           },
           "additionalProperties": false
         }
@@ -736,7 +736,7 @@ capi2_schema = """
               "items": {
                 "type": "string"
               }
-            },
+            }
           },
           "additionalProperties": false
         }
