@@ -83,6 +83,26 @@ capi2_schema = """
       }
     },
 
+    "any_type": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "number"
+        },
+        {
+          "type": "boolean"
+        },
+        {
+          "type": "array"
+        },
+        {
+          "type": "object"
+        }
+      ]
+    },
+
     "files": {
       "description": "Files in fileset",
       "type": "array",
@@ -534,23 +554,7 @@ capi2_schema = """
               "type": "object",
               "patternProperties": {
                 "^.+$": {
-                  "anyOf": [
-                    {
-                      "type": "string"
-                    },
-                    {
-                      "type": "number"
-                    },
-                    {
-                      "type": "boolean"
-                    },
-                    {
-                      "type": "array"
-                    },
-                    {
-                      "type": "object"
-                    }
-                  ]
+                  "$ref": "#/$defs/any_type"
                 }
               }
             },
@@ -585,23 +589,7 @@ capi2_schema = """
                   "type": "object",
                   "patternProperties": {
                     "^.+$": {
-                      "anyOf": [
-                        {
-                          "type": "string"
-                        },
-                        {
-                          "type": "number"
-                        },
-                        {
-                          "type": "boolean"
-                        },
-                        {
-                          "type": "array"
-                        },
-                        {
-                          "type": "object"
-                        }
-                      ]
+                      "$ref": "#/$defs/any_type"
                     }
                   }
                 }
@@ -623,23 +611,7 @@ capi2_schema = """
               "type": "object",
               "patternProperties": {
                 "^.+$": {
-                  "anyOf": [
-                    {
-                      "type": "string"
-                    },
-                    {
-                      "type": "number"
-                    },
-                    {
-                      "type": "boolean"
-                    },
-                    {
-                      "type": "array"
-                    },
-                    {
-                      "type": "object"
-                    }
-                  ]
+                  "$ref": "#/$defs/any_type"
                 }
               }
             }
