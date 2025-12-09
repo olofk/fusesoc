@@ -71,6 +71,7 @@ capi2_schema = """
       }
     }
   },
+  "required": ["name"],
   "additionalProperties": false,
 
   "$defs": {
