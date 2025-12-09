@@ -331,7 +331,7 @@ capi2_schema = """
           "properties": {
             "name": {
               "type": "string",
-              "pattern": "^github$"
+              "const": "github"
             },
             "user": {
               "type": "string"
@@ -363,7 +363,7 @@ capi2_schema = """
           "properties": {
             "name": {
               "type": "string",
-              "pattern": "^local$"
+              "const": "local"
             },
             "patches": {
               "$ref": "#/$defs/string_array"
@@ -383,7 +383,7 @@ capi2_schema = """
           "properties": {
             "name": {
               "type": "string",
-              "pattern": "^git$"
+              "const": "git"
             },
             "repo": {
               "type": "string"
@@ -410,7 +410,7 @@ capi2_schema = """
           "properties": {
             "name": {
               "type": "string",
-              "pattern": "^opencores$"
+              "const": "opencores"
             },
             "repo_name": {
               "type": "string"
@@ -442,7 +442,7 @@ capi2_schema = """
           "properties": {
             "name": {
               "type": "string",
-              "pattern": "^svn$"
+              "const": "svn"
             },
             "url": {
               "type": "string"
@@ -472,7 +472,7 @@ capi2_schema = """
           "properties": {
             "name": {
               "type": "string",
-              "pattern": "^url$"
+              "const": "url"
             },
             "url": {
               "type": "string"
