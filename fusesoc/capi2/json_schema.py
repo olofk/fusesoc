@@ -569,7 +569,7 @@ capi2_schema = """
                   "$ref": "#/$defs/string_array"
                 },
                 "^pre_run(_append)?$": {
-                  "description": "Scrips executed before the *run* phase",
+                  "description": "Scripts executed before the *run* phase",
                   "$ref": "#/$defs/string_array"
                 },
                 "^post_run(_append)?$": {
