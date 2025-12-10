@@ -7,13 +7,32 @@ logger = logging.getLogger(__name__)
 class Autotype:
     def run(self, edam, work_root):
         type_map = {
+            # HDL sources
+            ".sv": "systemVerilogSource",
+            ".v": "verilogSource",
+            ".vhd": "vhdlSource",
+            ".vhdl": "vhdlSource",
+
+            # Vivado IP
+            ".xci": "xci",
+            ".bd": "bd",
+
+            # Verilator
+            ".vlt": "vlt",
+
+            # Design constraints
+            ".sdc": "SDC", # Synopsys-style
+            ".xdc": "xdc", # Vivado-style
+
+            # Software
             ".c": "cSource",
             ".cpp": "cppSource",
-            ".sv": "systemVerilogSource",
+
+            # Scripts
             ".tcl": "tclSource",
-            ".v": "verilogSource",
-            ".vlt": "vlt",
-            ".xdc": "xdc",
+
+            # Register map definitions
+            ".rdl": "systemRDL",
         }
         for f in edam["files"]:
             if not "file_type" in f:
