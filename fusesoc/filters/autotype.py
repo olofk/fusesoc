@@ -12,25 +12,19 @@ class Autotype:
             ".v": "verilogSource",
             ".vhd": "vhdlSource",
             ".vhdl": "vhdlSource",
-
             # Vivado IP
             ".xci": "xci",
             ".bd": "bd",
-
             # Verilator
             ".vlt": "vlt",
-
             # Design constraints
-            ".sdc": "SDC", # Synopsys-style
-            ".xdc": "xdc", # Vivado-style
-
+            ".sdc": "SDC",  # Synopsys-style
+            ".xdc": "xdc",  # Vivado-style
             # Software
             ".c": "cSource",
             ".cpp": "cppSource",
-
             # Scripts
             ".tcl": "tclSource",
-
             # Register map definitions
             ".rdl": "systemRDL",
         }
