@@ -325,7 +325,12 @@ class CoreDB:
             # tree.
             if not only_matching_vlnv:
                 _flags["is_toplevel"] = core.name == top_core
-                _depends = core.get_depends(_flags)
+                try:
+                    _depends = core.get_depends(_flags)
+                except SyntaxError as e:
+                    logger.warning(
+                        f"Ignoring {core.name} due to syntax error in dependencies: {e.msg}"
+                    )
                 if _depends:
                     for depend in _depends:
                         self._mapping_apply(depend)
