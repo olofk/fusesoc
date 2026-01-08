@@ -691,7 +691,7 @@ def test_core2parser():
 
     parser = Core2Parser(allow_additional_properties=False)
     assert parser.get_version() == 2
-    assert parser.get_allow_additional_properties() == False
+    assert parser.get_allow_additional_properties() is False
     assert parser.get_preamble() == "CAPI=2:"
 
     expected = {
@@ -731,7 +731,7 @@ def test_core2parser():
     assert "Error validating" in str(excinfo.value)
 
     parser = Core2Parser(allow_additional_properties=True)
-    assert parser.get_allow_additional_properties() == True
+    assert parser.get_allow_additional_properties() is True
 
     expected = {
         "name": "::withadditionalproperties:0",

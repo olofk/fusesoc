@@ -276,7 +276,7 @@ class Core:
                 attributes = {
                     k: v
                     for k, v in attributes.items()
-                    if (isinstance(v, bool) and v == True)
+                    if (isinstance(v, bool) and v is True)
                     or (isinstance(v, str) and len(v) > 0)
                     or (isinstance(v, list) and len(v) > 0)
                     or (isinstance(v, dict) and len(v) > 0)
