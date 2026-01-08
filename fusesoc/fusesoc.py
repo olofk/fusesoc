@@ -6,11 +6,10 @@ import logging
 import os
 from importlib import import_module
 
-from fusesoc.config import Config
 from fusesoc.coremanager import CoreManager, DependencyError
 from fusesoc.edalizer import Edalizer
 from fusesoc.librarymanager import Library, LibraryManager
-from fusesoc.utils import Launcher, setup_logging, yaml_fread
+from fusesoc.utils import setup_logging, yaml_fread
 from fusesoc.vlnv import Vlnv
 
 try:

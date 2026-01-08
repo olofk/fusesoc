@@ -2,8 +2,6 @@
 # Licensed under the 2-Clause BSD License, see LICENSE for details.
 # SPDX-License-Identifier: BSD-2-Clause
 
-import pytest
-
 from fusesoc.vlnv import Vlnv, compare_relation
 
 
