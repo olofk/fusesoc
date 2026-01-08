@@ -696,7 +696,7 @@ class Ttptttg:
                 shutil.rmtree(generator_cwd, ignore_errors=True)
             try:
                 self._run(generator_cwd)
-            except:
+            except Exception:
                 # If the generator invocation failed for any reason, its output
                 # directory is removed. While this is bad for debugging failing
                 # generators, it at least prevents the next FuseSoC-run to
