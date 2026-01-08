@@ -87,7 +87,7 @@ def _get_parser():
         + Suppress(")")
     )
     exprs <<= OneOrMore(conditional ^ word)
-    conditional.setParseAction(_cond_parse_action)
+    conditional.set_parse_action(_cond_parse_action)
     _PARSER = exprs
     return _PARSER
 
@@ -138,7 +138,7 @@ def _parse(string):
 
     """
     try:
-        raw_ast = _get_parser().parseString(string, parseAll=True)
+        raw_ast = _get_parser().parse_string(string, parse_all=True)
     except ParseException as err:
         raise ValueError(
             f"Invalid syntax for string: {err}. Parsed text was {string!r}."
