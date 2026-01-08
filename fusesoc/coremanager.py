@@ -427,7 +427,7 @@ class CoreManager:
         found_cores = []
         path = os.path.expanduser(library.location)
         exclude = {".git"}
-        if os.path.isdir(path) == False:
+        if not os.path.isdir(path):
             raise OSError(path + " is not a directory")
         logger.debug("Checking for cores in " + path)
         visited = set()
