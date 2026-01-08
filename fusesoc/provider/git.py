@@ -67,7 +67,7 @@ class Git(Provider):
             try:
                 args = ["clone", "-q", "--no-single-branch", repo, local_dir]
                 Launcher("git", args).run()
-            except:
+            except Exception:
                 raise e
         if version:
             args = ["-C", local_dir, "checkout", "-q", version]

@@ -686,7 +686,7 @@ Targets:
                     ok = True
         except RuntimeError:
             return "*"  # Signature is not for this core (should not happen)
-        except:
+        except Exception:
             return "!"  # Other signature checking error
         if ok:
             return "good"
