@@ -67,7 +67,7 @@ class CoreData:
                 if k.endswith("_append"):
                     _k = k[:-7]
 
-                    if type(v) == list and (not _k in data or type(data[_k]) == list):
+                    if type(v) == list and (_k not in data or type(data[_k]) == list):
                         if _k in data:
                             # If for instance default target is included for several other
                             # targets we need to create a copy to avoid modifying the source
@@ -121,7 +121,7 @@ class CoreData:
             for file in fs.get("files", []):
                 files.append(self._setup_file(file, fs))
 
-            if not "depend" in fs:
+            if "depend" not in fs:
                 fs["depend"] = []
 
             fs["files"] = files

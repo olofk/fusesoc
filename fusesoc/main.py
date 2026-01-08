@@ -34,7 +34,7 @@ logger = logging.getLogger(__name__)
 
 def _get_core(cm, name):
     matches = set()
-    if not ":" in name:
+    if ":" not in name:
         for core in cm.get_cores():
             (v, l, n, _) = core.split(":")
             if n.lower() == name.lower():
