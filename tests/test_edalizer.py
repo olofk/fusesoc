@@ -4,8 +4,6 @@
 
 
 def test_apply_filters(caplog):
-    import logging
-
     import pytest
 
     from fusesoc.edalizer import Edalizer

@@ -3,7 +3,6 @@
 # Licensed under the 2-Clause BSD License, see LICENSE for details.
 # SPDX-License-Identifier: BSD-2-Clause
 
-import base64
 import logging
 import os
 import shutil

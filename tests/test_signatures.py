@@ -3,8 +3,6 @@
 # SPDX-License-Identifier: BSD-2-Clause
 
 import os
-import shutil
-from pathlib import Path
 
 import pytest
 from test_common import tests_dir
