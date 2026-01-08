@@ -222,7 +222,7 @@ class Config:
     @ignored_dirs.setter
     def ignored_dirs(self, val):
         self._set_default_section(
-            "ignored_dirs", " ".join(val) if type(val) == list else val
+            "ignored_dirs", " ".join(val) if isinstance(val, list) else val
         )
 
     @property

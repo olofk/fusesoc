@@ -34,16 +34,16 @@ class CoreParser:
             raise SyntaxError(f"\nError parsing JSON Schema: {e}")
 
     def _set_additional_properties(self, schema, val):
-        if type(schema) == list:
+        if isinstance(schema, list):
             for i in schema:
                 self._set_additional_properties(i, val)
 
-        if type(schema) == dict:
+        if isinstance(schema, dict):
             for k, v in schema.items():
-                if k == "additionalProperties" and type(v) == bool:
+                if k == "additionalProperties" and isinstance(v, bool):
                     schema[k] = val
 
-                if type(v) == dict or type(v) == list:
+                if isinstance(v, (dict, list)):
                     self._set_additional_properties(v, val)
 
     def read(self, core_file, validate_core=True):

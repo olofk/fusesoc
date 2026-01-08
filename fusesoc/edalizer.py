@@ -488,7 +488,7 @@ class Edalizer:
             # on the command line
             if value is None:
                 continue
-            _value = value[0] if type(value) == list else value
+            _value = value[0] if isinstance(value, list) else value
 
             # If flow option is a list, we split up the parsed string
             if "list" in available_flow_options[key]:
@@ -516,7 +516,7 @@ class Edalizer:
         for key, value in sorted(vars(parsed_args).items()):
             if value is None:
                 continue
-            _value = value[0] if type(value) == list else value
+            _value = value[0] if isinstance(value, list) else value
             args_dict[key] = _value
 
         self.add_parsed_args(backend_class, args_dict)
@@ -590,7 +590,7 @@ class Ttptttg:
         hash = hashlib.sha256()
 
         for f in input_files:
-            if type(f) == list:
+            if isinstance(f, list):
                 files = f
             else:
                 files = [f]

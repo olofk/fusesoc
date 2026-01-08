@@ -427,14 +427,14 @@ def test_capi2_get_parameters():
     }
     result = core.get_parameters(flags)
     assert expected == result
-    assert str == type(result["param2"]["datatype"])
-    assert str == type(result["param2"]["default"])
-    assert str == type(result["param2"]["description"])
-    assert str == type(result["param2"]["paramtype"])
-    assert int == type(result["intparam"]["default"])
-    assert bool == type(result["boolfalse"]["default"])
-    assert bool == type(result["booltrue"]["default"])
-    assert float == type(result["realpi"]["default"])
+    assert isinstance(result["param2"]["datatype"], str)
+    assert isinstance(result["param2"]["default"], str)
+    assert isinstance(result["param2"]["description"], str)
+    assert isinstance(result["param2"]["paramtype"], str)
+    assert isinstance(result["intparam"]["default"], int)
+    assert isinstance(result["boolfalse"]["default"], bool)
+    assert isinstance(result["booltrue"]["default"], bool)
+    assert isinstance(result["realpi"]["default"], float)
 
     flags["target"] = "empty"
     expected = {"int0": int0, "emptystr": emptystr}
