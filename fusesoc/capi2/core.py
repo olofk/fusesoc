@@ -133,7 +133,7 @@ class Core:
                 _abs_f = os.path.join(root, f)
                 _rel_f = os.path.normpath(os.path.relpath(_abs_f, dst_dir))
 
-                if not _rel_f in [os.path.normpath(x) for x in src_files]:
+                if _rel_f not in [os.path.normpath(x) for x in src_files]:
                     os.remove(_abs_f)
 
     def _get_script_names(self, flags):
@@ -148,7 +148,7 @@ class Core:
                 if scripts:
                     hooks[hook] = []
                     for script in scripts:
-                        if not script in cd_scripts:
+                        if script not in cd_scripts:
                             raise SyntaxError(
                                 "Script '{}', requested by target '{}', was not found".format(
                                     script, target_name
@@ -332,11 +332,11 @@ class Core:
                 core_param["description"] if "description" in core_param else ""
             )
 
-            if not datatype in ["bool", "file", "int", "real", "str"]:
+            if datatype not in ["bool", "file", "int", "real", "str"]:
                 _s = "{} : Invalid datatype '{}' for parameter {}"
                 raise SyntaxError(_s.format(self.name, datatype, p))
 
-            if not paramtype in [
+            if paramtype not in [
                 "cmdlinearg",
                 "generic",
                 "plusarg",
@@ -447,7 +447,7 @@ class Core:
         for gen in _ttptttg:
             gen_name = gen["name"]
             cd_generate = self._coredata.get_generate(flags)
-            if not gen_name in cd_generate:
+            if gen_name not in cd_generate:
                 raise SyntaxError(
                     "Generator instance '{}', requested by target '{}', was not found".format(
                         gen_name, target_name
@@ -620,7 +620,7 @@ Targets:
         cd_filesets = self._coredata.get_filesets(flags)
 
         for fs in target.get("filesets", []):
-            if not fs in cd_filesets:
+            if fs not in cd_filesets:
                 raise SyntaxError(
                     "{} : Fileset '{}', requested by target '{}', was not found".format(
                         self.name, fs, target_name

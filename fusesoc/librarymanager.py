@@ -20,7 +20,7 @@ class Library:
         sync_version=None,
         auto_sync=True,
     ):
-        if sync_type and not sync_type in ["local", "git", "url"]:
+        if sync_type and sync_type not in ["local", "git", "url"]:
             raise ValueError(
                 "Library {} ({}) Invalid sync-type '{}'".format(
                     name, location, sync_type

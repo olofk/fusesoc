@@ -26,27 +26,27 @@ class Generator:
     def add_files(
         self, files, fileset="rtl", targets=["default"], file_type="", logical_name=""
     ):
-        if not fileset in self.filesets:
+        if fileset not in self.filesets:
             self.filesets[fileset] = {"files": []}
         self.filesets[fileset]["files"] = files
         self.filesets[fileset]["file_type"] = file_type
         self.filesets[fileset]["logical_name"] = logical_name
 
         for target in targets:
-            if not target in self.targets:
+            if target not in self.targets:
                 self.targets[target] = {"filesets": []}
-            if not fileset in self.targets[target]["filesets"]:
+            if fileset not in self.targets[target]["filesets"]:
                 self.targets[target]["filesets"].append(fileset)
 
     def add_parameter(self, parameter, data={}, targets=["default"]):
         self.parameters[parameter] = data
 
         for target in targets:
-            if not target in self.targets:
+            if target not in self.targets:
                 self.targets[target] = {}
-            if not "parameters" in self.targets[target]:
+            if "parameters" not in self.targets[target]:
                 self.targets[target]["parameters"] = []
-            if not parameter in self.targets[target]["parameters"]:
+            if parameter not in self.targets[target]["parameters"]:
                 self.targets[target]["parameters"].append(parameter)
 
     def write(self):

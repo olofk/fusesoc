@@ -346,7 +346,7 @@ class Edalizer:
             _description = param.get("description", "No description")
             _paramtype = param["paramtype"]
             if _paramtype in paramtypes:
-                if not _paramtype in param_groups:
+                if _paramtype not in param_groups:
                     param_groups[_paramtype] = parser.add_argument_group(
                         _descr[_paramtype]
                     )
@@ -438,7 +438,7 @@ class Edalizer:
             elif key in backend_members:
                 tool_options[key] = value
             elif key in backend_lists:
-                if not key in tool_options:
+                if key not in tool_options:
                     tool_options[key] = []
                 tool_options[key] += value.split(" ")
             elif key in self.edam["parameters"]:
@@ -533,7 +533,7 @@ from fusesoc.utils import Launcher
 class Ttptttg:
     def __init__(self, ttptttg, core, generators, work_root, resolve_env_vars=False):
         generator_name = ttptttg["generator"]
-        if not generator_name in generators:
+        if generator_name not in generators:
             raise RuntimeError(
                 "Could not find generator '{}' requested by {}".format(
                     generator_name, core.name
