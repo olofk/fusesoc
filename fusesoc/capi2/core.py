@@ -276,10 +276,10 @@ class Core:
                 attributes = {
                     k: v
                     for k, v in attributes.items()
-                    if (type(v) == bool and v == True)
-                    or (type(v) == str and len(v)) > 0
-                    or (type(v) == list and len(v)) > 0
-                    or (type(v) == dict and len(v)) > 0
+                    if (isinstance(v, bool) and v == True)
+                    or (isinstance(v, str) and len(v) > 0)
+                    or (isinstance(v, list) and len(v) > 0)
+                    or (isinstance(v, dict) and len(v) > 0)
                 }
 
                 _src_files.append(attributes)
@@ -302,7 +302,7 @@ class Core:
     def get_parameters(self, flags={}, ext_parameters={}):
         def _parse_param_value(name, datatype, default):
             if datatype == "bool":
-                if type(default) == str:
+                if isinstance(default, str):
                     if default.lower() == "true":
                         return True
                     elif default.lower() == "false":
@@ -312,12 +312,12 @@ class Core:
                         raise SyntaxError(_s.format(self.name, default, p))
                 return default
             elif datatype == "int":
-                if type(default) == int:
+                if isinstance(default, int):
                     return default
                 else:
                     return int(default, 0)
             elif datatype == "real":
-                if type(default) == float:
+                if isinstance(default, float):
                     return default
                 else:
                     return float(default)
@@ -402,7 +402,7 @@ class Core:
                 # If default is a string and it is empty it should be deleted
                 if (
                     "default" in parameters[p]
-                    and type(parameters[p]["default"]) == str
+                    and isinstance(parameters[p]["default"], str)
                     and len(parameters[p]["default"]) == 0
                 ):
                     del parameters[p]["default"]
@@ -420,7 +420,7 @@ class Core:
         if "toplevel" in target:
             toplevel = target["toplevel"]
             self._debug(f"Matched toplevel {toplevel}")
-            return " ".join(toplevel) if type(toplevel) == list else toplevel
+            return " ".join(toplevel) if isinstance(toplevel, list) else toplevel
         else:
             s = "{} : Target '{}' has no toplevel"
             raise SyntaxError(s.format(self.name, target_name))
@@ -436,9 +436,9 @@ class Core:
         _ttptttg = []
         if "generate" in target:
             for f in target["generate"]:
-                if type(f) == str:
+                if isinstance(f, str):
                     _ttptttg.append({"name": f, "params": {}})
-                elif type(f) == dict:
+                elif isinstance(f, dict):
                     for k, v in f.items():
                         _ttptttg.append({"name": k, "params": v})
 

@@ -17,23 +17,22 @@ class CoreData:
         self._append_lists(self._capi_data)
 
     def _expand_use(self, data, flags):
-        if type(data) == dict:
+        if isinstance(data, dict):
             remove = []
             append = {}
             for k, v in data.items():
                 # Only run expand() if a string contains a "?" to avoid
                 # issues with strings containing for instance parentheses
-                if type(v) == str and len(v) > 0 and "?" in v:
+                if isinstance(v, str) and len(v) > 0 and "?" in v:
                     data[k] = Exprs(v).expand(flags)
-                if type(k) == str and "?" in k:
+                if isinstance(k, str) and "?" in k:
                     expanded_k = Exprs(k).expand(flags)
                     if len(expanded_k) == 0:
                         remove.append(k)
                     elif expanded_k != k:
                         append[expanded_k] = v
                         remove.append(k)
-
-                if type(v) == dict or type(v) == list:
+                if isinstance(v, (dict, list)):
                     self._expand_use(data[k], flags)
 
             for i in remove:
@@ -41,33 +40,35 @@ class CoreData:
 
             data.update(append)
 
-        if type(data) == list:
+        if isinstance(data, list):
             remove = []
             for idx, i in enumerate(data):
-                if type(i) == str and len(i) > 0 and "?" in i:
+                if isinstance(i, str) and len(i) > 0 and "?" in i:
                     expanded = Exprs(i).expand(flags)
                     if i != expanded:
                         if len(expanded) > 0:
                             data[idx] = expanded
                         else:
                             remove.append(idx)
-                elif type(i) == dict or type(i) == list:
+                elif isinstance(i, (dict, list)):
                     self._expand_use(i, flags)
             for i in reversed(remove):
                 data.pop(i)
 
     def _append_lists(self, data):
-        if type(data) == list:
+        if isinstance(data, list):
             for i in data:
                 self._append_lists(i)
 
-        if type(data) == dict:
+        if isinstance(data, dict):
             data_append = {}
             for k, v in data.items():
                 if k.endswith("_append"):
                     _k = k[:-7]
 
-                    if type(v) == list and (_k not in data or type(data[_k]) == list):
+                    if isinstance(v, list) and (
+                        _k not in data or isinstance(data[_k], list)
+                    ):
                         if _k in data:
                             # If for instance default target is included for several other
                             # targets we need to create a copy to avoid modifying the source
@@ -106,11 +107,11 @@ class CoreData:
             d["logical_name"] = fs["logical_name"]
 
         # If we already have values for the file attributes we overwrite the defaults
-        if type(file) == dict:
+        if isinstance(file, dict):
             for k in file.keys():
                 d.update(file[k])
                 file_name = k
-        elif type(file) == str:
+        elif isinstance(file, str):
             file_name = file
 
         return {file_name: d}
