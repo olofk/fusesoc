@@ -173,8 +173,11 @@ def compare_relation(vlvn_a: Vlnv, relation: str, vlvn_b: Vlnv):
     """Compare two VLVNs with the provided relation. Returns boolan."""
     from okonomiyaki.versions import EnpkgVersion
 
+    def version_str(v):
+        return f"{v.version}-{v.revision}"
+
     valid_version = False
-    version_str = lambda v: f"{v.version}-{v.revision}"
+
     if vlvn_a.vln_str() == vlvn_b.vln_str():
         ver_a = EnpkgVersion.from_string(version_str(vlvn_a))
         ver_b = EnpkgVersion.from_string(version_str(vlvn_b))
