@@ -6,6 +6,7 @@ import os
 import os.path
 import tempfile
 
+import pytest
 from test_common import cache_root, cores_root, library_root
 
 from fusesoc.config import Config
@@ -41,9 +42,6 @@ def test_config():
     conf = Config(tcf.name)
 
     assert conf.library_root == library_root
-
-
-import pytest
 
 
 @pytest.mark.parametrize("from_cli", [False, True])

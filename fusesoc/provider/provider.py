@@ -6,12 +6,11 @@ import logging
 import os
 import shutil
 import stat
+from importlib import import_module
 
 from fusesoc.utils import Launcher
 
 logger = logging.getLogger(__name__)
-
-from importlib import import_module
 
 
 def get_provider(name):

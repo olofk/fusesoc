@@ -3,6 +3,7 @@
 # SPDX-License-Identifier: BSD-2-Clause
 
 import logging
+import os
 import subprocess
 import sys
 import warnings
@@ -57,9 +58,6 @@ def is_mingw():
 def cygpath(win_path):
     path = subprocess.check_output(["cygpath", "-u", win_path])
     return path.decode("ascii").strip()
-
-
-import os
 
 
 def unique_dirs(file_list):
