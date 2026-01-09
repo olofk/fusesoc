@@ -498,9 +498,9 @@ class CoreManager:
         """
         try:
             with open(core_file) as f:
-                l = f.readline().split()
-                if l:
-                    first_line = l[0]
+                lines = f.readline().split()
+                if lines:
+                    first_line = lines[0]
                 else:
                     first_line = ""
                 if first_line == "CAPI=1":
