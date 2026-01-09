@@ -499,7 +499,7 @@ class Core:
             vpi[vpi_name] = {
                 "src_files": files,
                 "inc_files": incfiles,
-                "libs": [l for l in libs],
+                "libs": [lib for lib in libs],
             }
         return vpi
 
@@ -534,12 +534,12 @@ Targets:
         cd_target = self._coredata.get_targets({})
 
         if cd_target:
-            l = max(len(x) for x in cd_target)
+            maxlen = max(len(x) for x in cd_target)
             targets = ""
 
             for t in sorted(cd_target):
                 targets += "{} : {}\n".format(
-                    t.ljust(l),
+                    t.ljust(maxlen),
                     cd_target[t]["description"]
                     if "description" in cd_target[t]
                     else "<No description>",
