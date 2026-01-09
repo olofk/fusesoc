@@ -115,7 +115,7 @@ def setup_logging(level, monchrome=False, log_file=None):
         # Format FutureWarnings, which are intended for end users, in a way
         # that strips out all code references, which are meaningless to an end
         # user.
-        if category == FutureWarning:
+        if category is FutureWarning:
             return message
 
         return _formatwarning_orig(message, category, filename, lineno, line)
