@@ -41,35 +41,35 @@ class Library:
         self.auto_sync = auto_sync
 
     def update(self, force=False):
-        def l(s):
+        def lib(s):
             return self.name + " : " + s
 
         if self.sync_type == "local":
-            logger.info(l("sync-type is local. Ignoring update"))
+            logger.info(lib("sync-type is local. Ignoring update"))
             return
 
         if not (self.auto_sync or force):
-            logger.info(l("auto-sync disabled. Ignoring update"))
+            logger.info(lib("auto-sync disabled. Ignoring update"))
             return
 
         provider = get_provider(self.sync_type)
 
         if not os.path.exists(self.location):
-            logger.info(l(f"{self.location} does not exist. Trying a checkout"))
+            logger.info(lib(f"{self.location} does not exist. Trying a checkout"))
             try:
                 provider.init_library(self)
             except RuntimeError:
                 # Keep old behavior of logging a warning if there is a library
                 # in `fusesoc.conf`, but the directory does not exist for some
                 # reason and it could not be initialized.
-                logger.warning(l(f"{self.location} does not exist. Ignoring update"))
+                logger.warning(lib(f"{self.location} does not exist. Ignoring update"))
             return
 
         try:
-            logger.info(l("Updating..."))
+            logger.info(lib("Updating..."))
             provider.update_library(self)
         except RuntimeError as e:
-            logger.error(l("Failed to update library: " + str(e)))
+            logger.error(lib("Failed to update library: " + str(e)))
 
 
 class LibraryManager:
