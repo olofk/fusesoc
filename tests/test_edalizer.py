@@ -209,11 +209,6 @@ def test_generators():
                 ],
                 "license": "MIT",
             },
-            "::generators:0": {
-                "core_file": "generators.core",
-                "dependencies": [],
-                "license": None,
-            },
             "::generate-testgenerate_without_params:0": {
                 "core_file": "generated.core",
                 "dependencies": [],
