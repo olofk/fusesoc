@@ -9,13 +9,14 @@
 # full list see the documentation:
 # http://www.sphinx-doc.org/en/master/config
 
+import importlib.util
 import os
 import sys
 from datetime import datetime
+from importlib.metadata import version as get_version
 
 import jsonschema2md
 
-import fusesoc
 from fusesoc.capi2.json_schema import capi2_schema
 from fusesoc.utils import yaml_read
 
@@ -33,8 +34,6 @@ sys.path.insert(0, os.path.abspath(os.path.join("..", "..")))
 project = "FuseSoC"
 copyright = f"2018-{datetime.now().year}, Olof Kindgren"
 author = "Olof Kindgren"
-
-from importlib.metadata import version as get_version
 
 # The full version, including alpha/beta/rc tags.
 release: str = get_version("fusesoc")
@@ -109,11 +108,9 @@ todo_include_todos = True
 # or
 # - apt-get install python-sphinx-rtd-theme
 
-try:
-    import sphinx_rtd_theme
-
+if importlib.util.find_spec("sphinx_rtd_theme") is not None:
     html_theme = "sphinx_rtd_theme"
-except ImportError:
+else:
     sys.stderr.write(
         "Warning: The Sphinx 'sphinx_rtd_theme' HTML theme was "
         + "not found. Make sure you have the theme installed to produce pretty "
