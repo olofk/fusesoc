@@ -32,30 +32,30 @@ from fusesoc.librarymanager import Library
 logger = logging.getLogger(__name__)
 
 
-def _get_core(cm, name):
+def _get_core(cm, core_name):
     matches = set()
-    if ":" not in name:
+    if ":" not in core_name:
         for core in cm.get_cores():
-            (v, l, n, _) = core.split(":")
-            if n.lower() == name.lower():
-                matches.add(f"{v}:{l}:{n}")
+            (vendor, library, name, _) = core.split(":")
+            if name.lower() == core_name.lower():
+                matches.add(f"{vendor}:{library}:{name}")
         if len(matches) == 1:
-            name = matches.pop()
+            core_name = matches.pop()
         elif len(matches) > 1:
-            _s = f"'{name}' is ambiguous. Potential matches: "
+            _s = f"'{core_name}' is ambiguous. Potential matches: "
             _s += ", ".join(f"'{x}'" for x in matches)
             logger.error(_s)
             exit(1)
 
     core = None
     try:
-        core = cm.get_core(name)
+        core = cm.get_core(core_name)
     except RuntimeError as e:
         logger.error(str(e))
         exit(1)
     except DependencyError as e:
         logger.error(
-            f"{name!r} or any of its dependencies requires {e.value!r}, but "
+            f"{core_name!r} or any of its dependencies requires {e.value!r}, but "
             "this core was not found"
         )
         exit(1)
