@@ -416,7 +416,7 @@ class CoreManager:
         self.db = CoreDB()
         self._lm = (
             LibraryManager(config.library_root)
-            if library_manager == None
+            if library_manager is None
             else library_manager
         )
         self.core2parser = Core2Parser(

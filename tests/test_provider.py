@@ -59,7 +59,7 @@ def test_github_provider():
         assert fref.read() == fgen.read(), f
 
 
-@pytest.mark.skipif(shutil.which("svn") == None, reason="Subversion not installed")
+@pytest.mark.skipif(shutil.which("svn") is None, reason="Subversion not installed")
 def test_svn_provider():
     cache_root = tempfile.mkdtemp("svn_")
     core = Core(
