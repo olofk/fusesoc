@@ -38,6 +38,6 @@ repos:
     rev: v0.14.11
     hooks:
       # Run the linter.
-      - id: ruff
+      - id: ruff-check
       # The formatter could be run in the future
       #- id: ruff-format
