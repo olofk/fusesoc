@@ -352,7 +352,7 @@ class Edalizer:
                     )
 
                 default = None
-                if not param.get("default") is None:
+                if param.get("default") is not None:
                     try:
                         if param["datatype"] == "bool":
                             default = param["default"]
