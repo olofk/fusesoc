@@ -139,9 +139,7 @@ location = fusesoc_libraries/fusesoc-cores
 sync-uri = https://github.com/fusesoc/fusesoc-cores
 sync-version = capi2
 sync-type = git
-auto-sync = true""".format(
-        cm._lm.library_root
-    )
+auto-sync = true"""
 
     add_library(cm, args)
 
