@@ -359,7 +359,7 @@ class Edalizer:
                             default = [
                                 typedict[param["datatype"]]["type"](param["default"])
                             ]
-                    except KeyError as e:
+                    except KeyError:
                         pass
                 try:
                     param_groups[_paramtype].add_argument(
@@ -644,7 +644,9 @@ class Ttptttg:
         return self.is_input_cacheable() or self.is_generator_cacheable()
 
     def acquire_cache_lock(self):
-        have_lock = False
+        pass
+        # TODO: Implement cache locking
+        # have_lock = False
         # while not have_lock:
         #    if
 

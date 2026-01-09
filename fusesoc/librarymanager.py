@@ -58,7 +58,7 @@ class Library:
             logger.info(l(f"{self.location} does not exist. Trying a checkout"))
             try:
                 provider.init_library(self)
-            except RuntimeError as e:
+            except RuntimeError:
                 # Keep old behavior of logging a warning if there is a library
                 # in `fusesoc.conf`, but the directory does not exist for some
                 # reason and it could not be initialized.

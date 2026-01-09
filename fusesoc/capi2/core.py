@@ -384,7 +384,6 @@ class Core:
                 # ...or in any of its dependencies
                 elif p in ext_parameters:
                     parameters[p] = ext_parameters[p]
-                    datatype = parameters[p]["datatype"]
 
                 else:
                     raise SyntaxError(
