@@ -22,13 +22,6 @@ try:
 except ImportError:
     __version__ = "unknown"
 
-# Check if this is run from a local installation
-fusesocdir = os.path.abspath(
-    os.path.join(os.path.dirname(os.path.realpath(__file__)), "..")
-)
-if os.path.exists(os.path.join(fusesocdir, "fusesoc")):
-    sys.path[0:0] = [fusesocdir]
-
 import logging
 
 from fusesoc.config import Config
