@@ -9,8 +9,6 @@ import sys
 import tarfile
 import zipfile
 
-logger = logging.getLogger(__name__)
-
 if sys.version_info[0] >= 3:
     import urllib.request as urllib
     from urllib.error import HTTPError, URLError
@@ -20,6 +18,8 @@ else:
     from urllib2 import HTTPError
 
 from fusesoc.provider.provider import Provider
+
+logger = logging.getLogger(__name__)
 
 _HAS_TAR_FILTER = hasattr(tarfile, "tar_filter")  # Requires Python 3.12
 

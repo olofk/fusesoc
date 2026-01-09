@@ -13,7 +13,8 @@ from importlib import import_module
 
 from fusesoc import utils
 from fusesoc.capi2.coreparser import Core2Parser
-from fusesoc.utils import merge_dict
+from fusesoc.core import Core
+from fusesoc.utils import Launcher, merge_dict
 from fusesoc.vlnv import Vlnv
 
 logger = logging.getLogger(__name__)
@@ -523,10 +524,6 @@ class Edalizer:
     def to_yaml(self, edam_file):
         pathlib.Path(edam_file).parent.mkdir(parents=True, exist_ok=True)
         return utils.yaml_fwrite(edam_file, self.edam)
-
-
-from fusesoc.core import Core
-from fusesoc.utils import Launcher
 
 
 class Ttptttg:
