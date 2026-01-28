@@ -44,6 +44,7 @@ class Edalizer:
         self,
         toplevel,
         flags,
+        variables,
         work_root,
         core_manager,
         export_root=None,
@@ -54,6 +55,7 @@ class Edalizer:
 
         self.toplevel = toplevel
         self.flags = flags
+        self.variables = variables
         self.core_manager = core_manager
         self.work_root = work_root
         self.export_root = export_root
@@ -140,7 +142,7 @@ class Edalizer:
         for core in self.cores:
             _flags = self._core_flags(core)
             logger.debug("Searching for generators in " + str(core.name))
-            core_generators = core.get_generators(_flags)
+            core_generators = core.get_generators(_flags, self.variables)
             logger.debug(f"Found generators: {core_generators.keys()}")
             generators.update(core_generators)
 
@@ -153,7 +155,7 @@ class Edalizer:
             logger.debug("Running generators in " + str(core.name))
             core_flags = self._core_flags(core)
             self._resolved_or_generated_cores.append(core)
-            for ttptttg_data in core.get_ttptttg(core_flags):
+            for ttptttg_data in core.get_ttptttg(core_flags, self.variables):
                 _ttptttg = Ttptttg(
                     ttptttg_data,
                     core,
@@ -186,7 +188,7 @@ class Edalizer:
                 files_root = core.files_root
 
             # Add copyto files
-            for file in core.get_files(_flags):
+            for file in core.get_files(_flags, self.variables):
                 if file.get("copyto"):
                     src = os.path.join(files_root, file["name"])
                     self._copyto(src, file.get("copyto"))
@@ -237,26 +239,28 @@ class Edalizer:
             }
 
             # Extract parameters
-            snippet["parameters"] = core.get_parameters(_flags, parameters)
+            snippet["parameters"] = core.get_parameters(
+                _flags, parameters, self.variables
+            )
             merge_dict(parameters, snippet["parameters"])
 
             # Extract tool options
             if self.flags.get("tool"):
                 snippet["tool_options"] = {
-                    self.flags["tool"]: core.get_tool_options(_flags)
+                    self.flags["tool"]: core.get_tool_options(_flags, self.variables)
                 }
 
             # Extract EDAM filters
-            snippet["filters"] = core.get_filters(_flags)
+            snippet["filters"] = core.get_filters(_flags, self.variables)
 
             # Extract flow options
-            snippet["flow_options"] = core.get_flow_options(_flags)
+            snippet["flow_options"] = core.get_flow_options(_flags, self.variables)
 
             # Extract scripts
-            snippet["hooks"] = core.get_scripts(rel_root, _flags)
+            snippet["hooks"] = core.get_scripts(rel_root, _flags, self.variables)
 
             _files = []
-            for file in core.get_files(_flags):
+            for file in core.get_files(_flags, self.variables):
 
                 # Reparent file path
                 if "copyto" in file:
@@ -284,7 +288,7 @@ class Edalizer:
 
             # Extract VPI modules
             snippet["vpi"] = []
-            for _vpi in core.get_vpi(_flags):
+            for _vpi in core.get_vpi(_flags, self.variables):
                 snippet["vpi"].append(
                     {
                         "name": _vpi["name"],
@@ -314,7 +318,7 @@ class Edalizer:
         self.edam = {
             "version": "0.2.1",
             "name": self.system_name or top_core.name.sanitized_name,
-            "toplevel": top_core.get_toplevel(self.flags),
+            "toplevel": top_core.get_toplevel(self.flags, self.variables),
         }
 
         for snippet in first_snippets + snippets + last_snippets:
