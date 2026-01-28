@@ -326,7 +326,7 @@ class CoreDB:
             if not only_matching_vlnv:
                 _flags["is_toplevel"] = core.name == top_core
                 try:
-                    _depends = core.get_depends(_flags)
+                    _depends = core.get_depends(_flags, _flags.get("variables", {}))
                 except SyntaxError as e:
                     logger.warning(
                         f"Ignoring {core.name} due to syntax error in dependencies: {e.msg}"
