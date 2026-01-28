@@ -23,7 +23,8 @@ Setting variables
 User-defined variables can be set as a dict of key/value pairs in the variables section of a target, or they can be applied on the command line, using the ``--var`` argument to ``fusesoc run``.
 Failing to define a variable that is used in a core file will result in an error.
 Examples:
-.. code:: bash
+
+.. code-block:: bash
 
   # Set the variable "frequency" to "100MHz".
   fusesoc run --var "frequency=100MHz" fusesoc:examples:varexample:1.0.0
@@ -62,6 +63,7 @@ Variables can be used in :term:`core files <core file>` to effect the value of a
 * Variables can be used in string, int, and boolean CAPI2 values.
 
 The following example shows how to use variables in a core file.
+
 .. code-block:: yaml
 
    # An excerpt from a core file.
