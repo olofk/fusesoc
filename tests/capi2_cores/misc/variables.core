@@ -1,0 +1,85 @@
+CAPI=2:
+# Copyright FuseSoC contributors
+# Licensed under the 2-Clause BSD License, see LICENSE for details.
+# SPDX-License-Identifier: BSD-2-Clause
+
+name: ::variables:0
+
+generate:
+  generate_with_vars:
+    generator: generator1
+    parameters:
+      PARAM1: $WIDTH
+
+filesets:
+  default:
+    depend:
+      - generators
+  fs_with_dep_vars:
+    depend:
+      - $DEP_VENDOR:$DEP_LIB:$DEP_NAME:$DEP_VERSION
+  fs_with_file_vars:
+    files:
+      - $FILENAME
+    file_type: verilogSource
+  fs_with_downstream_vars:
+    depend:
+        - ::variables_downstream:0
+
+targets:
+  novars: {}
+  emptyvars:
+    variables: {}
+  multiple_vars:
+    variables:
+      var1: "2"
+      var2: blue
+      var3: "false"
+  var_with_gen:
+    filesets:
+      - default
+    variables:
+      WIDTH: "8"
+    generate:
+      - generate_with_vars
+  var_with_params:
+    variables:
+      INTPARAM: "10"
+      STRPARAM: "hello"
+      REALPARAM: "1.61803"
+    parameters:
+      - INTPARAM=$INTPARAM
+      - STRPARAM=$STRPARAM
+      - REALPARAM=$REALPARAM
+  var_with_deps:
+    filesets:
+      - fs_with_dep_vars
+    variables:
+      DEP_VENDOR: ""
+      DEP_LIB: "used"
+      DEP_NAME: "core"
+      DEP_VERSION: "2.0"
+  var_with_files:
+    filesets:
+      - fs_with_file_vars
+    variables:
+      FILENAME: "test.v"
+  var_with_downstream_var:
+    variables:
+      WIDTH_DOWNSTREAM: "32"
+    filesets:
+      - fs_with_downstream_vars
+
+parameters:
+  INTPARAM:
+    datatype: int
+    paramtype: vlogparam
+    default: 4
+  STRPARAM:
+    datatype: str
+    paramtype: vlogparam
+    default: default_string
+  REALPARAM:
+    datatype: real
+    paramtype: vlogparam
+    default: 2.71828
