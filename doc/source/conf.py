@@ -60,6 +60,7 @@ extensions = [
     "sphinx.ext.intersphinx",
     "sphinx.ext.todo",
     "sphinxcontrib.programoutput",
+    "sphinx-jsonschema",
     "myst_parser",
 ]
 
@@ -213,5 +214,5 @@ p = jsonschema2md.Parser(
 )
 md_lines = p.parse_schema(yaml_read(capi2_schema))
 
-with open(os.path.join(os.path.abspath("."), "ref/capi2.md"), "w") as f:
-    f.write("".join(md_lines))
+# with open(os.path.join(os.path.abspath("."), "ref/capi2.md"), "w") as f:
+#    f.write("".join(md_lines))
