@@ -622,6 +622,15 @@ capi2_schema = """
                   "$ref": "#/$defs/any_type"
                 }
               }
+            },
+            "variables" : {
+              "description": "Default values of variables",
+              "type": "object",
+              "patternProperties": {
+                "^.+$": {
+                  "$ref": "#/$defs/any_type"
+                }
+              }
             }
           },
           "patternProperties": {
