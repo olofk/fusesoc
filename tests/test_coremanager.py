@@ -82,6 +82,7 @@ def test_deptree(tmp_path):
     edalizer = Edalizer(
         toplevel=root_core.name,
         flags=flags,
+        variables={},
         work_root=work_root,
         core_manager=cm,
     )
@@ -144,6 +145,7 @@ def test_copyto():
     edalizer = Edalizer(
         toplevel=core.name,
         flags=flags,
+        variables={},
         core_manager=cm,
         work_root=work_root,
         export_root=None,
@@ -200,6 +202,7 @@ def test_export():
     edalizer = Edalizer(
         toplevel=core.name,
         flags=flags,
+        variables={},
         core_manager=cm,
         work_root=work_root,
         export_root=export_root,
@@ -275,6 +278,7 @@ def test_virtual():
         edalizer = Edalizer(
             toplevel=root_core.name,
             flags=flags,
+            variables={},
             core_manager=cm,
             work_root=work_root,
         )
@@ -315,6 +319,7 @@ def test_virtual_conflict():
     edalizer = Edalizer(
         toplevel=root_core.name,
         flags=flags,
+        variables={},
         core_manager=cm,
         work_root=work_root,
     )
@@ -352,6 +357,7 @@ def test_virtual_non_deterministic_virtual(caplog):
     edalizer = Edalizer(
         toplevel=root_core.name,
         flags=flags,
+        variables={},
         core_manager=cm,
         work_root=work_root,
     )
@@ -498,6 +504,7 @@ def test_lockfile(caplog):
     edalizer = Edalizer(
         toplevel=root_core.name,
         flags=flags,
+        variables={},
         core_manager=cm,
         work_root=work_root,
     )
@@ -551,6 +558,7 @@ def test_lockfile_partial_warning(caplog):
     edalizer = Edalizer(
         toplevel=root_core.name,
         flags=flags,
+        variables={},
         core_manager=cm,
         work_root=work_root,
     )
@@ -606,6 +614,7 @@ def test_lockfile_version_warning(caplog):
     edalizer = Edalizer(
         toplevel=root_core.name,
         flags=flags,
+        variables={},
         core_manager=cm,
         work_root=work_root,
     )
@@ -657,6 +666,7 @@ def test_lockfile_no_file(caplog):
     edalizer = Edalizer(
         toplevel=root_core.name,
         flags=flags,
+        variables={},
         core_manager=cm,
         work_root=work_root,
     )
@@ -712,6 +722,7 @@ def test_lockfile_no_file_create(caplog):
     edalizer = Edalizer(
         toplevel=root_core.name,
         flags=flags,
+        variables={},
         core_manager=cm,
         work_root=work_root,
     )
