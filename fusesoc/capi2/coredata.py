@@ -3,8 +3,12 @@
 # SPDX-License-Identifier: BSD-2-Clause
 
 import copy
+import logging
+import re
 
 from fusesoc.capi2.exprs import Exprs
+
+logger = logging.getLogger(__name__)
 
 
 class CoreData:
@@ -16,15 +20,35 @@ class CoreData:
         # _capi_data.
         self._append_lists(self._capi_data)
 
-    def _expand_use(self, data, flags):
+    def _expand_variables(self, text, variables):
+        """Replace $var_name with variables['var_name']"""
+        if not isinstance(text, str) or not variables:
+            return text
+
+        def replace_var(match):
+            var_name = match.group(1)
+            if var_name not in variables:
+                logger.warning(
+                    f"Variable '${var_name}' found but not defined in variables. "
+                    f"Available variables: {list(variables.keys())}"
+                )
+            return str(variables.get(var_name, match.group(0)))
+
+        return re.sub(r"\$(\w+)", replace_var, text)
+
+    def _expand_use(self, data, flags, variables):
         if isinstance(data, dict):
             remove = []
             append = {}
             for k, v in data.items():
                 # Only run expand() if a string contains a "?" to avoid
                 # issues with strings containing for instance parentheses
-                if isinstance(v, str) and len(v) > 0 and "?" in v:
-                    data[k] = Exprs(v).expand(flags)
+                if isinstance(v, str) and len(v) > 0:
+                    if "?" in v:
+                        data[k] = Exprs(v).expand(flags)
+                    # Expand variables denoted by $var_name
+                    if isinstance(data[k], str) and variables:
+                        data[k] = self._expand_variables(data[k], variables)
                 if isinstance(k, str) and "?" in k:
                     expanded_k = Exprs(k).expand(flags)
                     if len(expanded_k) == 0:
@@ -32,8 +56,14 @@ class CoreData:
                     elif expanded_k != k:
                         append[expanded_k] = v
                         remove.append(k)
+                # Expand variables in dict keys
+                if isinstance(k, str) and variables and "$" in k:
+                    expanded_k = self._expand_variables(k, variables)
+                    if expanded_k != k:
+                        append[expanded_k] = v
+                        remove.append(k)
                 if isinstance(v, (dict, list)):
-                    self._expand_use(data[k], flags)
+                    self._expand_use(data[k], flags, variables)
 
             for i in remove:
                 del data[i]
@@ -43,15 +73,19 @@ class CoreData:
         if isinstance(data, list):
             remove = []
             for idx, i in enumerate(data):
-                if isinstance(i, str) and len(i) > 0 and "?" in i:
-                    expanded = Exprs(i).expand(flags)
-                    if i != expanded:
-                        if len(expanded) > 0:
-                            data[idx] = expanded
-                        else:
-                            remove.append(idx)
+                if isinstance(i, str) and len(i) > 0:
+                    if "?" in i:
+                        expanded = Exprs(i).expand(flags)
+                        if i != expanded:
+                            if len(expanded) > 0:
+                                data[idx] = expanded
+                            else:
+                                remove.append(idx)
+                    # Expand variables denoted by $var_name
+                    if isinstance(data[idx], str) and variables:
+                        data[idx] = self._expand_variables(data[idx], variables)
                 elif isinstance(i, (dict, list)):
-                    self._expand_use(i, flags)
+                    self._expand_use(i, flags, variables)
             for i in reversed(remove):
                 data.pop(i)
 
@@ -116,7 +150,7 @@ class CoreData:
 
         return {file_name: d}
 
-    def _setup_fileset(self, data, flags):
+    def _setup_fileset(self, data, flags, variables):
         for fs in data.values():
             files = []
             for file in fs.get("files", []):
@@ -126,15 +160,15 @@ class CoreData:
                 fs["depend"] = []
 
             fs["files"] = files
-            self._expand_use(fs, flags)
+            self._expand_use(fs, flags, variables)
 
             # If use expansion caused any empty items we remove them
             fs["files"] = [i for i in fs["files"] if len(i) > 0]
 
-    def _deepcopy_and_expand(self, section, flags):
+    def _deepcopy_and_expand(self, section, flags, variables):
         s = copy.deepcopy(self.get(section))
 
-        self._expand_use(s, flags)
+        self._expand_use(s, flags, variables)
 
         return s
 
@@ -150,31 +184,31 @@ class CoreData:
     def get_provider(self):
         return copy.deepcopy(self.get("provider"))
 
-    def get_filesets(self, flags):
+    def get_filesets(self, flags, variables):
         fs = copy.deepcopy(self.get("filesets"))
 
         if fs:
-            self._setup_fileset(fs, flags)
+            self._setup_fileset(fs, flags, variables)
 
         return fs or {}
 
-    def get_generate(self, flags):
-        return self._deepcopy_and_expand("generate", flags) or {}
+    def get_generate(self, flags, variables):
+        return self._deepcopy_and_expand("generate", flags, variables) or {}
 
-    def get_generators(self, flags):
-        return self._deepcopy_and_expand("generators", flags) or {}
+    def get_generators(self, flags, variables):
+        return self._deepcopy_and_expand("generators", flags, variables) or {}
 
-    def get_scripts(self, flags):
-        return self._deepcopy_and_expand("scripts", flags) or {}
+    def get_scripts(self, flags, variables):
+        return self._deepcopy_and_expand("scripts", flags, variables) or {}
 
-    def get_targets(self, flags):
-        return self._deepcopy_and_expand("targets", flags) or {}
+    def get_targets(self, flags, variables):
+        return self._deepcopy_and_expand("targets", flags, variables) or {}
 
-    def get_parameters(self, flags):
-        return self._deepcopy_and_expand("parameters", flags) or {}
+    def get_parameters(self, flags, variables):
+        return self._deepcopy_and_expand("parameters", flags, variables) or {}
 
-    def get_vpi(self, flags):
-        return self._deepcopy_and_expand("vpi", flags) or {}
+    def get_vpi(self, flags, variables):
+        return self._deepcopy_and_expand("vpi", flags, variables) or {}
 
-    def get_virtual(self, flags):
-        return self._deepcopy_and_expand("virtual", flags) or []
+    def get_virtual(self, flags, variables):
+        return self._deepcopy_and_expand("virtual", flags, variables) or []
