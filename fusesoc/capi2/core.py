@@ -75,18 +75,23 @@ class Core:
         else:
             return "local"
 
-    def export(self, dst_dir, flags={}):
-        src_files = [f["name"] for f in self.get_files(flags)]
+    def export(self, dst_dir, flags=None, variables=None):
+        if flags is None:
+            flags = {}
+        if variables is None:
+            variables = {}
 
-        for k, v in self._get_vpi(flags).items():
+        src_files = [f["name"] for f in self.get_files(flags, variables)]
+
+        for k, v in self._get_vpi(flags, variables).items():
             src_files += [
                 f for f in v["src_files"] + v["inc_files"]
             ]  # FIXME include files
         self._debug("Exporting {}".format(str(src_files)))
 
-        filesets = self._coredata.get_filesets(flags)
+        filesets = self._coredata.get_filesets(flags, variables)
 
-        for scripts in self._get_script_names(flags).values():
+        for scripts in self._get_script_names(flags, variables).values():
             for script in scripts:
                 for fs in script.get("filesets", []):
                     for file in filesets[fs].get("files", []):
@@ -136,12 +141,12 @@ class Core:
                 if _rel_f not in [os.path.normpath(x) for x in src_files]:
                     os.remove(_abs_f)
 
-    def _get_script_names(self, flags):
-        target_name, target = self._get_target(flags)
+    def _get_script_names(self, flags, variables):
+        target_name, target = self._get_target(flags, variables)
         hooks = {}
 
         if "hooks" in target:
-            cd_scripts = self._coredata.get_scripts(flags)
+            cd_scripts = self._coredata.get_scripts(flags, variables)
             for hook in ["pre_build", "post_build", "pre_run", "post_run"]:
                 scripts = target["hooks"][hook] if hook in target["hooks"] else None
 
@@ -162,10 +167,10 @@ class Core:
 
     """ Get flags, including tool, from target """
 
-    def get_flags(self, target_name):
+    def get_flags(self, target_name, variables):
         flags = {}
 
-        cd_targets = self._coredata.get_targets(flags)
+        cd_targets = self._coredata.get_targets(flags, variables)
         if target_name in cd_targets:
             target = cd_targets[target_name]
 
@@ -181,11 +186,20 @@ class Core:
             raise RuntimeError(f"'{self.name}' has no target '{target_name}'")
         return flags
 
-    def get_filters(self, flags):
-        target_name, target = self._get_target(flags)
+    """ Get variables from target """
+
+    def get_variables(self, target_name):
+        cd_targets = self._coredata.get_targets({}, {})
+        if target_name not in cd_targets:
+            raise RuntimeError(f"'{self.name}' has no target '{target_name}'")
+        target = cd_targets[target_name]
+        return target.get("variables", {}).copy()
+
+    def get_filters(self, flags, variables):
+        target_name, target = self._get_target(flags, variables)
         return target.get("filters", [])
 
-    def get_flow(self, flags):
+    def get_flow(self, flags, variables):
         self._debug("Getting flow for flags {}".format(str(flags)))
         flow = None
         if flags.get("flow"):
@@ -193,7 +207,7 @@ class Core:
         else:
             _flags = flags.copy()
             _flags["is_toplevel"] = True
-            target_name, target = self._get_target(_flags)
+            target_name, target = self._get_target(_flags, variables)
             if "flow" in target:
                 flow = str(target["flow"])
 
@@ -203,10 +217,10 @@ class Core:
             self._debug(" Matched no flow")
         return flow
 
-    def get_scripts(self, files_root, flags):
+    def get_scripts(self, files_root, flags, variables):
         self._debug("Getting hooks for flags '{}'".format(str(flags)))
         hooks = {}
-        for hook, scripts in self._get_script_names(flags).items():
+        for hook, scripts in self._get_script_names(flags, variables).items():
             hooks[hook] = []
             for script in scripts:
                 env = script.get("env", {})
@@ -221,12 +235,12 @@ class Core:
                 self._debug(_s.format(hook, str(_script)))
         return hooks
 
-    def get_tool_options(self, flags):
+    def get_tool_options(self, flags, variables):
         _flags = flags.copy()
 
         self._debug("Getting tool options for flags {}".format(str(_flags)))
 
-        target_name, target = self._get_target(_flags)
+        target_name, target = self._get_target(_flags, variables)
         tool = flags["tool"]
         options = (
             target["tools"][tool]
@@ -241,11 +255,11 @@ class Core:
 
         return options
 
-    def get_flow_options(self, flags):
+    def get_flow_options(self, flags, variables):
         _flags = flags.copy()
 
         self._debug("Getting flow options for flags {}".format(str(_flags)))
-        target_name, target = self._get_target(_flags)
+        target_name, target = self._get_target(_flags, variables)
 
         if "flow_options" in target:
             self._debug("Found flow options " + str(target["flow_options"]))
@@ -254,16 +268,16 @@ class Core:
 
         return ("flow_options" in target and target["flow_options"]) or {}
 
-    def get_depends(self, flags):  # Add use flags?
+    def get_depends(self, flags, variables):  # Add use flags?
         depends = []
         self._debug("Getting dependencies for flags {}".format(str(flags)))
-        for fs in self._get_filesets(flags):
+        for fs in self._get_filesets(flags, variables):
             depends += [Vlnv(d) for d in fs["depend"]]
         return depends
 
-    def get_files(self, flags):
+    def get_files(self, flags, variables):
         src_files = []
-        for fs in self._get_filesets(flags):
+        for fs in self._get_filesets(flags, variables):
             src_files += fs["files"]
 
         _src_files = []
@@ -285,8 +299,8 @@ class Core:
                 _src_files.append(attributes)
         return _src_files
 
-    def get_generators(self, flags={}):
-        cd_generators = self._coredata.get_generators(flags)
+    def get_generators(self, flags={}, variables={}):
+        cd_generators = self._coredata.get_generators(flags, variables)
         generators = {}
         for k, v in cd_generators.items():
             v.update({"root": self.files_root})
@@ -294,12 +308,12 @@ class Core:
 
         return generators
 
-    def get_virtuals(self, flags={}):
+    def get_virtuals(self, flags={}, variables={}):
         """Get a list of "virtual" VLNVs provided by this core."""
 
-        return [Vlnv(x) for x in self._coredata.get_virtual(flags)]
+        return [Vlnv(x) for x in self._coredata.get_virtual(flags, variables)]
 
-    def get_parameters(self, flags={}, ext_parameters={}):
+    def get_parameters(self, flags={}, ext_parameters={}, variables={}):
         def _parse_param_value(name, datatype, default):
             if datatype == "bool":
                 if isinstance(default, str):
@@ -361,7 +375,7 @@ class Core:
             return parsed_param
 
         self._debug("Getting parameters for flags '{}'".format(str(flags)))
-        target_name, target = self._get_target(flags)
+        target_name, target = self._get_target(flags, variables)
         parameters = {}
 
         if "parameters" in target:
@@ -375,7 +389,7 @@ class Core:
                 if not p:
                     continue
 
-                cd_parameters = self._coredata.get_parameters(flags)
+                cd_parameters = self._coredata.get_parameters(flags, variables)
 
                 # The parameter exists either in this core...
                 if p in cd_parameters:
@@ -410,11 +424,11 @@ class Core:
 
         return parameters
 
-    def get_toplevel(self, flags):
+    def get_toplevel(self, flags, variables):
         _flags = flags.copy()
         _flags["is_toplevel"] = True  # FIXME: Is this correct?
         self._debug("Getting toplevel for flags {}".format(str(_flags)))
-        target_name, target = self._get_target(_flags)
+        target_name, target = self._get_target(_flags, variables)
 
         if "toplevel" in target:
             toplevel = target["toplevel"]
@@ -424,9 +438,9 @@ class Core:
             s = "{} : Target '{}' has no toplevel"
             raise SyntaxError(s.format(self.name, target_name))
 
-    def get_ttptttg(self, flags):
+    def get_ttptttg(self, flags, variables):
         self._debug("Getting ttptttg for flags {}".format(str(flags)))
-        target_name, target = self._get_target(flags)
+        target_name, target = self._get_target(flags, variables)
         ttptttg = []
 
         if not target:
@@ -445,7 +459,7 @@ class Core:
             self._debug(f" Matched generator instances {_ttptttg}")
         for gen in _ttptttg:
             gen_name = gen["name"]
-            cd_generate = self._coredata.get_generate(flags)
+            cd_generate = self._coredata.get_generate(flags, variables)
             if gen_name not in cd_generate:
                 raise SyntaxError(
                     "Generator instance '{}', requested by target '{}', was not found".format(
@@ -471,16 +485,16 @@ class Core:
             ttptttg.append(t)
         return ttptttg
 
-    def _get_vpi(self, flags):
+    def _get_vpi(self, flags, variables):
         vpi = {}
-        target_name, target = self._get_target(flags)
+        target_name, target = self._get_target(flags, variables)
         if not target:
             return vpi
 
-        cd_filesets = self._coredata.get_filesets(flags)
+        cd_filesets = self._coredata.get_filesets(flags, variables)
 
         for vpi_name in target.get("vpi", []):
-            cd_vpi_lib = self._coredata.get_vpi(flags)
+            cd_vpi_lib = self._coredata.get_vpi(flags, variables)
             files = []
             incfiles = []  # Really do this automatically?
             libs = []
@@ -503,11 +517,11 @@ class Core:
             }
         return vpi
 
-    def get_vpi(self, flags):
+    def get_vpi(self, flags, variables):
         self._debug(f"Getting VPI libraries for flags {flags}")
-        target_name, target = self._get_target(flags)
+        target_name, target = self._get_target(flags, variables)
         vpi = []
-        _vpi = self._get_vpi(flags)
+        _vpi = self._get_vpi(flags, variables)
         self._debug(" Matched VPI libraries {}".format([v for v in _vpi]))
         for k, v in sorted(_vpi.items()):
             vpi.append(
@@ -531,7 +545,7 @@ Signature:   {}
 Targets:
 {}"""
 
-        cd_target = self._coredata.get_targets({})
+        cd_target = self._coredata.get_targets({}, {})
 
         if cd_target:
             maxlen = max(len(x) for x in cd_target)
@@ -592,10 +606,10 @@ Targets:
     def _debug(self, msg):
         logger.debug("{} : {}".format(str(self.name), msg))
 
-    def _get_target(self, flags):
+    def _get_target(self, flags, variables):
         self._debug(" Resolving target for flags '{}'".format(str(flags)))
 
-        cd_target = self._coredata.get_targets(flags)
+        cd_target = self._coredata.get_targets(flags, variables)
         target_name = None
         if flags.get("is_toplevel") and flags.get("target"):
             target_name = flags.get("target")
@@ -609,14 +623,14 @@ Targets:
             self._debug("Matched no target")
             return target_name, {}
 
-    def _get_filesets(self, flags):
+    def _get_filesets(self, flags, variables):
         self._debug("Getting filesets for flags '{}'".format(str(flags)))
-        target_name, target = self._get_target(flags)
+        target_name, target = self._get_target(flags, variables)
         if not target:
             return []
         filesets = []
 
-        cd_filesets = self._coredata.get_filesets(flags)
+        cd_filesets = self._coredata.get_filesets(flags, variables)
 
         for fs in target.get("filesets", []):
             if fs not in cd_filesets:

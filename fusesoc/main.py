@@ -327,6 +327,16 @@ def run(fs, args):
         else:
             flags[flag] = True
 
+    variables = {}
+    for variable in args.var:
+        if "=" in variable:
+            var_name, var_value = variable.split("=", 1)
+            variables[var_name] = var_value
+        else:
+            logger.error(f"Invalid variable format: {variable}. Use NAME=VALUE.")
+            exit(1)
+
+    fs.cm.db.mapping_set(args.mapping)
     try:
         fs.cm.db.mapping_set(args.mapping)
     except RuntimeError as e:
@@ -343,7 +353,16 @@ def run(fs, args):
     core = _get_core(fs, args.system)
 
     try:
-        flags = dict(core.get_flags(flags["target"]), **flags)
+        flags = dict(core.get_flags(flags["target"], variables), **flags)
+    except SyntaxError as e:
+        logger.error(str(e))
+        exit(1)
+    except RuntimeError as e:
+        logger.error(str(e))
+        exit(1)
+
+    try:
+        variables = dict(core.get_variables(flags["target"]), **variables)
     except SyntaxError as e:
         logger.error(str(e))
         exit(1)
@@ -353,9 +372,9 @@ def run(fs, args):
 
     # Unconditionally clean out the work root on fresh builds
     # if we use the old tool API or clean flag is set
-    if do_configure and (not core.get_flow(flags) or args.clean):
+    if do_configure and (not core.get_flow(flags, variables) or args.clean):
         try:
-            prepare_work_root(fs.get_work_root(core, flags))
+            prepare_work_root(fs.get_work_root(core, flags, variables))
         except RuntimeError as e:
             logger.error(e)
             exit(1)
@@ -363,7 +382,7 @@ def run(fs, args):
     # Frontend/backend separation
 
     try:
-        edam_file, backend = fs.get_backend(core, flags, args.backendargs)
+        edam_file, backend = fs.get_backend(core, flags, variables, args.backendargs)
 
     except RuntimeError as e:
         logger.error(str(e))
@@ -688,6 +707,12 @@ def get_parser():
     parser_run.add_argument(
         "--flag",
         help="Set custom use flags. Can be specified multiple times",
+        action="append",
+        default=[],
+    )
+    parser_run.add_argument(
+        "--var",
+        help="Set custom variables. Can be specified multiple times",
         action="append",
         default=[],
     )

@@ -39,6 +39,7 @@ def test_apply_filters(caplog):
     edalizer = Edalizer(
         toplevel=None,
         flags=None,
+        variables=None,
         work_root=None,
         core_manager=None,
     )
@@ -103,6 +104,7 @@ def test_tool_or_flow():
     edam = Edalizer(
         toplevel=core.name,
         flags={"target": "nothing"},
+        variables={},
         core_manager=cm,
         work_root=".",
     ).run()
@@ -111,6 +113,7 @@ def test_tool_or_flow():
     edam = Edalizer(
         toplevel=core.name,
         flags={"target": "flowonly"},
+        variables={},
         core_manager=cm,
         work_root=".",
     ).run()
@@ -119,6 +122,7 @@ def test_tool_or_flow():
     edam = Edalizer(
         toplevel=core.name,
         flags={"target": "emptyflowoptions"},
+        variables={},
         core_manager=cm,
         work_root=".",
     ).run()
@@ -127,6 +131,7 @@ def test_tool_or_flow():
     edam = Edalizer(
         toplevel=core.name,
         flags={"target": "toolonly"},
+        variables={},
         core_manager=cm,
         work_root=".",
     ).run()
@@ -135,6 +140,7 @@ def test_tool_or_flow():
     edam = Edalizer(
         toplevel=core.name,
         flags={"target": "flowandtool"},
+        variables={},
         core_manager=cm,
         work_root=".",
     ).run()
@@ -143,6 +149,7 @@ def test_tool_or_flow():
     edam = Edalizer(
         toplevel=core.name,
         flags={"target": "flowoptions"},
+        variables={},
         core_manager=cm,
         work_root=".",
     ).run()
@@ -181,6 +188,7 @@ def test_generators():
     edalizer = Edalizer(
         toplevel=core.name,
         flags={"tool": "icarus"},
+        variables={},
         core_manager=cm,
         work_root=build_root / "work",
         export_root=export_root,

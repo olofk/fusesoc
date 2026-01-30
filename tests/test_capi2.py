@@ -155,22 +155,22 @@ def test_capi2_append():
     flags = {"is_toplevel": True}
 
     flags["target"] = "no_fs_no_fsappend"
-    result = [x["name"] for x in core.get_files(flags)]
+    result = [x["name"] for x in core.get_files(flags, {})]
     expected = []
     assert expected == result
 
     flags["target"] = "no_fs_fsappend"
-    result = [x["name"] for x in core.get_files(flags)]
+    result = [x["name"] for x in core.get_files(flags, {})]
     expected = ["file3", "file4"]
     assert expected == result
 
     flags["target"] = "fs_no_fsappend"
-    result = [x["name"] for x in core.get_files(flags)]
+    result = [x["name"] for x in core.get_files(flags, {})]
     expected = ["file1", "file2"]
     assert expected == result
 
     flags["target"] = "fs_fsappend"
-    result = [x["name"] for x in core.get_files(flags)]
+    result = [x["name"] for x in core.get_files(flags, {})]
     expected = ["file1", "file2", "file3", "file4"]
     assert expected == result
 
@@ -184,7 +184,7 @@ def test_capi2_get_depends():
         Core2Parser(), os.path.join(tests_dir, "capi2_cores", "misc", "depends.core")
     )
     flags = {}
-    result = core.get_depends(flags)
+    result = core.get_depends(flags, {})
 
     expected = [
         Vlnv("unversioned"),
@@ -255,14 +255,14 @@ def test_capi2_get_files():
     ]
 
     flags = {"tool": "icarus"}
-    result = core.get_files(flags)
+    result = core.get_files(flags, {})
 
     assert expected == result
 
     core_file = os.path.join(tests_dir, "capi2_cores", "misc", "fileattrs.core")
     core = Core(Core2Parser(), core_file)
     flags = {"is_toplevel": True, "target": "defines"}
-    result = core.get_files(flags)
+    result = core.get_files(flags, {})
     expected = [
         {"name": "hasdefines", "define": {"key1": "value1", "key2": "value2"}},
         {
@@ -288,10 +288,10 @@ def test_capi2_get_filters():
     from fusesoc.core import Core
 
     core = Core(Core2Parser(), os.path.join(cores_dir, "filters.core"))
-    assert [] == core.get_filters({"is_toplevel": True, "target": "nofilters"})
-    assert [] == core.get_filters({"is_toplevel": True, "target": "emptyfilters"})
+    assert [] == core.get_filters({"is_toplevel": True, "target": "nofilters"}, {})
+    assert [] == core.get_filters({"is_toplevel": True, "target": "emptyfilters"}, {})
     assert ["corefilter1", "corefilter2"] == core.get_filters(
-        {"is_toplevel": True, "target": "filters"}
+        {"is_toplevel": True, "target": "filters"}, {}
     )
 
 
@@ -302,16 +302,16 @@ def test_capi2_get_flags():
     core = Core(Core2Parser(), os.path.join(cores_dir, "flags.core"))
 
     with pytest.raises(RuntimeError) as e:
-        core.get_flags("bad_target")
+        core.get_flags("bad_target", {})
     assert "::flags:0' has no target 'bad_target'" in str(e.value)
-    assert {} == core.get_flags("noflags")
-    assert {} == core.get_flags("emptyflags")
-    assert {"tool": "mytool"} == core.get_flags("emptyflagstool")
+    assert {} == core.get_flags("noflags", {})
+    assert {} == core.get_flags("emptyflags", {})
+    assert {"tool": "mytool"} == core.get_flags("emptyflagstool", {})
     expected = {"flag1": False, "flag2": True, "flag3": True}
-    assert expected == core.get_flags("allflags")
+    assert expected == core.get_flags("allflags", {})
     expected["tool"] = "mytool"
     expected.pop("flag3")
-    assert expected == core.get_flags("allflagstool")
+    assert expected == core.get_flags("allflagstool", {})
 
 
 def test_capi2_get_generators():
@@ -381,15 +381,15 @@ def test_capi2_get_parameters():
     flags = {"is_toplevel": True}
     expected = {"param1": param1}
 
-    assert expected == core.get_parameters(flags)
+    assert expected == core.get_parameters(flags, {})
 
     flags["target"] = "noparameters"
     expected = {}
-    assert expected == core.get_parameters(flags)
+    assert expected == core.get_parameters(flags, {})
 
     flags["target"] = "nonexistant"
     with pytest.raises(SyntaxError) as excinfo:
-        core.get_parameters(flags)
+        core.get_parameters(flags, {})
     assert (
         "Parameter 'idontexist', requested by target 'nonexistant', was not found"
         in str(excinfo.value)
@@ -397,7 +397,7 @@ def test_capi2_get_parameters():
 
     flags["target"] = "multiparameters"
     expected = {"param1": param1, "param2": param2}
-    assert expected == core.get_parameters(flags)
+    assert expected == core.get_parameters(flags, {})
 
     flags["target"] = "use_flags"
     expected = {
@@ -405,14 +405,14 @@ def test_capi2_get_parameters():
         "condparamtype": {"datatype": "str", "paramtype": "vlogparam"},
     }
 
-    assert expected == core.get_parameters(flags)
+    assert expected == core.get_parameters(flags, {})
 
     flags["tool"] = "icarus"
     expected = {
         "param1": param1,
         "condparamtype": {"datatype": "str", "paramtype": "plusarg"},
     }
-    assert expected == core.get_parameters(flags)
+    assert expected == core.get_parameters(flags, {})
 
     flags["target"] = "types"
     expected = {
@@ -422,7 +422,7 @@ def test_capi2_get_parameters():
         "booltrue": booltrue,
         "realpi": realpi,
     }
-    result = core.get_parameters(flags)
+    result = core.get_parameters(flags, {})
     assert expected == result
     assert isinstance(result["param2"]["datatype"], str)
     assert isinstance(result["param2"]["default"], str)
@@ -436,7 +436,7 @@ def test_capi2_get_parameters():
     flags["target"] = "empty"
     expected = {"int0": int0, "emptystr": emptystr}
 
-    assert expected == core.get_parameters(flags)
+    assert expected == core.get_parameters(flags, {})
 
     flags["target"] = "override"
     param1["default"] = "def"
@@ -453,7 +453,7 @@ def test_capi2_get_parameters():
         "booltrue": booltrue,
         "realpi": realpi,
     }
-    assert expected == core.get_parameters(flags)
+    assert expected == core.get_parameters(flags, {})
 
 
 def test_capi2_get_scripts():
@@ -495,15 +495,15 @@ def test_capi2_get_scripts():
 
     flags = {"is_toplevel": True}
     expected = {"pre_build": [simple1]}
-    assert expected == core.get_scripts("my_files_root", flags)
+    assert expected == core.get_scripts("my_files_root", flags, {})
 
     flags["target"] = "nohooks"
     expected = {}
-    assert expected == core.get_scripts("my_files_root", flags)
+    assert expected == core.get_scripts("my_files_root", flags, {})
 
     flags["target"] = "nonexistant"
     with pytest.raises(SyntaxError) as excinfo:
-        core.get_scripts("", flags)
+        core.get_scripts("", flags, {})
     assert (
         "Script 'idontexist', requested by target 'nonexistant', was not found"
         in str(excinfo.value)
@@ -516,19 +516,19 @@ def test_capi2_get_scripts():
         "pre_run": [simple3],
         "post_run": [simple4],
     }
-    assert expected == core.get_scripts("my_files_root", flags)
+    assert expected == core.get_scripts("my_files_root", flags, {})
 
     flags["target"] = "multihooks"
     expected = {"pre_run": [simple1, with_env, multi_cmd]}
-    assert expected == core.get_scripts("my_files_root", flags)
+    assert expected == core.get_scripts("my_files_root", flags, {})
 
     flags["target"] = "use_flags"
     expected = {"post_run": [simple2]}
-    assert expected == core.get_scripts("my_files_root", flags)
+    assert expected == core.get_scripts("my_files_root", flags, {})
 
     flags["tool"] = "icarus"
     expected = {"post_run": [simple1]}
-    assert expected == core.get_scripts("my_files_root", flags)
+    assert expected == core.get_scripts("my_files_root", flags, {})
 
 
 def test_capi2_get_tool_options():
@@ -539,22 +539,22 @@ def test_capi2_get_tool_options():
     core = Core(Core2Parser(), core_file)
 
     with pytest.raises(KeyError):
-        core.get_tool_options({})
+        core.get_tool_options({}, {})
 
-    assert {} == core.get_tool_options({"tool": "icarus"})
+    assert {} == core.get_tool_options({"tool": "icarus"}, {})
     flags = {"target": "target_with_tool_options", "is_toplevel": True}
 
     flags["tool"] = "icarus"
     expected = {"iverilog_options": ["a", "few", "options"]}
-    assert expected == core.get_tool_options(flags)
+    assert expected == core.get_tool_options(flags, {})
 
     flags["tool"] = "vivado"
     expected = {"part": "xc7a35tcsg324-1"}
-    assert expected == core.get_tool_options(flags)
+    assert expected == core.get_tool_options(flags, {})
 
     flags["tool"] = "invalid"
     expected = {}
-    assert expected == core.get_tool_options(flags)
+    assert expected == core.get_tool_options(flags, {})
 
 
 def test_capi2_get_toplevel():
@@ -566,13 +566,13 @@ def test_capi2_get_toplevel():
 
     flags = {"target": "no_toplevel"}
     with pytest.raises(SyntaxError):
-        core.get_toplevel(flags)
+        core.get_toplevel(flags, {})
 
     flags = {"target": "str_toplevel"}
-    assert "toplevel_as_string" == core.get_toplevel(flags)
+    assert "toplevel_as_string" == core.get_toplevel(flags, {})
 
     flags = {"target": "list_toplevel"}
-    assert "toplevel as list" == core.get_toplevel(flags)
+    assert "toplevel as list" == core.get_toplevel(flags, {})
 
 
 def test_capi2_get_ttptttg():
@@ -614,21 +614,21 @@ def test_capi2_get_ttptttg():
             "config": {"file_in_param1": "file_cachetest"},
         },
     ]
-    assert expected == core.get_ttptttg(flags)
+    assert expected == core.get_ttptttg(flags, {})
 
     flags["target"] = "nogenerate"
-    assert [] == core.get_ttptttg(flags)
+    assert [] == core.get_ttptttg(flags, {})
 
     flags["target"] = "invalid_generate"
     with pytest.raises(SyntaxError) as excinfo:
-        core.get_ttptttg(flags)
+        core.get_ttptttg(flags, {})
     assert (
         "Generator instance 'idontexist', requested by target 'invalid_generate', was not found"
         in str(excinfo.value)
     )
 
     flags["target"] = "invalid_target"
-    assert [] == core.get_ttptttg(flags)
+    assert [] == core.get_ttptttg(flags, {})
 
 
 def test_capi2_get_vpi():
@@ -648,9 +648,9 @@ def test_capi2_get_vpi():
         {"src_files": ["f4"], "include_dirs": [], "libs": [], "name": "vpi2"},
     ]
 
-    assert [] == core.get_vpi({"is_toplevel": True, "target": "invalid"})
-    assert expected == core.get_vpi({"is_toplevel": True})
-    assert expected == core.get_vpi({"is_toplevel": False})
+    assert [] == core.get_vpi({"is_toplevel": True, "target": "invalid"}, {})
+    assert expected == core.get_vpi({"is_toplevel": True}, {})
+    assert expected == core.get_vpi({"is_toplevel": False}, {})
 
 
 def test_capi2_info():
@@ -819,3 +819,127 @@ def test_inheritance():
 
     capi2_data = parser.read(core_file)
     assert expected == capi2_data
+
+
+def test_variables_local():
+    import os
+
+    from fusesoc.capi2.coreparser import Core2Parser
+    from fusesoc.core import Core
+
+    core_file = os.path.join(tests_dir, "capi2_cores", "misc", "variables.core")
+    core = Core(Core2Parser(), core_file)
+
+    # Test variable section parsing
+    variables = core.get_variables("multiple_vars")
+    expected_vars = {"var1": "2", "var2": "blue", "var3": "false"}
+    assert expected_vars == variables
+
+    # Test no variables not erroring
+    no_vars = core.get_variables("novars")
+    assert {} == no_vars
+
+    # Test generator with variable substitution
+    var_with_gen_variables = core.get_variables("var_with_gen")
+    gen_with_vars = core.get_ttptttg(
+        {"is_toplevel": True, "target": "var_with_gen"}, var_with_gen_variables
+    )
+    expected_gen = [
+        {
+            "name": "generate_with_vars",
+            "generator": "generator1",
+            "config": {"PARAM1": "8"},
+            "pos": "append",
+        },
+    ]
+    assert expected_gen == gen_with_vars
+
+    # Test Paramters with Variable Substitution
+    var_with_param_variables = core.get_variables("var_with_params")
+    params_with_vars = core.get_parameters(
+        {"is_toplevel": True, "target": "var_with_params"}, {}, var_with_param_variables
+    )
+    expected_params = {
+        "INTPARAM": {
+            "datatype": "int",
+            "default": 10,
+            "paramtype": "vlogparam",
+        },
+        "STRPARAM": {
+            "datatype": "str",
+            "default": "hello",
+            "paramtype": "vlogparam",
+        },
+        "REALPARAM": {
+            "datatype": "real",
+            "default": 1.61803,
+            "paramtype": "vlogparam",
+        },
+    }
+    assert expected_params == params_with_vars
+
+    # Test Dependencies with Variable Substitution
+    var_with_dep_variables = core.get_variables("var_with_deps")
+    deps_with_vars = core.get_depends(
+        {"is_toplevel": True, "target": "var_with_deps"}, var_with_dep_variables
+    )
+    assert len(deps_with_vars) == 1
+    dep = deps_with_vars[0]
+    assert str(dep) == ":used:core:2.0"
+
+    # Test Files with Variable Substitution
+    var_with_file_variables = core.get_variables("var_with_files")
+    files_with_vars = core.get_files(
+        {"is_toplevel": True, "target": "var_with_files"}, var_with_file_variables
+    )
+    assert len(files_with_vars) == 1
+    assert files_with_vars[0]["name"] == "test.v"
+    assert files_with_vars[0]["file_type"] == "verilogSource"
+
+    # Test Target Which Relies on Downstream Variables Resolving in Generator
+    # Test Target Which Relies on Downstream Variables Resolving in Generator
+    vars_for_downstream = core.get_variables("var_with_downstream_var")
+
+    # Load the downstream core that is a dependency
+    downstream_core_file = os.path.join(
+        tests_dir, "capi2_cores", "misc", "variables_downstream.core"
+    )
+    downstream_core = Core(Core2Parser(), downstream_core_file)
+
+    # Get the generators from the downstream core's default target using the upstream variables
+    # The upstream target defines WIDTH_DOWNSTREAM="32" which should override the downstream's default of "16"
+    gen_from_downstream = downstream_core.get_ttptttg(
+        {"is_toplevel": True, "target": "default"},
+        vars_for_downstream,
+    )
+
+    expected_gen_downstream = [
+        {
+            "name": "generate_with_vars_downstream",
+            "generator": "generator1",
+            "config": {"PARAM1": "32"},
+            "pos": "append",
+        },
+    ]
+    # Verify that the downstream core's generator uses the upstream variable value
+    assert expected_gen_downstream == gen_from_downstream
+
+    # Test negative case: downstream core with its own default variables
+    # The downstream's own default is WIDTH_DOWNSTREAM="16", which should NOT be overridden
+    # when we explicitly use the downstream's own variables
+    downstream_default_vars = downstream_core.get_variables("default")
+    gen_from_downstream_with_default = downstream_core.get_ttptttg(
+        {"is_toplevel": True, "target": "default"},
+        downstream_default_vars,
+    )
+
+    expected_gen_downstream_default = [
+        {
+            "name": "generate_with_vars_downstream",
+            "generator": "generator1",
+            "config": {"PARAM1": "16"},
+            "pos": "append",
+        },
+    ]
+    # Verify that the downstream core's generator uses its own default value when no override is provided
+    assert expected_gen_downstream_default == gen_from_downstream_with_default
