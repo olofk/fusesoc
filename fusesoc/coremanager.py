@@ -178,7 +178,9 @@ class CoreDB:
             new_mapping_name = str(Vlnv(mapping_vlnv))
             new_mapping_core = self._cores.get(new_mapping_name)
             if not new_mapping_core:
-                raise RuntimeError(f"The core '{mapping_vlnv}' wasn't found.")
+                raise RuntimeError(
+                    f"Requested mapping core '{mapping_vlnv}' wasn't found."
+                )
 
             new_mapping_raw = new_mapping_core["core"].mapping
             if not new_mapping_raw:

@@ -90,10 +90,11 @@ class Edalizer:
                 filter_class = getattr(
                     import_module(f"fusesoc.filters.{f}"), f.capitalize()
                 )
-                logger.info(f"Applying filter {f}")
-                self.edam = filter_class().run(self.edam, self.work_root)
             except ModuleNotFoundError:
                 raise RuntimeError(f"Could not find EDAM filter '{f}'")
+            logger.info(f"Applying filter {f}")
+            try:
+                self.edam = filter_class().run(self.edam, self.work_root)
             except Exception as e:
                 import traceback
 

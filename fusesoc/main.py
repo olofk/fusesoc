@@ -337,6 +337,11 @@ def run(fs, args):
             exit(1)
 
     fs.cm.db.mapping_set(args.mapping)
+    try:
+        fs.cm.db.mapping_set(args.mapping)
+    except RuntimeError as e:
+        logger.error(e)
+        exit(1)
 
     if args.lockfile is not None:
         try:
