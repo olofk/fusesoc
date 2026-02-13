@@ -5,6 +5,7 @@
 import logging
 import os
 from importlib import import_module
+from pathlib import Path
 
 from fusesoc.coremanager import CoreManager, DependencyError
 from fusesoc.edalizer import Edalizer
@@ -160,6 +161,7 @@ class Fusesoc:
         try:
             edalizer.run()
             edalizer.export()
+            Path(work_root).mkdir(parents=True, exist_ok=True)
             edalizer.apply_filters(self.config.filters)
             edalizer.parse_args(backend_class, backendargs)
         except SyntaxError as e:
