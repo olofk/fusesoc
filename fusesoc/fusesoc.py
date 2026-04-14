@@ -162,8 +162,8 @@ class Fusesoc:
             edalizer.run()
             edalizer.export()
             Path(work_root).mkdir(parents=True, exist_ok=True)
-            edalizer.apply_filters(self.config.filters)
             edalizer.parse_args(backend_class, backendargs)
+            edalizer.apply_filters(self.config.filters)
         except SyntaxError as e:
             raise RuntimeError(e.msg)
         except RuntimeError as e:
