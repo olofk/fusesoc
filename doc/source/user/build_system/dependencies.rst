@@ -121,10 +121,10 @@ The following version comparison operators are available.
      - ``>fusesoc:examples:blinky:1.2``: any version after 1.2, e.g. 1.3, or 10.7
    * - ``^``
      - Caret requirement: any version less than the next major version (see below)
-     - ``^fusesoc:examples:blinky:1.2``: >=1.2.0 <1.3.0
+     - ``^fusesoc:examples:blinky:1.2``: >=1.2.0 <2.0.0
    * - ``~``
      - Tilde requirement: allow updates to the current version (see below)
-     - ``~fusesoc:examples:blinky:1.2``: >=1.2.0 <2.0.0
+     - ``~fusesoc:examples:blinky:1.2``: >=1.2.0 <1.3.0
 
 Notes:
 
