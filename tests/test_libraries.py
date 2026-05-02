@@ -9,6 +9,7 @@ import subprocess
 import tempfile
 from argparse import Namespace
 
+import pytest
 from test_common import cache_root, cores_root, library_root
 
 from fusesoc.config import Config
@@ -56,6 +57,7 @@ def test_library_location():
     fs.get_core("atlys")
 
 
+@pytest.mark.network
 def test_library_add(caplog):
     import tempfile
 
@@ -151,6 +153,7 @@ auto-sync = true"""
     tcf.close()
 
 
+@pytest.mark.network
 def test_library_update(caplog):
 
     clone_target = tempfile.mkdtemp()
@@ -210,6 +213,7 @@ def test_library_update(caplog):
     assert "test_lib : sync-type is local. Ignoring update" in caplog.text
 
 
+@pytest.mark.network
 def test_library_update_with_initialize(caplog):
     with tempfile.TemporaryDirectory() as library:
 

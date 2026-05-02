@@ -50,6 +50,11 @@ include = ["fusesoc", "fusesoc.capi2", "fusesoc.provider", "fusesoc.parser", "fu
 [project.scripts]
 fusesoc = "fusesoc.main:main"
 
+[tool.pytest.ini_options]
+markers = [
+    "network: test requires network access.",
+]
+
 [tool.tox]
 legacy_tox_ini = """
 [tox]

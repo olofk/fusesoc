@@ -174,6 +174,7 @@ def test_copyto():
     assert os.path.exists(os.path.join(work_root, "copytodot"))
 
 
+@pytest.mark.network
 def test_export():
     import os
     import tempfile

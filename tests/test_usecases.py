@@ -23,6 +23,7 @@ import pytest
 from fusesoc.main import main
 
 
+@pytest.mark.network
 def test_git_library_with_default_branch_is_added_and_updated(caplog):
     _fusesoc("library", "add", "https://github.com/fusesoc/fusesoc-generators")
     assert "Cloning library into fusesoc_libraries/fusesoc-generators" in caplog.text
@@ -32,6 +33,7 @@ def test_git_library_with_default_branch_is_added_and_updated(caplog):
     assert "Updating..." in caplog.text
 
 
+@pytest.mark.network
 def test_update_git_library_with_fixed_version(caplog, capsys):
     """
     Previously, one could not successfully use `fusesoc library update` on

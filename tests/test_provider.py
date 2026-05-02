@@ -15,6 +15,7 @@ from fusesoc.core import Core
 cores_root = os.path.join(tests_dir, "cores")
 
 
+@pytest.mark.network
 def test_git_provider():
     cache_root = tempfile.mkdtemp("git_")
     core = Core(
@@ -33,6 +34,7 @@ def test_git_provider():
         assert os.path.isfile(os.path.join(core.files_root, f))
 
 
+@pytest.mark.network
 def test_github_provider():
     cache_root = tempfile.mkdtemp("github_")
     core = Core(
@@ -87,6 +89,7 @@ def test_opencores_provider():
     assert os.path.isfile(os.path.join(core.files_root, "tap_top.v"))
 
 
+@pytest.mark.network
 def test_url_provider():
     cores_root = os.path.join(tests_dir, "capi2_cores", "providers")
 
