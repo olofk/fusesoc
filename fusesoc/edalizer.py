@@ -10,6 +10,7 @@ import pathlib
 import shutil
 from filecmp import cmp
 from importlib import import_module
+from typing import Sequence
 
 from fusesoc import utils
 from fusesoc.capi2.coreparser import Core2Parser
@@ -81,8 +82,8 @@ class Edalizer:
         """Get a list of all cores found by fusesoc"""
         return self.core_manager.db.find()
 
-    def apply_filters(self, global_filters):
-        filters = self.edam.get("filters", []) + global_filters
+    def apply_filters(self, global_filters: Sequence):
+        filters = (*self.edam.get("filters", ()), *global_filters)
         for f in filters:
             try:
                 filter_class = getattr(

@@ -4,16 +4,17 @@
 
 import pytest
 
-from fusesoc.capi2.exprs import Exprs
+from fusesoc.capi2.exprs import expand, parse
+from fusesoc.capi2.flags import into_flag_defs
 
 
 def check_parses_to(string, ast):
-    assert Exprs(string).ast == ast
+    assert parse(string) == ast
 
 
 def check_parse_error(string):
     with pytest.raises(ValueError) as err:
-        Exprs(string)
+        parse(string)
     assert "Invalid syntax for string:" in str(err.value)
 
 
@@ -34,7 +35,8 @@ def test_exprs():
 
 
 def check_expand(string, flags, expansion):
-    assert Exprs(string).expand(flags) == expansion
+    defs = into_flag_defs(flags)
+    assert " ".join(expand(parse(string), defs)) == expansion
 
 
 def test_expand():

@@ -8,9 +8,9 @@ from fusesoc import utils
 
 
 class Generator:
-    filesets = {}
-    parameters = {}
-    targets = {}
+    filesets: dict = {}
+    parameters: dict = {}
+    targets: dict = {}
 
     def __init__(self, data=None, resolve_env_vars=False):
         if data is None:

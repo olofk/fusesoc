@@ -2,69 +2,72 @@
 # Licensed under the 2-Clause BSD License, see LICENSE for details.
 # SPDX-License-Identifier: BSD-2-Clause
 
-import copy
-
 # FIXME: Add IP-XACT support
 import logging
 import os
 import shutil
 import warnings
+from dataclasses import dataclass, field
 from filecmp import cmp
+from pathlib import Path
 from types import MappingProxyType
-from typing import Mapping, Optional
+from typing import Any, Literal, Mapping, Sequence
 
 from fusesoc import signature, utils
-from fusesoc.capi2.coredata import CoreData
+from fusesoc.capi2.core_handle import CoreHandle
 from fusesoc.provider.provider import get_provider
 from fusesoc.vlnv import Vlnv
+
+from .coreparser import Core2Parser
+from .flags import Flags, get_target_name, into_flag_defs
+from .schema.common import License
+from .schema.core import Core
+from .schema.target import Target
 
 logger = logging.getLogger(__name__)
 
 
-class Core:
-    capi_version = 2
+@dataclass
+class CoreInterface:
+    parser: Core2Parser
+    core_file: Path
+    cache_root: Path = field(default_factory=Path)
+    generated: bool = False
+    direct_deps: list = field(init=False, default_factory=list)
+    export_files: list = field(init=False, default_factory=list)
+    capi_version: Literal[2] = 2
 
-    def __init__(
-        self,
-        parser,
-        core_file,
-        cache_root="",
-        generated=False,
-    ):
-        self.core_file = core_file
+    def __post_init__(self):
+        parsed_capi = self.parser.read(self.core_file)
 
-        self.cache_root = cache_root
+        self.handle = CoreHandle.from_dict(parsed_capi)
 
-        self.core_basename = os.path.basename(self.core_file)
-        self.core_root = os.path.dirname(self.core_file)
+        self.name = Vlnv(self.get_data({}).name)
 
-        # Populated by CoreDB._solve(). TODO: Find a better solution for that.
-        self.direct_deps = []
-
-        self._parser = parser
-
-        self.export_files = []
-
-        self._capi_data = self._parser.read(core_file)
-
-        # If original data is needed at some later stage we need to create
-        # deepcopy since CoreData might modify it.
-        self._coredata = CoreData(copy.deepcopy(self._capi_data))
-
-        self.name = Vlnv(self._coredata.get_name())
-
-        cd_provider = self._coredata.get_provider()
-
-        if cd_provider:
-            self.files_root = os.path.join(cache_root, self.name.sanitized_name)
-            self.provider = get_provider(cd_provider["name"])(
-                cd_provider, self.core_root, self.files_root
+        if provider := self.get_data({}).provider:
+            self.files_root = os.path.join(self.cache_root, self.name.sanitized_name)
+            self.provider = get_provider(provider.name)(
+                provider.model_dump(exclude_unset=True), self.core_root, self.files_root
             )
         else:
             self.files_root = self.core_root
             self.provider = None
 
-        self.is_generated = generated
+    @property
+    def core_basename(self) -> str:
+        return os.path.basename(self.core_file)
+
+    @property
+    def core_root(self) -> str:
+        return os.path.dirname(self.core_file)
+
+    def get_data(self, flags: Flags) -> Core[str]:
+        defs = into_flag_defs(flags)
+        return self.handle.get(defs)
+
+    def get_target(self, flags: Flags) -> Target[str] | None:
+        name = get_target_name(flags)
+        return self.get_data(flags).targets.get(name)
 
     def __repr__(self):
         return str(self.name)
@@ -76,7 +79,7 @@ class Core:
             return "local"
 
     def export(self, dst_dir, flags={}):
-        src_files = [f["name"] for f in self.get_files(flags)]
+        src_files: list[str] = [f["name"] for f in self.get_files(flags)]
 
         for k, v in self._get_vpi(flags).items():
             src_files += [
@@ -84,16 +87,17 @@ class Core:
             ]  # FIXME include files
         self._debug("Exporting {}".format(str(src_files)))
 
-        filesets = self._coredata.get_filesets(flags)
+        filesets = self.get_data(flags).filesets
 
         for scripts in self._get_script_names(flags).values():
             for script in scripts:
                 for fs in script.get("filesets", []):
-                    for file in filesets[fs].get("files", []):
+                    for file in filesets[fs].files:
+                        assert not isinstance(file, str)
                         for filename, attributes in file.items():
                             src_files.append(filename)
 
-        dirs = list(set(map(os.path.dirname, src_files)))
+        dirs: set[str] = {os.path.dirname(p) for p in src_files}
         for d in dirs:
             if not os.path.isabs(d):
                 os.makedirs(os.path.join(dst_dir, d), exist_ok=True)
@@ -128,7 +132,7 @@ class Core:
                         shutil.copytree(src, dst, dirs_exist_ok=True)
 
         # Clean out leftover files from previous builds
-        for root, dirs, files in os.walk(dst_dir):
+        for root, dirs, files in os.walk(dst_dir):  # ty: ignore[invalid-assignment]
             for f in files:
                 _abs_f = os.path.join(root, f)
                 _rel_f = os.path.normpath(os.path.relpath(_abs_f, dst_dir))
@@ -136,54 +140,45 @@ class Core:
                 if _rel_f not in [os.path.normpath(x) for x in src_files]:
                     os.remove(_abs_f)
 
-    def _get_script_names(self, flags):
-        target_name, target = self._get_target(flags)
-        hooks = {}
+    def _get_script_names(
+        self, flags: Flags
+    ) -> Mapping[str, Sequence[Mapping[str, Any]]]:
+        target = self.get_target(flags)
 
-        if "hooks" in target:
-            cd_scripts = self._coredata.get_scripts(flags)
+        hooks: dict[str, list[dict[str, Any]]] = {}
+        if target is not None:
+            cd_scripts = self.get_data(flags).scripts
             for hook in ["pre_build", "post_build", "pre_run", "post_run"]:
-                scripts = target["hooks"][hook] if hook in target["hooks"] else None
-
-                if scripts:
+                if scripts := getattr(target.hooks, hook):
                     hooks[hook] = []
                     for script in scripts:
-                        if script not in cd_scripts:
+                        cd_script = cd_scripts.get(script)
+                        if cd_script is None:
                             raise SyntaxError(
                                 "Script '{}', requested by target '{}', was not found".format(
-                                    script, target_name
+                                    script, get_target_name(flags)
                                 )
                             )
 
-                        cd_scripts[script]["name"] = script
-                        hooks[hook].append(cd_scripts[script])
+                        hooks[hook].append(cd_script.model_dump() | {"name": script})
 
         return hooks
 
-    """ Get flags, including tool, from target """
+    def get_flags(self, target_name: str) -> Flags:
+        """Get flags, including tool, from target"""
 
-    def get_flags(self, target_name):
-        flags = {}
-
-        cd_targets = self._coredata.get_targets(flags)
-        if target_name in cd_targets:
-            target = cd_targets[target_name]
-
-            if target:
-                if "flags" in target:
-                    flags = target["flags"].copy()
-
-                if "default_tool" in target:
-                    # Special case for tool as we get it from default_tool
-                    flags["tool"] = str(target["default_tool"])
-
-        else:
+        target = self.get_data({}).targets.get(target_name)
+        if target is None:
             raise RuntimeError(f"'{self.name}' has no target '{target_name}'")
+
+        flags = dict(target.flags)
+        if tool := target.default_tool:
+            flags["tool"] = tool
+
         return flags
 
-    def get_filters(self, flags):
-        target_name, target = self._get_target(flags)
-        return target.get("filters", [])
+    def get_filters(self, flags: Flags) -> list[str]:
+        return list(target.filters) if (target := self.get_target(flags)) else []
 
     def get_flow(self, flags):
         self._debug("Getting flow for flags {}".format(str(flags)))
@@ -285,21 +280,18 @@ class Core:
                 _src_files.append(attributes)
         return _src_files
 
-    def get_generators(self, flags={}):
-        cd_generators = self._coredata.get_generators(flags)
-        generators = {}
-        for k, v in cd_generators.items():
-            v.update({"root": self.files_root})
-            generators[k] = v
+    def get_generators(self, flags: Flags = {}) -> Mapping[str, Any]:
+        generators = self.get_data(flags).generators
+        return {
+            name: generator.model_dump(exclude_unset=True) | {"root": self.files_root}
+            for name, generator in generators.items()
+        }
 
-        return generators
-
-    def get_virtuals(self, flags={}):
+    def get_virtuals(self, flags: Flags = {}) -> list[Vlnv]:
         """Get a list of "virtual" VLNVs provided by this core."""
+        return [Vlnv(name) for name in self.get_data(flags).virtual]
 
-        return [Vlnv(x) for x in self._coredata.get_virtual(flags)]
-
-    def get_parameters(self, flags={}, ext_parameters={}):
+    def get_parameters(self, flags: Flags = {}, ext_parameters={}):
         def _parse_param_value(name, datatype, default):
             if datatype == "bool":
                 if isinstance(default, str):
@@ -361,11 +353,11 @@ class Core:
             return parsed_param
 
         self._debug("Getting parameters for flags '{}'".format(str(flags)))
-        target_name, target = self._get_target(flags)
+        target = self.get_target(flags)
         parameters = {}
 
-        if "parameters" in target:
-            for _param in target["parameters"]:
+        if target is not None:
+            for _param in target.parameters:
                 plist = _param.split("=", 1)
 
                 p = plist[0]
@@ -375,11 +367,12 @@ class Core:
                 if not p:
                     continue
 
-                cd_parameters = self._coredata.get_parameters(flags)
+                cd_parameters = self.get_data(flags).parameters
 
                 # The parameter exists either in this core...
                 if p in cd_parameters:
-                    parameters[p] = _parse_param(flags, p, cd_parameters[p])
+                    cd_parameter = cd_parameters[p].model_dump(exclude_unset=True)
+                    parameters[p] = _parse_param(flags, p, cd_parameter)
 
                 # ...or in any of its dependencies
                 elif p in ext_parameters:
@@ -388,7 +381,7 @@ class Core:
                 else:
                     raise SyntaxError(
                         "Parameter '{}', requested by target '{}', was not found".format(
-                            p, target_name
+                            p, get_target_name(flags)
                         )
                     )
 
@@ -406,7 +399,7 @@ class Core:
                 ):
                     del parameters[p]["default"]
 
-            self._debug(f"Found parameters {parameters}")
+        self._debug(f"Found parameters {parameters}")
 
         return parameters
 
@@ -419,7 +412,7 @@ class Core:
         if "toplevel" in target:
             toplevel = target["toplevel"]
             self._debug(f"Matched toplevel {toplevel}")
-            return " ".join(toplevel) if isinstance(toplevel, list) else toplevel
+            return " ".join(toplevel) if isinstance(toplevel, Sequence) else toplevel
         else:
             s = "{} : Target '{}' has no toplevel"
             raise SyntaxError(s.format(self.name, target_name))
@@ -432,20 +425,19 @@ class Core:
         if not target:
             return ttptttg
 
-        _ttptttg = []
+        _ttptttg: list[tuple[str, dict]] = []
         if "generate" in target:
             for f in target["generate"]:
                 if isinstance(f, str):
-                    _ttptttg.append({"name": f, "params": {}})
+                    _ttptttg.append((f, {}))
                 elif isinstance(f, dict):
                     for k, v in f.items():
-                        _ttptttg.append({"name": k, "params": v})
+                        _ttptttg.append((k, v))
 
         if _ttptttg:
             self._debug(f" Matched generator instances {_ttptttg}")
-        for gen in _ttptttg:
-            gen_name = gen["name"]
-            cd_generate = self._coredata.get_generate(flags)
+        for gen_name, gen_params in _ttptttg:
+            cd_generate = self.get_data(flags).generate
             if gen_name not in cd_generate:
                 raise SyntaxError(
                     "Generator instance '{}', requested by target '{}', was not found".format(
@@ -453,20 +445,12 @@ class Core:
                     )
                 )
             gen_inst = cd_generate[gen_name]
-            params = (
-                utils.merge_dict(gen_inst["parameters"], gen["params"])
-                if "parameters" in gen_inst
-                else {}
-            )
+            params = utils.merge_dict(dict(gen_inst.parameters), gen_params)
             t = {
                 "name": gen_name,
-                "generator": str(gen_inst["generator"]),
-                "config": dict(params),
-                "pos": str(
-                    cd_generate[gen_name]["position"]
-                    if "position" in cd_generate[gen_name]
-                    else "append"
-                ),
+                "generator": gen_inst.generator,
+                "config": params,
+                "pos": gen_inst.position if gen_inst.position is not None else "append",
             }
             ttptttg.append(t)
         return ttptttg
@@ -477,35 +461,30 @@ class Core:
         if not target:
             return vpi
 
-        cd_filesets = self._coredata.get_filesets(flags)
+        cd_filesets = self.get_data(flags).filesets
 
         for vpi_name in target.get("vpi", []):
-            cd_vpi_lib = self._coredata.get_vpi(flags)
+            cd_vpi_lib = self.get_data(flags).vpi
             files = []
             incfiles = []  # Really do this automatically?
             libs = []
             if vpi_name in cd_vpi_lib:
-                for fs in cd_vpi_lib[vpi_name].get("filesets", []):
-                    for f in cd_filesets[fs]["files"]:
+                for fs in cd_vpi_lib[vpi_name].filesets:
+                    for f in cd_filesets[fs].files:
+                        assert not isinstance(f, str)
                         for k, v in f.items():
-                            if v["is_include_file"]:
+                            if v.is_include_file:
                                 incfiles.append(k)
                             else:
                                 files.append(k)
 
-                for lib in cd_vpi_lib[vpi_name].get("libs", []):
-                    libs.append(lib)
+                libs = list(cd_vpi_lib[vpi_name].libs)
 
-            vpi[vpi_name] = {
-                "src_files": files,
-                "inc_files": incfiles,
-                "libs": [lib for lib in libs],
-            }
+            vpi[vpi_name] = {"src_files": files, "inc_files": incfiles, "libs": libs}
         return vpi
 
     def get_vpi(self, flags):
         self._debug(f"Getting VPI libraries for flags {flags}")
-        target_name, target = self._get_target(flags)
         vpi = []
         _vpi = self._get_vpi(flags)
         self._debug(" Matched VPI libraries {}".format([v for v in _vpi]))
@@ -531,24 +510,22 @@ Signature:   {}
 Targets:
 {}"""
 
-        cd_target = self._coredata.get_targets({})
+        if cd_targets := self.get_data({}).targets:
+            maxlen = max(len(x) for x in cd_targets)
 
-        if cd_target:
-            maxlen = max(len(x) for x in cd_target)
             targets = ""
-
-            for t in sorted(cd_target):
+            for name in sorted(cd_targets):
                 targets += "{} : {}\n".format(
-                    t.ljust(maxlen),
-                    cd_target[t]["description"]
-                    if "description" in cd_target[t]
+                    name.ljust(maxlen),
+                    cd_targets[name].description
+                    if "description" in cd_targets[name].description
                     else "<No description>",
                 )
         else:
             targets = "<No targets>"
         return s.format(
             str(self.name),
-            str(self.get_description() or "<No description>"),
+            str(self.get_data({}).description or "<No description>"),
             str(self.core_root),
             str(self.core_basename),
             self.sig_status_long(trustfile),
@@ -557,7 +534,7 @@ Targets:
 
     def patch(self, dst_dir):
         # FIXME: Use native python patch instead
-        patches = self.provider.patches
+        patches = self.provider.patches  # ty: ignore[unresolved-attribute]
         for f in patches:
             patch_file = os.path.abspath(os.path.join(self.core_root, f))
             if os.path.isfile(patch_file):
@@ -592,19 +569,15 @@ Targets:
     def _debug(self, msg):
         logger.debug("{} : {}".format(str(self.name), msg))
 
-    def _get_target(self, flags):
+    def _get_target(self, flags: Flags):
         self._debug(" Resolving target for flags '{}'".format(str(flags)))
 
-        cd_target = self._coredata.get_targets(flags)
-        target_name = None
-        if flags.get("is_toplevel") and flags.get("target"):
-            target_name = flags.get("target")
-        else:
-            target_name = "default"
+        cd_target = self.get_target(flags)
+        target_name = get_target_name(flags)
 
-        if target_name in cd_target:
+        if cd_target:
             self._debug(f" Matched target {target_name}")
-            return target_name, cd_target[target_name]
+            return target_name, cd_target.model_dump(exclude_unset=True)
         else:
             self._debug("Matched no target")
             return target_name, {}
@@ -616,7 +589,7 @@ Targets:
             return []
         filesets = []
 
-        cd_filesets = self._coredata.get_filesets(flags)
+        cd_filesets = self.get_data(flags).filesets
 
         for fs in target.get("filesets", []):
             if fs not in cd_filesets:
@@ -625,23 +598,23 @@ Targets:
                         self.name, fs, target_name
                     )
                 )
-            filesets.append(cd_filesets[fs])
+            filesets.append(cd_filesets[fs].model_dump())
 
         self._debug(" Matched filesets " + str(target.get("filesets")))
         return filesets
 
-    def get_name(self):
-        return self.name
+    def get_description(self) -> str | None:
+        return self.get_data({}).description
 
-    def get_description(self):
-        return self._coredata.get_description()
-
-    def get_license(self):
-        return self._coredata.get("license")
+    def get_license(self) -> str | Mapping[str, str] | None:
+        license = self.get_data({}).license
+        if isinstance(license, License):
+            return license.model_dump()
+        return license
 
     @property
-    def mapping(self) -> Optional[Mapping[str, str]]:
-        return MappingProxyType(self._coredata.get("mapping", {}))
+    def mapping(self) -> Mapping[str, str]:
+        return MappingProxyType(self.get_data({}).mapping)
 
     def signed_data(self):
         """
@@ -672,7 +645,7 @@ Targets:
         }.get(self.sig_status(trustfile), "Other signature checking error")
 
     def sig_status(self, trustfile):
-        sigfile = self.core_file + ".sig"
+        sigfile = str(self.core_file) + ".sig"
         if not os.path.isfile(sigfile):
             return "-"  # Not signed
         if not trustfile:

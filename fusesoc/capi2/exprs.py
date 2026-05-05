@@ -29,19 +29,27 @@ containing each word that matched.
 
 """
 
+from functools import lru_cache
+from typing import Any, Sequence
+
+from pydantic import GetCoreSchemaHandler, validate_call
+from pydantic_core import CoreSchema, core_schema
 from pyparsing import (
     Forward,
     Group,
     OneOrMore,
     Optional,
     ParseException,
+    ParseResults,
     Suppress,
     Word,
     alphanums,
 )
 
+from .flags import FlagDefs
 
-def _cond_parse_action(string, location, tokens):
+
+def _cond_parse_action(tokens: ParseResults):
     """A parse action for conditional terms"""
     # A conditional term (see _make_cond_parser) has 2 or 3 tokens, depending
     # on whether it was negated or not.
@@ -57,7 +65,7 @@ def _cond_parse_action(string, location, tokens):
 _PARSER = None
 
 
-def _get_parser():
+def _get_parser() -> Forward:
     """Return a pyparsing parser for the exprs syntax
 
     This returns a basic "AST" that consists of a list of "exprs". Each expr is
@@ -92,7 +100,10 @@ def _get_parser():
     return _PARSER
 
 
-def _simplify_ast(raw_ast):
+SimplifiedAst = list[str | tuple[bool, str, "SimplifiedAst"]]
+
+
+def _simplify_ast(raw_ast: ParseResults) -> SimplifiedAst:
     """Simplify an AST that comes out of the parser
 
     As well as replacing pyparsing's ParseResults with bare lists, this merges
@@ -108,7 +119,7 @@ def _simplify_ast(raw_ast):
     flag is a string and ast is another simplified ast.
 
     """
-    children = []
+    children: SimplifiedAst = []
     str_acc = []
     for expr in raw_ast:
         if isinstance(expr, str):
@@ -123,6 +134,8 @@ def _simplify_ast(raw_ast):
             str_acc = []
 
         negated, flag, exprs = expr
+        assert isinstance(negated, bool)
+        assert isinstance(flag, str)
         children.append((negated, flag, _simplify_ast(exprs)))
 
     if str_acc:
@@ -131,7 +144,8 @@ def _simplify_ast(raw_ast):
     return children
 
 
-def _parse(string):
+@lru_cache(maxsize=2048)
+def parse(string: str) -> SimplifiedAst:
     """Parse a string to a simplified AST.
 
     Raises a ValueError if the string is malformed in some way.
@@ -147,57 +161,51 @@ def _parse(string):
     return _simplify_ast(raw_ast)
 
 
-class Exprs:
-    """A parsed list of exprs"""
+def expand(ast: SimplifiedAst, flag_defs: FlagDefs) -> Sequence[str]:
+    """Expand ast for the given flag_defs.
 
-    def __init__(self, string):
-        self.ast = _parse(string)
-        self.as_string = None
+    Returns a (possibly empty) list of strings
+
+    """
+    expanded: list[str] = []
+    for child in ast:
+        if isinstance(child, str):
+            expanded.append(child)
+            continue
+
+        # We have a conditional expression. Is the condition true? If not,
+        # skip it.
+        negated, flag, exprs = child
+        if (flag in flag_defs) == negated:
+            # The condition was false
+            continue
+
+        # The condition was true
+        expanded += expand(exprs, flag_defs)
+    return expanded
+
+
+class Expr(str):
+    """A CAPI2 string that may contain `?`-conditional expressions."""
+
+    __slots__ = ()
+
+    @validate_call
+    def expand(self, flag_defs: FlagDefs) -> str:
+        ast = parse(self)
 
         # An extra optimisation for the common case where the whole ast boils
         # down to a single string with no conditions.
-        if len(self.ast) == 1 and isinstance(self.ast[0], str):
-            self.as_string = self.ast[0]
+        if len(ast) == 1 and isinstance(ast[0], str):
+            return ast[0]
 
-    @staticmethod
-    def _expand(ast, flag_defs):
-        """Expand ast for the given flag_defs.
+        return " ".join(expand(ast, flag_defs))
 
-        Returns a (possibly empty) list of strings
-
-        """
-        expanded = []
-        for child in ast:
-            if isinstance(child, str):
-                expanded.append(child)
-                continue
-
-            # We have a conditional expression. Is the condition true? If not,
-            # skip it.
-            negated, flag, exprs = child
-            if (flag in flag_defs) == negated:
-                # The condition was false
-                continue
-
-            # The condition was true
-            expanded += Exprs._expand(exprs, flag_defs)
-        return expanded
-
-    @staticmethod
-    def _flags_to_flag_defs(flags):
-        """Convert a flags dictionary to the set of flags that are defined"""
-        ret = []
-        for k, v in flags.items():
-            if v is True:
-                ret.append(k)
-            elif v not in [False, None]:
-                ret.append(k + "_" + str(v))
-        return set(ret)
-
-    def expand(self, flags):
-        """Expand the parsed string in the presence of the given flags"""
-        if self.as_string is not None:
-            return self.as_string
-
-        flag_defs = Exprs._flags_to_flag_defs(flags)
-        return " ".join(Exprs._expand(self.ast, flag_defs))
+    @classmethod
+    def __get_pydantic_core_schema__(
+        cls, _source_type: Any, _handler: GetCoreSchemaHandler
+    ) -> CoreSchema:
+        return core_schema.no_info_after_validator_function(
+            cls,
+            core_schema.str_schema(),
+        )
