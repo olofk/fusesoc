@@ -61,10 +61,24 @@ def _get_core(cm, core_name):
         logger.error(str(e))
         exit(1)
     except DependencyError as e:
-        logger.error(
+        msg = (
             f"{core_name!r} or any of its dependencies requires {e.value!r}, but "
             "this core was not found"
         )
+        # If any core file failed to parse during library scanning, the missing
+        # core may simply be one that was silently ignored. Surface those errors
+        # alongside the "not found" message so they don't get lost in the log
+        # scrollback.
+        if getattr(cm, "parse_errors", None):
+            msg += (
+                "\n\n"
+                "The following core files failed to parse and were ignored "
+                "during the library scan; one of them may define the missing "
+                "core:"
+            )
+            for core_file, err in cm.parse_errors:
+                msg += f"\n  - {core_file}: {err}"
+        logger.error(msg)
         exit(1)
     except SyntaxError as e:
         logger.error(str(e))

@@ -424,6 +424,12 @@ class CoreManager:
         self.core2parser = Core2Parser(
             config.resolve_env_vars_early, config.allow_additional_properties
         )
+        # Files that were rejected during ``find_cores`` because they failed to
+        # parse, kept as ``(core_file, error_message)`` tuples. The corresponding
+        # warnings are still logged in real time, but tracking them here lets
+        # callers surface the original cause when a later "core not found" lookup
+        # would otherwise hide it.
+        self.parse_errors = []
 
     def find_cores(self, library, ignored_dirs):
         found_cores = []
@@ -485,6 +491,7 @@ class CoreManager:
                     except SyntaxError as e:
                         w = "Parse error. Ignoring file " + core_file + ": " + e.msg
                         logger.warning(w)
+                        self.parse_errors.append((core_file, e.msg))
                     except ImportError as e:
                         w = 'Failed to register "{}" due to unknown provider: {}'
                         logger.warning(w.format(core_file, str(e)))

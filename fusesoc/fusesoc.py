@@ -82,6 +82,13 @@ class Fusesoc:
     def get_core(self, name):
         return self.cm.get_core(Vlnv(name))
 
+    @property
+    def parse_errors(self):
+        """``(core_file, error_message)`` tuples for files that failed to parse
+        during library scanning. Forwarded from the underlying ``CoreManager``
+        so callers don't need to reach through the wrapper."""
+        return self.cm.parse_errors
+
     def get_cores(self):
         return self.cm.get_cores()
 

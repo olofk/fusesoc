@@ -733,3 +733,43 @@ def test_lockfile_no_file_create(caplog):
             "::used:1.1",
             "::dependencies-top:0",
         ]
+
+
+def test_find_cores_records_parse_errors(tmp_path):
+    """A malformed .core file should be recorded on ``parse_errors`` so callers
+    can surface it later instead of having the warning silently scroll off
+    screen.
+
+    Regression test for https://github.com/olofk/fusesoc/issues/761.
+    """
+    from fusesoc.config import Config
+    from fusesoc.coremanager import CoreManager
+    from fusesoc.librarymanager import Library
+
+    (tmp_path / "broken.core").write_text(
+        "CAPI=2:\n"
+        "name: ::broken:0\n"
+        "filesets:\n"
+        "  fs:\n"
+        "    files: not_an_array\n"
+        "targets:\n"
+        "  default:\n"
+        "    filesets: [fs]\n"
+    )
+    (tmp_path / "good.core").write_text(
+        "CAPI=2:\nname: ::good:0\ntargets:\n  default: {}\n"
+    )
+
+    cm = CoreManager(Config())
+    cm.add_library(Library("broken-test", str(tmp_path)), [])
+
+    # The valid core is still discoverable.
+    cores = {str(c) for c in cm.get_cores()}
+    assert "::good:0" in cores
+    assert "::broken:0" not in cores
+
+    # The broken core is recorded so a "core not found" caller can surface it.
+    assert len(cm.parse_errors) == 1
+    bad_file, msg = cm.parse_errors[0]
+    assert bad_file.endswith("broken.core")
+    assert "must be array" in msg
