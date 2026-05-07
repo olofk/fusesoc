@@ -3,7 +3,10 @@
 # SPDX-License-Identifier: BSD-2-Clause
 
 import copy
+import re
 from functools import total_ordering
+
+_VLNV_PART_RE = re.compile(r"^[A-Za-z0-9_.-]*$")
 
 
 @total_ordering
@@ -95,6 +98,14 @@ class Vlnv:
             # No version specifier means any version i.e. >=0
             self.version = "0"
             self.relation = default_relation
+
+        for field in ("vendor", "library", "name", "version"):
+            value = getattr(self, field)
+            if not _VLNV_PART_RE.match(value):
+                raise SyntaxError(
+                    "Illegal character in core name '{}': {} '{}' may only "
+                    "contain alphanumerics, '.', '-', and '_'".format(s, field, value)
+                )
 
         # Create sanitized name
         self.sanitized_name = str(self).lstrip(":").replace(":", "_")
