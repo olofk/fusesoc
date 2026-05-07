@@ -302,3 +302,39 @@ def test_generators():
         == "generate-testgenerate_with_file_cache_0-f3d9e1e462ef1f7113fafbacd62d6335dd684e69332f75498fb01bfaaa7c11ee"
     )
     shutil.rmtree(core.core_root, ignore_errors=True)
+
+
+def test_hook_script_names_are_unique_per_core():
+    """Two cores with a same-named hook script must produce distinct EDAM
+    hook names so edalize doesn't generate duplicate Makefile targets.
+
+    Regression test for https://github.com/olofk/fusesoc/issues/646
+    """
+    import os
+
+    from fusesoc.config import Config
+    from fusesoc.coremanager import CoreManager
+    from fusesoc.edalizer import Edalizer
+    from fusesoc.librarymanager import Library
+    from fusesoc.vlnv import Vlnv
+
+    tests_dir = os.path.dirname(__file__)
+    cores_dir = os.path.join(tests_dir, "capi2_cores", "hooks_collision")
+
+    cm = CoreManager(Config())
+    cm.add_library(Library("hooks_collision", cores_dir), [])
+
+    child = cm.get_core(Vlnv("::hookcollision-child:0"))
+    edam = Edalizer(
+        toplevel=child.name,
+        flags={"tool": "icarus"},
+        core_manager=cm,
+        work_root=".",
+    ).run()
+
+    pre_build_hooks = edam["hooks"]["pre_build"]
+    assert len(pre_build_hooks) == 2
+    names = [h["name"] for h in pre_build_hooks]
+    assert len(set(names)) == 2, f"hook script names collided: {names}"
+    assert "hookcollision-parent_0_myhook" in names
+    assert "hookcollision-child_0_myhook" in names

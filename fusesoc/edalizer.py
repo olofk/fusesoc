@@ -253,8 +253,17 @@ class Edalizer:
             # Extract flow options
             snippet["flow_options"] = core.get_flow_options(_flags)
 
-            # Extract scripts
+            # Extract scripts. Prefix every hook script name with the owning
+            # core's sanitized VLNV: edalize generates one Makefile target per
+            # hook script using its `name`, so two cores defining a script
+            # called `foo` would otherwise produce duplicate targets and only
+            # the last one would run.
             snippet["hooks"] = core.get_scripts(rel_root, _flags)
+            for hook_scripts in snippet["hooks"].values():
+                for script in hook_scripts:
+                    script["name"] = "{}_{}".format(
+                        core.name.sanitized_name, script["name"]
+                    )
 
             _files = []
             for file in core.get_files(_flags):
