@@ -52,3 +52,8 @@ def test_expand():
     check_expand("mode_foo ? (a)", {"mode": "bar"}, "")
     check_expand("!mode_foo ? (a)", {"mode": "foo"}, "")
     check_expand("!mode_foo ? (a)", {"mode": "bar"}, "a")
+
+    # Numeric flag values should be stringified, not crash
+    check_expand("blah_1234 ? (a)", {"blah": 1234}, "a")
+    check_expand("blah_1234 ? (a)", {"blah": 5678}, "")
+    check_expand("!blah_1234 ? (a)", {"blah": 1234}, "")

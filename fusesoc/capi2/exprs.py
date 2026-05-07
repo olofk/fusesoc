@@ -191,7 +191,7 @@ class Exprs:
             if v is True:
                 ret.append(k)
             elif v not in [False, None]:
-                ret.append(k + "_" + v)
+                ret.append(k + "_" + str(v))
         return set(ret)
 
     def expand(self, flags):
