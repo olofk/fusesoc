@@ -46,7 +46,14 @@ Changelog = "https://github.com/olofk/fusesoc/blob/main/NEWS"
 write_to = "fusesoc/version.py"
 
 [tool.setuptools.packages.find]
-include = ["fusesoc", "fusesoc.capi2", "fusesoc.provider", "fusesoc.parser", "fusesoc.filters"]
+include = [
+  "fusesoc",
+  "fusesoc.capi2",
+  "fusesoc.capi2.schema",
+  "fusesoc.provider",
+  "fusesoc.parser",
+  "fusesoc.filters",
+]
 
 [project.scripts]
 fusesoc = "fusesoc.main:main"
@@ -70,4 +77,43 @@ commands = pytest
 line-length = 88
 indent-width = 4
 
-target-version = "py37"
+target-version = "py310"
+
+[tool.mypy]
+mypy_path = "."
+namespace_packages = true
+explicit_package_bases = true
+files = ["fusesoc/capi2/"]
+
+[[tool.mypy.overrides]]
+module = [
+  "yaml",
+  "okonomiyaki.*",
+  "fastjsonschema",
+  "argcomplete",
+  "simplesat.*",
+  "edalize.*",
+  "pyparsing",
+]
+ignore_missing_imports = true
+
+[[tool.mypy.overrides]]
+module = [
+  "fusesoc.utils",
+  "fusesoc.signature",
+  "fusesoc.vlnv",
+  "fusesoc.provider.*",
+  "fusesoc.parser.*",
+  "fusesoc.coremanager",
+  "fusesoc.config",
+  "fusesoc.librarymanager",
+  "fusesoc.fusesoc",
+  "fusesoc.core",
+]
+follow_imports = "silent"
+
+[tool.ty.environment]
+python-version = "3.10"
+
+[tool.ty.src]
+include = ["fusesoc/capi2/"]
