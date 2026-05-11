@@ -575,7 +575,50 @@ class Ttptttg:
         data = self.generator_input.copy()
         # Remove files_root since that is not deterministic
         data.pop("files_root")
+        # Fold the generator definition into the hash so that updating the
+        # generator -- its declared command/interpreter *or* the script's
+        # bytes -- actually invalidates the cache. Without this a changed
+        # generator with unchanged user-facing inputs silently serves
+        # stale output. See #751.
+        #
+        # Deliberately NOT hashed:
+        #
+        # * The resolved interpreter path from ``shutil.which(interpreter)``
+        #   -- depends on the system PATH at run time and is not part of
+        #   the generator definition the user signs in their .core file.
+        # * The generator's ``root`` path -- it's an absolute path that
+        #   differs between machines/checkouts, which would make hashes
+        #   non-portable and cache directory names environment-specific.
+        #   Two generators with the same relative ``command`` rooted under
+        #   different directories are still distinguished here by
+        #   ``__generator_script_hash__``: if their script bytes differ,
+        #   the hash differs; if their bytes match, sharing the cache is
+        #   the desired behaviour.
+        data["__generator_command__"] = self.generator.get("command", "")
+        data["__generator_interpreter__"] = self.generator.get("interpreter", "")
+        data["__generator_script_hash__"] = self._generator_script_sha256()
         return hashlib.sha256(utils.yaml_dump(data).encode()).hexdigest()
+
+    def _generator_script_sha256(self):
+        """SHA-256 of the resolved generator script bytes, or ``None`` if
+        the script cannot be read.
+
+        The ``None`` sentinel is intentional: a script that is unreadable
+        on one run and readable on the next still flips the marker, which
+        is the conservative direction. Likewise, an in-place edit of the
+        script flips the hash even though the path on disk is unchanged
+        -- this is the gap that the literal command/interpreter strings
+        alone cannot close.
+        """
+        root = self.generator.get("root")
+        command = self.generator.get("command")
+        if not root or not command:
+            return None
+        script_path = os.path.join(os.path.abspath(root), command)
+        try:
+            return hashlib.sha256(pathlib.Path(script_path).read_bytes()).hexdigest()
+        except OSError:
+            return None
 
     def _sha256_file_input_hexdigest(self):
         input_files = []
