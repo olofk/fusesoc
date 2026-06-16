@@ -162,7 +162,7 @@ class Spdxgen:
     def run(self, edam, work_root):
         with open(os.path.join(work_root, edam["name"] + ".spdx.json"), "w") as f:
             ci_id = "https://FuseSoC/creationinfo/" + nanoid.generate()
-            dt = datetime.datetime.now(datetime.UTC)
+            dt = datetime.datetime.now(datetime.timezone.utc)
             dt.replace(microsecond=0)  # for isoformat to stop at seconds
             now = dt.isoformat()
             graph, sbom = self._generate_preamble(ci_id, now)
