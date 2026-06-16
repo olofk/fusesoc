@@ -34,7 +34,7 @@ class Launcher:
         logger.debug("    " + str(self))
         try:
             subprocess.check_call(
-                map(str, [self.cmd] + self.args),
+                list(map(str, [self.cmd] + self.args)),
                 cwd=self.cwd,
             ),
         except FileNotFoundError:
