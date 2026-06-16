@@ -206,11 +206,11 @@ def list_cores(fs, args):
     cores = fs.get_cores()
     trustfile = fs.config.ssh_trustfile or args.ssh_trustfile
     if not trustfile:
-        logger.warn(
+        logger.warning(
             "No trustfile configured (ssh-trustfile in fusesoc.conf), signatures will not be checked."
         )
     elif not os.path.isfile(trustfile):
-        logger.warn(
+        logger.warning(
             "The trustfile configured in fusesoc.conf does not exist, signatures will not be checked."
         )
     print("\nAvailable cores:\n")
