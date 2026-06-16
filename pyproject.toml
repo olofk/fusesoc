@@ -117,3 +117,49 @@ python-version = "3.10"
 
 [tool.ty.src]
 include = ["fusesoc/"]
+
+# Deps without stubs
+# (edalize, argcomplete, yaml, okonomiyaki, simplesat, fastjsonschema)
+[[tool.ty.overrides]]
+include = [
+  "fusesoc/coremanager.py",
+  "fusesoc/filters/custom.py",
+  "fusesoc/filters/spdxgen.py",
+  "fusesoc/fusesoc.py",
+  "fusesoc/lockfile.py",
+  "fusesoc/main.py",
+  "fusesoc/parser/coreparser.py",
+  "fusesoc/signature.py",
+  "fusesoc/utils.py",
+  "fusesoc/vlnv.py",
+]
+rules.unresolved-import = "ignore"
+
+# argcomplete adds .completer to argparse.Action at runtime which is not reflected in the stubs
+[[tool.ty.overrides]]
+include = ["fusesoc/main.py"]
+rules.unresolved-attribute = "ignore"
+
+# edalizer.py operates on untyped EDAM dicts and uses **typedict unpacking into argparse.add_argument()
+[[tool.ty.overrides]]
+include = ["fusesoc/edalizer.py"]
+rules.invalid-argument-type = "ignore"
+rules.invalid-assignment = "ignore"
+rules.call-non-callable = "ignore"
+rules.missing-argument = "ignore"
+rules.unresolved-attribute = "ignore"
+
+# Intentional ssl monkey-patching to disable certificate verification
+[[tool.ty.overrides]]
+include = ["fusesoc/provider/url.py"]
+rules.invalid-assignment = "ignore"
+
+# EDAM dict access via untyped dicts produces false positives
+[[tool.ty.overrides]]
+include = ["fusesoc/filters/spdxgen.py"]
+rules.unresolved-attribute = "ignore"
+
+# Intentional monkey-patching of warnings.formatwarning
+[[tool.ty.overrides]]
+include = ["fusesoc/utils.py"]
+rules.invalid-assignment = "ignore"
