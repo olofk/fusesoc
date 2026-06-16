@@ -133,7 +133,13 @@ class Spdxgen:
             file_id = "https://FuseSoC/file/" + nanoid.generate()
             hash_id = "https://FuseSoC/hash/" + nanoid.generate()
             with open(os.path.join(work_root, fname), "rb", buffering=0) as f:
-                hash_val = hashlib.file_digest(f, "sha256").hexdigest()
+                # When switching python version to >= 3.11 we can use:
+                # hash_val = hashlib.file_digest(f, "sha256").hexdigest()
+                # But for now do it in a 3.10 friendly way
+                h = hashlib.sha256()
+                while chunk := f.read(65536):
+                    h.update(chunk)
+                hash_val = h.hexdigest()
             pkg += [
                 {
                     "spdxId": file_id,
