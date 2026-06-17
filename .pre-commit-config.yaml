@@ -41,23 +41,6 @@ repos:
       - id: ruff-check
       # The formatter could be run in the future
       #- id: ruff-format
-  - repo: https://github.com/pre-commit/mirrors-mypy
-    rev: v1.13.0
-    hooks:
-      - id: mypy
-        # Typed runtime deps mypy needs to resolve imports for the
-        # strict-checked modules. Keep in sync with `pyproject.toml`'s
-        # `[project].dependencies` for any package that ships type info.
-        additional_dependencies:
-          - pydantic>=2.13.3
-          - typing_extensions
-          - pyparsing>=2.3.1
-          - types-PyYAML
-        args: [--config-file=pyproject.toml]
-        # Don't let pre-commit pass file paths as arguments — they would
-        # override `files = [...]` in pyproject.toml and pull every Python
-        # file into the check regardless of the strict whitelist.
-        pass_filenames: false
   - repo: local
     hooks:
       # ty doesn't have an upstream pre-commit hook repo yet (Astral ships
@@ -69,8 +52,7 @@ repos:
         entry: ty check
         language: python
         # ty itself + the runtime deps needed to resolve imports for the
-        # checked modules. Mirror the mypy hook's additional_dependencies
-        # for the same project deps.
+        # checked modules.
         additional_dependencies:
           - ty>=0.0.34
           - pydantic>=2.13.3
