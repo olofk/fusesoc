@@ -173,7 +173,7 @@ class CoreDB:
                 "Due to implementation details, mappings can only be applied once."
             )
 
-        mappings = {}
+        mappings: dict[str, str] = {}
         for mapping_vlnv in mapping_vlnvs:
             new_mapping_name = str(Vlnv(mapping_vlnv))
             new_mapping_core = self._cores.get(new_mapping_name)
@@ -256,8 +256,8 @@ class CoreDB:
         VLNVs. In the resulting package definitions, these must get "conflicts"
         constraints.
         """
-        conflict_map = {}
-        virtual_map = {}
+        conflict_map: dict[str, set[str]] = {}
+        virtual_map: dict[str, set[str]] = {}
         for core_data in self._cores.values():
             core = core_data["core"]
             _virtuals = core.get_virtuals()

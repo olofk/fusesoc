@@ -10,7 +10,7 @@ import pathlib
 import shutil
 from filecmp import cmp
 from importlib import import_module
-from typing import Sequence
+from typing import Any, Sequence
 
 from fusesoc import utils
 from fusesoc.capi2.coreparser import Core2Parser
@@ -62,6 +62,7 @@ class Edalizer:
         self.resolve_env_vars = resolve_env_vars
 
         self.generators = {}
+        self.edam: dict[str, Any] = {}
 
         self._resolved_or_generated_cores = []
 
@@ -208,12 +209,12 @@ class Edalizer:
                 )
 
     def create_edam(self):
-        first_snippets = []
-        snippets = []
-        last_snippets = []
-        parameters = {}
+        first_snippets: list[dict[str, Any]] = []
+        snippets: list[dict[str, Any]] = []
+        last_snippets: list[dict[str, Any]] = []
+        parameters: dict[str, Any] = {}
         for core in self.cores:
-            snippet = {}
+            snippet: dict[str, Any] = {}
 
             logger.debug(f"Collecting EDAM parameters from {str(core.name)}")
             _flags = self._core_flags(core)
@@ -332,7 +333,7 @@ class Edalizer:
             merge_dict(self.edam, snippet)
 
     def _build_parser(self, backend_class, edam):
-        typedict = {
+        typedict: dict[str, dict[str, Any]] = {
             "bool": {"type": str2bool, "nargs": "?", "const": True},
             "file": {"type": str, "nargs": 1, "action": FileAction},
             "int": {"type": int, "nargs": 1},
@@ -475,7 +476,7 @@ class Edalizer:
             prog=progname, conflict_handler="resolve", add_help=False
         )
         backend_args = parser.add_argument_group("Flow options")
-        typedict = {
+        typedict: dict[str, dict[str, Any]] = {
             "bool": {"type": str2bool, "nargs": "?", "const": True},
             "file": {"type": str, "nargs": 1, "action": FileAction},
             "int": {"type": int, "nargs": 1},
