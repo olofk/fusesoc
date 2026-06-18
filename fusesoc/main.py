@@ -559,7 +559,7 @@ def get_parser():
         "show", help="Show information about a core"
     )
     parser_core_show.add_argument("core", help="Name of the core to show").completer = (
-        CoreCompleter()
+        CoreCompleter()  # type: ignore[attr-defined]
     )
     parser_core_show.set_defaults(func=core_info)
 
@@ -567,7 +567,7 @@ def get_parser():
         "sign", help="Create user signature for a core"
     )
     parser_core_sign.add_argument("core", help="Name of the core to sign").completer = (
-        CoreCompleter()
+        CoreCompleter()  # type: ignore[attr-defined]
     )
     parser_core_sign.add_argument("keyfile", help="File containing ssh private key")
     parser_core_sign.set_defaults(func=core_sign)
@@ -591,7 +591,7 @@ def get_parser():
     parser_core_info = subparsers.add_parser(
         "core-info", help="Display details about a core"
     )
-    parser_core_info.add_argument("core").completer = CoreCompleter()
+    parser_core_info.add_argument("core").completer = CoreCompleter()  # type: ignore[attr-defined]
     parser_core_info.set_defaults(func=core_info)
 
     # gen subparser
@@ -613,7 +613,7 @@ def get_parser():
     )
     parser_gen_show.add_argument(
         "generator", help="Name of the generator to show"
-    ).completer = GenCompleter()
+    ).completer = GenCompleter()  # type: ignore[attr-defined]
     parser_gen_show.set_defaults(func=gen_show)
 
     # gen clean subparser
@@ -726,7 +726,7 @@ def get_parser():
     parser_run.add_argument("--target", help="Override default target")
     parser_run.add_argument(
         "--tool", help="Override default tool for target"
-    ).completer = ToolCompleter()
+    ).completer = ToolCompleter()  # type: ignore[attr-defined]
     parser_run.add_argument(
         "--flag",
         help="Set custom use flags. Can be specified multiple times",
@@ -748,7 +748,7 @@ def get_parser():
     )
     parser_run.add_argument(
         "system", help="Select a system to operate on"
-    ).completer = CoreCompleter()
+    ).completer = CoreCompleter()  # type: ignore[attr-defined]
     parser_run.add_argument(
         "backendargs", nargs=argparse.REMAINDER, help="arguments to be sent to backend"
     )
