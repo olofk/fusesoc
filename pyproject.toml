@@ -107,4 +107,4 @@ ignore_missing_imports = true
 python-version = "3.10"
 
 [tool.ty.src]
-include = ["fusesoc/capi2/"]
+include = ["fusesoc/"]
