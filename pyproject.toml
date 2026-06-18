@@ -98,7 +98,6 @@ module = [
   "pydantic",
   "pydantic_core",
   "nanoid",
-  "fusesoc.version",
 ]
 ignore_missing_imports = true
 
