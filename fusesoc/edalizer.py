@@ -765,5 +765,5 @@ class Ttptttg:
                     except SyntaxError as e:
                         w = "Failed to parse generated core file " + f + ": " + e.msg
                         raise RuntimeError(w)
-        logger.debug("Found " + ", ".join(str(c.name) for c in cores))
+        logger.debug("Found " + ", ".join(str(c.name) for c in cores))  # type: ignore[attr-defined]
         return cores
