@@ -132,7 +132,7 @@ class CoreInterface:
                         shutil.copytree(src, dst, dirs_exist_ok=True)
 
         # Clean out leftover files from previous builds
-        for root, dirs, files in os.walk(dst_dir):  # ty: ignore[invalid-assignment]
+        for root, _, files in os.walk(dst_dir):
             for f in files:
                 _abs_f = os.path.join(root, f)
                 _rel_f = os.path.normpath(os.path.relpath(_abs_f, dst_dir))
