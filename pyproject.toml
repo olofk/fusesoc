@@ -94,6 +94,9 @@ module = [
   "simplesat.*",
   "edalize.*",
   "pyparsing",
+  "pydantic",
+  "pydantic_core",
+  "nanoid",
 ]
 ignore_missing_imports = true
 
