@@ -14,8 +14,8 @@ try:
     from yaml import CSafeDumper as YamlDumper
     from yaml import CSafeLoader as YamlLoader
 except ImportError:
-    from yaml import SafeDumper as YamlDumper
-    from yaml import SafeLoader as YamlLoader
+    from yaml import SafeDumper as YamlDumper  # type: ignore[assignment]
+    from yaml import SafeLoader as YamlLoader  # type: ignore[assignment]
 
 from fusesoc.capi2.inheritance import Inheritance
 

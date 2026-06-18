@@ -8,7 +8,7 @@ try:
     from yaml import CDumper as Dumper
     from yaml import CLoader as Loader
 except ImportError:
-    from yaml import Dumper, Loader
+    from yaml import Dumper, Loader  # type: ignore[assignment]
 
 logger = logging.getLogger(__name__)
 
