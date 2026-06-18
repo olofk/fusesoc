@@ -83,7 +83,7 @@ target-version = "py310"
 mypy_path = "."
 namespace_packages = true
 explicit_package_bases = true
-files = ["fusesoc/capi2/"]
+files = ["fusesoc/"]
 
 [[tool.mypy.overrides]]
 module = [
@@ -96,21 +96,6 @@ module = [
   "pyparsing",
 ]
 ignore_missing_imports = true
-
-[[tool.mypy.overrides]]
-module = [
-  "fusesoc.utils",
-  "fusesoc.signature",
-  "fusesoc.vlnv",
-  "fusesoc.provider.*",
-  "fusesoc.parser.*",
-  "fusesoc.coremanager",
-  "fusesoc.config",
-  "fusesoc.librarymanager",
-  "fusesoc.fusesoc",
-  "fusesoc.core",
-]
-follow_imports = "silent"
 
 [tool.ty.environment]
 python-version = "3.10"
