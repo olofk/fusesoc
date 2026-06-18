@@ -84,6 +84,7 @@ python_version = "3.10"
 mypy_path = "."
 namespace_packages = true
 explicit_package_bases = true
+check_untyped_defs = true
 enable_error_code = ["deprecated"]
 files = ["fusesoc/"]
 
