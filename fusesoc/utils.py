@@ -140,7 +140,7 @@ def setup_logging(level, monchrome=False, log_file=None):
         package_logger.addHandler(ch)
         package_logger.setLevel(level)
     # Warning only packages
-    warning_only_packages = []
+    warning_only_packages: list[str] = []
     for package in warning_only_packages:
         package_logger = logging.getLogger(package)
         package_logger.addHandler(ch)

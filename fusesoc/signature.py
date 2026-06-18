@@ -92,7 +92,7 @@ def verify(core_obj, trust_file_name, sig_file_name):
     if shutil.which("ssh-keygen") is None:
         raise RuntimeError("ssh-keygen not found in $PATH")
 
-    user_results = {}
+    user_results: dict[str, bool] = {}
     for sig in sig_data["coresig"]["signatures"]:
         f_os, tmp_name = tempfile.mkstemp(prefix="sig_", suffix=".asc")
         os.write(f_os, bytes(sig["signature"].encode("utf-8")))

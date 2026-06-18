@@ -200,7 +200,7 @@ class CoreInterface:
 
     def get_scripts(self, files_root, flags):
         self._debug(f"Getting hooks for flags '{str(flags)}'")
-        hooks = {}
+        hooks: dict[str, list[dict[str, Any]]] = {}
         for hook, scripts in self._get_script_names(flags).items():
             hooks[hook] = []
             for script in scripts:
@@ -420,7 +420,7 @@ class CoreInterface:
     def get_ttptttg(self, flags):
         self._debug(f"Getting ttptttg for flags {str(flags)}")
         target_name, target = self._get_target(flags)
-        ttptttg = []
+        ttptttg: list[dict[str, Any]] = []
 
         if not target:
             return ttptttg
@@ -456,7 +456,7 @@ class CoreInterface:
         return ttptttg
 
     def _get_vpi(self, flags):
-        vpi = {}
+        vpi: dict[str, Any] = {}
         target_name, target = self._get_target(flags)
         if not target:
             return vpi
