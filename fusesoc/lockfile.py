@@ -3,6 +3,7 @@ import enum
 import json
 import logging
 import pathlib
+from typing import Any
 
 import fastjsonschema
 
@@ -69,7 +70,7 @@ def load_lockfile(filepath: pathlib.Path):
         logger.warning(f"Lockfile {filepath} not found")
         return {}
 
-    cores = {}
+    cores: dict[Vlnv, Any] = {}
     for core in lockfile_data.setdefault("cores", []):
 
         if "name" in core:

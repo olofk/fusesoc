@@ -167,7 +167,7 @@ class Spdxgen:
             now = dt.isoformat()
             graph, sbom = self._generate_preamble(ci_id, now)
 
-            core_dict = {}
+            core_dict: dict[str, list[str]] = {}
             for fn in edam["files"]:
                 core = fn["core"]
                 name = fn["name"]
