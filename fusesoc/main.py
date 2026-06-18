@@ -558,8 +558,8 @@ def get_parser():
     parser_core_show = core_subparsers.add_parser(
         "show", help="Show information about a core"
     )
-    core_show_arg = parser_core_show.add_argument(
-        "core", help="Name of the core to show"
+    parser_core_show.add_argument("core", help="Name of the core to show").completer = (
+        CoreCompleter()  # type: ignore[attr-defined]
     )
     core_show_arg.completer = CoreCompleter()  # type: ignore[attr-defined, ty:unresolved-attribute]
     parser_core_show.set_defaults(func=core_info)
@@ -567,8 +567,8 @@ def get_parser():
     parser_core_sign = core_subparsers.add_parser(
         "sign", help="Create user signature for a core"
     )
-    core_sign_arg = parser_core_sign.add_argument(
-        "core", help="Name of the core to sign"
+    parser_core_sign.add_argument("core", help="Name of the core to sign").completer = (
+        CoreCompleter()  # type: ignore[attr-defined]
     )
     core_sign_arg.completer = CoreCompleter()  # type: ignore[attr-defined, ty:unresolved-attribute]
     parser_core_sign.add_argument("keyfile", help="File containing ssh private key")
@@ -593,7 +593,7 @@ def get_parser():
     parser_core_info = subparsers.add_parser(
         "core-info", help="Display details about a core"
     )
-    parser_core_info.add_argument("core").completer = CoreCompleter()  # type: ignore[attr-defined, ty:unresolved-attribute]
+    parser_core_info.add_argument("core").completer = CoreCompleter()  # type: ignore[attr-defined]
     parser_core_info.set_defaults(func=core_info)
 
     # gen subparser
@@ -615,7 +615,7 @@ def get_parser():
     )
     parser_gen_show.add_argument(
         "generator", help="Name of the generator to show"
-    ).completer = GenCompleter()  # type: ignore[attr-defined, ty:unresolved-attribute]
+    ).completer = GenCompleter()  # type: ignore[attr-defined]
     parser_gen_show.set_defaults(func=gen_show)
 
     # gen clean subparser
@@ -728,7 +728,7 @@ def get_parser():
     parser_run.add_argument("--target", help="Override default target")
     parser_run.add_argument(
         "--tool", help="Override default tool for target"
-    ).completer = ToolCompleter()  # type: ignore[attr-defined, ty:unresolved-attribute]
+    ).completer = ToolCompleter()  # type: ignore[attr-defined]
     parser_run.add_argument(
         "--flag",
         help="Set custom use flags. Can be specified multiple times",
@@ -750,7 +750,7 @@ def get_parser():
     )
     parser_run.add_argument(
         "system", help="Select a system to operate on"
-    ).completer = CoreCompleter()  # type: ignore[attr-defined, ty:unresolved-attribute]
+    ).completer = CoreCompleter()  # type: ignore[attr-defined]
     parser_run.add_argument(
         "backendargs", nargs=argparse.REMAINDER, help="arguments to be sent to backend"
     )
