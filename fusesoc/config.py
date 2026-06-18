@@ -49,7 +49,7 @@ class Config:
         # Get the environment variable for further cores
         env_cores_root = []
         if os.getenv("FUSESOC_CORES"):
-            env_cores_root = os.getenv("FUSESOC_CORES").split(":")
+            env_cores_root = os.getenv("FUSESOC_CORES", "").split(":")
             env_cores_root.reverse()
 
         self.libraries = [
