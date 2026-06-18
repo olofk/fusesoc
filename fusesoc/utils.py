@@ -123,7 +123,7 @@ def setup_logging(level, monchrome=False, log_file=None):
         return _formatwarning_orig(message, category, filename, lineno, line)
 
     _formatwarning_orig = warnings.formatwarning
-    warnings.formatwarning = _formatwarning
+    warnings.formatwarning = _formatwarning  # ty: ignore[invalid-assignment]
 
     # Pretty color terminal logging
     ch = logging.StreamHandler()
