@@ -37,9 +37,9 @@ class Github(Provider):
         # Ugly hack to get the first part of the directory name of the extracted files
         tmp = t.getnames()[0]
 
-        extraction_arguments = {"path": cache_root}
         if _HAS_TAR_FILTER:
-            extraction_arguments["filter"] = "data"
-        t.extractall(**extraction_arguments)
+            t.extractall(path=cache_root, filter="data")
+        else:
+            t.extractall(path=cache_root)
 
         os.rename(os.path.join(cache_root, tmp), os.path.join(cache_root, core))
