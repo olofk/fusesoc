@@ -61,10 +61,10 @@ class Url(Provider):
 
         if filetype == "tar":
             t = tarfile.open(filename)
-            extraction_arguments = {"path": local_dir}
             if _HAS_TAR_FILTER:
-                extraction_arguments["filter"] = "data"
-            t.extractall(**extraction_arguments)
+                t.extractall(path=local_dir, filter="data")
+            else:
+                t.extractall(path=local_dir)
         elif filetype == "zip":
             with zipfile.ZipFile(filename, "r") as z:
                 z.extractall(local_dir)
