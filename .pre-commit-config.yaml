@@ -72,7 +72,7 @@ repos:
         # checked modules. Mirror the mypy hook's additional_dependencies
         # for the same project deps.
         additional_dependencies:
-          - ty>=0.0.34
+          - ty>=0.0.49
           - pydantic>=2.13.3
           - typing_extensions
           - pyparsing>=2.3.1
