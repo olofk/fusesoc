@@ -44,7 +44,7 @@ class Url(Provider):
         if not self.config.get("verify_cert", True):
             import ssl
 
-            ssl._create_default_https_context = ssl._create_unverified_context  # type: ignore[assignment]
+            ssl._create_default_https_context = ssl._create_unverified_context  # type: ignore[assignment, ty:invalid-assignment]
 
         Url._download(url, local_dir, filetype, user_agent)
 
