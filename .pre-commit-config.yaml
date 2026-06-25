@@ -76,5 +76,7 @@ repos:
           - pydantic>=2.13.3
           - typing_extensions
           - pyparsing>=2.3.1
+          - types-PyYAML
+          - edalize>=0.4.1
         types_or: [python, pyi]
         pass_filenames: false
