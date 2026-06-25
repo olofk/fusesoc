@@ -86,6 +86,7 @@ class Spdxgen:
         decl_license_rel_id = "https://FuseSoC/relationship/" + nanoid.generate()
         purl = f"pkg:fusesoc/{vendor}/{library}/{name}@{version}"
         pkg_id = "https://FuseSoC/package/" + vlnv
+        file_ids: list[str] = []
         pkg = [
             {
                 "spdxId": pkg_id,
@@ -125,10 +126,9 @@ class Spdxgen:
                 "creationInfo": ci_id,
                 "from": pkg_id,
                 "relationshipType": "contains",
-                "to": [],
+                "to": file_ids,
             },
         ]
-        file_rel = pkg[-1]
         for fname in flist:
             file_id = "https://FuseSoC/file/" + nanoid.generate()
             hash_id = "https://FuseSoC/hash/" + nanoid.generate()
@@ -156,7 +156,7 @@ class Spdxgen:
                     "@id": hash_id,
                 },
             ]
-            file_rel["to"].append(file_id)
+            file_ids.append(file_id)
         return pkg, pkg_id
 
     def run(self, edam, work_root):
