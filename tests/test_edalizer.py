@@ -282,7 +282,7 @@ def test_generators():
     assert core_root.is_dir()
     assert (
         core_root.name
-        == "generate-testgenerate_with_cache_0-3ecde28208c91a7f077b518fcec91f115affa02a34204790f654f6ba13efe2bd"
+        == "generate-testgenerate_with_cache_0-dd0cbabeb8396cc34c551cb738a9d4cbf1fb6ba0fafca24be5aa55c03839a40f"
     )
     shutil.rmtree(core.core_root, ignore_errors=True)
 
@@ -299,7 +299,7 @@ def test_generators():
     )
     assert (
         core_root.parent.name
-        == "generate-testgenerate_with_file_cache_0-01cdfe6a25d93d4dacd9c477db1e75feb62cec19d935cae0b3130d6ffebeab62"
+        == "generate-testgenerate_with_file_cache_0-71f6f955798bff1e5f67c76f40f9715d5fc12e6ccbb8919fc607f9c222db7452"
     )
     shutil.rmtree(core.core_root, ignore_errors=True)
 
@@ -340,11 +340,9 @@ def test_hook_script_names_are_unique_per_core():
     assert "hookcollision-child_0_myhook" in names
 
 
-def test_generator_input_hash_includes_command(tmp_path):
-    """``Ttptttg._sha256_input_yaml_hexdigest`` must fold the generator's
-    ``command`` (and ``interpreter``) into the cache hash. Without that,
-    a user updating the generator script (same parameters, same input
-    files) silently keeps getting the previously-cached output.
+def test_changing_generator_command_invalidates_cache_hash(tmp_path):
+    """Changing the generator's ``command`` produces a different cache hash,
+    so an updated generator does not reuse a previous run's cached output.
 
     Regression test for https://github.com/olofk/fusesoc/issues/751.
     """
@@ -384,13 +382,13 @@ def test_generator_input_hash_includes_command(tmp_path):
     h_new = hash_with_cmd("gen_v2.py")
     h_repeat = hash_with_cmd("gen_v1.py")
 
-    assert h_old != h_new, "changing generator command must invalidate the cache hash"
-    assert h_old == h_repeat, "same command must produce stable hash"
+    assert h_old != h_new, "changing generator command changes the cache hash"
+    assert h_old == h_repeat, "same command produces a stable hash"
 
 
-def test_generator_input_hash_includes_interpreter(tmp_path):
-    """Swapping the interpreter (e.g. ``python3`` → ``python2``) is also a
-    real environment change that should invalidate the cache."""
+def test_changing_generator_interpreter_invalidates_cache_hash(tmp_path):
+    """Swapping the interpreter (e.g. ``python3`` → ``python2``)
+    invalidates the cache."""
     from types import SimpleNamespace
 
     from fusesoc.edalizer import Ttptttg
@@ -423,12 +421,10 @@ def test_generator_input_hash_includes_interpreter(tmp_path):
     assert hash_with_interp("python3") != hash_with_interp("python2")
 
 
-def test_generator_input_hash_includes_script_bytes(tmp_path):
+def test_editing_generator_script_invalidates_cache_hash(tmp_path):
     """Editing the generator script in place -- same path, same
-    declarations -- must still invalidate the cache. The literal
-    ``command`` / ``interpreter`` strings alone don't catch this; the
-    fix folds a SHA-256 of the resolved script bytes into the hash.
-    Regression for the gap codex flagged on top of issue #751.
+    declarations -- changes the cache hash, because the hash folds in a
+    SHA-256 of the resolved script bytes.
     """
     from types import SimpleNamespace
 

@@ -572,31 +572,19 @@ class Ttptttg:
         }
 
     def _sha256_input_yaml_hexdigest(self):
+        """Hash the generator inputs plus the generator definition itself.
+
+        The command, interpreter, and a hash of the script bytes are folded
+        in so editing the generator invalidates the cache. The resolved
+        interpreter path and the generator ``root`` are excluded to keep the
+        hash portable across machines and checkouts.
+        """
         data = self.generator_input.copy()
         # Remove files_root since that is not deterministic
         data.pop("files_root")
-        # Fold the generator definition into the hash so that updating the
-        # generator -- its declared command/interpreter *or* the script's
-        # bytes -- actually invalidates the cache. Without this a changed
-        # generator with unchanged user-facing inputs silently serves
-        # stale output. See #751.
-        #
-        # Deliberately NOT hashed:
-        #
-        # * The resolved interpreter path from ``shutil.which(interpreter)``
-        #   -- depends on the system PATH at run time and is not part of
-        #   the generator definition the user signs in their .core file.
-        # * The generator's ``root`` path -- it's an absolute path that
-        #   differs between machines/checkouts, which would make hashes
-        #   non-portable and cache directory names environment-specific.
-        #   Two generators with the same relative ``command`` rooted under
-        #   different directories are still distinguished here by
-        #   ``__generator_script_hash__``: if their script bytes differ,
-        #   the hash differs; if their bytes match, sharing the cache is
-        #   the desired behaviour.
-        data["__generator_command__"] = self.generator.get("command", "")
-        data["__generator_interpreter__"] = self.generator.get("interpreter", "")
-        data["__generator_script_hash__"] = self._generator_script_sha256()
+        data["generator_command"] = self.generator.get("command", "")
+        data["generator_interpreter"] = self.generator.get("interpreter", "")
+        data["generator_script_hash"] = self._generator_script_sha256()
         return hashlib.sha256(utils.yaml_dump(data).encode()).hexdigest()
 
     def _generator_script_sha256(self):
