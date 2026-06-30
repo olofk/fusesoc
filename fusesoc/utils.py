@@ -3,6 +3,7 @@
 # SPDX-License-Identifier: BSD-2-Clause
 
 import logging
+import os
 import subprocess
 import sys
 import warnings
@@ -57,9 +58,6 @@ def is_mingw():
 def cygpath(win_path):
     path = subprocess.check_output(["cygpath", "-u", win_path])
     return path.decode("ascii").strip()
-
-
-import os
 
 
 def unique_dirs(file_list):
@@ -117,7 +115,7 @@ def setup_logging(level, monchrome=False, log_file=None):
         # Format FutureWarnings, which are intended for end users, in a way
         # that strips out all code references, which are meaningless to an end
         # user.
-        if category == FutureWarning:
+        if category is FutureWarning:
             return message
 
         return _formatwarning_orig(message, category, filename, lineno, line)

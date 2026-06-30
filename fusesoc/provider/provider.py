@@ -6,12 +6,11 @@ import logging
 import os
 import shutil
 import stat
+from importlib import import_module
 
 from fusesoc.utils import Launcher
 
 logger = logging.getLogger(__name__)
-
-from importlib import import_module
 
 
 def get_provider(name):
@@ -23,7 +22,7 @@ class Provider:
         self.config = config
         self.core_root = core_root
         self.files_root = files_root
-        self.cachable = not (config.get("cachable", "") == False)
+        self.cachable = config.get("cachable", "") is not False
         self.patches = config.get("patches", [])
 
     def clean_cache(self):

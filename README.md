@@ -19,6 +19,7 @@ FuseSoC makes it easier to
 -   port designs to new targets
 -   let other projects use your code
 -   set up continuous integration
+-   generate FPGA SBOMs (through the spdxgen filter)
 
 To learn more about FuseSoC head over to the
 [User Guide](https://fusesoc.readthedocs.io/en/stable/user).

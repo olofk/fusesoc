@@ -29,7 +29,7 @@ class Autotype:
             ".rdl": "systemRDL",
         }
         for f in edam["files"]:
-            if not "file_type" in f:
+            if "file_type" not in f:
                 fn = f["name"]
                 (_, ext) = os.path.splitext(fn)
                 ft = type_map.get(ext, "")

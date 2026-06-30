@@ -11,7 +11,8 @@ from fusesoc import utils
 class Inheritance:
     MERGE_OPERATOR = "<<__FUSESOC_MERGE_OVERLOAD__<<"
 
-    def yaml_merge_2_fusesoc_merge(capi):
+    @staticmethod
+    def yaml_merge_2_fusesoc_merge(capi: str) -> str:
         """
         Replace YAML merge key operator (<<) with FuseSoC merge operator
         """
@@ -22,7 +23,8 @@ class Inheritance:
             capi = re.sub(yaml_merge_pattern, r"\1" + Inheritance.MERGE_OPERATOR, capi)
         return capi
 
-    def elaborate_inheritance(capi):
+    @staticmethod
+    def elaborate_inheritance(capi: dict) -> dict:
         if not isinstance(capi, dict):
             return capi
 

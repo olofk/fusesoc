@@ -10,11 +10,12 @@ import pathlib
 import shutil
 from filecmp import cmp
 from importlib import import_module
+from typing import Sequence
 
 from fusesoc import utils
 from fusesoc.capi2.coreparser import Core2Parser
-from fusesoc.coremanager import DependencyError
-from fusesoc.utils import merge_dict
+from fusesoc.core import Core
+from fusesoc.utils import Launcher, merge_dict
 from fusesoc.vlnv import Vlnv
 
 logger = logging.getLogger(__name__)
@@ -81,17 +82,18 @@ class Edalizer:
         """Get a list of all cores found by fusesoc"""
         return self.core_manager.db.find()
 
-    def apply_filters(self, global_filters):
-        filters = self.edam.get("filters", []) + global_filters
+    def apply_filters(self, global_filters: Sequence):
+        filters = (*self.edam.get("filters", ()), *global_filters)
         for f in filters:
             try:
                 filter_class = getattr(
                     import_module(f"fusesoc.filters.{f}"), f.capitalize()
                 )
-                logger.info(f"Applying filter {f}")
-                self.edam = filter_class().run(self.edam, self.work_root)
             except ModuleNotFoundError:
                 raise RuntimeError(f"Could not find EDAM filter '{f}'")
+            logger.info(f"Applying filter {f}")
+            try:
+                self.edam = filter_class().run(self.edam, self.work_root)
             except Exception as e:
                 import traceback
 
@@ -252,8 +254,17 @@ class Edalizer:
             # Extract flow options
             snippet["flow_options"] = core.get_flow_options(_flags)
 
-            # Extract scripts
+            # Extract scripts. Prefix every hook script name with the owning
+            # core's sanitized VLNV: edalize generates one Makefile target per
+            # hook script using its `name`, so two cores defining a script
+            # called `foo` would otherwise produce duplicate targets and only
+            # the last one would run.
             snippet["hooks"] = core.get_scripts(rel_root, _flags)
+            for hook_scripts in snippet["hooks"].values():
+                for script in hook_scripts:
+                    script["name"] = "{}_{}".format(
+                        core.name.sanitized_name, script["name"]
+                    )
 
             _files = []
             for file in core.get_files(_flags):
@@ -346,13 +357,13 @@ class Edalizer:
             _description = param.get("description", "No description")
             _paramtype = param["paramtype"]
             if _paramtype in paramtypes:
-                if not _paramtype in param_groups:
+                if _paramtype not in param_groups:
                     param_groups[_paramtype] = parser.add_argument_group(
                         _descr[_paramtype]
                     )
 
                 default = None
-                if not param.get("default") is None:
+                if param.get("default") is not None:
                     try:
                         if param["datatype"] == "bool":
                             default = param["default"]
@@ -360,7 +371,7 @@ class Edalizer:
                             default = [
                                 typedict[param["datatype"]]["type"](param["default"])
                             ]
-                    except KeyError as e:
+                    except KeyError:
                         pass
                 try:
                     param_groups[_paramtype].add_argument(
@@ -438,7 +449,7 @@ class Edalizer:
             elif key in backend_members:
                 tool_options[key] = value
             elif key in backend_lists:
-                if not key in tool_options:
+                if key not in tool_options:
                     tool_options[key] = []
                 tool_options[key] += value.split(" ")
             elif key in self.edam["parameters"]:
@@ -488,7 +499,7 @@ class Edalizer:
             # on the command line
             if value is None:
                 continue
-            _value = value[0] if type(value) == list else value
+            _value = value[0] if isinstance(value, list) else value
 
             # If flow option is a list, we split up the parsed string
             if "list" in available_flow_options[key]:
@@ -516,7 +527,7 @@ class Edalizer:
         for key, value in sorted(vars(parsed_args).items()):
             if value is None:
                 continue
-            _value = value[0] if type(value) == list else value
+            _value = value[0] if isinstance(value, list) else value
             args_dict[key] = _value
 
         self.add_parsed_args(backend_class, args_dict)
@@ -526,14 +537,10 @@ class Edalizer:
         return utils.yaml_fwrite(edam_file, self.edam)
 
 
-from fusesoc.core import Core
-from fusesoc.utils import Launcher
-
-
 class Ttptttg:
     def __init__(self, ttptttg, core, generators, work_root, resolve_env_vars=False):
         generator_name = ttptttg["generator"]
-        if not generator_name in generators:
+        if generator_name not in generators:
             raise RuntimeError(
                 "Could not find generator '{}' requested by {}".format(
                     generator_name, core.name
@@ -590,7 +597,7 @@ class Ttptttg:
         hash = hashlib.sha256()
 
         for f in input_files:
-            if type(f) == list:
+            if isinstance(f, list):
                 files = f
             else:
                 files = [f]
@@ -645,7 +652,9 @@ class Ttptttg:
         return self.is_input_cacheable() or self.is_generator_cacheable()
 
     def acquire_cache_lock(self):
-        have_lock = False
+        pass
+        # TODO: Implement cache locking
+        # have_lock = False
         # while not have_lock:
         #    if
 
@@ -696,7 +705,7 @@ class Ttptttg:
                 shutil.rmtree(generator_cwd, ignore_errors=True)
             try:
                 self._run(generator_cwd)
-            except:
+            except Exception:
                 # If the generator invocation failed for any reason, its output
                 # directory is removed. While this is bad for debugging failing
                 # generators, it at least prevents the next FuseSoC-run to

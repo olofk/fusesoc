@@ -1,5 +1,4 @@
 import logging
-import os
 
 logger = logging.getLogger(__name__)
 
@@ -18,6 +17,6 @@ class Splitlib:
 
         edam["library_dependencies"] = libdeps
         for f in edam["files"]:
-            if not "logical_name" in f:
+            if "logical_name" not in f:
                 f["logical_name"] = flatten_vlnv(f["core"])
         return edam

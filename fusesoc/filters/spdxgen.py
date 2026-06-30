@@ -10,7 +10,7 @@ import os
 
 try:
     import nanoid
-except:
+except ImportError:
     print(
         "Filter spdxgen needs the nanoid python package, please install it and try again."
     )

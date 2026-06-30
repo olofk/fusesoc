@@ -1,0 +1,18 @@
+CAPI=2:
+# Copyright FuseSoC contributors
+# Licensed under the 2-Clause BSD License, see LICENSE for details.
+# SPDX-License-Identifier: BSD-2-Clause
+
+name: ::hookcollision-child:0
+filesets:
+  fs:
+    depend: ["::hookcollision-parent:0"]
+scripts:
+  myhook:
+    cmd: [child_cmd]
+targets:
+  default:
+    filesets: [fs]
+    toplevel: unused
+    hooks:
+      pre_build: [myhook]

@@ -3,7 +3,10 @@
 # SPDX-License-Identifier: BSD-2-Clause
 
 import copy
+import re
 from functools import total_ordering
+
+_VLNV_PART_RE = re.compile(r"^[A-Za-z0-9_.-]*$")
 
 
 @total_ordering
@@ -96,6 +99,14 @@ class Vlnv:
             self.version = "0"
             self.relation = default_relation
 
+        for field in ("vendor", "library", "name", "version"):
+            value = getattr(self, field)
+            if not _VLNV_PART_RE.match(value):
+                raise SyntaxError(
+                    "Illegal character in core name '{}': {} '{}' may only "
+                    "contain alphanumerics, '.', '-', and '_'".format(s, field, value)
+                )
+
         # Create sanitized name
         self.sanitized_name = str(self).lstrip(":").replace(":", "_")
 
@@ -173,8 +184,11 @@ def compare_relation(vlvn_a: Vlnv, relation: str, vlvn_b: Vlnv):
     """Compare two VLVNs with the provided relation. Returns boolan."""
     from okonomiyaki.versions import EnpkgVersion
 
+    def version_str(v):
+        return f"{v.version}-{v.revision}"
+
     valid_version = False
-    version_str = lambda v: f"{v.version}-{v.revision}"
+
     if vlvn_a.vln_str() == vlvn_b.vln_str():
         ver_a = EnpkgVersion.from_string(version_str(vlvn_a))
         ver_b = EnpkgVersion.from_string(version_str(vlvn_b))

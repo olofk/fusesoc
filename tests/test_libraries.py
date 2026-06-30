@@ -9,11 +9,11 @@ import subprocess
 import tempfile
 from argparse import Namespace
 
+import pytest
 from test_common import cache_root, cores_root, library_root
 
 from fusesoc.config import Config
 from fusesoc.fusesoc import Fusesoc
-from fusesoc.librarymanager import Library
 
 build_root = "test_build_root"
 
@@ -57,11 +57,11 @@ def test_library_location():
     fs.get_core("atlys")
 
 
+@pytest.mark.network
 def test_library_add(caplog):
     import tempfile
 
     from fusesoc.coremanager import CoreManager
-    from fusesoc.librarymanager import LibraryManager
     from fusesoc.main import add_library
 
     with tempfile.TemporaryDirectory() as td:
@@ -141,9 +141,7 @@ location = fusesoc_libraries/fusesoc-cores
 sync-uri = https://github.com/fusesoc/fusesoc-cores
 sync-version = capi2
 sync-type = git
-auto-sync = true""".format(
-        cm._lm.library_root
-    )
+auto-sync = true"""
 
     add_library(cm, args)
 
@@ -155,6 +153,7 @@ auto-sync = true""".format(
     tcf.close()
 
 
+@pytest.mark.network
 def test_library_update(caplog):
 
     clone_target = tempfile.mkdtemp()
@@ -176,8 +175,6 @@ def test_library_update(caplog):
         tcf.flush()
 
         conf = Config(tcf.name)
-
-    args = Namespace()
 
     Fusesoc.init_logging(False, False)
     fs = Fusesoc(conf)
@@ -216,6 +213,7 @@ def test_library_update(caplog):
     assert "test_lib : sync-type is local. Ignoring update" in caplog.text
 
 
+@pytest.mark.network
 def test_library_update_with_initialize(caplog):
     with tempfile.TemporaryDirectory() as library:
 
@@ -235,8 +233,6 @@ auto-sync = true
             tcf.flush()
 
             conf = Config(tcf.name)
-
-        args = Namespace()
 
         Fusesoc.init_logging(False, False)
         fs = Fusesoc(conf)

@@ -82,6 +82,24 @@ def test_name_revision_legacy():
     assert vlnv_tuple(Vlnv("uart16550-r2")) == ("", "", "uart16550", "0", 2)
 
 
+# Reject names containing characters that downstream parsers cannot handle.
+# Regression tests for https://github.com/olofk/fusesoc/issues/749
+@pytest.mark.parametrize(
+    "bad_name",
+    [
+        "a/b",
+        "::a/b",
+        "vend/or:lib:name",
+        "::a b:0",
+        "::na\tme",
+        "foo*:lib:name:0",
+    ],
+)
+def test_vlnv_rejects_illegal_chars(bad_name):
+    with pytest.raises(SyntaxError, match="Illegal character"):
+        Vlnv(bad_name)
+
+
 def test_vlvn_compare_relation():
     version_1_3 = Vlnv(":peripherals:uart16550:1.3.1")
     version_1_4 = Vlnv(":peripherals:uart16550:1.4.2")

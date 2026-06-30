@@ -16,6 +16,15 @@ there, it will search next in ``$XDG_CONFIG_HOME/fusesoc`` (i.e.
 ``~/.config/fusesoc`` on Linux and ``%HOMEPATH%\.config\fusesoc`` on
 Windows) and lastly in ``/etc/fusesoc``
 
+A specific configuration file can be selected in two ways:
+
+- Set the ``FUSESOC_CONFIG`` environment variable to the path of the
+  configuration file.
+- Pass ``--config <path>`` on the command line.
+
+The ``--config`` command-line option takes precedence over the
+``FUSESOC_CONFIG`` environment variable.
+
 By running ``fusesoc library add fusesoc_cores https://github.com/fusesoc/fusesoc-cores`` after FuseSoC is installed, the standard
 libraries will be installed, and a default configuration file will be
 created in ``$XDG_CONFIG_HOME/fusesoc/fusesoc.conf`` on Linux and ``%HOMEPATH%\.config\fusesoc\fusesoc.conf`` on

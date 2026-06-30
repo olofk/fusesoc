@@ -16,7 +16,7 @@ logger = logging.getLogger(__name__)
 class Config:
     default_section = "main"
 
-    def __init__(self, path=None):
+    def __init__(self, path=None, create_if_missing=True):
         self._cp = CP(default_section=Config.default_section)
 
         if path is None:
@@ -31,9 +31,12 @@ class Config:
         else:
             logger.debug(f"Using config file '{path}'")
             if not os.path.isfile(path):
-                Path(path).parent.mkdir(parents=True, exist_ok=True)
-                with open(path, "a"):
-                    pass
+                if create_if_missing:
+                    Path(path).parent.mkdir(parents=True, exist_ok=True)
+                    with open(path, "a"):
+                        pass
+                else:
+                    logger.warning(f"Config file '{path}' was not found")
             config_files = [path]
 
         logger.debug("Looking for config files from " + ":".join(config_files))
@@ -64,7 +67,9 @@ class Config:
         for section in library_sections:
             name = section.partition(".")[2]
             try:
-                location = self._cp.get(section, "location")
+                location = self._resolve_path_from_cfg(
+                    self._cp.get(section, "location")
+                )
             except configparser.NoOptionError:
                 location = os.path.join(self.library_root, name)
 
@@ -222,7 +227,7 @@ class Config:
     @ignored_dirs.setter
     def ignored_dirs(self, val):
         self._set_default_section(
-            "ignored_dirs", " ".join(val) if type(val) == list else val
+            "ignored_dirs", " ".join(val) if isinstance(val, list) else val
         )
 
     @property

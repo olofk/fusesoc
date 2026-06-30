@@ -4,11 +4,11 @@
 
 import logging
 
-from fusesoc.capi2.core import Core as Capi2Core
+from fusesoc.capi2.core import CoreInterface
 
 logger = logging.getLogger(__name__)
 
 
 class Core:
     def __new__(cls, *args, **kwargs):
-        return Capi2Core(*args, **kwargs)
+        return CoreInterface(*args, **kwargs)

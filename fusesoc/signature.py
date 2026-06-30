@@ -3,7 +3,6 @@
 # Licensed under the 2-Clause BSD License, see LICENSE for details.
 # SPDX-License-Identifier: BSD-2-Clause
 
-import base64
 import logging
 import os
 import shutil
@@ -32,7 +31,7 @@ def sign(core, key_file_name, old_sig_file):
     signatory = key_parts[2].strip()
     core_canonical = core.signed_data()
 
-    if shutil.which("ssh-keygen") == None:
+    if shutil.which("ssh-keygen") is None:
         raise RuntimeError("ssh-keygen not found in $PATH")
 
     cmd = ["ssh-keygen", "-Y", "sign", "-f", key_file_name, "-n", "file"]
@@ -80,17 +79,17 @@ def verify(core_obj, trust_file_name, sig_file_name):
     logger.debug("with trustfile:    " + trust_file_name)
     core_canonical = core_obj.signed_data()
     sig_data = utils.yaml_fread(sig_file_name)
-    if not "coresig" in sig_data:
+    if "coresig" not in sig_data:
         raise RuntimeError("Signature file missing coresig member.")
     if not isinstance(sig_data["coresig"], dict):
         raise RuntimeError("coresig object in signature is not an object.")
-    if not "name" in sig_data["coresig"]:
+    if "name" not in sig_data["coresig"]:
         raise RuntimeError("Signature file missing name member in coresig object.")
     if sig_data["coresig"]["name"] != str(core_obj.name):
         raise RuntimeError(
             "Signature file and core file must have the same 'name' field."
         )
-    if shutil.which("ssh-keygen") == None:
+    if shutil.which("ssh-keygen") is None:
         raise RuntimeError("ssh-keygen not found in $PATH")
 
     user_results = {}

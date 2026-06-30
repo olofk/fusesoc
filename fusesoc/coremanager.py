@@ -178,7 +178,9 @@ class CoreDB:
             new_mapping_name = str(Vlnv(mapping_vlnv))
             new_mapping_core = self._cores.get(new_mapping_name)
             if not new_mapping_core:
-                raise RuntimeError(f"The core '{mapping_vlnv}' wasn't found.")
+                raise RuntimeError(
+                    f"Requested mapping core '{mapping_vlnv}' wasn't found."
+                )
 
             new_mapping_raw = new_mapping_core["core"].mapping
             if not new_mapping_raw:
@@ -364,7 +366,7 @@ class CoreDB:
             transaction = solver.solve(request)
         except SatisfiabilityError as e:
             raise DependencyError(top_core.name, msg=e.unsat.to_string(pool))
-        except NoPackageFound as e:
+        except NoPackageFound:
             raise DependencyError(top_core.name)
 
         virtual_selection = {}
@@ -416,18 +418,24 @@ class CoreManager:
         self.db = CoreDB()
         self._lm = (
             LibraryManager(config.library_root)
-            if library_manager == None
+            if library_manager is None
             else library_manager
         )
         self.core2parser = Core2Parser(
             config.resolve_env_vars_early, config.allow_additional_properties
         )
+        # Files that were rejected during ``find_cores`` because they failed to
+        # parse, kept as ``(core_file, error_message)`` tuples. The corresponding
+        # warnings are still logged in real time, but tracking them here lets
+        # callers surface the original cause when a later "core not found" lookup
+        # would otherwise hide it.
+        self.parse_errors = []
 
     def find_cores(self, library, ignored_dirs):
         found_cores = []
         path = os.path.expanduser(library.location)
         exclude = {".git"}
-        if os.path.isdir(path) == False:
+        if not os.path.isdir(path):
             raise OSError(path + " is not a directory")
         logger.debug("Checking for cores in " + path)
         visited = set()
@@ -483,6 +491,7 @@ class CoreManager:
                     except SyntaxError as e:
                         w = "Parse error. Ignoring file " + core_file + ": " + e.msg
                         logger.warning(w)
+                        self.parse_errors.append((core_file, e.msg))
                     except ImportError as e:
                         w = 'Failed to register "{}" due to unknown provider: {}'
                         logger.warning(w.format(core_file, str(e)))
@@ -498,9 +507,9 @@ class CoreManager:
         """
         try:
             with open(core_file) as f:
-                l = f.readline().split()
-                if l:
-                    first_line = l[0]
+                lines = f.readline().split()
+                if lines:
+                    first_line = lines[0]
                 else:
                     first_line = ""
                 if first_line == "CAPI=1":
@@ -523,7 +532,7 @@ class CoreManager:
                             core_file
                         )
                     )
-        except Exception as error:
+        except Exception:
             error_msg = f"Unable to determine CAPI version from core file {core_file}"
             logger.warning(error_msg)
             return -1

@@ -38,14 +38,13 @@ def test_files_out_of_hierarchy():
 
 def test_empty_core():
     import os
-    import tempfile
 
     from fusesoc.capi2.coreparser import Core2Parser
     from fusesoc.core import Core
 
     core_file = os.path.join(tests_dir, "capi2_cores", "misc", "empty.core")
     with pytest.raises(SyntaxError) as excinfo:
-        core = Core(Core2Parser(), core_file)
+        Core(Core2Parser(), core_file)
     assert "Error validating" in str(excinfo.value)
 
 
@@ -126,8 +125,6 @@ def test_capi2_export_no_overwrite():
         "vlogfile",
         "vpifile",
     ]
-
-    result = []
 
     # Export and check all dst files are equal to src files
     core.export(export_root)
@@ -282,7 +279,7 @@ def test_capi2_type_check():
     core_file = os.path.join(tests_dir, "capi2_cores", "misc", "typecheck.core")
 
     with pytest.raises(SyntaxError) as excinfo:
-        core = Core(Core2Parser(), core_file)
+        Core(Core2Parser(), core_file)
     assert "Error validating" in str(excinfo.value)
 
 
@@ -427,14 +424,14 @@ def test_capi2_get_parameters():
     }
     result = core.get_parameters(flags)
     assert expected == result
-    assert str == type(result["param2"]["datatype"])
-    assert str == type(result["param2"]["default"])
-    assert str == type(result["param2"]["description"])
-    assert str == type(result["param2"]["paramtype"])
-    assert int == type(result["intparam"]["default"])
-    assert bool == type(result["boolfalse"]["default"])
-    assert bool == type(result["booltrue"]["default"])
-    assert float == type(result["realpi"]["default"])
+    assert isinstance(result["param2"]["datatype"], str)
+    assert isinstance(result["param2"]["default"], str)
+    assert isinstance(result["param2"]["description"], str)
+    assert isinstance(result["param2"]["paramtype"], str)
+    assert isinstance(result["intparam"]["default"], int)
+    assert isinstance(result["boolfalse"]["default"], bool)
+    assert isinstance(result["booltrue"]["default"], bool)
+    assert isinstance(result["realpi"]["default"], float)
 
     flags["target"] = "empty"
     expected = {"int0": int0, "emptystr": emptystr}
@@ -691,7 +688,7 @@ def test_core2parser():
 
     parser = Core2Parser(allow_additional_properties=False)
     assert parser.get_version() == 2
-    assert parser.get_allow_additional_properties() == False
+    assert parser.get_allow_additional_properties() is False
     assert parser.get_preamble() == "CAPI=2:"
 
     expected = {
@@ -731,7 +728,7 @@ def test_core2parser():
     assert "Error validating" in str(excinfo.value)
 
     parser = Core2Parser(allow_additional_properties=True)
-    assert parser.get_allow_additional_properties() == True
+    assert parser.get_allow_additional_properties() is True
 
     expected = {
         "name": "::withadditionalproperties:0",

@@ -1,3 +1,24 @@
+2.4.6 2026-05-10 Olof Kindgren
+======================================================
+* Optionally load config files from env var
+* Expand the autotype filter
+* CAPI2 JSON schema fixes
+* Improved handling of dependencies with parse errors
+* Ensure CLI options are evaluated before running filters
+* Make library location relative to config file
+* Support integers in flags
+* Validate VLNV names on loading
+* Support multiple scripts with the same name
+
+Contributors:
+Alex Mykyta
+Erik Waling
+Hugo McNally
+Olof Kindgren
+Per Karlstrom
+Raul Schmidlin
+Anonymous
+
 2.4.5 2025-11-13 Olof Kindgren
 ======================================================
 

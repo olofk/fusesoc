@@ -79,7 +79,7 @@ def load_lockfile(filepath: pathlib.Path):
                 raise SyntaxError(f"Core {vln} defined multiple times in lock file")
             core["name"] = vlnv
         else:
-            raise SyntaxError(f"Core definition without a name")
+            raise SyntaxError("Core definition without a name")
         cores[vlnv] = core
     lockfile = {
         "cores": cores,

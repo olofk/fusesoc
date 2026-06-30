@@ -3,7 +3,6 @@
 # SPDX-License-Identifier: BSD-2-Clause
 
 import logging
-import sys
 
 from fusesoc.provider.provider import Provider
 from fusesoc.utils import Launcher, cygpath, is_mingw

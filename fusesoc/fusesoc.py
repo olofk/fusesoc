@@ -5,12 +5,12 @@
 import logging
 import os
 from importlib import import_module
+from pathlib import Path
 
-from fusesoc.config import Config
 from fusesoc.coremanager import CoreManager, DependencyError
 from fusesoc.edalizer import Edalizer
 from fusesoc.librarymanager import Library, LibraryManager
-from fusesoc.utils import Launcher, setup_logging, yaml_fread
+from fusesoc.utils import setup_logging, yaml_fread
 from fusesoc.vlnv import Vlnv
 
 try:
@@ -36,7 +36,7 @@ class Fusesoc:
         for library in self.config.libraries + cores_root_libs:
             try:
                 self.add_library(library)
-            except (RuntimeError, OSError) as e:
+            except (RuntimeError, OSError):
                 try:
                     temporary_lm = LibraryManager(self.config.library_root)
                     # try to initialize library
@@ -81,6 +81,13 @@ class Fusesoc:
 
     def get_core(self, name):
         return self.cm.get_core(Vlnv(name))
+
+    @property
+    def parse_errors(self):
+        """``(core_file, error_message)`` tuples for files that failed to parse
+        during library scanning. Forwarded from the underlying ``CoreManager``
+        so callers don't need to reach through the wrapper."""
+        return self.cm.parse_errors
 
     def get_cores(self):
         return self.cm.get_cores()
@@ -166,8 +173,9 @@ class Fusesoc:
         try:
             edalizer.run()
             edalizer.export()
-            edalizer.apply_filters(self.config.filters)
+            Path(work_root).mkdir(parents=True, exist_ok=True)
             edalizer.parse_args(backend_class, backendargs)
+            edalizer.apply_filters(self.config.filters)
         except SyntaxError as e:
             raise RuntimeError(e.msg)
         except RuntimeError as e:
