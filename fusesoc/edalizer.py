@@ -7,6 +7,7 @@ import hashlib
 import logging
 import os
 import pathlib
+import shlex
 import shutil
 from filecmp import cmp
 from importlib import import_module
@@ -23,10 +24,10 @@ logger = logging.getLogger(__name__)
 
 class FileAction(argparse.Action):
     def __call__(self, parser, namespace, values, option_string=None):
-        path = os.path.expandvars(values[0])
+        path = os.path.expandvars(values)
         path = os.path.expanduser(path)
         path = os.path.abspath(path)
-        setattr(namespace, self.dest, [path])
+        setattr(namespace, self.dest, path)
 
 
 def str2bool(v):
@@ -38,6 +39,22 @@ def str2bool(v):
         return False
     else:
         raise argparse.ArgumentTypeError("Boolean value expected.")
+
+
+#: Conversion table between Edalize types and FuseSoC command line arguments
+#: The ``metavar`` is used to inform users about expected value type
+_TYPEDICT_PARAMETERS = {
+    "bool": {"type": str2bool, "nargs": "?", "const": True, "metavar": "yes|no"},
+    "file": {"type": str, "action": FileAction, "metavar": "FILE"},
+    "int": {"type": int, "metavar": "INTEGER"},
+    "str": {"type": str, "metavar": "ARG"},
+    "real": {"type": float, "metavar": "NUMBER"},
+}
+
+_TYPEDICT_OPTIONS = {
+    **_TYPEDICT_PARAMETERS,
+    "list": {"type": shlex.split, "metavar": "ARGS"},
+}
 
 
 class Edalizer:
@@ -332,13 +349,6 @@ class Edalizer:
             merge_dict(self.edam, snippet)
 
     def _build_parser(self, backend_class, edam):
-        typedict = {
-            "bool": {"type": str2bool, "nargs": "?", "const": True},
-            "file": {"type": str, "nargs": 1, "action": FileAction},
-            "int": {"type": int, "nargs": 1},
-            "str": {"type": str, "nargs": 1},
-            "real": {"type": float, "nargs": 1},
-        }
         progname = "fusesoc run {}".format(edam["name"])
 
         parser = argparse.ArgumentParser(prog=progname, conflict_handler="resolve")
@@ -362,15 +372,12 @@ class Edalizer:
                         _descr[_paramtype]
                     )
 
-                default = None
-                if param.get("default") is not None:
+                default = param.get("default")
+                if default is not None:
                     try:
-                        if param["datatype"] == "bool":
-                            default = param["default"]
-                        else:
-                            default = [
-                                typedict[param["datatype"]]["type"](param["default"])
-                            ]
+                        default = _TYPEDICT_PARAMETERS[param["datatype"]]["type"](
+                            default
+                        )
                     except KeyError:
                         pass
                 try:
@@ -378,7 +385,7 @@ class Edalizer:
                         "--" + name,
                         help=_description,
                         default=default,
-                        **typedict[param["datatype"]],
+                        **_TYPEDICT_PARAMETERS[param["datatype"]],
                     )
                 except KeyError as e:
                     raise RuntimeError(
@@ -400,7 +407,7 @@ class Edalizer:
                 backend_args.add_argument(
                     "--" + k,
                     help=v["desc"],
-                    **typedict[v["type"]],
+                    **_TYPEDICT_OPTIONS[v["type"]],
                 )
             for k, v in backend_class.get_tool_options(
                 self.activated_flow_options
@@ -408,7 +415,7 @@ class Edalizer:
                 backend_args.add_argument(
                     "--" + k,
                     help=v["desc"],
-                    **typedict[v["type"]],
+                    **_TYPEDICT_OPTIONS[v["type"]],
                 )
         else:
             _opts = backend_class.get_doc(0)
@@ -475,18 +482,11 @@ class Edalizer:
             prog=progname, conflict_handler="resolve", add_help=False
         )
         backend_args = parser.add_argument_group("Flow options")
-        typedict = {
-            "bool": {"type": str2bool, "nargs": "?", "const": True},
-            "file": {"type": str, "nargs": 1, "action": FileAction},
-            "int": {"type": int, "nargs": 1},
-            "str": {"type": str, "nargs": 1},
-            "real": {"type": float, "nargs": 1},
-        }
         for k, v in available_flow_options.items():
             backend_args.add_argument(
                 "--" + k,
                 help=v["desc"],
-                **typedict[v["type"]],
+                **_TYPEDICT_OPTIONS[v["type"]],
             )
 
         # Parse known args (i.e. only flow options) from the command-line
@@ -499,12 +499,8 @@ class Edalizer:
             # on the command line
             if value is None:
                 continue
-            _value = value[0] if isinstance(value, list) else value
 
-            # If flow option is a list, we split up the parsed string
-            if "list" in available_flow_options[key]:
-                _value = _value.split(" ")
-            parsed_args_dict[key] = _value
+            parsed_args_dict[key] = value
 
         # Add parsed args to the ones from the EDAM
         merge_dict(flow_options, parsed_args_dict)
@@ -527,8 +523,7 @@ class Edalizer:
         for key, value in sorted(vars(parsed_args).items()):
             if value is None:
                 continue
-            _value = value[0] if isinstance(value, list) else value
-            args_dict[key] = _value
+            args_dict[key] = value
 
         self.add_parsed_args(backend_class, args_dict)
 
