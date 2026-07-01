@@ -14,7 +14,7 @@ from fusesoc.utils import setup_logging, yaml_fread
 from fusesoc.vlnv import Vlnv
 
 try:
-    from edalize.edatool import get_edatool, ToolResolutionError
+    from edalize.edatool import ToolResolutionError, get_edatool
 except ImportError:
     from edalize import get_edatool
 
