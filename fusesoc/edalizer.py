@@ -573,10 +573,41 @@ class Ttptttg:
         }
 
     def _sha256_input_yaml_hexdigest(self):
+        """Hash the generator inputs plus the generator definition itself.
+
+        The command, interpreter, and a hash of the script bytes are folded
+        in so editing the generator invalidates the cache. The resolved
+        interpreter path and the generator ``root`` are excluded to keep the
+        hash portable across machines and checkouts.
+        """
         data = self.generator_input.copy()
         # Remove files_root since that is not deterministic
         data.pop("files_root")
+        data["generator_command"] = self.generator.get("command", "")
+        data["generator_interpreter"] = self.generator.get("interpreter", "")
+        data["generator_script_hash"] = self._generator_script_sha256()
         return hashlib.sha256(utils.yaml_dump(data).encode()).hexdigest()
+
+    def _generator_script_sha256(self):
+        """SHA-256 of the resolved generator script bytes, or ``None`` if
+        the script cannot be read.
+
+        The ``None`` sentinel is intentional: a script that is unreadable
+        on one run and readable on the next still flips the marker, which
+        is the conservative direction. Likewise, an in-place edit of the
+        script flips the hash even though the path on disk is unchanged
+        -- this is the gap that the literal command/interpreter strings
+        alone cannot close.
+        """
+        root = self.generator.get("root")
+        command = self.generator.get("command")
+        if not root or not command:
+            return None
+        script_path = os.path.join(os.path.abspath(root), command)
+        try:
+            return hashlib.sha256(pathlib.Path(script_path).read_bytes()).hexdigest()
+        except OSError:
+            return None
 
     def _sha256_file_input_hexdigest(self):
         input_files = []

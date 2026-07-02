@@ -282,7 +282,7 @@ def test_generators():
     assert core_root.is_dir()
     assert (
         core_root.name
-        == "generate-testgenerate_with_cache_0-616d6cf151dba72fcd893c08a8e18e6dba2b81ee25dec08c92e0177064dfc18c"
+        == "generate-testgenerate_with_cache_0-dd0cbabeb8396cc34c551cb738a9d4cbf1fb6ba0fafca24be5aa55c03839a40f"
     )
     shutil.rmtree(core.core_root, ignore_errors=True)
 
@@ -299,7 +299,7 @@ def test_generators():
     )
     assert (
         core_root.parent.name
-        == "generate-testgenerate_with_file_cache_0-f3d9e1e462ef1f7113fafbacd62d6335dd684e69332f75498fb01bfaaa7c11ee"
+        == "generate-testgenerate_with_file_cache_0-71f6f955798bff1e5f67c76f40f9715d5fc12e6ccbb8919fc607f9c222db7452"
     )
     shutil.rmtree(core.core_root, ignore_errors=True)
 
@@ -338,3 +338,142 @@ def test_hook_script_names_are_unique_per_core():
     assert len(set(names)) == 2, f"hook script names collided: {names}"
     assert "hookcollision-parent_0_myhook" in names
     assert "hookcollision-child_0_myhook" in names
+
+
+def test_changing_generator_command_invalidates_cache_hash(tmp_path):
+    """Changing the generator's ``command`` produces a different cache hash,
+    so an updated generator does not reuse a previous run's cached output.
+
+    Regression test for https://github.com/olofk/fusesoc/issues/751.
+    """
+    from types import SimpleNamespace
+
+    from fusesoc.edalizer import Ttptttg
+    from fusesoc.vlnv import Vlnv
+
+    # Minimal core stand-in: Ttptttg only touches .name, .cache_root,
+    # .files_root.
+    fake_core = SimpleNamespace(
+        name=Vlnv("::fake:0.1.0"),
+        cache_root=str(tmp_path / "cache"),
+        files_root=str(tmp_path / "src"),
+    )
+
+    ttptttg = {
+        "generator": "mygen",
+        "name": "inst",
+        "pos": "append",
+        "config": {"foo": "bar"},
+    }
+
+    def hash_with_cmd(cmd):
+        generators = {
+            "mygen": {
+                "command": cmd,
+                "interpreter": "python3",
+                "root": str(tmp_path),
+                "cache_type": "input",
+            }
+        }
+        t = Ttptttg(ttptttg, fake_core, generators, str(tmp_path / "work"))
+        return t._sha256_input_yaml_hexdigest()
+
+    h_old = hash_with_cmd("gen_v1.py")
+    h_new = hash_with_cmd("gen_v2.py")
+    h_repeat = hash_with_cmd("gen_v1.py")
+
+    assert h_old != h_new, "changing generator command changes the cache hash"
+    assert h_old == h_repeat, "same command produces a stable hash"
+
+
+def test_changing_generator_interpreter_invalidates_cache_hash(tmp_path):
+    """Swapping the interpreter (e.g. ``python3`` → ``python2``)
+    invalidates the cache."""
+    from types import SimpleNamespace
+
+    from fusesoc.edalizer import Ttptttg
+    from fusesoc.vlnv import Vlnv
+
+    fake_core = SimpleNamespace(
+        name=Vlnv("::fake:0.1.0"),
+        cache_root=str(tmp_path / "cache"),
+        files_root=str(tmp_path / "src"),
+    )
+    ttptttg = {
+        "generator": "mygen",
+        "name": "inst",
+        "pos": "append",
+        "config": {},
+    }
+
+    def hash_with_interp(interp):
+        generators = {
+            "mygen": {
+                "command": "gen.py",
+                "interpreter": interp,
+                "root": str(tmp_path),
+                "cache_type": "input",
+            }
+        }
+        t = Ttptttg(ttptttg, fake_core, generators, str(tmp_path / "work"))
+        return t._sha256_input_yaml_hexdigest()
+
+    assert hash_with_interp("python3") != hash_with_interp("python2")
+
+
+def test_editing_generator_script_invalidates_cache_hash(tmp_path):
+    """Editing the generator script in place -- same path, same
+    declarations -- changes the cache hash, because the hash folds in a
+    SHA-256 of the resolved script bytes.
+    """
+    from types import SimpleNamespace
+
+    from fusesoc.edalizer import Ttptttg
+    from fusesoc.vlnv import Vlnv
+
+    gen_root = tmp_path / "gen"
+    gen_root.mkdir()
+    script = gen_root / "gen.py"
+
+    fake_core = SimpleNamespace(
+        name=Vlnv("::fake:0.1.0"),
+        cache_root=str(tmp_path / "cache"),
+        files_root=str(tmp_path / "src"),
+    )
+    ttptttg = {
+        "generator": "mygen",
+        "name": "inst",
+        "pos": "append",
+        "config": {},
+    }
+    generators = {
+        "mygen": {
+            "command": "gen.py",
+            "interpreter": "python3",
+            "root": str(gen_root),
+            "cache_type": "input",
+        }
+    }
+
+    def current_hash():
+        t = Ttptttg(ttptttg, fake_core, generators, str(tmp_path / "work"))
+        return t._sha256_input_yaml_hexdigest()
+
+    # 1. Script missing -- hash is well-defined (None sentinel).
+    h_missing = current_hash()
+
+    # 2. Script created with v1 bytes -- hash flips.
+    script.write_text("# generator v1\nprint('hello v1')\n")
+    h_v1 = current_hash()
+    assert h_v1 != h_missing
+
+    # 3. Script edited in place to v2 -- hash flips again.
+    script.write_text("# generator v2\nprint('hello v2')\n")
+    h_v2 = current_hash()
+    assert h_v2 != h_v1
+
+    # 4. Reverting to v1 bytes -- hash returns to the v1 value
+    # (proves the hash depends on bytes, not on "has the file been
+    # touched"-style ctime/mtime heuristics).
+    script.write_text("# generator v1\nprint('hello v1')\n")
+    assert current_hash() == h_v1
