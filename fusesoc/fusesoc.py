@@ -14,7 +14,7 @@ from fusesoc.utils import setup_logging, yaml_fread
 from fusesoc.vlnv import Vlnv
 
 try:
-    from edalize.edatool import get_edatool
+    from edalize.edatool import ToolResolutionError, get_edatool
 except ImportError:
     from edalize import get_edatool
 
@@ -150,10 +150,15 @@ class Fusesoc:
                 )
 
         else:
+            if "tool" in flags:
+                tool = flags["tool"]
+            else:
+                tool_error = "No flow or tool was supplied on command line or found in '{}' core description"
+                raise RuntimeError(tool_error.format(core.name.sanitized_name))
             try:
-                backend_class = get_edatool(flags["tool"])
-            except ImportError:
-                raise RuntimeError(f"Backend {flags['tool']!r} not found")
+                backend_class = get_edatool(tool)
+            except ToolResolutionError:
+                raise RuntimeError(f"Backend {tool!r} not found")
 
         edalizer = Edalizer(
             toplevel=core.name,
