@@ -36,7 +36,7 @@ def _get_core(cm, core_name):
     matches = set()
     if ":" not in core_name:
         for core in cm.get_cores():
-            (vendor, library, name, _) = core.split(":")
+            vendor, library, name, _ = core.split(":")
             if name.lower() == core_name.lower():
                 matches.add(f"{vendor}:{library}:{name}")
         if len(matches) == 1:
@@ -217,10 +217,12 @@ def list_cores(fs, args):
 
 def list_tools(fs, args):
     import edalize.edatool
+
     if hasattr(edalize.edatool, "get_edatool_map"):
         # edalize>=0.6.2
         from edalize.edatool import get_edatool_map
-        NON_TOOLS = ["edatool"] # edalize reports this abstract class as a tool
+
+        NON_TOOLS = ["edatool"]  # edalize reports this abstract class as a tool
         tools = get_edatool_map()
         maxlen = max(map(len, tools.keys()))
 
@@ -248,7 +250,6 @@ def list_tools(fs, args):
             # Ignore any misbehaving backends
             except Exception:
                 pass
-
 
 
 def gen_list(fs, args):
@@ -541,17 +542,17 @@ def get_parser():
     parser_core_show = core_subparsers.add_parser(
         "show", help="Show information about a core"
     )
-    parser_core_show.add_argument(
-        "core", help="Name of the core to show"
-    ).completer = CoreCompleter()
+    parser_core_show.add_argument("core", help="Name of the core to show").completer = (
+        CoreCompleter()
+    )
     parser_core_show.set_defaults(func=core_info)
 
     parser_core_sign = core_subparsers.add_parser(
         "sign", help="Create user signature for a core"
     )
-    parser_core_sign.add_argument(
-        "core", help="Name of the core to sign"
-    ).completer = CoreCompleter()
+    parser_core_sign.add_argument("core", help="Name of the core to sign").completer = (
+        CoreCompleter()
+    )
     parser_core_sign.add_argument("keyfile", help="File containing ssh private key")
     parser_core_sign.set_defaults(func=core_sign)
 
