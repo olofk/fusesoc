@@ -2,6 +2,7 @@
 # Licensed under the 2-Clause BSD License, see LICENSE for details.
 # SPDX-License-Identifier: BSD-2-Clause
 
+import json
 import logging
 import os
 import shutil
@@ -11,6 +12,12 @@ from importlib import import_module
 from fusesoc.utils import Launcher
 
 logger = logging.getLogger(__name__)
+
+# File written inside a cached files_root after a successful checkout. Holds a
+# normalised JSON copy of the provider's CAPI2 config so subsequent runs can
+# detect when the user changed e.g. the provider ``version`` and the cache
+# needs to be refreshed.
+_CONFIG_MARKER = ".fusesoc-provider-config.json"
 
 
 def get_provider(name):
@@ -24,6 +31,36 @@ class Provider:
         self.files_root = files_root
         self.cachable = config.get("cachable", "") is not False
         self.patches = config.get("patches", [])
+
+    def _config_marker_path(self):
+        return os.path.join(self.files_root, _CONFIG_MARKER)
+
+    def _config_marker_value(self):
+        # Serialise with sorted keys so logically-equal configs compare equal,
+        # and exclude ``cachable`` since it controls *whether* we cache, not
+        # *what* we cache.
+        comparable = {k: v for k, v in self.config.items() if k != "cachable"}
+        return json.dumps(comparable, sort_keys=True)
+
+    def _read_config_marker(self):
+        try:
+            with open(self._config_marker_path()) as f:
+                return f.read()
+        except OSError:
+            return None
+
+    def _write_config_marker(self):
+        try:
+            with open(self._config_marker_path(), "w") as f:
+                f.write(self._config_marker_value())
+        except OSError as e:
+            # Don't fail the whole fetch over a marker write — we just lose the
+            # cache-invalidation benefit on the next run.
+            logger.warning(
+                "Failed to write provider cache marker {}: {}".format(
+                    self._config_marker_path(), e
+                )
+            )
 
     def clean_cache(self):
         def _make_tree_writable(topdir):
@@ -59,6 +96,11 @@ class Provider:
             )
         if _fetched:
             self._patch()
+        # Always (re-)write the marker after a successful fetch, including
+        # the legacy "downloaded but no marker" case from caches predating
+        # marker support.
+        if self.cachable and os.path.isdir(self.files_root):
+            self._write_config_marker()
 
     def _patch(self):
         for f in self.patches:
@@ -81,5 +123,11 @@ class Provider:
             return "outofdate"
         if not os.path.isdir(self.files_root):
             return "empty"
-        else:
-            return "downloaded"
+        marker = self._read_config_marker()
+        # No marker means the cache was populated by a fusesoc that predates
+        # the marker (or by something else that touched the directory). Stay
+        # backward-compatible: assume the cache is valid; ``fetch()`` will
+        # write a fresh marker so subsequent runs can spot drift.
+        if marker is not None and marker != self._config_marker_value():
+            return "outofdate"
+        return "downloaded"

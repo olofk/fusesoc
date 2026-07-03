@@ -120,3 +120,80 @@ def test_cachable():
     assert core.cache_status() == "empty"
     core.setup()
     assert core.cache_status() == "downloaded"
+
+
+def test_provider_cache_invalidates_on_config_change(tmp_path):
+    """Changing a field in a core's ``provider`` block (e.g. ``version``)
+    should be detected on the next run so the cache gets refreshed instead
+    of silently serving stale content.
+
+    Regression test for https://github.com/olofk/fusesoc/issues/700.
+    """
+    from fusesoc.provider.provider import Provider
+
+    files_root = tmp_path / "cache"
+    files_root.mkdir()
+    (files_root / "payload").write_text("v1")
+
+    # Initial fetch with version v1
+    p1 = Provider(
+        config={
+            "name": "url",
+            "url": "https://example.invalid/foo.tar",
+            "version": "v1",
+        },
+        core_root=str(tmp_path),
+        files_root=str(files_root),
+    )
+    # Simulate "fetch" having completed by writing the marker manually; we
+    # don't actually want to hit the network in this test.
+    p1._write_config_marker()
+    assert p1.status() == "downloaded"
+
+    # Same config, different Provider instance: still considered downloaded.
+    p_same = Provider(
+        config={
+            "name": "url",
+            "url": "https://example.invalid/foo.tar",
+            "version": "v1",
+        },
+        core_root=str(tmp_path),
+        files_root=str(files_root),
+    )
+    assert p_same.status() == "downloaded"
+
+    # User changes ``version``: cache must now be flagged out-of-date.
+    p_changed = Provider(
+        config={
+            "name": "url",
+            "url": "https://example.invalid/foo.tar",
+            "version": "v2",
+        },
+        core_root=str(tmp_path),
+        files_root=str(files_root),
+    )
+    assert p_changed.status() == "outofdate"
+
+
+def test_provider_legacy_cache_without_marker_is_valid(tmp_path):
+    """Caches populated by an older fusesoc don't have the marker file. Treat
+    them as valid for backward compatibility; the next fetch will create the
+    marker so future drift is detectable.
+    """
+    from fusesoc.provider.provider import Provider
+
+    files_root = tmp_path / "cache"
+    files_root.mkdir()
+    (files_root / "payload").write_text("legacy")
+    # Note: no .fusesoc-provider-config.json marker is written.
+
+    p = Provider(
+        config={
+            "name": "url",
+            "url": "https://example.invalid/foo.tar",
+            "version": "v1",
+        },
+        core_root=str(tmp_path),
+        files_root=str(files_root),
+    )
+    assert p.status() == "downloaded"
