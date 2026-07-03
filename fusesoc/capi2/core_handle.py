@@ -73,8 +73,11 @@ class CoreHandle:
     _cache: dict[FlagDefs, Core[str]] = field(init=False, default_factory=dict)
 
     @classmethod
-    def from_dict(cls, capi_dict: dict) -> "CoreHandle":
-        return cls(Core[Expr].model_validate(capi_dict))
+    def from_dict(cls, capi_dict: dict, core_file=None) -> "CoreHandle":
+        # core_file is passed as validation context so schema validators can
+        # point warnings at the core file they originate from.
+        context = {"core_file": str(core_file)} if core_file else None
+        return cls(Core[Expr].model_validate(capi_dict, context=context))
 
     def get(self, flag_defs: FlagDefs) -> Core[str]:
         if core := self._cache.get(flag_defs):

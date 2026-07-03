@@ -40,7 +40,7 @@ class CoreInterface:
     def __post_init__(self):
         parsed_capi = self.parser.read(self.core_file)
 
-        self.handle = CoreHandle.from_dict(parsed_capi)
+        self.handle = CoreHandle.from_dict(parsed_capi, self.core_file)
 
         self.name = Vlnv(self.get_data({}).name)
 
