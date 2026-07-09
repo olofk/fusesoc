@@ -304,7 +304,7 @@ class Config:
 
         self._cp.add_section(section_name)
 
-        self._cp.set(section_name, "location", library.location)
+        self._cp.set(section_name, "location", str(library.location))
 
         if library.sync_type:
             self._cp.set(section_name, "sync-uri", library.sync_uri)

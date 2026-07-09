@@ -4,41 +4,35 @@
 
 import logging
 import os
+from typing import Literal
+
+from pydantic import model_validator
+from pydantic.dataclasses import dataclass
+from typing_extensions import Self
 
 from fusesoc.provider.provider import get_provider
 
 logger = logging.getLogger(__name__)
 
 
+@dataclass(config={"validate_assignment": True})
 class Library:
-    def __init__(
-        self,
-        name,
-        location,
-        sync_type=None,
-        sync_uri=None,
-        sync_version=None,
-        auto_sync=True,
-    ):
-        if sync_type and sync_type not in ["local", "git", "url"]:
-            raise ValueError(
-                "Library {} ({}) Invalid sync-type '{}'".format(
-                    name, location, sync_type
-                )
-            )
+    name: str
+    location: str
+    sync_type: Literal["local", "git", "url"] | None = None
+    sync_uri: str | None = None
+    sync_version: str | None = None
+    auto_sync: bool = True
 
-        if sync_type in ["git", "url"]:
-            if not sync_uri:
+    @model_validator(mode="after")
+    def check_instances(self) -> Self:
+        if self.sync_type in ("git", "url"):
+            if self.sync_uri is None:
                 raise ValueError(
-                    f"Library name ({location}) {sync_uri} must be set when using sync_type '{sync_type}'"
+                    f"Library {self.name} ({self.location}) "
+                    f"sync-uri must be set when using sync_type '{self.sync_type}'"
                 )
-
-        self.name = name
-        self.location = location
-        self.sync_type = sync_type or "local"
-        self.sync_uri = sync_uri
-        self.sync_version = sync_version
-        self.auto_sync = auto_sync
+        return self
 
     def update(self, force=False):
         def lib(s):
