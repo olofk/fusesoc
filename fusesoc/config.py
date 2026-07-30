@@ -86,8 +86,25 @@ class Config:
             sync_version = self._cp.get(section, "sync-version", fallback=None)
             sync_type = self._cp.get(section, "sync-type", fallback=None)
 
+            try:
+                sync_submodules = self._cp.getboolean(section, "sync-submodules")
+            except configparser.NoOptionError:
+                sync_submodules = False
+            except ValueError as e:
+                _s = "Error parsing sync-submodules '{}'. Ignoring library '{}'"
+                logger.warning(_s.format(str(e), name))
+                continue
+
             libraries.append(
-                Library(name, location, sync_type, sync_uri, sync_version, auto_sync)
+                Library(
+                    name,
+                    location,
+                    sync_type,
+                    sync_uri,
+                    sync_version,
+                    auto_sync,
+                    sync_submodules,
+                )
             )
 
         return libraries
@@ -315,6 +332,8 @@ class Config:
             self._cp.set(section_name, "sync-type", library.sync_type)
             _auto_sync = "true" if library.auto_sync else "false"
             self._cp.set(section_name, "auto-sync", _auto_sync)
+            if library.sync_submodules:
+                self._cp.set(section_name, "sync-submodules", "true")
 
         try:
             provider = get_provider(library.sync_type)

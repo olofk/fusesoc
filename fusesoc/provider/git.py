@@ -25,12 +25,27 @@ class Git(Provider):
             Launcher("git", git_args).run()
 
     @staticmethod
+    def _update_library_submodules(library):
+        if library.sync_submodules:
+            logger.info(f"Updating submodules for {library.name}")
+            git_args = [
+                "-C",
+                library.location,
+                "submodule",
+                "update",
+                "--init",
+                "--recursive",
+            ]
+            Launcher("git", git_args).run()
+
+    @staticmethod
     def init_library(library):
         logger.info(f"Cloning library into {library.location}")
         git_args = ["clone", library.sync_uri, library.location]
         try:
             Launcher("git", git_args).run()
             Git._checkout_library_version(library)
+            Git._update_library_submodules(library)
         except subprocess.CalledProcessError as e:
             raise RuntimeError(str(e))
 
@@ -41,6 +56,7 @@ class Git(Provider):
         try:
             Git._checkout_library_version(library)
             Launcher("git", git_args).run()
+            Git._update_library_submodules(library)
         except subprocess.CalledProcessError as e:
             raise RuntimeError(str(e))
 

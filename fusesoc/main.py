@@ -152,7 +152,15 @@ def add_library(fs, args):
         location = os.path.abspath(sync_uri)
 
     auto_sync = not args.no_auto_sync
-    library = Library(name, location, sync_type, sync_uri, sync_version, auto_sync)
+    library = Library(
+        name,
+        location,
+        sync_type,
+        sync_uri,
+        sync_version,
+        auto_sync,
+        args.sync_submodules,
+    )
 
     effective_config = _effective_config_path(args.config)
     if effective_config:
@@ -658,6 +666,11 @@ def get_parser():
         "--no-auto-sync",
         action="store_true",
         help="Disable automatic updates of the library",
+    )
+    parser_library_add.add_argument(
+        "--sync-submodules",
+        action="store_true",
+        help="Also clone/update git submodules, for providers that support it",
     )
     parser_library_add.add_argument(
         "--global",
