@@ -78,6 +78,7 @@ def test_library_add(caplog):
         args.location = clone_target
         args.config = conf_path
         args.no_auto_sync = False
+        args.sync_submodules = False
         vars(args)["sync-uri"] = sync_uri
 
         add_library(cm, args)

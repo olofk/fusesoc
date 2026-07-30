@@ -19,6 +19,7 @@ class Library:
         sync_uri=None,
         sync_version=None,
         auto_sync=True,
+        sync_submodules=False,
     ):
         if sync_type and sync_type not in ["local", "git", "url"]:
             raise ValueError(
@@ -39,6 +40,7 @@ class Library:
         self.sync_uri = sync_uri
         self.sync_version = sync_version
         self.auto_sync = auto_sync
+        self.sync_submodules = sync_submodules
 
     def update(self, force=False):
         def lib(s):
