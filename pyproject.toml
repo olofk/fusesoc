@@ -87,6 +87,7 @@ explicit_package_bases = true
 check_untyped_defs = true
 enable_error_code = ["deprecated"]
 files = ["fusesoc/"]
+plugins = ["pydantic.mypy"]
 
 [[tool.mypy.overrides]]
 module = [
