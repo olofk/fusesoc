@@ -46,7 +46,7 @@ class CoreParser:
                     self._set_additional_properties(v, val)
 
     def read(self, core_file, validate_core=True):
-        capi_data = utils.yaml_fread(core_file, self._resolve_env_vars, True)
+        capi_data = utils.yaml_fread(core_file, self._resolve_env_vars)
 
         if validate_core:
             self.validate(capi_data)

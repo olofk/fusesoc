@@ -108,12 +108,30 @@ Naming the core file
 The core file can have any name, but it must end in ``.core``.
 It is recommended to choose a file name matching the core name, as discussed below.
 
-The first line: ``CAPI=2``
---------------------------
+The ``CAPI=2:`` directive at the beginning of the core file
+-----------------------------------------------------------
 
-A core file always starts with the line ``CAPI=2``.
-No other content (including comments) is allowed before this line, as FuseSoC uses this line to differentiate between different versions of the CAPI schema.
+A core file **MUST** always have the ``CAPI=2:`` directive at the beginning of the document.
+FuseSoC uses this directive to differentiate between different versions of the CAPI schema.
 Only CAPI version 2 is specified at the moment.
+
+Allowed content before the ``CAPI=2:`` directive:
+
+* `YAML directives`_ like ``%YAML 1.2`` or ``%TAG``
+* `YAML start document indicator`_ ``---```
+* Comments starting by the ``#`` hash character
+* Empty lines
+
+For example:
+
+.. code:: yaml
+
+    %YAML 1.2
+    ---
+    # SPDX-FileCopyrightText: © 2026 John Doe <john.doe@fusesoc.com>
+    # SPDX-License-Identifier: BSD-2-Clause
+
+    CAPI=2:
 
 .. _ug_build_system_core_name:
 
@@ -296,3 +314,6 @@ This setting can also be overridden using the command line option ``--ssh-trustf
 The signing process is accomplished with the ``core sign`` command, which takes a core name and a path to a private ssh key as arguments.
 
 The signing status of a core is shown in the ``core list`` and ``core show`` commands in the fusesoc cli tool.
+
+.. _YAML directives: https://yaml.org/spec/1.2.2/#directives
+.. _YAML start document indicator: https://yaml.org/spec/1.2.2/#22-structures

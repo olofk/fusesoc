@@ -5,6 +5,10 @@ capi2_schema = """
   "description": "Core API Version 2",
   "type": "object",
   "properties": {
+    "CAPI=2": {
+      "description": "Short for 'Core API version 2'. The schema or 'language' used in core files.",
+      "type": "null",
+    },
     "description": {
       "description": "Short description of core",
       "type": "string"

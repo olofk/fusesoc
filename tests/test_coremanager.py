@@ -774,3 +774,167 @@ def test_find_cores_records_parse_errors(tmp_path):
     bad_file, msg = cm.parse_errors[0]
     assert bad_file.endswith("broken.core")
     assert "must be array" in msg
+
+
+def test_capi2_directive_relaxed_for_yaml(tmp_path):
+    """Support the YAML specification as-is without enforcing strange requirements."""
+    from textwrap import dedent
+
+    from fusesoc.config import Config
+    from fusesoc.coremanager import CoreManager
+    from fusesoc.librarymanager import Library
+
+    (tmp_path / "yaml_minimal.core").write_text(
+        dedent(
+            """
+            CAPI=2:
+            name: fusesoc:yaml:minimal:0
+            targets:
+              default: {}
+            """
+        )
+    )
+
+    (tmp_path / "yaml_full.core").write_text(
+        dedent(
+            """
+            %YAML 1.2
+            ---
+            # SPDX-FileCopyrightText: © 2026 John Doe <john.doe@fusesoc.com>
+            # SPDX-License-Identifier: BSD-2-Clause
+
+            CAPI=2:
+            name: fusesoc:yaml:full:0
+            targets:
+              default: {}
+            """
+        )
+    )
+
+    (tmp_path / "yaml_directives.core").write_text(
+        dedent(
+            """
+            %YAML 1.2
+            ---
+            CAPI=2:
+            name: fusesoc:yaml:directives:0
+            targets:
+              default: {}
+            """
+        )
+    )
+
+    (tmp_path / "yaml_start_document_indicator.core").write_text(
+        dedent(
+            """
+            ---
+            CAPI=2:
+            name: fusesoc:yaml:start_document_indicator:0
+            targets:
+              default: {}
+            """
+        )
+    )
+
+    (tmp_path / "yaml_comments.core").write_text(
+        dedent(
+            """
+            # SPDX-FileCopyrightText: © 2026 John Doe <john.doe@fusesoc.com>
+            # SPDX-License-Identifier: BSD-2-Clause
+                # Comment but with spaces
+            CAPI=2:
+            name: fusesoc:yaml:comments:0
+            targets:
+              default: {}
+            """
+        )
+    )
+
+    (tmp_path / "yaml_empty_lines.core").write_text(
+        dedent(
+            """
+
+
+            CAPI=2:
+            name: fusesoc:yaml:empty_lines:0
+            targets:
+              default: {}
+            """
+        )
+    )
+
+    cm = CoreManager(Config())
+    cm.add_library(Library("yaml", str(tmp_path)), [])
+
+    cores = {str(c) for c in cm.get_cores()}
+    assert "fusesoc:yaml:minimal:0" in cores
+    assert "fusesoc:yaml:full:0" in cores
+    assert "fusesoc:yaml:directives:0" in cores
+    assert "fusesoc:yaml:start_document_indicator:0" in cores
+    assert "fusesoc:yaml:comments:0" in cores
+    assert "fusesoc:yaml:empty_lines:0" in cores
+
+
+def test_capi2_directive_at_the_beginning(tmp_path, caplog):
+    """The ``CAPI=2:`` directive **MUST** be at the beginning of core files."""
+    from logging import WARNING
+    from textwrap import dedent
+
+    from fusesoc.config import Config
+    from fusesoc.coremanager import CoreManager
+    from fusesoc.librarymanager import Library
+
+    caplog.set_level(WARNING)
+
+    (tmp_path / "yaml.core").write_text(
+        dedent(
+            """
+            name: fusesoc:yaml:capi:2
+            CAPI=2:
+            targets:
+              default: {}
+            """
+        )
+    )
+
+    cm = CoreManager(Config())
+    cm.add_library(Library("yaml", str(tmp_path)), [])
+
+    cores = {str(c) for c in cm.get_cores()}
+    assert not cores
+    assert (
+        "Found 'name: fusesoc:yaml:capi:2' but expecting the 'CAPI=<version>' directive at the beginning"
+        in caplog.text
+    )
+
+
+def test_capi2_directive_required(tmp_path, caplog):
+    """The ``CAPI=2:`` directive is required in FuseSoC core files."""
+    from logging import WARNING
+    from textwrap import dedent
+
+    from fusesoc.config import Config
+    from fusesoc.coremanager import CoreManager
+    from fusesoc.librarymanager import Library
+
+    caplog.set_level(WARNING)
+
+    (tmp_path / "yaml.core").write_text(
+        dedent(
+            """
+            name: fusesoc:yaml:capi:2
+            targets:
+              default: {}
+            """
+        )
+    )
+
+    cm = CoreManager(Config())
+    cm.add_library(Library("yaml", str(tmp_path)), [])
+
+    cores = {str(c) for c in cm.get_cores()}
+    assert not cores
+    assert (
+        "Found 'name: fusesoc:yaml:capi:2' but expecting the 'CAPI=<version>' directive at the beginning"
+        in caplog.text
+    )
