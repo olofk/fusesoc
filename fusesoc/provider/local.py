@@ -5,6 +5,7 @@
 import logging
 import os.path
 
+from fusesoc.library import Library
 from fusesoc.provider.provider import Provider
 
 logger = logging.getLogger(__name__)
@@ -12,7 +13,7 @@ logger = logging.getLogger(__name__)
 
 class Local(Provider):
     @staticmethod
-    def init_library(library):
+    def init_library(library: Library) -> None:
         if not os.path.isdir(library.location):
             logger.error(f"Local library at location '{library.location}' not found.")
             exit(1)
@@ -21,5 +22,5 @@ class Local(Provider):
         pass
 
     @staticmethod
-    def update_library(library):
+    def update_library(library: Library) -> None:
         pass

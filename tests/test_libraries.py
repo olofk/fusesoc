@@ -241,6 +241,8 @@ auto-sync = true
         with caplog.at_level(logging.INFO):
             fs.update_libraries([])
 
-        assert "vlog_tb_utils does not exist. Trying a checkout" in caplog.text
+        assert (
+            "vlog_tb_utils does not exist. Trying to initialize library" in caplog.text
+        )
         assert f"Cloning library into {library}/vlog_tb_utils" in caplog.text
         assert "Updating..." in caplog.text

@@ -17,6 +17,7 @@ else:
     from urllib2 import URLError
     from urllib2 import HTTPError
 
+from fusesoc.library import Library
 from fusesoc.provider.provider import Provider
 
 logger = logging.getLogger(__name__)
@@ -26,7 +27,7 @@ _HAS_TAR_FILTER = hasattr(tarfile, "tar_filter")  # Requires Python 3.12
 
 class Url(Provider):
     @staticmethod
-    def init_library(library):
+    def init_library(library: Library) -> None:
         try:
             logger.info(f"Downloading library from {library.sync_uri}...")
             Url._download(library.sync_uri, library.location, "zip")
@@ -35,7 +36,7 @@ class Url(Provider):
             raise RuntimeError(str(e))
 
     @staticmethod
-    def update_library(library):
+    def update_library(library: Library) -> None:
         try:
             Url._download(library.sync_uri, library.location, "zip")
         except Exception as e:

@@ -25,7 +25,7 @@ URL = "https://github.com/{user}/{repo}/archive/{version}.tar.gz"
 
 
 class Github(Provider):
-    def _checkout(self, local_dir):
+    def _checkout(self, local_dir: str) -> None:
         user = self.config.get("user")
         repo = self.config.get("repo")
 
