@@ -25,7 +25,7 @@ class Fusesoc:
     def __init__(self, config):
         self.config = config
 
-        self.lm = LibraryManager(config.library_root)
+        self.lm = LibraryManager()
         self.cm = CoreManager(self.config, library_manager=self.lm)
 
         self._register_libraries()
@@ -38,7 +38,7 @@ class Fusesoc:
                 self.add_library(library)
             except (RuntimeError, OSError):
                 try:
-                    temporary_lm = LibraryManager(self.config.library_root)
+                    temporary_lm = LibraryManager()
                     # try to initialize library
                     temporary_lm.add_library(library)
                     temporary_lm.update([library.name])

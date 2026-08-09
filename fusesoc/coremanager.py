@@ -416,11 +416,7 @@ class CoreManager:
     def __init__(self, config, library_manager=None):
         self.config = config
         self.db = CoreDB()
-        self._lm = (
-            LibraryManager(config.library_root)
-            if library_manager is None
-            else library_manager
-        )
+        self._lm = LibraryManager() if library_manager is None else library_manager
         self.core2parser = Core2Parser(
             config.resolve_env_vars_early, config.allow_additional_properties
         )

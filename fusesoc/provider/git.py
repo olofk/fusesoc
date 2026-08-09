@@ -5,6 +5,7 @@
 import logging
 import subprocess
 
+from fusesoc.library import Library
 from fusesoc.provider.provider import Provider
 from fusesoc.utils import Launcher
 
@@ -13,7 +14,7 @@ logger = logging.getLogger(__name__)
 
 class Git(Provider):
     @staticmethod
-    def _checkout_library_version(library):
+    def _checkout_library_version(library: Library) -> None:
         git_args = ["-C", library.location, "checkout", "-q", library.sync_version]
 
         if library.sync_version:
@@ -25,7 +26,7 @@ class Git(Provider):
             Launcher("git", git_args).run()
 
     @staticmethod
-    def _update_library_submodules(library):
+    def _update_library_submodules(library: Library) -> None:
         if library.sync_submodules:
             logger.info(f"Updating submodules for {library.name}")
             git_args = [
@@ -39,7 +40,7 @@ class Git(Provider):
             Launcher("git", git_args).run()
 
     @staticmethod
-    def init_library(library):
+    def init_library(library: Library) -> None:
         logger.info(f"Cloning library into {library.location}")
         git_args = ["clone", library.sync_uri, library.location]
         try:
@@ -50,7 +51,7 @@ class Git(Provider):
             raise RuntimeError(str(e))
 
     @staticmethod
-    def update_library(library):
+    def update_library(library: Library) -> None:
         download_option = "pull" if not library.sync_version else "fetch"
         git_args = ["-C", library.location, download_option]
         try:
@@ -60,7 +61,7 @@ class Git(Provider):
         except subprocess.CalledProcessError as e:
             raise RuntimeError(str(e))
 
-    def _checkout(self, local_dir):
+    def _checkout(self, local_dir: str) -> None:
         version = self.config.get("version", None)
 
         # TODO : Sanitize URL

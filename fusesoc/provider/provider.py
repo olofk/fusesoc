@@ -8,6 +8,7 @@ import shutil
 import stat
 from importlib import import_module
 
+from fusesoc.library import Library
 from fusesoc.utils import Launcher
 
 logger = logging.getLogger(__name__)
@@ -83,3 +84,33 @@ class Provider:
             return "empty"
         else:
             return "downloaded"
+
+    @staticmethod
+    def init_library(library: Library) -> None:
+        """Initialize FuseSoC library.
+
+        .. note::
+
+           Method required by the FuseSoC library manager.
+
+        Args:
+            library: The FuseSoC library object.
+        """
+        raise NotImplementedError(
+            "The 'init_library' static method required by the FuseSoC library manager is not implemented by this provider"
+        )
+
+    @staticmethod
+    def update_library(library: Library) -> None:
+        """Update FuseSoC library.
+
+        .. note::
+
+           Method required by the FuseSoC library manager.
+
+        Args:
+            library: The FuseSoC library object.
+        """
+        raise NotImplementedError(
+            "The 'update_library' static method required by the FuseSoC library manager is not implemented by this provider"
+        )
