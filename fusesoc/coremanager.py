@@ -71,7 +71,7 @@ class CoreDB:
         package_names = []
         for virtual in virtuals:
             for simple in virtual.simpleVLNVs():
-                package_names.append("{}".format(self._package_name(simple)))
+                package_names.append(f"{self._package_name(simple)}")
         return ", ".join(package_names)
 
     def add(self, core, library):
@@ -571,7 +571,7 @@ class CoreManager:
         )
         resolved_core = self.db.find(core)
         deps = self.db.solve(resolved_core.name, flags)
-        logger.debug(" Resolved core to {}".format(str(resolved_core.name)))
+        logger.debug(f" Resolved core to {str(resolved_core.name)}")
         logger.debug(" with dependencies " + ", ".join([str(c.name) for c in deps]))
         return deps
 
