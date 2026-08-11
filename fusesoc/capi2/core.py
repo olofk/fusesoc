@@ -517,9 +517,11 @@ Targets:
             for name in sorted(cd_targets):
                 targets += "{} : {}\n".format(
                     name.ljust(maxlen),
-                    cd_targets[name].description
-                    if "description" in cd_targets[name].description
-                    else "<No description>",
+                    (
+                        cd_targets[name].description
+                        if "description" in cd_targets[name].description
+                        else "<No description>"
+                    ),
                 )
         else:
             targets = "<No targets>"

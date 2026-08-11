@@ -558,17 +558,17 @@ def get_parser():
     parser_core_show = core_subparsers.add_parser(
         "show", help="Show information about a core"
     )
-    parser_core_show.add_argument(
-        "core", help="Name of the core to show"
-    ).completer = CoreCompleter()
+    parser_core_show.add_argument("core", help="Name of the core to show").completer = (
+        CoreCompleter()
+    )
     parser_core_show.set_defaults(func=core_info)
 
     parser_core_sign = core_subparsers.add_parser(
         "sign", help="Create user signature for a core"
     )
-    parser_core_sign.add_argument(
-        "core", help="Name of the core to sign"
-    ).completer = CoreCompleter()
+    parser_core_sign.add_argument("core", help="Name of the core to sign").completer = (
+        CoreCompleter()
+    )
     parser_core_sign.add_argument("keyfile", help="File containing ssh private key")
     parser_core_sign.set_defaults(func=core_sign)
 
