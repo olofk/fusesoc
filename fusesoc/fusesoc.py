@@ -179,7 +179,7 @@ class Fusesoc:
         except SyntaxError as e:
             raise RuntimeError(e.msg)
         except RuntimeError as e:
-            raise RuntimeError("Setup failed : {}".format(str(e)))
+            raise RuntimeError(f"Setup failed : {str(e)}")
         except DependencyError as e:
             raise RuntimeError("Failed to resolve dependencies. " + e.msg)
 

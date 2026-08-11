@@ -111,7 +111,7 @@ def fetch(fs, args):
     try:
         core.setup()
     except RuntimeError as e:
-        logger.error("Failed to fetch '{}': {}".format(core.name, str(e)))
+        logger.error(f"Failed to fetch '{core.name}': {str(e)}")
         exit(1)
 
 
@@ -419,14 +419,14 @@ def run(fs, args):
         try:
             backend.build()
         except RuntimeError as e:
-            logger.error("Failed to build {} : {}".format(str(core.name), str(e)))
+            logger.error(f"Failed to build {str(core.name)} : {str(e)}")
             exit(1)
 
     if do_run:
         try:
             backend.run()
         except RuntimeError as e:
-            logger.error("Failed to run {} : {}".format(str(core.name), str(e)))
+            logger.error(f"Failed to run {str(core.name)} : {str(e)}")
             exit(1)
 
 

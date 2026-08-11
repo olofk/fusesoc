@@ -85,7 +85,7 @@ class CoreInterface:
             src_files += [
                 f for f in v["src_files"] + v["inc_files"]
             ]  # FIXME include files
-        self._debug("Exporting {}".format(str(src_files)))
+        self._debug(f"Exporting {str(src_files)}")
 
         filesets = self.get_data(flags).filesets
 
@@ -181,7 +181,7 @@ class CoreInterface:
         return list(target.filters) if (target := self.get_target(flags)) else []
 
     def get_flow(self, flags):
-        self._debug("Getting flow for flags {}".format(str(flags)))
+        self._debug(f"Getting flow for flags {str(flags)}")
         flow = None
         if flags.get("flow"):
             flow = flags["flow"]
@@ -199,7 +199,7 @@ class CoreInterface:
         return flow
 
     def get_scripts(self, files_root, flags):
-        self._debug("Getting hooks for flags '{}'".format(str(flags)))
+        self._debug(f"Getting hooks for flags '{str(flags)}'")
         hooks = {}
         for hook, scripts in self._get_script_names(flags).items():
             hooks[hook] = []
@@ -219,7 +219,7 @@ class CoreInterface:
     def get_tool_options(self, flags):
         _flags = flags.copy()
 
-        self._debug("Getting tool options for flags {}".format(str(_flags)))
+        self._debug(f"Getting tool options for flags {str(_flags)}")
 
         target_name, target = self._get_target(_flags)
         tool = flags["tool"]
@@ -239,7 +239,7 @@ class CoreInterface:
     def get_flow_options(self, flags):
         _flags = flags.copy()
 
-        self._debug("Getting flow options for flags {}".format(str(_flags)))
+        self._debug(f"Getting flow options for flags {str(_flags)}")
         target_name, target = self._get_target(_flags)
 
         if "flow_options" in target:
@@ -251,7 +251,7 @@ class CoreInterface:
 
     def get_depends(self, flags):  # Add use flags?
         depends = []
-        self._debug("Getting dependencies for flags {}".format(str(flags)))
+        self._debug(f"Getting dependencies for flags {str(flags)}")
         for fs in self._get_filesets(flags):
             depends += [Vlnv(d) for d in fs["depend"]]
         return depends
@@ -352,7 +352,7 @@ class CoreInterface:
 
             return parsed_param
 
-        self._debug("Getting parameters for flags '{}'".format(str(flags)))
+        self._debug(f"Getting parameters for flags '{str(flags)}'")
         target = self.get_target(flags)
         parameters = {}
 
@@ -406,7 +406,7 @@ class CoreInterface:
     def get_toplevel(self, flags):
         _flags = flags.copy()
         _flags["is_toplevel"] = True  # FIXME: Is this correct?
-        self._debug("Getting toplevel for flags {}".format(str(_flags)))
+        self._debug(f"Getting toplevel for flags {str(_flags)}")
         target_name, target = self._get_target(_flags)
 
         if "toplevel" in target:
@@ -418,7 +418,7 @@ class CoreInterface:
             raise SyntaxError(s.format(self.name, target_name))
 
     def get_ttptttg(self, flags):
-        self._debug("Getting ttptttg for flags {}".format(str(flags)))
+        self._debug(f"Getting ttptttg for flags {str(flags)}")
         target_name, target = self._get_target(flags)
         ttptttg = []
 
@@ -487,7 +487,7 @@ class CoreInterface:
         self._debug(f"Getting VPI libraries for flags {flags}")
         vpi = []
         _vpi = self._get_vpi(flags)
-        self._debug(" Matched VPI libraries {}".format([v for v in _vpi]))
+        self._debug(f" Matched VPI libraries {[v for v in _vpi]}")
         for k, v in sorted(_vpi.items()):
             vpi.append(
                 {
@@ -567,10 +567,10 @@ Targets:
                 self.patch(self.files_root)
 
     def _debug(self, msg):
-        logger.debug("{} : {}".format(str(self.name), msg))
+        logger.debug(f"{str(self.name)} : {msg}")
 
     def _get_target(self, flags: Flags):
-        self._debug(" Resolving target for flags '{}'".format(str(flags)))
+        self._debug(f" Resolving target for flags '{str(flags)}'")
 
         cd_target = self.get_target(flags)
         target_name = get_target_name(flags)
@@ -583,7 +583,7 @@ Targets:
             return target_name, {}
 
     def _get_filesets(self, flags):
-        self._debug("Getting filesets for flags '{}'".format(str(flags)))
+        self._debug(f"Getting filesets for flags '{str(flags)}'")
         target_name, target = self._get_target(flags)
         if not target:
             return []
