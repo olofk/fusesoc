@@ -43,7 +43,7 @@ def _get_core(cm, core_name):
     matches = set()
     if ":" not in core_name:
         for core in cm.get_cores():
-            (vendor, library, name, _) = core.split(":")
+            vendor, library, name, _ = core.split(":")
             if name.lower() == core_name.lower():
                 matches.add(f"{vendor}:{library}:{name}")
         if len(matches) == 1:
@@ -246,19 +246,40 @@ def list_cores(fs, args):
 
 
 def list_tools(fs, args):
-    from edalize.edatool import get_edatool, walk_tool_packages
+    import edalize.edatool
 
-    _tp = list(walk_tool_packages())
-    maxlen = max(map(len, _tp))
+    if hasattr(edalize.edatool, "get_edatool_map"):
+        # edalize>=0.6.2
+        from edalize.edatool import get_edatool_map
 
-    for tool_name in _tp:
-        try:
-            tool_class = get_edatool(tool_name)
-            desc = tool_class.get_doc(0)["description"]
-            print(f"{tool_name:{maxlen}} : {desc}")
-        # Ignore any misbehaving backends
-        except Exception:
-            pass
+        NON_TOOLS = ["edatool"]  # edalize reports this abstract class as a tool
+        tools = get_edatool_map()
+        maxlen = max(map(len, tools.keys()))
+
+        for name, tool in tools.items():
+            if name in NON_TOOLS:
+                continue
+            try:
+                desc = tool.tool_class.get_doc(0)["description"]
+                print(f"{name:{maxlen}}: {desc}")
+            # Ignore any misbehaving backends
+            except Exception:
+                pass
+    else:
+        # edalize<=0.6.1
+        from edalize.edatool import get_edatool, walk_tool_packages
+
+        _tp = list(walk_tool_packages())
+        maxlen = max(map(len, _tp))
+
+        for tool_name in _tp:
+            try:
+                tool_class = get_edatool(tool_name)
+                desc = tool_class.get_doc(0)["description"]
+                print(f"{tool_name:{maxlen}} : {desc}")
+            # Ignore any misbehaving backends
+            except Exception:
+                pass
 
 
 def gen_list(fs, args):
