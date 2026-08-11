@@ -692,6 +692,7 @@ def test_core2parser():
     assert parser.get_preamble() == "CAPI=2:"
 
     expected = {
+        "CAPI=2": None,
         "name": "::noadditionalproperties:0",
         "filesets": {
             "somename": {
@@ -731,6 +732,7 @@ def test_core2parser():
     assert parser.get_allow_additional_properties() is True
 
     expected = {
+        "CAPI=2": None,
         "name": "::withadditionalproperties:0",
         "filesets": {
             "somename": {
@@ -779,6 +781,7 @@ def test_inheritance():
     assert parser.get_preamble() == "CAPI=2:"
 
     expected = {
+        "CAPI=2": None,
         "name": "::inheritance:0",
         "filesets": {
             "fileset_a": {"files": ["1.txt", "2.txt", "3.txt"]},

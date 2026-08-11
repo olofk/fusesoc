@@ -503,34 +503,31 @@ class CoreManager:
         """
         try:
             with open(core_file) as f:
-                lines = f.readline().split()
-                if lines:
-                    first_line = lines[0]
-                else:
-                    first_line = ""
-                if first_line == "CAPI=1":
-                    return 1
-                elif first_line == "CAPI=2:":
-                    return 2
-                else:
-                    error_msg = (
-                        "The first line of the core file {} must be "
-                        ' "CAPI=1" or "CAPI=2:".'.format(core_file)
-                    )
-                    error_msg += '  The first line of this core file is "{}".'.format(
-                        first_line
-                    )
-                    if first_line == "CAPI=2":
-                        error_msg += "  Just add a colon on the end!"
-                    logger.warning(error_msg)
-                    raise ValueError(
-                        "Unable to determine CAPI version from core file {}.".format(
-                            core_file
+                while line := f.readline():
+                    line = line.strip()
+
+                    if not line or line == "---" or line[0] in ("%", "#"):
+                        # Allow YAML start document indicator ---, YAML directive %, empty lines and comments
+                        continue
+
+                    if line == "CAPI=1":
+                        return 1
+
+                    if line == "CAPI=2:":
+                        return 2
+
+                    if line == "CAPI=2":
+                        raise ValueError(
+                            "Missing colon ':' after the 'CAPI=2' directive"
                         )
+
+                    raise ValueError(
+                        f"Found {line!r} but expecting the 'CAPI=<version>' directive at the beginning"
                     )
-        except Exception:
-            error_msg = f"Unable to determine CAPI version from core file {core_file}"
-            logger.warning(error_msg)
+        except Exception as e:
+            logger.warning(
+                f"{e}. Unable to determine CAPI version from core file: {core_file!r}"
+            )
             return -1
 
     def _load_cores(self, library, ignored_dirs):

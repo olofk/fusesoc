@@ -155,10 +155,8 @@ def yaml_fwrite(filepath, content, preamble=""):
         f.write(yaml.dump(content, Dumper=YamlDumper, sort_keys=False))
 
 
-def yaml_fread(filepath, resolve_env_vars=False, remove_preamble=False):
+def yaml_fread(filepath, resolve_env_vars=False):
     with open(filepath) as f:
-        if remove_preamble:
-            f.readline()
         return yaml_read(f.read(), resolve_env_vars)
 
 
