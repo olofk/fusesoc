@@ -20,7 +20,7 @@ repos:
         # Test golden references
         exclude: ^tests/(.+\.(info|patch)|test_provider/.+\.v)
   - repo: https://github.com/asottile/pyupgrade
-    rev: v2.7.4
+    rev: v3.21.2
     hooks:
       - id: pyupgrade
         # for now don't force to change from %-operator to {}
