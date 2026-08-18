@@ -830,3 +830,49 @@ def test_solve_skips_core_with_unreadable_depends(tmp_path, bad_first, caplog):
     # dependencies of whichever core happened to precede it.
     with pytest.raises(DependencyError):
         db.solve(Vlnv("::bad:0"), {})
+
+
+def test_virtual_conflict_with_conditional_virtual(tmp_path):
+    """
+    Flag-conditional ``virtual`` entries should be able to conflicts.
+    """
+
+    from fusesoc.capi2.coreparser import Core2Parser
+    from fusesoc.core import Core
+    from fusesoc.coremanager import CoreDB, DependencyError
+    from fusesoc.librarymanager import Library
+    from fusesoc.vlnv import Vlnv
+
+    def write_core(name, body):
+        core_file = tmp_path / (name + ".core")
+        core_file.write_text("CAPI=2:\n" + body)
+        return Core(Core2Parser(), str(core_file), str(tmp_path))
+
+    db = CoreDB()
+    lib = Library("test", str(tmp_path))
+    for name in ("impl_a", "impl_b"):
+        db.add(
+            write_core(name, f'name: ::{name}:0\nvirtual:\n  - "impl ? (::virt:0)"\n'),
+            lib,
+        )
+    db.add(
+        write_core(
+            "top",
+            "name: ::top:0\n"
+            "filesets:\n"
+            "  rtl:\n"
+            '    depend: ["::impl_a:0", "::impl_b:0"]\n'
+            "targets:\n"
+            "  default:\n"
+            "    filesets: [rtl]\n",
+        ),
+        lib,
+    )
+
+    # Without the flag neither core provides the virtual VLNV, so both may be
+    # selected together.
+    assert len(db.solve(Vlnv("::top:0"), {})) == 3
+
+    # With the flag both provide ::virt:0, so requiring both is unsatisfiable.
+    with pytest.raises(DependencyError):
+        db.solve(Vlnv("::top:0"), {"impl": True})
