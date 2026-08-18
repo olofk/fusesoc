@@ -774,3 +774,59 @@ def test_find_cores_records_parse_errors(tmp_path):
     bad_file, msg = cm.parse_errors[0]
     assert bad_file.endswith("broken.core")
     assert "must be array" in msg
+
+
+@pytest.mark.parametrize("bad_first", [True, False], ids=["bad_first", "bad_second"])
+def test_solve_skips_core_with_unreadable_depends(tmp_path, bad_first, caplog):
+    """
+    A core whose dependencies can't be read should be left out of the solve.
+    """
+
+    import logging
+
+    from fusesoc.capi2.coreparser import Core2Parser
+    from fusesoc.core import Core
+    from fusesoc.coremanager import CoreDB, DependencyError
+    from fusesoc.librarymanager import Library
+    from fusesoc.vlnv import Vlnv
+
+    def write_core(name, body):
+        core_file = tmp_path / (name + ".core")
+        core_file.write_text("CAPI=2:\n" + body)
+        return Core(Core2Parser(), str(core_file), str(tmp_path))
+
+    # 'bad' names a fileset that doesn't exist, so get_depends() raises an exception.
+    bad = write_core(
+        "bad",
+        "name: ::bad:0\n"
+        "targets:\n"
+        "  default:\n"
+        "    filesets: [no_such_fileset]\n",
+    )
+    good = write_core(
+        "good",
+        "name: ::good:0\n"
+        "filesets:\n"
+        "  rtl:\n"
+        '    depend: ["::dep:0"]\n'
+        "targets:\n"
+        "  default:\n"
+        "    filesets: [rtl]\n",
+    )
+    dep = write_core("dep", "name: ::dep:0\n")
+
+    db = CoreDB()
+    lib = Library("test", str(tmp_path))
+    for core in (bad, good, dep) if bad_first else (good, bad, dep):
+        db.add(core, lib)
+
+    # The broken core is reported, and the cores around it still solve.
+    with caplog.at_level(logging.WARNING):
+        resolved = [str(c.name) for c in db.solve(Vlnv("::good:0"), {})]
+    assert resolved == ["::dep:0", "::good:0"]
+    assert "Ignoring ::bad:0" in caplog.text
+
+    # ...and the broken core is excluded rather than quietly inheriting the
+    # dependencies of whichever core happened to precede it.
+    with pytest.raises(DependencyError):
+        db.solve(Vlnv("::bad:0"), {})
