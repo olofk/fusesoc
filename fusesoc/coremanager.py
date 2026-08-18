@@ -333,6 +333,9 @@ class CoreDB:
                     logger.warning(
                         f"Ignoring {core.name} due to syntax error in dependencies: {e.msg}"
                     )
+                    # Skip core since it has errors in the dependencies
+                    continue
+
                 if _depends:
                     for depend in _depends:
                         self._mapping_apply(depend)
