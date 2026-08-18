@@ -247,7 +247,7 @@ class CoreDB:
     def solve(self, top_core, flags):
         return self._solve(top_core, flags)
 
-    def _get_conflict_map(self):
+    def _get_conflict_map(self, flags):
         """Return a map of cores to their conflicts
 
         Only one core that implements a virtual VLNV may be selected in a
@@ -260,7 +260,7 @@ class CoreDB:
         virtual_map: dict[str, set[str]] = {}
         for core_data in self._cores.values():
             core = core_data["core"]
-            _virtuals = core.get_virtuals()
+            _virtuals = core.get_virtuals(flags)
             for virtual in _virtuals:
                 for simple in virtual.simpleVLNVs():
                     virtual_pkg = self._package_name(simple)
@@ -293,7 +293,7 @@ class CoreDB:
         repo = Repository()
         _flags = flags.copy()
         cores = [x["core"] for x in self._cores.values()]
-        conflict_map = self._get_conflict_map()
+        conflict_map = self._get_conflict_map(_flags)
 
         for core in cores:
             if only_matching_vlnv:
