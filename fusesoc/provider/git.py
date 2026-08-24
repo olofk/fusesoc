@@ -60,6 +60,8 @@ class Git(Provider):
             Git._update_library_submodules(library)
         except subprocess.CalledProcessError as e:
             raise RuntimeError(str(e))
+        except RuntimeError as e:
+            pass
 
     def _checkout(self, local_dir: str) -> None:
         version = self.config.get("version", None)
