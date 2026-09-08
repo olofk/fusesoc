@@ -1,3 +1,20 @@
+2.4.7 2026-09-08 Olof Kindgren
+======================================================
+* Set minium Python version to 3.10
+* Add type checked CAPI2 schema
+* Improve generator hashing
+* Support git submodules in git libraries
+* Support custom providers
+* Drop microseconds in SPDX timestamps
+
+Contributors:
+Alex Mykyta
+Erik Waling
+Hugo McNally
+Stefan Wallentowitz
+Tymoteusz Blazejczyk
+Anonymous
+
 2.4.6 2026-05-10 Olof Kindgren
 ======================================================
 * Optionally load config files from env var
