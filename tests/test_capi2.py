@@ -272,6 +272,33 @@ def test_capi2_get_files():
     assert expected == result
 
 
+
+def test_capi2_get_files_keeps_tags():
+    """File tags must survive get_files(); tuples need model_dump(mode="json")."""
+    from fusesoc.capi2.coreparser import Core2Parser
+    from fusesoc.core import Core
+
+    core_file = os.path.join(tests_dir, "capi2_cores", "misc", "tags.core")
+    core = Core(Core2Parser(), core_file)
+    flags = {"is_toplevel": True}
+    result = core.get_files(flags)
+    assert result == [
+        {
+            "file_type": "verilogSource",
+            "name": "top.v",
+            "tags": ["sim", "synth"],
+        }
+    ]
+    # fileset-only tags (no per-file tags) also survive
+    assert core.get_files({"is_toplevel": True, "target": "fs_only"}) == [
+        {
+            "file_type": "verilogSource",
+            "name": "other.v",
+            "tags": ["fileset_tag"],
+        }
+    ]
+
+
 def test_capi2_type_check():
     from fusesoc.capi2.coreparser import Core2Parser
     from fusesoc.core import Core
