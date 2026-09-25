@@ -2,10 +2,12 @@
 # Licensed under the 2-Clause BSD License, see LICENSE for details.
 # SPDX-License-Identifier: BSD-2-Clause
 
+from pathlib import Path
+
+import pytest
+
 
 def test_apply_filters(caplog):
-    import pytest
-
     from fusesoc.edalizer import Edalizer
 
     input_edam = {
@@ -477,3 +479,223 @@ def test_editing_generator_script_invalidates_cache_hash(tmp_path):
     # touched"-style ctime/mtime heuristics).
     script.write_text("# generator v1\nprint('hello v1')\n")
     assert current_hash() == h_v1
+
+
+@pytest.mark.parametrize(
+    "datatype,value",
+    (
+        ("bool", None),
+        ("bool", "FalSE"),
+        ("bool", "f"),
+        ("bool", "No"),
+        ("bool", "n"),
+        ("bool", "0"),
+        ("bool", "tRuE"),
+        ("bool", "t"),
+        ("bool", "Yes"),
+        ("bool", "y"),
+        ("bool", "1"),
+        ("int", None),
+        ("int", -2137),
+        ("int", 0),
+        ("int", 2137),
+        ("real", None),
+        ("real", -0.25),
+        ("real", 0.0),
+        ("real", 0.25),
+        ("str", None),
+        ("str", ""),
+        ("str", "arg"),
+        ("str", "arg with spaces"),
+        ("list", None),
+        ("list", ""),
+        ("list", "-arg1"),
+        ("list", "-arg1 val1"),
+        ("list", "-arg1 val1 -arg2"),
+        ("list", "-arg1 val1 -arg2 val2"),
+        ("file", None),
+        ("file", "input.tcl"),
+    ),
+)
+def test_edalizer_parse_args_for_options(datatype: str, value: object) -> None:
+    """Test parsing arguments for options by the Edalizer class."""
+    from edalize.flows.edaflow import Edaflow
+
+    from fusesoc.edalizer import Edalizer
+
+    name = f"my_{datatype}_option"
+
+    class MyFlow(Edaflow):
+        argtypes = []
+
+        FLOW_OPTIONS = {
+            name: {"type": datatype, "desc": "Description"},
+        }
+
+    if datatype == "list":
+        MyFlow.FLOW_OPTIONS[name]["type"] = "str"
+        MyFlow.FLOW_OPTIONS[name]["list"] = True
+
+    edalizer = Edalizer(
+        toplevel=None,
+        flags=None,
+        work_root=None,
+        core_manager=None,
+    )
+
+    edalizer.edam = {
+        "name": "flow",
+        "flow_options": {},
+        "parameters": {},
+    }
+
+    backendargs: list[str]
+
+    if value is None:
+        backendargs = [f"--{name}"] if datatype == "bool" else []
+    elif datatype == "list":
+        # To pass arguments with leading dashes to backend
+        backendargs = [f"--{name}={value}"]
+    else:
+        backendargs = [f"--{name}", str(value)]
+
+    edalizer.parse_args(MyFlow, backendargs)
+
+    expected: object = None
+
+    # Convert provided command line value to expected type for the Edalize
+    if value is None and datatype != "bool":
+        pass
+    elif datatype == "bool":
+        if value is None or str(value).lower() in ("yes", "true", "t", "y", "1"):
+            expected = True
+        else:
+            expected = False
+    elif datatype == "int":
+        expected = int(value)
+    elif datatype == "real":
+        expected = float(value)
+    elif datatype == "str":
+        expected = str(value)
+    elif datatype == "list":
+        expected = str(value).split(" ")
+    elif datatype == "file":
+        expected = str(Path(value).resolve())
+
+    assert edalizer.edam["parameters"] == {}
+
+    if expected is None and datatype != "bool":
+        # Option was defined but not used
+        assert edalizer.activated_flow_options == {}
+        assert name not in edalizer.edam["flow_options"]
+    else:
+        # Option was defined and used
+        assert edalizer.activated_flow_options == {name: expected}
+        assert edalizer.edam["flow_options"][name] == expected
+
+
+@pytest.mark.parametrize(
+    "datatype,value,default",
+    (
+        ("bool", None, None),
+        ("bool", "FalSE", True),
+        ("bool", "f", True),
+        ("bool", "No", True),
+        ("bool", "n", True),
+        ("bool", "0", True),
+        ("bool", "tRuE", False),
+        ("bool", "t", False),
+        ("bool", "Yes", False),
+        ("bool", "y", False),
+        ("bool", "1", False),
+        ("int", None, None),
+        ("int", -2137, 10),
+        ("int", 0, 2137),
+        ("int", 2137, -10),
+        ("real", None, None),
+        ("real", -0.25, 5),
+        ("real", 0.0, 5.0),
+        ("real", 0.25, -5),
+        ("str", None, None),
+        ("str", "", "default"),
+        ("str", "arg", "default"),
+        ("str", "arg with spaces", "default"),
+        ("file", None, None),
+        ("file", "input.tcl", "default.tcl"),
+    ),
+)
+@pytest.mark.parametrize(
+    "paramtype",
+    (
+        "plusarg",
+        "vlogparam",
+        "vlogdefine",
+        "generic",
+        "cmdlinearg",
+    ),
+)
+def test_edalizer_parse_args_for_parameters(
+    datatype: str, value: object, default: object, paramtype: str
+) -> None:
+    """Test parsing arguments for parameters by the Edalizer class."""
+    from edalize.flows.edaflow import Edaflow
+
+    from fusesoc.edalizer import Edalizer
+
+    name = f"my_{datatype}_parameter"
+
+    class MyFlow(Edaflow):
+        argtypes = [paramtype]
+
+        FLOW_OPTIONS = {}
+
+    edalizer = Edalizer(
+        toplevel=None,
+        flags=None,
+        work_root=None,
+        core_manager=None,
+    )
+
+    edalizer.edam = {
+        "name": "flow",
+        "flow_options": {},
+        "parameters": {
+            name: {
+                "datatype": datatype,
+                "paramtype": paramtype,
+                "default": default,
+            },
+        },
+    }
+
+    backendargs: list[str]
+
+    if value is None:
+        backendargs = [f"--{name}"] if datatype == "bool" else []
+    else:
+        backendargs = [f"--{name}", str(value)]
+
+    edalizer.parse_args(MyFlow, backendargs)
+
+    expected: object = None
+
+    # Convert provided command line value to expected type for the Edalize
+    if value is None and datatype != "bool":
+        pass
+    elif datatype == "bool":
+        if value is None or str(value).lower() in ("yes", "true", "t", "y", "1"):
+            expected = True
+        else:
+            expected = False
+    elif datatype == "int":
+        expected = int(value)
+    elif datatype == "real":
+        expected = float(value)
+    elif datatype == "str":
+        expected = str(value)
+    elif datatype == "file":
+        expected = str(Path(value).resolve())
+
+    assert edalizer.activated_flow_options == {}
+    assert edalizer.edam["flow_options"] == {}
+    assert edalizer.edam["parameters"][name]["default"] == expected
