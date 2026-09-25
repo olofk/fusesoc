@@ -192,6 +192,11 @@ class Expr(str):
 
     @validate_call
     def expand(self, flag_defs: FlagDefs) -> str:
+        # Only parse strings containing a "?" to avoid syntax errors on plain
+        # strings with for instance parentheses or shell syntax
+        if "?" not in self:
+            return str(self)
+
         ast = parse(self)
 
         # An extra optimisation for the common case where the whole ast boils

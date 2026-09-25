@@ -4,7 +4,7 @@
 
 import pytest
 
-from fusesoc.capi2.exprs import expand, parse
+from fusesoc.capi2.exprs import Expr, expand, parse
 from fusesoc.capi2.flags import into_flag_defs
 
 
@@ -59,3 +59,10 @@ def test_expand():
     check_expand("blah_1234 ? (a)", {"blah": 1234}, "a")
     check_expand("blah_1234 ? (a)", {"blah": 5678}, "")
     check_expand("!blah_1234 ? (a)", {"blah": 1234}, "")
+
+
+def test_expr_without_conditional_is_not_parsed():
+    # Strings without "?" are returned as-is, even if they are not valid expr
+    # syntax (e.g. shell commands in script cmd lists)
+    cmd = "'./tb & make run && (kill $$! >/dev/null 2>&1; true)'"
+    assert Expr(cmd).expand(into_flag_defs({})) == cmd
