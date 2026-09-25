@@ -4,7 +4,7 @@
 from collections.abc import Mapping
 from typing import Any, Generic, Literal
 
-from pydantic import Field, JsonValue, model_validator
+from pydantic import Field, JsonValue, ValidationInfo, model_validator
 
 from ..flags import Flags
 from .common import ExprOrStr, FrozenModel, _merge_append_keys
@@ -26,9 +26,9 @@ class Hooks(FrozenModel, Generic[ExprOrStr]):
 
     @model_validator(mode="before")
     @staticmethod
-    def _merge_appends(data: Any) -> Any:
+    def _merge_appends(data: Any, info: ValidationInfo) -> Any:
         return _merge_append_keys(
-            data, ("pre_build", "post_build", "pre_run", "post_run")
+            data, ("pre_build", "post_build", "pre_run", "post_run"), info
         )
 
 
@@ -38,8 +38,8 @@ class Vpi(FrozenModel, Generic[ExprOrStr]):
 
     @model_validator(mode="before")
     @staticmethod
-    def _merge_appends(data: Any) -> Any:
-        return _merge_append_keys(data, ("filesets", "libs"))
+    def _merge_appends(data: Any, info: ValidationInfo) -> Any:
+        return _merge_append_keys(data, ("filesets", "libs"), info)
 
 
 class Target(FrozenModel, Generic[ExprOrStr]):
@@ -59,11 +59,11 @@ class Target(FrozenModel, Generic[ExprOrStr]):
 
     @model_validator(mode="before")
     @staticmethod
-    def _normalize(data: Any) -> Any:
+    def _normalize(data: Any, info: ValidationInfo) -> Any:
         if not isinstance(data, dict):
             return data
         data = _merge_append_keys(
-            data, ("filesets", "filters", "parameters", "vpi", "generate")
+            data, ("filesets", "filters", "parameters", "vpi", "generate"), info
         )
         if "toplevel" in data and isinstance(data["toplevel"], str):
             data = {**data, "toplevel": (data["toplevel"],)}
