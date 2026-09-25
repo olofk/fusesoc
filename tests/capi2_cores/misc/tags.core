@@ -1,0 +1,17 @@
+CAPI=2:
+
+name : ::tags:0
+
+filesets:
+  rtl:
+    files:
+      - top.v : {file_type : verilogSource, tags : [sim, synth]}
+    tags: [fileset_tag]
+  rtl_fs:
+    files:
+      - other.v : {file_type : verilogSource}
+    tags: [fileset_tag]
+
+targets:
+  default: {filesets : [rtl]}
+  fs_only: {filesets : [rtl_fs]}
