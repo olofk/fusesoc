@@ -7,6 +7,12 @@ filesets:
     files:
       - hasdefines : {define : {key1 : value1, key2 : value2}}
       - nodefines
+  tags:
+    tags : [fileset_tag]
+    files:
+      - hastags : {tags : [file_tag]}
+      - inheritstags
 
 targets:
   defines: {filesets : [defines]}
+  tags: {filesets : [tags]}

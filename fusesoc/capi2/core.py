@@ -596,7 +596,7 @@ Targets:
                         self.name, fs, target_name
                     )
                 )
-            filesets.append(cd_filesets[fs].model_dump())
+            filesets.append(cd_filesets[fs].model_dump(mode="json"))
 
         self._debug(" Matched filesets " + str(target.get("filesets")))
         return filesets

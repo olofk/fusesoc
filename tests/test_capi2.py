@@ -271,6 +271,14 @@ def test_capi2_get_files():
     ]
     assert expected == result
 
+    flags = {"is_toplevel": True, "target": "tags"}
+    result = core.get_files(flags)
+    expected = [
+        {"name": "hastags", "tags": ["file_tag"]},
+        {"name": "inheritstags", "tags": ["fileset_tag"]},
+    ]
+    assert expected == result
+
 
 def test_capi2_type_check():
     from fusesoc.capi2.coreparser import Core2Parser
