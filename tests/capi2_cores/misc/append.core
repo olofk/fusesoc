@@ -20,3 +20,14 @@ targets:
   fs_fsappend:
     filesets : [fs1, fs2]
     filesets_append : [fs3, fs4]
+  # Regression for #767: a fileset listed in both filesets and
+  # filesets_append, or repeated within filesets_append, is emitted
+  # only once (with a warning).
+  fs_fsappend_dup_with_base:
+    filesets : [fs1, fs2]
+    filesets_append : [fs2, fs3]
+  fs_fsappend_dup_within_append:
+    filesets : [fs1]
+    filesets_append : [fs2, fs2, fs3]
+  fs_fsappend_only_dup:
+    filesets_append : [fs1, fs1, fs2]
