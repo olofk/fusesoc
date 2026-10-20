@@ -133,11 +133,11 @@ class Vlnv:
 
     def simpleVLNVs(self):
         if self.relation in "^~":
-            # A VLNV which implies a range of versions
-            # ^ for same major release
+            # A VLNV which implies a range of versions, as in Cargo and npm
+            # ^ for the same left-most non-zero number, i.e. same major
+            # release from 1.0 on
             # ~ for same minor release, or same major release if the
-            # version has no minor number (as in Cargo and npm)
-            incr = {"^": 0, "~": 1}
+            # version has no minor number
 
             # For both, we represent a >= relation on the provided
             # version...
@@ -147,7 +147,13 @@ class Vlnv:
             # and then a second < relation on the relevant
             # field (with later fields tied low)
             nextversion = list(map(int, self.version.split(".")))
-            pos = min(incr[self.relation], len(nextversion) - 1)
+            if self.relation == "^":
+                # The last number if they are all zero
+                pos = next(
+                    (i for i, n in enumerate(nextversion) if n), len(nextversion) - 1
+                )
+            else:
+                pos = min(1, len(nextversion) - 1)
             nextversion[pos] += 1
             for i in range(pos + 1, len(nextversion)):
                 nextversion[i] = 0

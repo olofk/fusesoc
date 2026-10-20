@@ -104,6 +104,11 @@ def test_vlnv_rejects_illegal_chars(bad_name):
     "dependency, lower, upper",
     [
         ("^::x:1.2.3", "::x:1.2.3", "::x:2.0.0"),
+        # Before 1.0, ^ keeps the left-most non-zero number
+        ("^::x:0.2.3", "::x:0.2.3", "::x:0.3.0"),
+        ("^::x:0.0.3", "::x:0.0.3", "::x:0.0.4"),
+        ("^::x:0.0", "::x:0.0", "::x:0.1"),
+        ("^::x:0", "::x:0", "::x:1"),
         ("~::x:1.2.3", "::x:1.2.3", "::x:1.3.0"),
         ("~::x:1.2", "::x:1.2", "::x:1.3"),
         # With no minor number, ~ allows minor updates
