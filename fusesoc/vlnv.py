@@ -27,13 +27,15 @@ class Vlnv:
         else:
             self.conflict = False
             _s = s[:]
+        if not _s:
+            raise SyntaxError(f"Core name is empty in '{s}'")
         if _s[0:2] in [">=", "<="]:
             self.relation = _s[0:2]
             _s = _s[2:]
-        elif s[0] in [">", "<", "~", "^"]:
-            self.relation = s[0]
+        elif _s[0] in [">", "<", "~", "^"]:
+            self.relation = _s[0]
             _s = _s[1:]
-        elif s[0] in ["="]:
+        elif _s[0] in ["="]:
             self.relation = "=="
             _s = _s[1:]
         else:
@@ -49,7 +51,7 @@ class Vlnv:
             sl = vlnv_parts[0].rsplit("-")
             if len(sl) == 1:
                 # Simplest case. No '-' => Only name
-                self.name = s
+                self.name = _s
                 self.version = ""
             else:
                 # If last part is the revision, save and pop from list
