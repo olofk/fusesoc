@@ -876,3 +876,136 @@ def test_virtual_conflict_with_conditional_virtual(tmp_path):
     # With the flag both provide ::virt:0, so requiring both is unsatisfiable.
     with pytest.raises(DependencyError):
         db.solve(Vlnv("::top:0"), {"impl": True})
+
+
+def _conflict_db(tmp_path, top_depends, mid_depends=None):
+    """A CoreDB with ::b at 1.0, 1.2.5 and 1.3.0 and ::top:0 depending on
+    top_depends. Given mid_depends, ::top:0 also depends on ::mid:0, which
+    depends on mid_depends."""
+    import json
+
+    from fusesoc.capi2.coreparser import Core2Parser
+    from fusesoc.core import Core
+    from fusesoc.coremanager import CoreDB
+    from fusesoc.librarymanager import Library
+
+    def write_core(name, depends=()):
+        core_file = tmp_path / (name.replace(":", "_") + ".core")
+        core_file.write_text(
+            f"CAPI=2:\nname: {name}\n"
+            f"filesets:\n  rtl:\n    depend: {json.dumps(list(depends))}\n"
+            "targets:\n  default:\n    filesets: [rtl]\n"
+        )
+        return Core(Core2Parser(), str(core_file), str(tmp_path))
+
+    cores = [write_core(f"::b:{version}") for version in ("1.0", "1.2.5", "1.3.0")]
+    if mid_depends is not None:
+        cores.append(write_core("::mid:0", mid_depends))
+        top_depends = top_depends + ["::mid:0"]
+    cores.append(write_core("::top:0", top_depends))
+
+    db = CoreDB()
+    lib = Library("test", str(tmp_path))
+    for core in cores:
+        db.add(core, lib)
+    return db
+
+
+@pytest.mark.parametrize(
+    "conflict, mid_depends, expected",
+    [
+        # A conflict never pulls a core in...
+        ("!::b", None, []),
+        # ...and makes the solve fail when another core does
+        ("!::b", ["::b"], None),
+        # A range keeps out only the versions in it
+        ("!~::b:1.2", ["<::b:1.2"], ["::b:1.0"]),
+        ("!~::b:1.2", ["::b:1.2.5"], None),
+        ("!~::b:1.2", ["::b"], ["::b:1.3.0"]),
+        ("!>=::b:1.2", ["::b"], ["::b:1.0"]),
+    ],
+)
+def test_depend_conflict(tmp_path, conflict, mid_depends, expected):
+    """A ! dependency keeps the versions it names out of the solve."""
+    from fusesoc.coremanager import DependencyError
+    from fusesoc.vlnv import Vlnv
+
+    db = _conflict_db(tmp_path, [conflict], mid_depends)
+    if expected is None:
+        with pytest.raises(DependencyError):
+            db.solve(Vlnv("::top:0"), {})
+    else:
+        resolved = [str(c.name) for c in db.solve(Vlnv("::top:0"), {})]
+        assert [name for name in resolved if name.startswith("::b:")] == expected
+
+
+def test_depend_conflict_twice(tmp_path, caplog):
+    """The solver can't combine two conflicts with one core, so a core that
+    has them is left out of the solve."""
+    import logging
+
+    from fusesoc.coremanager import DependencyError
+    from fusesoc.vlnv import Vlnv
+
+    db = _conflict_db(tmp_path, ["!<::b:1.2", "!>::b:1.3"])
+    with caplog.at_level(logging.WARNING), pytest.raises(DependencyError):
+        db.solve(Vlnv("::top:0"), {})
+    assert "More than one conflict ('!') with ::b" in caplog.text
+
+
+def test_depend_conflict_repeated(tmp_path):
+    """Filesets often repeat a dependency, so an identical second conflict is
+    not refused."""
+    from fusesoc.vlnv import Vlnv
+
+    db = _conflict_db(tmp_path, ["!>=::b:1.2", "!>=::b:1.2"], ["::b"])
+    resolved = [str(c.name) for c in db.solve(Vlnv("::top:0"), {})]
+    assert [name for name in resolved if name.startswith("::b:")] == ["::b:1.0"]
+
+
+def test_depend_conflict_not_pinned_by_lockfile(tmp_path):
+    """A lock file pins dependencies, not conflicts: pinning !<::b:1.3 to the
+    locked ::b:1.0 would let ::b:1.2.5 through."""
+    from fusesoc.coremanager import DependencyError
+    from fusesoc.vlnv import Vlnv
+
+    db = _conflict_db(tmp_path, ["!<::b:1.3"], ["~::b:1.2"])
+    lockfile = tmp_path / "fusesoc.lock.yml"
+    lockfile.write_text('cores:\n  - name: "::b:1.0"\n')
+    db.load_lockfile(lockfile, True)
+    with pytest.raises(DependencyError):
+        db.solve(Vlnv("::top:0"), {})
+
+
+def test_depend_conflict_mapped(tmp_path):
+    """A mapping applies to a conflict like to any dependency: with ::c
+    mapped to ::b, !::c keeps ::b out."""
+    from fusesoc.capi2.coreparser import Core2Parser
+    from fusesoc.core import Core
+    from fusesoc.coremanager import DependencyError
+    from fusesoc.librarymanager import Library
+    from fusesoc.vlnv import Vlnv
+
+    db = _conflict_db(tmp_path, ["!::c"], ["::b"])
+    map_file = tmp_path / "map.core"
+    map_file.write_text('CAPI=2:\nname: ::map:0\nmapping:\n  "::c": "::b"\n')
+    db.add(
+        Core(Core2Parser(), str(map_file), str(tmp_path)),
+        Library("test", str(tmp_path)),
+    )
+    db.mapping_set(["::map:0"])
+    with pytest.raises(DependencyError):
+        db.solve(Vlnv("::top:0"), {})
+
+
+def test_depend_conflict_with_virtual_conflict():
+    """A virtual conflict keeps out every version of its package. A ! on the
+    same package must not narrow it, since the solver ANDs the two, but a
+    second ! is still refused."""
+    from fusesoc.coremanager import CoreDB
+    from fusesoc.vlnv import Vlnv
+
+    db = CoreDB()
+    assert db._parse_conflicts({"b"}, [Vlnv("!>=::b:1.3")]) == "b"
+    with pytest.raises(SyntaxError, match="More than one conflict"):
+        db._parse_conflicts({"b"}, [Vlnv("!<::b:1.2"), Vlnv("!>::b:1.3")])
