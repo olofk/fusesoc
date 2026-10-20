@@ -100,6 +100,22 @@ def test_vlnv_rejects_illegal_chars(bad_name):
         Vlnv(bad_name)
 
 
+@pytest.mark.parametrize(
+    "dependency, lower, upper",
+    [
+        ("^::x:1.2.3", "::x:1.2.3", "::x:2.0.0"),
+        ("~::x:1.2.3", "::x:1.2.3", "::x:1.3.0"),
+        # The upper bound has no revision: 2.0.0-r0 is outside the range too
+        ("^::x:1.2.3-r1", "::x:1.2.3-r1", "::x:2.0.0"),
+        ("~::x:1.2.3-r2", "::x:1.2.3-r2", "::x:1.3.0"),
+    ],
+)
+def test_vlnv_range(dependency, lower, upper):
+    low, high = Vlnv(dependency).simpleVLNVs()
+    assert (low.relation, str(low)) == (">=", lower)
+    assert (high.relation, str(high)) == ("<", upper)
+
+
 def test_vlvn_compare_relation():
     version_1_3 = Vlnv(":peripherals:uart16550:1.3.1")
     version_1_4 = Vlnv(":peripherals:uart16550:1.4.2")

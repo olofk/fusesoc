@@ -154,6 +154,8 @@ class Vlnv:
             vlnvs.append(copy.deepcopy(self))
             vlnvs[1].relation = "<"
             vlnvs[1].version = ".".join(map(str, nextversion))
+            # Any revision of the next version is outside the range
+            vlnvs[1].revision = 0
             return vlnvs
         else:
             # A normal VLNV, so we can return ourselves
