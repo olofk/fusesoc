@@ -10,6 +10,7 @@ FuseSoC core files allow strings matching the following pseudo-BNF:
           | expr exprs
 
   expr ::= word
+         | "!" word                             (e.g. a conflict dependency)
          | conditional
 
   word ::= [a-zA-Z0-9:<>.\[\]_-,=~/^+"]+    (one or more alphanum/special chars)
@@ -35,6 +36,7 @@ from typing import Any, Sequence
 from pydantic import GetCoreSchemaHandler, validate_call
 from pydantic_core import CoreSchema, core_schema
 from pyparsing import (
+    Combine,
     Forward,
     Group,
     OneOrMore,
@@ -84,6 +86,10 @@ def _get_parser() -> Forward:
         return _PARSER
 
     word = Word(alphanums + '`:<>.[]_-,=~/^+"$')
+    # A word outside a condition keeps a leading "!", as in "flag ? (!::b)".
+    # A condition's "!" negates it, and "^" picks the longer match, so
+    # "!flag ? (::b)" is still a negated conditional.
+    leaf = Combine(Optional("!") + word)
     exprs = Forward()
 
     conditional = (
@@ -94,7 +100,7 @@ def _get_parser() -> Forward:
         + Group(exprs)
         + Suppress(")")
     )
-    exprs <<= OneOrMore(conditional ^ word)
+    exprs <<= OneOrMore(conditional ^ leaf)
     conditional.set_parse_action(_cond_parse_action)
     _PARSER = exprs
     return _PARSER
