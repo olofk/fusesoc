@@ -105,6 +105,9 @@ def test_vlnv_rejects_illegal_chars(bad_name):
     [
         ("^::x:1.2.3", "::x:1.2.3", "::x:2.0.0"),
         ("~::x:1.2.3", "::x:1.2.3", "::x:1.3.0"),
+        ("~::x:1.2", "::x:1.2", "::x:1.3"),
+        # With no minor number, ~ allows minor updates
+        ("~::x:1", "::x:1", "::x:2"),
         # The upper bound has no revision: 2.0.0-r0 is outside the range too
         ("^::x:1.2.3-r1", "::x:1.2.3-r1", "::x:2.0.0"),
         ("~::x:1.2.3-r2", "::x:1.2.3-r2", "::x:1.3.0"),
