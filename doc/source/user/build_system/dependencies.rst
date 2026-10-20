@@ -145,6 +145,24 @@ Tilde requirements specify a minimal version with some ability to update.
 If you specify a major, minor, and patch version or only a major and minor version, only patch-level changes are allowed.
 If you only specify a major version, then minor- and patch-level changes are allowed.
 
+Conflicts
+~~~~~~~~~
+
+Prefixing a dependency with ``!`` turns it into a conflict: the named core, in the versions it names, must not be part of the build.
+A conflict never adds a core to the build, and it applies only while the core that declares it is part of the build.
+If another core in the build depends on a conflicting version, the dependency resolution picks another version or fails.
+``!`` can be combined with any of the operators above.
+
+.. code-block:: yaml
+
+   depend:
+     # No version of blinky may be used
+     - "!fusesoc:examples:blinky"
+     # Versions 1.2.x of uart may not be used
+     - "!~fusesoc:examples:uart:1.2"
+
+A core can name another core in one conflict only.
+
 .. _ug_build_system_dependencies_semver:
 
 Semantic versioning (SemVer)
