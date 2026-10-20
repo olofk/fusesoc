@@ -52,11 +52,13 @@ class CoreDB:
         return f"{vlnv.version}-{vlnv.revision}"
 
     def _parse_depend(self, depends):
-        # FIXME: Handle conflicts
         deps = []
 
         _s = "{} {} {}"
         for d in depends:
+            # A conflict goes to the solver's conflicts, see _parse_conflicts
+            if d.conflict:
+                continue
             for simple in d.simpleVLNVs():
                 deps.append(
                     _s.format(
@@ -66,6 +68,35 @@ class CoreDB:
                     )
                 )
         return ", ".join(deps)
+
+    def _parse_conflicts(self, virtual_conflicts, depends):
+        """The solver's conflicts for a core: the other cores that provide one
+        of its virtual VLNVs, and its ! dependencies.
+
+        The solver ANDs the constraints on one package within the conflicts,
+        so each package gets one entry. A virtual conflict covers every
+        version of its package, so a ! dependency on it adds nothing.
+        """
+        conflicts = {pkg: pkg for pkg in virtual_conflicts}
+        # The versions each package's ! dependency names, to refuse a second,
+        # different one whether or not the package is also a virtual
+        # conflict. Filesets often repeat a dependency, so an identical one is
+        # allowed.
+        depend_conflicts: dict[str, tuple[str, str, int]] = {}
+        for d in depends:
+            if not d.conflict:
+                continue
+            pkg = self._package_name(d)
+            versions = (d.relation, d.version, d.revision)
+            if depend_conflicts.setdefault(pkg, versions) != versions:
+                raise SyntaxError(f"More than one conflict ('!') with {d.vln_str()}")
+            if pkg in virtual_conflicts:
+                continue
+            conflicts[pkg] = ", ".join(
+                f"{pkg} {simple.relation} {self._package_version(simple)}"
+                for simple in d.simpleVLNVs()
+            )
+        return ", ".join(conflicts.values())
 
     def _parse_virtual(self, virtuals):
         package_names = []
@@ -319,9 +350,6 @@ class CoreDB:
                 _s = "; provides ( {} )"
                 package_str += _s.format(self._parse_virtual(_virtuals))
             conflict_set = conflict_map.get(self._package_name(core.name), set())
-            if len(conflict_set) > 0:
-                _s = "; conflicts ( {} )"
-                package_str += _s.format(", ".join(list(conflict_set)))
 
             # Add dependencies only if we want to build the whole dependency
             # tree.
@@ -329,6 +357,12 @@ class CoreDB:
                 _flags["is_toplevel"] = core.name == top_core
                 try:
                     _depends = core.get_depends(_flags)
+                    for depend in _depends:
+                        self._mapping_apply(depend)
+                        # A conflict names versions to keep out, not one to pin
+                        if not depend.conflict:
+                            self._lockfile_replace(depend)
+                    conflicts = self._parse_conflicts(conflict_set, _depends)
                 except SyntaxError as e:
                     logger.warning(
                         f"Ignoring {core.name} due to syntax error in dependencies: {e.msg}"
@@ -336,14 +370,15 @@ class CoreDB:
                     # Skip core since it has errors in the dependencies
                     continue
 
-                if _depends:
-                    for depend in _depends:
-                        self._mapping_apply(depend)
-                        self._lockfile_replace(depend)
-                    _s = "; depends ( {} )"
-                    package_str += _s.format(self._parse_depend(_depends))
+                depends = self._parse_depend(_depends)
+                if depends:
+                    package_str += f"; depends ( {depends} )"
             else:
                 self._lockfile_replace(top_core)
+                conflicts = self._parse_conflicts(conflict_set, [])
+
+            if conflicts:
+                package_str += f"; conflicts ( {conflicts} )"
 
             parser = PrettyPackageStringParser(EnpkgVersion.from_string)
 
