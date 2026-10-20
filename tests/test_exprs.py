@@ -28,10 +28,12 @@ def test_exprs():
     check_parses_to("!a ? (b)", [(True, "a", ["b"])])
     check_parses_to("a b ? (c)", ["a", (False, "b", ["c"])])
     check_parses_to('a"b"', ['a"b"'])
+    # A leading "!" on a word inside a conditional is part of the word
+    check_parses_to("a ? (!b)", [(False, "a", ["!b"])])
+    check_parses_to("!a ? (!b)", [(True, "a", ["!b"])])
 
-    check_parse_error("!a")
     check_parse_error("a ? b")
-    check_parse_error("a !b")
+    check_parse_error("a ? (!)")
 
 
 def check_expand(string, flags, expansion):
@@ -49,6 +51,9 @@ def test_expand():
 
     check_expand("a ? (b)", {"a": False}, "")
     check_expand("!a ? (b)", {"a": False}, "b")
+
+    check_expand("a ? (!::b)", {"a": True}, "!::b")
+    check_expand("!a ? (!>=::b:1.2)", {}, "!>=::b:1.2")
 
     check_expand("mode_foo ? (a)", {"mode": "foo"}, "a")
     check_expand("mode_foo ? (a)", {"mode": "bar"}, "")
