@@ -124,6 +124,28 @@ def test_vlnv_range(dependency, lower, upper):
     assert (high.relation, str(high)) == ("<", upper)
 
 
+def test_vlnv_rejects_bare_conflict():
+    with pytest.raises(SyntaxError, match="Core name is empty"):
+        Vlnv("!")
+
+
+@pytest.mark.parametrize(
+    "dependency, relation, version",
+    [
+        ("!::x", ">=", "0"),
+        ("!x", ">=", "0"),
+        ("!::x:1.2", "==", "1.2"),
+        ("!=::x:1.2", "==", "1.2"),
+        ("!>=::x:1.2", ">=", "1.2"),
+        ("!~::x:1.2", "~", "1.2"),
+    ],
+)
+def test_vlnv_conflict(dependency, relation, version):
+    vlnv = Vlnv(dependency)
+    assert vlnv.conflict
+    assert (vlnv.relation, vlnv.vln_str(), vlnv.version) == (relation, "::x", version)
+
+
 def test_vlvn_compare_relation():
     version_1_3 = Vlnv(":peripherals:uart16550:1.3.1")
     version_1_4 = Vlnv(":peripherals:uart16550:1.4.2")
