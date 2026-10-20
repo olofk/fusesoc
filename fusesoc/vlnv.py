@@ -7,6 +7,10 @@ import re
 from functools import total_ordering
 
 _VLNV_PART_RE = re.compile(r"^[A-Za-z0-9_.-]*$")
+# The dot-separated numbers a version starts with, before any pre-release
+_VERSION_NUMBERS_RE = re.compile(r"\d+(?:\.\d+)*")
+# The lowest version the solver gives a set of numbers, below its pre-releases
+_BEFORE_PRERELEASES = ".dev0"
 
 
 @total_ordering
@@ -109,6 +113,10 @@ class Vlnv:
                     "contain alphanumerics, '.', '-', and '_'".format(s, field, value)
                 )
 
+        # Raises here, while the core is read, if a range has no numbers
+        if self.relation in ("^", "~"):
+            self._range_numbers()
+
         # Create sanitized name
         self.sanitized_name = str(self).lstrip(":").replace(":", "_")
 
@@ -133,6 +141,42 @@ class Vlnv:
             relation = self.relation
         return relation + str(self)
 
+    def _range_numbers(self):
+        # The numbers a ^ or ~ range is computed from: those the version
+        # starts with, before any pre-release
+        numbers = _VERSION_NUMBERS_RE.match(self.version)
+        if not numbers:
+            raise SyntaxError(
+                "{}: '{}' operator requires a version that starts with a "
+                "number".format(self.depstr(), self.relation)
+            )
+        nextversion = list(map(int, numbers.group().split(".")))
+
+        # The solver compares versions as in PEP 386. A version that is not
+        # valid PEP 386 (1.0alpha1, 1.0RC1, 01.0) sorts below every valid
+        # one, so as a lower bound it would let older versions into the
+        # range. The version must not sort below its numbers' .dev0
+        from okonomiyaki.errors import InvalidEnpkgVersion
+        from okonomiyaki.versions import EnpkgVersion
+
+        lowest = ".".join(map(str, nextversion)) + _BEFORE_PRERELEASES
+        try:
+            below = EnpkgVersion.from_string(
+                f"{self.version}-{self.revision}"
+            ) < EnpkgVersion.from_string(f"{lowest}-0")
+        except InvalidEnpkgVersion:
+            raise SyntaxError(
+                f"{self.depstr()}: the solver cannot read version '{self.version}'"
+            )
+        if below:
+            raise SyntaxError(
+                "{}: the solver orders version '{}' below {}, so a '{}' range "
+                "from it would include older versions".format(
+                    self.depstr(), self.version, lowest, self.relation
+                )
+            )
+        return nextversion
+
     def simpleVLNVs(self):
         if self.relation in "^~":
             # A VLNV which implies a range of versions, as in Cargo and npm
@@ -147,8 +191,9 @@ class Vlnv:
             vlnvs[0].relation = ">="
 
             # and then a second < relation on the relevant
-            # field (with later fields tied low)
-            nextversion = list(map(int, self.version.split(".")))
+            # field (with later fields tied low). Only the leading
+            # numbers count, so ^1.0.0rc1 is <2.0.0 like ^1.0.0
+            nextversion = self._range_numbers()
             if self.relation == "^":
                 # The last number if they are all zero
                 pos = next(
