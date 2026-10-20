@@ -116,12 +116,48 @@ def test_vlnv_rejects_illegal_chars(bad_name):
         # The upper bound has no revision: 2.0.0-r0 is outside the range too
         ("^::x:1.2.3-r1", "::x:1.2.3-r1", "::x:2.0.0"),
         ("~::x:1.2.3-r2", "::x:1.2.3-r2", "::x:1.3.0"),
+        # A pre-release keeps its lower bound, the upper bound uses the numbers
+        ("^::x:1.0.0rc1", "::x:1.0.0rc1", "::x:2.0.0"),
+        ("^::x:0.2rc1-r1", "::x:0.2rc1-r1", "::x:0.3"),
+        ("~::x:1.2b3", "::x:1.2b3", "::x:1.3"),
+        # So do .postN and .devN, alone or after a pre-release
+        ("^::x:1.0.0.post1", "::x:1.0.0.post1", "::x:2.0.0"),
+        ("~::x:1.2.dev3", "::x:1.2.dev3", "::x:1.3"),
+        ("^::x:0.2a1.dev2", "::x:0.2a1.dev2", "::x:0.3"),
     ],
 )
 def test_vlnv_range(dependency, lower, upper):
     low, high = Vlnv(dependency).simpleVLNVs()
     assert (low.relation, str(low)) == (">=", lower)
     assert (high.relation, str(high)) == ("<", upper)
+
+
+@pytest.mark.parametrize("dependency", ["^::x:v1.0", "~::x:rc1"])
+def test_vlnv_range_needs_numbers(dependency):
+    with pytest.raises(SyntaxError, match="requires a version that starts with"):
+        Vlnv(dependency)
+
+
+# Versions the solver orders below every release, or below 1.1 for 1.01
+@pytest.mark.parametrize(
+    "dependency", ["^::x:1.0.0alpha1", "~::x:1.2RC1", "^::x:01.2", "^::x:1.01"]
+)
+def test_vlnv_range_refuses_low_sorting_versions(dependency):
+    with pytest.raises(SyntaxError, match="would include older versions"):
+        Vlnv(dependency)
+
+
+def test_vlnv_range_refuses_unreadable_versions():
+    with pytest.raises(SyntaxError, match="the solver cannot read version"):
+        Vlnv("^::x:1.0.0-rc1")
+
+
+# The lowest version for a set of numbers and the spellings above it
+@pytest.mark.parametrize(
+    "dependency", ["^::x:1.0.0.dev0", "~::x:1.0c1", "^::x:1.0.0.post1-r2"]
+)
+def test_vlnv_range_accepts_solver_versions(dependency):
+    assert len(Vlnv(dependency).simpleVLNVs()) == 2
 
 
 def test_vlnv_rejects_bare_conflict():
