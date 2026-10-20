@@ -207,7 +207,9 @@ class Vlnv:
 
             vlnvs.append(copy.deepcopy(self))
             vlnvs[1].relation = "<"
-            vlnvs[1].version = ".".join(map(str, nextversion))
+            # .dev0 sorts before the next version's pre-releases (a, b, rc)
+            # in the solver, so ^1.2.3 does not select 2.0.0rc1
+            vlnvs[1].version = ".".join(map(str, nextversion)) + _BEFORE_PRERELEASES
             # Any revision of the next version is outside the range
             vlnvs[1].revision = 0
             return vlnvs

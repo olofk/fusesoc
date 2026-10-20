@@ -131,6 +131,8 @@ Notes:
 * If no operator is specified, then ``=`` is assumed.
   So the ``=`` operator is effectively optional.
 * If no version number is given any version is accepted, i.e. ``>= 0.0.0``.
+* A ``^`` or ``~`` range excludes the pre-releases of its upper bound:
+  ``^fusesoc:examples:blinky:1.2`` does not match 2.0.0rc1.
 
 Caret requirements
 ~~~~~~~~~~~~~~~~~~

@@ -103,27 +103,27 @@ def test_vlnv_rejects_illegal_chars(bad_name):
 @pytest.mark.parametrize(
     "dependency, lower, upper",
     [
-        ("^::x:1.2.3", "::x:1.2.3", "::x:2.0.0"),
+        ("^::x:1.2.3", "::x:1.2.3", "::x:2.0.0.dev0"),
         # Before 1.0, ^ keeps the left-most non-zero number
-        ("^::x:0.2.3", "::x:0.2.3", "::x:0.3.0"),
-        ("^::x:0.0.3", "::x:0.0.3", "::x:0.0.4"),
-        ("^::x:0.0", "::x:0.0", "::x:0.1"),
-        ("^::x:0", "::x:0", "::x:1"),
-        ("~::x:1.2.3", "::x:1.2.3", "::x:1.3.0"),
-        ("~::x:1.2", "::x:1.2", "::x:1.3"),
+        ("^::x:0.2.3", "::x:0.2.3", "::x:0.3.0.dev0"),
+        ("^::x:0.0.3", "::x:0.0.3", "::x:0.0.4.dev0"),
+        ("^::x:0.0", "::x:0.0", "::x:0.1.dev0"),
+        ("^::x:0", "::x:0", "::x:1.dev0"),
+        ("~::x:1.2.3", "::x:1.2.3", "::x:1.3.0.dev0"),
+        ("~::x:1.2", "::x:1.2", "::x:1.3.dev0"),
         # With no minor number, ~ allows minor updates
-        ("~::x:1", "::x:1", "::x:2"),
+        ("~::x:1", "::x:1", "::x:2.dev0"),
         # The upper bound has no revision: 2.0.0-r0 is outside the range too
-        ("^::x:1.2.3-r1", "::x:1.2.3-r1", "::x:2.0.0"),
-        ("~::x:1.2.3-r2", "::x:1.2.3-r2", "::x:1.3.0"),
+        ("^::x:1.2.3-r1", "::x:1.2.3-r1", "::x:2.0.0.dev0"),
+        ("~::x:1.2.3-r2", "::x:1.2.3-r2", "::x:1.3.0.dev0"),
         # A pre-release keeps its lower bound, the upper bound uses the numbers
-        ("^::x:1.0.0rc1", "::x:1.0.0rc1", "::x:2.0.0"),
-        ("^::x:0.2rc1-r1", "::x:0.2rc1-r1", "::x:0.3"),
-        ("~::x:1.2b3", "::x:1.2b3", "::x:1.3"),
+        ("^::x:1.0.0rc1", "::x:1.0.0rc1", "::x:2.0.0.dev0"),
+        ("^::x:0.2rc1-r1", "::x:0.2rc1-r1", "::x:0.3.dev0"),
+        ("~::x:1.2b3", "::x:1.2b3", "::x:1.3.dev0"),
         # So do .postN and .devN, alone or after a pre-release
-        ("^::x:1.0.0.post1", "::x:1.0.0.post1", "::x:2.0.0"),
-        ("~::x:1.2.dev3", "::x:1.2.dev3", "::x:1.3"),
-        ("^::x:0.2a1.dev2", "::x:0.2a1.dev2", "::x:0.3"),
+        ("^::x:1.0.0.post1", "::x:1.0.0.post1", "::x:2.0.0.dev0"),
+        ("~::x:1.2.dev3", "::x:1.2.dev3", "::x:1.3.dev0"),
+        ("^::x:0.2a1.dev2", "::x:0.2a1.dev2", "::x:0.3.dev0"),
     ],
 )
 def test_vlnv_range(dependency, lower, upper):
@@ -229,3 +229,13 @@ def test_vlvn_compare_relation():
     assert compare_relation(Vlnv(":peripherals:uart16550:1.4.9"), "~", version_1_4)
     assert not compare_relation(version_1_5, "~", version_1_4)
     assert not compare_relation(version_2_0, "~", version_1_4)
+
+    # The next version's pre-releases are outside the range, the ones
+    # inside it are not
+    assert not compare_relation(
+        Vlnv(":peripherals:uart16550:2.0.0rc1"), "^", version_1_4
+    )
+    assert compare_relation(Vlnv(":peripherals:uart16550:1.5.0a1"), "^", version_1_4)
+    assert not compare_relation(
+        Vlnv(":peripherals:uart16550:1.5.0a1"), "~", version_1_4
+    )
