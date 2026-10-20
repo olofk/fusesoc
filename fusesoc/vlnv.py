@@ -135,7 +135,8 @@ class Vlnv:
         if self.relation in "^~":
             # A VLNV which implies a range of versions
             # ^ for same major release
-            # ~ for same minor release
+            # ~ for same minor release, or same major release if the
+            # version has no minor number (as in Cargo and npm)
             incr = {"^": 0, "~": 1}
 
             # For both, we represent a >= relation on the provided
@@ -146,7 +147,7 @@ class Vlnv:
             # and then a second < relation on the relevant
             # field (with later fields tied low)
             nextversion = list(map(int, self.version.split(".")))
-            pos = incr[self.relation]
+            pos = min(incr[self.relation], len(nextversion) - 1)
             nextversion[pos] += 1
             for i in range(pos + 1, len(nextversion)):
                 nextversion[i] = 0
