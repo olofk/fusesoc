@@ -181,7 +181,8 @@ class Vlnv:
 
 
 def compare_relation(vlvn_a: Vlnv, relation: str, vlvn_b: Vlnv):
-    """Compare two VLVNs with the provided relation. Returns boolan."""
+    """Whether vlvn_a satisfies the relation to vlvn_b, e.g. a locked core
+    against a dependency. Returns boolean."""
     from okonomiyaki.versions import EnpkgVersion
 
     def version_str(v):
@@ -202,22 +203,13 @@ def compare_relation(vlvn_a: Vlnv, relation: str, vlvn_b: Vlnv):
             valid_version = ver_a >= ver_b
         elif relation == "<=":
             valid_version = ver_a <= ver_b
-        elif relation == "^":
-            nextversion = list(map(int, vlvn_a.version.split(".")))
-            for pos in range(len(nextversion)):
-                if pos == 0:
-                    nextversion[pos] += 1
-                else:
-                    nextversion[pos] = 0
-            nextversion = EnpkgVersion.from_string(".".join(map(str, nextversion)))
-            valid_version = ver_a <= ver_b and ver_b < nextversion
-        elif relation == "~":
-            nextversion = list(map(int, vlvn_a.version.split(".")))
-            for pos in range(len(nextversion)):
-                if pos == 1:
-                    nextversion[pos] += 1
-                elif pos > 1:
-                    nextversion[pos] = 0
-            nextversion = EnpkgVersion.from_string(".".join(map(str, nextversion)))
-            valid_version = ver_a <= ver_b and ver_b < nextversion
+        elif relation in ("^", "~"):
+            # The range starts at vlvn_b's version. vlvn_a must be within
+            # both of its bounds, as the solver computes them.
+            vlnv_range = copy.copy(vlvn_b)
+            vlnv_range.relation = relation
+            valid_version = all(
+                compare_relation(vlvn_a, simple.relation, simple)
+                for simple in vlnv_range.simpleVLNVs()
+            )
     return valid_version

@@ -136,13 +136,14 @@ def test_vlvn_compare_relation():
     assert compare_relation(version_1_4, "<=", version_1_5)
     assert compare_relation(version_1_4, "<=", version_2_0)
 
-    assert not compare_relation(version_1_4, "^", version_1_3)
+    # A range starts at the second VLNV's version, like the other relations
+    assert not compare_relation(version_1_3, "^", version_1_4)
     assert compare_relation(version_1_4, "^", version_1_4)
-    assert compare_relation(version_1_4, "^", version_1_5)
-    assert not compare_relation(version_1_4, "^", version_2_0)
+    assert compare_relation(version_1_5, "^", version_1_4)
+    assert not compare_relation(version_2_0, "^", version_1_4)
 
-    assert not compare_relation(version_1_4, "~", version_1_3)
+    assert not compare_relation(version_1_3, "~", version_1_4)
     assert compare_relation(version_1_4, "~", version_1_4)
-    assert compare_relation(version_1_4, "~", Vlnv(":peripherals:uart16550:1.4.9"))
-    assert not compare_relation(version_1_4, "~", version_1_5)
-    assert not compare_relation(version_1_4, "~", version_2_0)
+    assert compare_relation(Vlnv(":peripherals:uart16550:1.4.9"), "~", version_1_4)
+    assert not compare_relation(version_1_5, "~", version_1_4)
+    assert not compare_relation(version_2_0, "~", version_1_4)
