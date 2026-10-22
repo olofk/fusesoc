@@ -139,7 +139,8 @@ class Vlnv:
             relation = ""
         else:
             relation = self.relation
-        return relation + str(self)
+        # Keep the ! of a conflict, so errors show the dependency as written
+        return ("!" if self.conflict else "") + relation + str(self)
 
     def _range_numbers(self):
         # The numbers a ^ or ~ range is computed from: those the version
