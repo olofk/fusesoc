@@ -33,6 +33,9 @@ When running ``fusesoc run`` some flags are automatically made available.
 * ``target_TARGETNAME``: A flag that is set if a particular target is being built.
   ``TARGETNAME`` is replaced with the name of the target that is being built.
   For example, if the target ``synth`` is being built, the flag ``target_synth`` will be set.
+* ``flow_FLOWNAME``: A flag that is set when a particular flow is being run.
+  ``FLOWNAME`` is replaced with the name of the flow that is being run.
+  For example, if the simulation flow is being run, the flag ``flow_sim`` will be set.
 
 User-defined flags
 ~~~~~~~~~~~~~~~~~~

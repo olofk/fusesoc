@@ -381,6 +381,23 @@ def run(fs, args):
         logger.error(str(e))
         exit(1)
 
+    try:
+        flow = core.get_flow(flags)
+        if flow and "flow" not in flags:
+            flags["flow"] = flow
+
+            flow_options = core.get_flow_options(
+                {"is_toplevel": True, **flags}
+            )
+            if flow_options and "tool" in flow_options and "tool" not in flags:
+                flags["tool"] = flow_options["tool"]
+    except SyntaxError as e:
+        logger.error(str(e))
+        exit(1)
+    except RuntimeError as e:
+        logger.error(str(e))
+        exit(1)
+
     # Unconditionally clean out the work root on fresh builds
     # if we use the old tool API or clean flag is set
     if do_configure and (not core.get_flow(flags) or args.clean):
