@@ -4,7 +4,7 @@
 from collections.abc import Mapping
 from typing import Any, Generic
 
-from pydantic import model_validator
+from pydantic import ValidationInfo, model_validator
 from typing_extensions import TypeAliasType
 
 from .common import ExprOrStr, FrozenModel, _merge_append_keys
@@ -36,8 +36,8 @@ class Fileset(FrozenModel, Generic[ExprOrStr]):
 
     @model_validator(mode="before")
     @staticmethod
-    def _merge_appends(data: Any) -> Any:
-        return _merge_append_keys(data, ("files", "depend"))
+    def _merge_appends(data: Any, info: ValidationInfo) -> Any:
+        return _merge_append_keys(data, ("files", "depend"), info)
 
 
 def normalize_filesets(

@@ -146,11 +146,23 @@ def test_capi2_export_no_overwrite():
         assert cmp(os.path.join(core.files_root, f), os.path.join(export_root, f))
 
 
-def test_capi2_append():
+def test_capi2_append(caplog):
     from fusesoc.capi2.coreparser import Core2Parser
     from fusesoc.core import Core
 
     core = Core(Core2Parser(), os.path.join(cores_dir, "append.core"))
+
+    # Loading the core warns once per dropped duplicate ``..._append``
+    # entry, pointing at the offending key and core file.
+    dup_warnings = [
+        r.message for r in caplog.records if "Dropping duplicate entry" in r.message
+    ]
+    assert len(dup_warnings) == 3
+    assert (
+        "Dropping duplicate entry 'fs2' from 'filesets_append' in "
+        + os.path.join(cores_dir, "append.core")
+        in dup_warnings
+    )
 
     flags = {"is_toplevel": True}
 
@@ -173,6 +185,21 @@ def test_capi2_append():
     result = [x["name"] for x in core.get_files(flags)]
     expected = ["file1", "file2", "file3", "file4"]
     assert expected == result
+
+    # Regression for https://github.com/olofk/fusesoc/issues/767: filesets
+    # listed in both ``filesets`` and ``filesets_append`` or repeated within
+    # ``filesets_append`` produce each file only once.
+    flags["target"] = "fs_fsappend_dup_with_base"
+    result = [x["name"] for x in core.get_files(flags)]
+    assert result == ["file1", "file2", "file3"]
+
+    flags["target"] = "fs_fsappend_dup_within_append"
+    result = [x["name"] for x in core.get_files(flags)]
+    assert result == ["file1", "file2", "file3"]
+
+    flags["target"] = "fs_fsappend_only_dup"
+    result = [x["name"] for x in core.get_files(flags)]
+    assert result == ["file1", "file2"]
 
 
 def test_capi2_get_depends():
