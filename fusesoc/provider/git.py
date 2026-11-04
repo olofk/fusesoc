@@ -55,8 +55,26 @@ class Git(Provider):
         download_option = "pull" if not library.sync_version else "fetch"
         git_args = ["-C", library.location, download_option]
         try:
-            Git._checkout_library_version(library)
             Launcher("git", git_args).run()
+            Git._checkout_library_version(library)
+            if library.sync_version:
+                branch = subprocess.check_output(
+                    [
+                        "git",
+                        "-C",
+                        library.location,
+                        "rev-parse",
+                        "--abbrev-ref",
+                        "HEAD",
+                    ],
+                    text=True,
+                ).strip()
+                # Tags and commit IDs remain pinned in detached HEAD state.
+                if branch != "HEAD":
+                    Launcher(
+                        "git",
+                        ["-C", library.location, "merge", "--ff-only", "@{upstream}"],
+                    ).run()
             Git._update_library_submodules(library)
         except subprocess.CalledProcessError as e:
             raise RuntimeError(str(e))
