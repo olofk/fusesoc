@@ -47,7 +47,9 @@ class CoreInterface:
         if provider := self.get_data({}).provider:
             self.files_root = os.path.join(self.cache_root, self.name.sanitized_name)
             self.provider = get_provider(provider.name)(
-                provider.model_dump(exclude_unset=True), self.core_root, self.files_root
+                provider.model_dump(exclude_unset=True, by_alias=True),
+                self.core_root,
+                self.files_root,
             )
         else:
             self.files_root = self.core_root
