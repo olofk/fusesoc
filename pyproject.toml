@@ -126,4 +126,4 @@ include = [
   "fusesoc/utils.py",
   "fusesoc/vlnv.py",
 ]
-rules.unresolved-import = "ignore"
+rules.import-not-found = "ignore"
