@@ -58,25 +58,9 @@ repos:
         # override `files = [...]` in pyproject.toml and pull every Python
         # file into the check regardless of the strict whitelist.
         pass_filenames: false
-  - repo: local
+  - repo: https://github.com/astral-sh/ty-pre-commit
+    rev: v0.0.99
     hooks:
-      # ty doesn't have an upstream pre-commit hook repo yet (Astral ships
-      # one for ruff and uv but not ty). Until it does, use a local hook
-      # with `language: python` so pre-commit installs the pinned ty into
-      # an isolated venv on every contributor's machine.
-      - id: ty-check
-        name: ty check
-        entry: ty check
-        language: python
-        # ty itself + the runtime deps needed to resolve imports for the
-        # checked modules. Mirror the mypy hook's additional_dependencies
-        # for the same project deps.
-        additional_dependencies:
-          - ty>=0.0.49
-          - pydantic>=2.13.3
-          - typing_extensions
-          - pyparsing>=3.0.0
-          - types-PyYAML
-          - edalize>=0.4.1
-        types_or: [python, pyi]
-        pass_filenames: false
+      - id: ty
+        # Don't create/update uv.lock or a .venv in the working tree.
+        args: [--isolated]
