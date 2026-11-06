@@ -55,7 +55,7 @@ class UrlProvider(FrozenModel):
     name: Literal["url"]
     url: str
     user_agent: str | None = Field(default=None, alias="user-agent")
-    verify_cert: str | None = None
+    verify_cert: bool | None = None
     filetype: str
     # The download's hash, checked before it is unpacked.
     sha256: str | None = Field(default=None, pattern=SHA256_PATTERN)
