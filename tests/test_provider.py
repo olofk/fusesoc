@@ -103,6 +103,21 @@ def test_url_provider():
         assert os.path.isfile(os.path.join(core.files_root, "file.v"))
 
 
+def test_url_provider_user_agent(monkeypatch, tmp_path):
+    from fusesoc.provider.url import Url
+
+    cores_root = os.path.join(tests_dir, "capi2_cores", "providers")
+    core = Core(
+        Core2Parser(),
+        os.path.join(cores_root, "url_simple_with_user_agent.core"),
+        str(tmp_path),
+    )
+    calls = []
+    monkeypatch.setattr(Url, "_download", lambda *args: calls.append(args))
+    core.provider._checkout(str(tmp_path / "out"))
+    assert calls[0][3] == "FuseSoC"
+
+
 def test_uncachable():
     cores_root = os.path.join(tests_dir, "capi2_cores", "misc")
     cache_root = tempfile.mkdtemp("uncachable_")
