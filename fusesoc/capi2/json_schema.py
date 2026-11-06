@@ -484,7 +484,7 @@ capi2_schema = """
               "type": "string"
             },
             "verify_cert": {
-              "type": "string"
+              "type": "boolean"
             },
             "filetype": {
               "type": "string"

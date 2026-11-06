@@ -103,6 +103,26 @@ def test_url_provider():
         assert os.path.isfile(os.path.join(core.files_root, "file.v"))
 
 
+def test_url_provider_no_verify_cert(monkeypatch, tmp_path):
+    import ssl
+
+    from fusesoc.provider.url import Url
+
+    cores_root = os.path.join(tests_dir, "capi2_cores", "providers")
+    core = Core(
+        Core2Parser(),
+        os.path.join(cores_root, "url_simple_no_verify_cert.core"),
+        str(tmp_path),
+    )
+    # Restored after the test: _checkout replaces it for the whole process
+    monkeypatch.setattr(
+        ssl, "_create_default_https_context", ssl._create_default_https_context
+    )
+    monkeypatch.setattr(Url, "_download", lambda *args: None)
+    core.provider._checkout(str(tmp_path / "out"))
+    assert ssl._create_default_https_context is ssl._create_unverified_context
+
+
 def test_uncachable():
     cores_root = os.path.join(tests_dir, "capi2_cores", "misc")
     cache_root = tempfile.mkdtemp("uncachable_")
