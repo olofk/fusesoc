@@ -2,6 +2,7 @@
 # Licensed under the 2-Clause BSD License, see LICENSE for details.
 # SPDX-License-Identifier: BSD-2-Clause
 
+import hashlib
 import logging
 import os.path
 import shutil
@@ -17,6 +18,9 @@ from fusesoc.provider.provider import Provider
 logger = logging.getLogger(__name__)
 
 _HAS_TAR_FILTER = hasattr(tarfile, "tar_filter")  # Requires Python 3.12
+
+# Read size when hashing a download.
+_HASH_CHUNK_SIZE = 1 << 20
 
 
 class Url(Provider):
@@ -46,10 +50,15 @@ class Url(Provider):
 
             ssl._create_default_https_context = ssl._create_unverified_context  # type: ignore[assignment, ty:invalid-assignment]
 
-        Url._download(url, local_dir, filetype, user_agent)
+        Url._download(url, local_dir, filetype, user_agent, self.config.get("sha256"))
 
     @staticmethod
-    def _download(url, local_dir, filetype, user_agent=False):
+    def _download(url, local_dir, filetype, user_agent=False, sha256=None):
+        """Download `url` and unpack it into `local_dir`.
+
+        A given `sha256` must match the downloaded file, checked before it is
+        unpacked.
+        """
         if user_agent and sys.version_info[0] >= 3:
             opener = urllib.build_opener()
             opener.addheaders = [("User-agent", user_agent)]
@@ -58,6 +67,18 @@ class Url(Provider):
             (filename, headers) = urllib.urlretrieve(url)
         except (URLError, HTTPError) as e:
             raise RuntimeError(f"Failed to download '{url}'. '{e.reason}'")
+
+        if sha256:
+            # TODO: use hashlib.file_digest (Python 3.11+) once 3.10 is dropped.
+            h = hashlib.sha256()
+            with open(filename, "rb") as f:
+                for chunk in iter(lambda: f.read(_HASH_CHUNK_SIZE), b""):
+                    h.update(chunk)
+            found = h.hexdigest()
+            if sha256.lower() != found:
+                raise RuntimeError(
+                    f"sha256 mismatch for '{url}': expected {sha256.lower()}, found {found}"
+                )
 
         if filetype == "tar":
             t = tarfile.open(filename)
