@@ -59,6 +59,9 @@ include = [
 fusesoc = "fusesoc.main:main"
 
 [tool.pytest.ini_options]
+# Collect only tests/, so a bare pytest skips untracked checkouts such as
+# fusesoc_libraries/ in the repository root.
+testpaths = ["tests"]
 markers = [
     "network: test requires network access.",
 ]
