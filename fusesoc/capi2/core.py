@@ -129,15 +129,23 @@ class CoreInterface:
                     try:
                         shutil.copy2(src, dst)
                     except IsADirectoryError:
-                        shutil.copytree(src, dst, dirs_exist_ok=True)
+                        # Copy the directory afresh so files removed from
+                        # the source do not linger in the export
+                        shutil.rmtree(dst, ignore_errors=True)
+                        shutil.copytree(src, dst)
 
-        # Clean out leftover files from previous builds
+        # Clean out leftover files from previous builds. A listed path may be
+        # a directory (copied with copytree above), so keep every file below
+        # a listed path too, not only the listed paths themselves.
+        _src_paths = [os.path.normpath(x) for x in src_files]
         for root, _, files in os.walk(dst_dir):
             for f in files:
                 _abs_f = os.path.join(root, f)
                 _rel_f = os.path.normpath(os.path.relpath(_abs_f, dst_dir))
 
-                if _rel_f not in [os.path.normpath(x) for x in src_files]:
+                if not any(
+                    _rel_f == p or _rel_f.startswith(p + os.sep) for p in _src_paths
+                ):
                     os.remove(_abs_f)
 
     def _get_script_names(
