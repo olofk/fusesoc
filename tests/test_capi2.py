@@ -103,6 +103,41 @@ def test_capi2_export():
     assert expected == sorted(result)
 
 
+def test_capi2_export_dir(tmp_path):
+    import os
+    import shutil
+
+    from fusesoc.capi2.coreparser import Core2Parser
+    from fusesoc.core import Core
+
+    # Work on a copy so files can be added to and removed from the source
+    core_root = tmp_path / "core"
+    shutil.copytree(os.path.join(tests_dir, "capi2_cores", "misc"), core_root)
+    core = Core(Core2Parser(), str(core_root / "files.core"))
+
+    export_root = tmp_path / "export"
+    flags = {"target": "dir_test", "is_toplevel": True}
+
+    def exported():
+        result = []
+        for root, dirs, files in os.walk(export_root):
+            result += [
+                os.path.relpath(os.path.join(root, f), export_root) for f in files
+            ]
+        return sorted(result)
+
+    # The files below a listed directory must survive the leftover cleanup
+    extra = core_root / "subdir" / "extra.file"
+    extra.write_text("extra")
+    core.export(str(export_root), flags)
+    assert ["subdir/dummy.extra", "subdir/extra.file"] == exported()
+
+    # A file removed from the listed directory must not linger in the export
+    extra.unlink()
+    core.export(str(export_root), flags)
+    assert ["subdir/dummy.extra"] == exported()
+
+
 def test_capi2_export_no_overwrite():
     import os
     import tempfile
