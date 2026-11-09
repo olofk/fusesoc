@@ -489,6 +489,11 @@ capi2_schema = """
             "filetype": {
               "type": "string"
             },
+            "sha256": {
+              "description": "The sha256 of the downloaded file, as 64 hex digits. A download that does not match is an error",
+              "type": "string",
+              "pattern": "^[0-9a-fA-F]{64}$"
+            },
             "patches": {
               "$ref": "#/$defs/string_array"
             },
