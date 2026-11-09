@@ -40,6 +40,9 @@ filesets:
   vpi_fileset:
     files:
       - vpifile : {file_type : CSource}
+  dir_fileset:
+    files:
+      - subdir : {file_type : user}
 
 scripts:
   script_with_fileset:
@@ -59,6 +62,8 @@ targets:
     filesets : [unusedfiles]
   files_root_test:
     filesets: [fileset_in_files_root]
+  dir_test:
+    filesets: [dir_fileset]
 
 vpi:
   vpi_with_fileset:
