@@ -121,3 +121,42 @@ def test_cachable():
     assert core.cache_status() == "empty"
     core.setup()
     assert core.cache_status() == "downloaded"
+
+
+# The hash of `tests/test_provider/file.tar.gz`.
+FILE_TAR_SHA256 = "ad12e833bedfc2833e7e57315c1a68ba282ddcbe157c8f84ecb68dc3d69fc063"
+
+
+def _url_core(tmp_path, sha256):
+    """A `url` core downloading `file.tar.gz` over file://, with the given hash."""
+    url = "file://" + os.path.join(tests_dir, "test_provider", "file.tar.gz")
+    core_file = tmp_path / "url_sha.core"
+    core_file.write_text(
+        "CAPI=2:\nname: ::url_sha:0\n"
+        f"provider: {{name: url, filetype: tar, url: '{url}', sha256: '{sha256}'}}\n"
+    )
+    return Core(Core2Parser(), str(core_file), str(tmp_path / "cache"))
+
+
+def test_url_provider_sha256_matches(tmp_path):
+    # The hash is case-insensitive.
+    core = _url_core(tmp_path, FILE_TAR_SHA256.upper())
+    core.setup()
+    assert os.path.isfile(os.path.join(core.files_root, "file.v"))
+
+
+def test_url_provider_sha256_mismatch(tmp_path):
+    wrong = "0" * 64
+    core = _url_core(tmp_path, wrong)
+    with pytest.raises(RuntimeError) as excinfo:
+        core.setup()
+    msg = str(excinfo.value)
+    assert "file.tar.gz" in msg and wrong in msg and FILE_TAR_SHA256 in msg
+    # Nothing was unpacked.
+    assert not os.path.exists(os.path.join(core.files_root, "file.v"))
+
+
+def test_url_provider_sha256_must_be_hex(tmp_path):
+    # The schema rejects the provider section; the message does not name sha256.
+    with pytest.raises(SyntaxError, match="provider cannot be validated"):
+        _url_core(tmp_path, "abc")
