@@ -7,6 +7,8 @@ from pydantic import Field
 
 from .common import FrozenModel
 
+SHA256_PATTERN = "^[0-9a-fA-F]{64}$"
+
 
 class GithubProvider(FrozenModel):
     name: Literal["github"]
@@ -55,6 +57,8 @@ class UrlProvider(FrozenModel):
     user_agent: str | None = Field(default=None, alias="user-agent")
     verify_cert: str | None = None
     filetype: str
+    # The download's hash, checked before it is unpacked.
+    sha256: str | None = Field(default=None, pattern=SHA256_PATTERN)
     patches: tuple[str, ...] = ()
     cachable: bool | None = None
 
