@@ -239,3 +239,13 @@ def test_vlvn_compare_relation():
     assert not compare_relation(
         Vlnv(":peripherals:uart16550:1.5.0a1"), "~", version_1_4
     )
+
+
+def test_vlnv_revision_equality_and_hash():
+    # Cores that differ only in revision are different cores, and equal
+    # cores must hash equally (hash covers the revision via str()).
+    assert Vlnv("::uart16550:1.5-r5") != Vlnv("::uart16550:1.5")
+    assert Vlnv("::uart16550:1.5-r5") != Vlnv("::uart16550:1.5-r6")
+    assert Vlnv("::uart16550:1.5-r5") == Vlnv("::uart16550:1.5-r5")
+    assert hash(Vlnv("::uart16550:1.5-r5")) == hash(Vlnv("::uart16550:1.5-r5"))
+    assert len({Vlnv("::uart16550:1.5-r5"), Vlnv("::uart16550:1.5-r5")}) == 1

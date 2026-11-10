@@ -219,11 +219,18 @@ class Vlnv:
             return [self]
 
     def __eq__(self, other):
-        return (self.vendor, self.library, self.name, self.version) == (
+        return (
+            self.vendor,
+            self.library,
+            self.name,
+            self.version,
+            self.revision,
+        ) == (
             other.vendor,
             other.library,
             other.name,
             other.version,
+            other.revision,
         )
 
     def __lt__(self, other):
