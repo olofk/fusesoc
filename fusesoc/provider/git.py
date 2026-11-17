@@ -3,6 +3,7 @@
 # SPDX-License-Identifier: BSD-2-Clause
 
 import logging
+import os
 import subprocess
 
 from fusesoc.library import Library
@@ -10,6 +11,14 @@ from fusesoc.provider.provider import Provider
 from fusesoc.utils import Launcher
 
 logger = logging.getLogger(__name__)
+
+
+def _normalize_uri(uri: str) -> str:
+    """Resolve local paths, which git clone stores as absolute paths, and strip
+    a trailing / and .git suffix, which do not change the repository."""
+    if os.path.isdir(uri):
+        return os.path.realpath(uri)
+    return uri.rstrip("/").removesuffix(".git")
 
 
 class Git(Provider):
@@ -41,6 +50,42 @@ class Git(Provider):
 
     @staticmethod
     def init_library(library: Library) -> None:
+        # Reuse an existing checkout of the same repo, e.g. when fusesoc.conf
+        # was lost. .git is a file in worktrees and submodules.
+        if os.path.exists(os.path.join(library.location, ".git")):
+            try:
+                # Read the stored URL: get-url would apply insteadOf rewrites
+                origin = subprocess.check_output(
+                    [
+                        "git",
+                        "-C",
+                        library.location,
+                        "config",
+                        "--get",
+                        "remote.origin.url",
+                    ],
+                    text=True,
+                ).strip()
+            except (subprocess.CalledProcessError, FileNotFoundError) as e:
+                raise RuntimeError(f"Cannot get origin of {library.location}: {e}")
+            # git resolves a relative local origin against the checkout, not the CWD
+            if os.path.isdir(os.path.join(library.location, origin)):
+                origin = os.path.join(library.location, origin)
+            if _normalize_uri(origin) != _normalize_uri(library.sync_uri or ""):
+                raise RuntimeError(
+                    f"{library.location} has origin '{origin}', "
+                    f"expected '{library.sync_uri}'"
+                )
+            logger.info(f"Reusing existing checkout in {library.location}")
+            # The checkout is left as is, so a clone's version checkout and
+            # submodule update only happen on the next library update
+            if library.sync_version or library.sync_submodules:
+                logger.warning(
+                    f"Run 'fusesoc library update {library.name}' to apply "
+                    "sync-version and sync-submodules to the existing checkout"
+                )
+            return
+
         logger.info(f"Cloning library into {library.location}")
         git_args = ["clone", library.sync_uri, library.location]
         try:
