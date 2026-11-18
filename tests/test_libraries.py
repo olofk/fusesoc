@@ -4,6 +4,7 @@
 
 import logging
 import os.path
+import re
 import shutil
 import subprocess
 import tempfile
@@ -246,3 +247,125 @@ auto-sync = true
         )
         assert f"Cloning library into {library}/vlog_tb_utils" in caplog.text
         assert "Updating..." in caplog.text
+
+
+def _git_repo(path):
+    """Create a git repo with one empty commit and return its file:// URI."""
+    git = [
+        "git",
+        "-c",
+        "user.name=test",
+        "-c",
+        "user.email=test@example.com",
+        "-c",
+        "commit.gpgsign=false",
+    ]
+    subprocess.run(git + ["init", "-q", str(path)], check=True)
+    subprocess.run(
+        git + ["-C", str(path), "commit", "-q", "--allow-empty", "-m", "init"],
+        check=True,
+    )
+    return path.as_uri()
+
+
+def test_library_add_existing_git_checkout(tmp_path, caplog):
+    from fusesoc.library import Library
+
+    uri = _git_repo(tmp_path / "repo")
+    location = str(tmp_path / "fusesoc_libraries" / "mylib")
+    subprocess.run(["git", "clone", "-q", uri, location], check=True)
+
+    # Checkout of the same repo, e.g. after fusesoc.conf was lost: reuse it.
+    # A .git suffix and trailing / do not count as a different origin.
+    conf_path = str(tmp_path / "fusesoc.conf")
+    with caplog.at_level(logging.INFO):
+        Config(conf_path).add_library(Library("mylib", location, "git", uri + ".git/"))
+    assert Config(conf_path).libraries[0].location == location
+    assert f"Reusing existing checkout in {location}" in caplog.text
+    assert not [r for r in caplog.records if r.levelname == "WARNING"]
+
+    # Checkout of another repo: fail without writing the config
+    other_uri = _git_repo(tmp_path / "other")
+    other_conf = tmp_path / "other.conf"
+    with pytest.raises(RuntimeError, match=f"has origin '{re.escape(uri)}'"):
+        Config(str(other_conf)).add_library(
+            Library("mylib", location, "git", other_uri)
+        )
+    assert not Config(str(other_conf)).libraries
+
+    # Checkout without an origin remote: fail
+    subprocess.run(["git", "-C", location, "remote", "remove", "origin"], check=True)
+    with pytest.raises(RuntimeError, match="Cannot get origin"):
+        Config(str(other_conf)).add_library(Library("mylib", location, "git", uri))
+    subprocess.run(["git", "-C", location, "remote", "add", "origin", uri], check=True)
+
+    # sync-version and sync-submodules are not applied to a reused checkout:
+    # warn that a library update is needed
+    for i, (version, submodules) in enumerate((("v1.0", False), (None, True))):
+        caplog.clear()
+        Config(str(tmp_path / f"sync{i}.conf")).add_library(
+            Library("mylib", location, "git", uri, version, sync_submodules=submodules)
+        )
+        assert "Run 'fusesoc library update mylib'" in caplog.text
+
+    # An insteadOf rewrite of the origin does not count as a different origin
+    subprocess.run(
+        ["git", "-C", location, "config", "url.https://example.com/.insteadOf", uri],
+        check=True,
+    )
+    Config(str(tmp_path / "insteadof.conf")).add_library(
+        Library("mylib", location, "git", uri)
+    )
+
+    # A relative local origin is resolved against the checkout
+    subprocess.run(
+        [
+            "git",
+            "-C",
+            location,
+            "remote",
+            "set-url",
+            "origin",
+            os.path.relpath(tmp_path / "repo", location),
+        ],
+        check=True,
+    )
+    Config(str(tmp_path / "relative.conf")).add_library(
+        Library("mylib", location, "git", str(tmp_path / "repo"))
+    )
+
+
+def test_library_add_existing_git_worktree(tmp_path, caplog):
+    from fusesoc.library import Library
+
+    # A worktree has a .git file instead of a .git directory
+    uri = _git_repo(tmp_path / "repo")
+    clone = str(tmp_path / "clone")
+    location = str(tmp_path / "mylib")
+    subprocess.run(["git", "clone", "-q", uri, clone], check=True)
+    subprocess.run(
+        ["git", "-C", clone, "worktree", "add", "-q", "--detach", location],
+        check=True,
+    )
+    with caplog.at_level(logging.INFO):
+        Config(str(tmp_path / "fusesoc.conf")).add_library(
+            Library("mylib", location, "git", uri)
+        )
+    assert f"Reusing existing checkout in {location}" in caplog.text
+    assert not [r for r in caplog.records if r.levelname == "WARNING"]
+
+
+def test_library_add_existing_git_checkout_local_path(tmp_path, monkeypatch, caplog):
+    from fusesoc.library import Library
+
+    # git clone stores a relative local path as an absolute one, e.g.
+    # /abs/./repo for ./repo. The same relative path must still match.
+    monkeypatch.chdir(tmp_path)
+    _git_repo(tmp_path / "repo")
+    location = str(tmp_path / "mylib")
+    subprocess.run(["git", "clone", "-q", "./repo", location], check=True)
+    with caplog.at_level(logging.INFO):
+        Config(str(tmp_path / "fusesoc.conf")).add_library(
+            Library("mylib", location, "git", "./repo")
+        )
+    assert f"Reusing existing checkout in {location}" in caplog.text
