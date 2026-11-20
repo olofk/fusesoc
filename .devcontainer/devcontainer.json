@@ -1,0 +1,73 @@
+{
+  "name": "FuseSoC",
+  "build": {
+    "dockerfile": "Dockerfile",
+    "context": ".." // always build from root
+  },
+
+  // The host checkout may contain a macOS/Windows-built .venv and .tox
+  // so we shadow them
+  "mounts": [
+    "source=fusesoc-venv,target=${containerWorkspaceFolder}/.venv,type=volume",
+    "source=fusesoc-tox,target=${containerWorkspaceFolder}/.tox,type=volume"
+  ],
+
+  // load your key into ssh agent w/
+  //
+  //     ssh-add --apple-use-keychain ~/.ssh/id_ed25519
+  "containerEnv": {
+    // allow to run pytest without tox
+    "MODEL_TECH": "dummy_value"
+  },
+
+  // fusesoc is installed with "pip install --user" in ~/.local/bin.
+  "remoteEnv": {
+    "PATH": "/home/vscode/.local/bin:${containerEnv:PATH}"
+  },
+
+  // see script for details
+  "postCreateCommand": "bash .devcontainer/post-create.sh",
+
+  "remoteUser": "vscode",
+
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "ms-python.python",
+        "ms-python.vscode-pylance",
+        "ms-python.debugpy",
+        "ms-python.black-formatter",
+        "ms-python.isort",
+        "charliermarsh.ruff",
+        "ms-python.mypy-type-checker",
+        "astral-sh.ty",
+        "tamasfe.even-better-toml",
+        "editorconfig.editorconfig",
+        "redhat.vscode-yaml",
+        "lextudio.restructuredtext",
+        "Hudson-River-Trading.vscode-slang"
+      ],
+      "settings": {
+        "python.defaultInterpreterPath": "/usr/local/bin/python",
+        "python.testing.pytestEnabled": true,
+        "python.testing.unittestEnabled": false,
+        "python.testing.pytestArgs": ["tests"],
+        "[python]": {
+          "editor.defaultFormatter": "ms-python.black-formatter",
+          "editor.formatOnSave": true,
+          "editor.codeActionsOnSave": {
+            "source.organizeImports": "explicit"
+          }
+        },
+        "isort.args": ["--profile", "black"],
+        "mypy-type-checker.args": ["--config-file=pyproject.toml"],
+        "slang.path": "/usr/local/bin/slang-server",
+        "files.associations": {
+          "*.core": "yaml"
+        },
+        "files.eol": "\n",
+        "files.insertFinalNewline": true
+      }
+    }
+  }
+}
