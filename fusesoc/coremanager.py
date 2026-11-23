@@ -98,12 +98,38 @@ class CoreDB:
             )
         return ", ".join(conflicts.values())
 
+    def _is_versioned(self, vlnv):
+        return vlnv.version != "0" or vlnv.revision != 0
+
     def _parse_virtual(self, virtuals):
+        """The solver's provides for a core: its unversioned virtual VLNVs.
+
+        The solver does not take a version for a provided package, it matches
+        a requirement against the version of the providing package. A
+        versioned virtual VLNV is therefore solved with an alias package, see
+        _virtual_aliases.
+        """
         package_names = []
         for virtual in virtuals:
             for simple in virtual.simpleVLNVs():
-                package_names.append(f"{self._package_name(simple)}")
+                if not self._is_versioned(simple):
+                    package_names.append(f"{self._package_name(simple)}")
         return ", ".join(package_names)
+
+    def _virtual_aliases(self, core, virtuals):
+        """Solver packages named after each versioned virtual VLNV of a core,
+        with that version, that depend on the core itself."""
+        return [
+            "{} {}; depends ( {} == {} )".format(
+                self._package_name(simple),
+                self._package_version(simple),
+                self._package_name(core.name),
+                self._package_version(core.name),
+            )
+            for virtual in virtuals
+            for simple in virtual.simpleVLNVs()
+            if self._is_versioned(simple)
+        ]
 
     def add(self, core, library):
         self._solver_cache_invalidate_all()
@@ -387,6 +413,11 @@ class CoreDB:
 
             repo.add_package(package)
 
+            for alias_str in self._virtual_aliases(core, _virtuals):
+                alias = parser.parse_to_package(alias_str)
+                alias.core = core
+                repo.add_package(alias)
+
         request = Request()
         _top_dep = "{} {} {}".format(
             self._package_name(top_core),
@@ -423,6 +454,9 @@ class CoreDB:
                                 virtual,
                             )
                     objdict[p[0]] = str(op.package.core.name)
+                if op.package.name != package_name:
+                    # An alias for a versioned virtual, not a core of its own
+                    continue
                 for p in op.package.install_requires:
                     if p[0] in virtual_selection:
                         # If package that implements a virtual core is required, remove from the dictionary
@@ -442,7 +476,11 @@ class CoreDB:
         if partial_lockfile and not self._lockfile.no_cores():
             logger.warning("Using lock file with partial list of cores")
 
-        result = [op.package.core for op in transaction.operations]
+        result = [
+            op.package.core
+            for op in transaction.operations
+            if op.package.name == self._package_name(op.package.core.name)
+        ]
 
         # Cache the solution for further lookups
         self._solver_cache_store(solver_cache_key, result)
