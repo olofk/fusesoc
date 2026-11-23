@@ -82,6 +82,12 @@ def test_name_revision_legacy():
     assert vlnv_tuple(Vlnv("uart16550-r2")) == ("", "", "uart16550", "0", 2)
 
 
+# An empty part after the last '-' is not a version
+@pytest.mark.parametrize("name", ["foo-", "foo--r1"])
+def test_name_trailing_dash_legacy(name):
+    assert Vlnv(name).name == "foo-"
+
+
 # Reject names containing characters that downstream parsers cannot handle.
 # Regression tests for https://github.com/olofk/fusesoc/issues/749
 @pytest.mark.parametrize(
