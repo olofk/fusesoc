@@ -126,3 +126,9 @@ You can use ``pip`` to install as same as Linux.
 .. code-block:: shell-session
 
    $ pip3 install --upgrade --user fusesoc
+
+A FuseSoC formula is also available for Homebrew users:
+
+.. code-block:: shell-session
+
+   $ brew install fusesoc
