@@ -1009,3 +1009,70 @@ def test_depend_conflict_with_virtual_conflict():
     assert db._parse_conflicts({"b"}, [Vlnv("!>=::b:1.3")]) == "b"
     with pytest.raises(SyntaxError, match="More than one conflict"):
         db._parse_conflicts({"b"}, [Vlnv("!<::b:1.2"), Vlnv("!>::b:1.3")])
+
+
+@pytest.mark.parametrize(
+    "depends,expected",
+    [
+        # Constraints on the versioned virtual of impl_a (1.2)
+        (["::versioned:1.2"], ["::impl_a:1.0"]),
+        (["=::versioned:1.2"], ["::impl_a:1.0"]),
+        ([">=::versioned:1.1", "<::versioned:2"], ["::impl_a:1.0"]),
+        (["<::versioned:1.3"], ["::impl_a:1.0"]),
+        (["~::versioned:1.2"], ["::impl_a:1.0"]),
+        (["^::versioned:1.0"], ["::impl_a:1.0"]),
+        (["::versioned:1.1"], None),
+        ([">::versioned:2.1"], None),
+        (["<::versioned:1.2"], None),
+        # Two providers of the same virtual: the version picks between them
+        (["::versioned:2.1"], ["::impl_b:2.0"]),
+        ([">=::versioned:2"], ["::impl_b:2.0"]),
+        ([">=::versioned:3"], None),
+        # The version of a core is not the version of its virtual
+        (["::versioned:1.0"], None),
+        (["::versioned:2.0"], None),
+        # A virtual that declares no version is not matched against its
+        # versions, but is matched as before
+        (["::unversioned"], ["::impl_u:1.0"]),
+        ([">=::unversioned:1.0"], ["::impl_u:1.0"]),
+        # Both providers of one virtual in the same tree conflict
+        (["::impl_a:1.0", "::impl_b:2.0"], None),
+    ],
+)
+def test_virtual_version(tmp_path, depends, expected):
+    """A versioned virtual is matched with its own version, not the version of
+    the core that provides it."""
+    import json
+    import os
+
+    from fusesoc.config import Config
+    from fusesoc.coremanager import CoreManager, DependencyError
+    from fusesoc.librarymanager import Library
+    from fusesoc.vlnv import Vlnv
+
+    (tmp_path / "top.core").write_text(
+        "CAPI=2:\n"
+        "name: ::top:0\n"
+        "filesets:\n"
+        "  rtl:\n"
+        f"    depend: {json.dumps(depends)}\n"
+        "targets:\n"
+        "  default:\n"
+        "    filesets: [rtl]\n"
+    )
+    cm = CoreManager(Config())
+    cm.add_library(
+        Library(
+            "virtual_version",
+            os.path.join(os.path.dirname(__file__), "capi2_cores", "virtual_version"),
+        ),
+        [],
+    )
+    cm.add_library(Library("top", str(tmp_path)), [])
+
+    if expected is None:
+        with pytest.raises(DependencyError):
+            cm.get_depends(Vlnv("::top:0"), {})
+    else:
+        deps = [str(c) for c in cm.get_depends(Vlnv("::top:0"), {})]
+        assert deps == expected + ["::top:0"]
