@@ -20,7 +20,7 @@ class Vlnv:
             return s.startswith("r") and s[1:].isdigit()
 
         def _is_version(s):
-            return s[0].isdigit()
+            return s[:1].isdigit()
 
         if not s:
             raise SyntaxError("Core name is empty string")
