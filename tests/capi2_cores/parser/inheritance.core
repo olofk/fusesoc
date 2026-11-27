@@ -52,6 +52,24 @@ targets:
       verilator:
         mode: lint-only
 
+  subfield_list_override:
+    <<: *subfield
+    tools:
+      verilator:
+        verilator_options:
+          - --Wall
+  subfield_list_append: &subfield_list_append
+    tools:
+      verilator:
+        verilator_options_append:
+          - --Wall
+  subfield_list_append_child:
+    <<: *subfield_list_append
+    tools:
+      verilator:
+        verilator_options_append:
+          - --timing
+
   merge_test1: {<<: *default}
   merge_test2<<: {tools: {2<<: {}}}
   <<merge_test3: {tools: {<<3: {}}}

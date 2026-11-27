@@ -184,7 +184,7 @@ def yaml_dump(data):
 def merge_dict(d1, d2, concat_list_appends_only=False):
     for key, value in d2.items():
         if isinstance(value, dict):
-            d1[key] = merge_dict(d1.get(key, {}), value)
+            d1[key] = merge_dict(d1.get(key, {}), value, concat_list_appends_only)
         elif isinstance(value, list) and (
             not concat_list_appends_only or key.endswith("_append")
         ):

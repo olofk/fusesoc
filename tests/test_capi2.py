@@ -832,6 +832,19 @@ def test_inheritance():
                     }
                 }
             },
+            "subfield_list_override": {
+                "tools": {
+                    "verilator": {"mode": "cc", "verilator_options": ["--Wall"]}
+                }
+            },
+            "subfield_list_append": {
+                "tools": {"verilator": {"verilator_options_append": ["--Wall"]}}
+            },
+            "subfield_list_append_child": {
+                "tools": {
+                    "verilator": {"verilator_options_append": ["--Wall", "--timing"]}
+                }
+            },
             "merge_test1": {"filesets": ["fileset_a"]},
             "merge_test2<<": {"tools": {"2<<": {}}},
             "<<merge_test3": {"tools": {"<<3": {}}},
